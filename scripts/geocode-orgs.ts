@@ -31,7 +31,7 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CACHE_PATH = resolve(__dirname, '..', 'src', 'lib', 'geocode-cache.json');
 
-const USER_AGENT = 'CRN-site-geocoder/2.0 (https://crn.elghareeb.space)';
+const USER_AGENT = 'CRN-site-geocoder/2.0 (https://climaterobotics.network)';
 const REDO = process.argv.includes('--redo');
 
 type Coords = [number, number];
