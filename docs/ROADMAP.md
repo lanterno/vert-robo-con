@@ -178,7 +178,7 @@ On Nov 30 climaterobotics.network moves to the new server, and 2027 registration
 - [ ] Finish the Privacy page with the legal entity, legal basis and retention periods
 - [ ] Two people each do one deploy and one restore on their own
 - [ ] Test that email lands in inboxes, not spam, on Gmail and Outlook
-- [ ] Switch the 4 references from crn.elghareeb.space to climaterobotics.network (`public/CNAME`, `astro.config.mjs`, `src/lib/constants.ts`, `README.md`) and commit the geocoder change
+- [ ] Switch the 4 references from crn.elghareeb.space to climaterobotics.network (`public/CNAME`, `astro.config.mjs`, `src/lib/constants.ts`, `README.md`)
 - [ ] Lower the DNS TTL on Nov 23, then move climaterobotics.network from GoDaddy to the server on Nov 30. Keep the GoDaddy site and GitHub Pages as a fallback for 30 days
 - [ ] Close the 2027 registration Google Form with a note pointing to the new page
 
