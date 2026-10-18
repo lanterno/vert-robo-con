@@ -2,6 +2,7 @@
   "name": "climate-robotics-network",
   "type": "module",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "Climate Robotics Network - Green Bots, Blue Planet",
   "scripts": {
     "dev": "tinacms dev -c \"astro dev\"",
