@@ -1,5 +1,5 @@
 /**
- * Site-wide constants for the Vert Robo Con.
+ * Site-wide constants for Vert Robo Con.
  *
  * Every organisation, person, event, link and statistic on this site is
  * fictional demo content. The brand lives here so it can be swapped in one place.

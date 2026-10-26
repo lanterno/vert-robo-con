@@ -1,6 +1,6 @@
 # VRC roadmap: from today's site to the V3 designs
 
-As of Oct 18, 2026 · The Vert Robo Con (VRC) is a fictional organisation; every name, figure and address in this plan is demo content.
+As of Oct 18, 2026 · Vert Robo Con (VRC) is a fictional organisation; every name, figure and address in this plan is demo content.
 
 ## Summary
 
@@ -67,7 +67,7 @@ By Nov 6 the server runs the full stack on a staging hostname. Admin tools are r
 **Weeks 1–2, the server:**
 
 - [ ] Harden the server: SSH keys only, firewall, automatic security updates, tailnet
-- [ ] Create a `ern-infra` Git repo holding Docker Compose files for:
+- [ ] Create a `vrc-infra` Git repo holding Docker Compose files for:
     - Caddy
     - Postgres 17, with one database each for Payload, listmonk and Umami
     - Payload 3.91.x
@@ -160,7 +160,7 @@ On Dec 7 vert-robo-con.example moves to the new server, and 2027 registration op
 - [ ] Add magic links and the first version of My VRC at `/me`: see, cancel or add to calendar a registration, and download or delete your data
 - [ ] Send the confirmation email through SES with the magic link and an .ics file
 - [ ] In listmonk, add the "notify me" topics with double opt-in, and a private 2027 registrants list kept in sync by Payload
-- [ ] Build RegisterV3 and the registration part of MyERNV3 (frontend)
+- [ ] Build RegisterV3 and the registration part of MyVRCV3 (frontend)
 
 **Admin screens in this phase:**
 
@@ -192,13 +192,13 @@ Items are listed in the order their deadlines force:
 
 | When | What | Replaces | Boards |
 | --- | --- | --- | --- |
-| Dec 8 | Startup and research pitch calls. On Dec 8 a one-step form writes to the pitches collection; the 4-step form with "Save and finish later" follows by Dec 18. References like PIT-2027-018 | 2026 startup and research pitch forms | GetInvolvedV3, MyERNV3 |
+| Dec 8 | Startup and research pitch calls. On Dec 8 a one-step form writes to the pitches collection; the 4-step form with "Save and finish later" follows by Dec 18. References like PIT-2027-018 | 2026 startup and research pitch forms | GetInvolvedV3, MyVRCV3 |
 | Dec 8–18 | Pitch review: any admin scores, with their name shown. Decisions are held as pending and sent out together | Reviewing in spreadsheets | AdminPitchesV3 |
 | Dec 8–18 | One moderation queue with counts for each type. It covers join requests, map suggestions, job posts, internship applications, messages, document suggestions, research topics and reports of concern | Nothing; these were ad hoc | AdminQueueV3, AdminDashboardV3 |
-| Dec 7–18 | Joining the network. The Slack invite link appears only in the approval email. A daily check warns before the link expires (after 30 days or 400 uses). The email-only digest is still instant | Public Slack invite links | HomeV3 join sheet, MyERNV3 |
+| Dec 7–18 | Joining the network. The Slack invite link appears only in the approval email. A daily check warns before the link expires (after 30 days or 400 uses). The email-only digest is still instant | Public Slack invite links | HomeV3 join sheet, MyVRCV3 |
 | Dec 7–18 | Contact form routed by topic, and the 2-step consulting enquiry. It emails hello@ with Reply-To set to the sender. References like MSG-1093 | Old site's contact form, "DM us" | ContactV3 |
 | Dec 14 – Jan 15 | Map moderation, below | Map dataset in the repo | MapV3, AdminMapV3 |
-| Jan 4–22 | Jobs board: posts are reviewed, expire daily, and can be renewed, edited or closed through the magic link. References like JOB-0219. Internship applications for each track, with track toggles | Jobs spreadsheet, job and internship forms | JobsV3, MyERNV3, AdminQueueV3, AdminSettingsV3 |
+| Jan 4–22 | Jobs board: posts are reviewed, expire daily, and can be renewed, edited or closed through the magic link. References like JOB-0219. Internship applications for each track, with track toggles | Jobs spreadsheet, job and internship forms | JobsV3, MyVRCV3, AdminQueueV3, AdminSettingsV3 |
 | Jan 4–22 | The smaller forms: sponsor interest, recommend a speaker, volunteer, register interest in the Schools Programme or the Field Skills Course, propose a research topic, join the research team, a private report-a-concern form, and "Suggest" on each section of the white paper | Slack messages, white-paper feedback form | GetInvolvedV3, ResearchV3 |
 
 **Map moderation in detail:**
@@ -231,7 +231,7 @@ By Mar 12 the 2027 program is published and every registrant can build an agenda
 
 **My VRC and personal data (Jan 18 – Mar 5):**
 
-- [ ] Complete MyERNV3:
+- [ ] Complete MyVRCV3:
     - pitch, internship and job-post status, with edit, withdraw, renew and close
     - map suggestions and join-request status
     - email preferences and unsubscribe
@@ -291,7 +291,7 @@ All 27 canvas boards are covered: the static part of every public board ships by
 | ProgramV3 | Phase 1 (archives) | Saved agenda, calendar feed, join links, Phase 4 | AdminProgramV3 |
 | RegisterV3 | — | All of it, Phase 2 | AdminEditionV3, AdminRegistrationsV3 |
 | GetInvolvedV3 | Phase 1 | Pitch calls and smaller forms, Phase 3 | AdminPitchesV3, AdminSettingsV3 toggles |
-| MyERNV3 | — | Registrations Phase 2; everything else Phase 4 | Magic links |
+| MyVRCV3 | — | Registrations Phase 2; everything else Phase 4 | Magic links |
 | PhoneV3 | Phase 1 | Follows each desktop board | — |
 | MapV3 | Phase 1 (MapLibre, downloads) | Suggestions and moderation, Phase 3 | AdminMapV3 |
 | ResearchV3 | Phase 1 (reader) | Section suggestions, topics, concerns, Phase 3 | AdminQueueV3, AdminContentV3 |
