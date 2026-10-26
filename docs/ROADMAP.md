@@ -1,10 +1,10 @@
-# ERN roadmap: from today's site to the V3 designs
+# VRC roadmap: from today's site to the V3 designs
 
-As of Oct 18, 2026 · The Example Robotics Network (ERN) is a fictional organisation; every name, figure and address in this plan is demo content.
+As of Oct 18, 2026 · The Vert Robo Con (VRC) is a fictional organisation; every name, figure and address in this plan is demo content.
 
 ## Summary
 
-With two developers starting Mon Oct 19, the new site can launch on example.org on **Mon Dec 7, 2026**, with built-in registration open that day. The rest of the backoffice would be finished by mid-March, a month before the April 20–22, 2027 summit.
+With two developers starting Mon Oct 19, the new site can launch on vert-robo-con.example on **Mon Dec 7, 2026**, with built-in registration open that day. The rest of the backoffice would be finished by mid-March, a month before the April 20–22, 2027 summit.
 
 **Where the site is today.**
 
@@ -12,7 +12,7 @@ With two developers starting Mon Oct 19, the new site can launch on example.org 
 - All content is hard-coded in TypeScript, mainly `src/lib/summits-data.ts`. TinaCMS is installed, but no page reads from it.
 - The map reads a fictional dataset of 120 organisations from `src/data/organizations.json` at build time.
 - There are no tests, no server code and none of the V3 colours or fonts.
-- The official example.org is still a separate site made with the old site builder, which links out to forms, spreadsheets, documents and PDFs.
+- The official vert-robo-con.example is still a separate site made with the old site builder, which links out to forms, spreadsheets, documents and PDFs.
 
 **What the V3 designs add.**
 
@@ -30,7 +30,7 @@ With two developers starting Mon Oct 19, the new site can launch on example.org 
 | 1 · Public site in the V3 look | Oct 19 – Nov 20 | Gate B: every public page rebuilt from today's data, on staging |
 | 2 · Backoffice core and registration | Nov 2 – Dec 7 | Gate C, **launch:** DNS cutover and registration opens |
 | 3 · Calls, community and moderation | Dec 7 – Jan 22 | Gate D: pitches, Slack joins, map suggestions, jobs and contact built in; the old forms and spreadsheets closed |
-| 4 · Program, My ERN and email | Jan 4 – Mar 12 | Gate E: program published, full My ERN, newsletter |
+| 4 · Program, My VRC and email | Jan 4 – Mar 12 | Gate E: program published, full My VRC, newsletter |
 | 5 · Summit and after | Mar 15 – Jun 2027 | Gate F: change freeze, the summit, recordings, the Payload 4 upgrade |
 
 The backend estimate is 6–10 developer-weeks of custom code plus about one week for required 2FA. The redesign of the public pages comes on top of that. That is why the plan needs two developers to keep the launch and pitch-call dates.
@@ -45,7 +45,7 @@ The first three block Phase 0 and should be settled in the first week. The rest 
 | Choose how required 2FA is enforced: authentik in front of every admin tool, or the payload-better-auth plugin (MIT) inside Payload | Phase 0 | authentik: one 2FA sign-in also covers listmonk, Umami and Beszel; the plugin is still pre-1.0 |
 | Who builds it, and how many developers | All dates in this plan | Two developers from Oct 19, one frontend and one backend. With one, the timeline roughly doubles and the December launch is missed |
 | Name the owner (first admin) and the first 2–3 admins | Phase 0 | Open: who owns the backoffice? |
-| Access to the example.org DNS and an AWS account for SES | Phase 0 email, Phase 2 cutover | Set up now; email domain checks take days |
+| Access to the vert-robo-con.example DNS and an AWS account for SES | Phase 0 email, Phase 2 cutover | Set up now; email domain checks take days |
 | When 2027 registration opens | Order of Phases 3–4 | Keep the dates announced on the site: registration opens Mon Dec 7, startup pitches Tue Dec 8. Fallback: both open Jan 11 |
 | Legal entity, legal basis and retention periods for the Privacy page | Launch and registration (Phase 2) | Needs legal review |
 | What to do with old form responses | Phase 5 | Export to encrypted storage with a set deletion date; no bulk import |
@@ -61,8 +61,8 @@ By Nov 6 the server runs the full stack on a staging hostname. Admin tools are r
 
 - [ ] Order the Hetzner AX42 (Ubuntu 24.04, FSN1 or HEL1) and sign Hetzner's data processing agreement
 - [ ] Request Amazon SES production access in eu-central-1, since AWS can take up to 96 hours to reply, and sign the AWS data processing agreement
-- [ ] Add SPF, DKIM and DMARC for example.org. They must cover both SES and whoever hosts the hello@ mailbox
-- [ ] Decide Tailscale or self-hosted Headscale for the tailnet. Tailscale is free only if ERN qualifies as non-commercial
+- [ ] Add SPF, DKIM and DMARC for vert-robo-con.example. They must cover both SES and whoever hosts the hello@ mailbox
+- [ ] Decide Tailscale or self-hosted Headscale for the tailnet. Tailscale is free only if VRC qualifies as non-commercial
 
 **Weeks 1–2, the server:**
 
@@ -134,7 +134,7 @@ By Nov 20 every public page is rebuilt in the V3 look on staging, using today's 
 
 ## Phase 2 · Backoffice core and registration (Nov 2 – Dec 7, both developers)
 
-On Dec 7 example.org moves to the new server, and 2027 registration opens on it. From then on the content comes from Payload, and admins edit it there instead of in code.
+On Dec 7 vert-robo-con.example moves to the new server, and 2027 registration opens on it. From then on the content comes from Payload, and admins edit it there instead of in code.
 
 **Content in Payload (backend, Nov 2–20):**
 
@@ -145,7 +145,7 @@ On Dec 7 example.org moves to the new server, and 2027 registration opens on it.
 - [ ] Write repeatable seed scripts that load `summits-data.ts` and `constants.ts` into Payload. Map organisations stay in the repo JSON until Phase 3
 - [ ] Switch the Phase 1 data layer from the TypeScript files to Payload
 - [ ] Rebuild the site automatically: one rebuild 60 seconds after the last publish, so a burst of edits costs one build, published as a release you can roll back. Also rebuild on schedule when registration opens and when it closes
-- [ ] Restyle the Payload admin in the ERN look
+- [ ] Restyle the Payload admin in the VRC look
 
 **Registration (backend Nov 9 – Dec 4, frontend Nov 16 – Dec 4):**
 
@@ -155,9 +155,9 @@ On Dec 7 example.org moves to the new server, and 2027 registration opens on it.
     - ALTCHA, a hidden honeypot field and rate limits
     - the server rejects sign-ups outside the registration window
     - a repeat sign-up re-sends the link instead of creating a duplicate
-    - references like ERN-2027-0142
+    - references like VRC-2027-0142
     - records which version of the consent text was agreed to, and when
-- [ ] Add magic links and the first version of My ERN at `/me`: see, cancel or add to calendar a registration, and download or delete your data
+- [ ] Add magic links and the first version of My VRC at `/me`: see, cancel or add to calendar a registration, and download or delete your data
 - [ ] Send the confirmation email through SES with the magic link and an .ics file
 - [ ] In listmonk, add the "notify me" topics with double opt-in, and a private 2027 registrants list kept in sync by Payload
 - [ ] Build RegisterV3 and the registration part of MyERNV3 (frontend)
@@ -178,15 +178,15 @@ On Dec 7 example.org moves to the new server, and 2027 registration opens on it.
 - [ ] Finish the Privacy page with the legal entity, legal basis and retention periods
 - [ ] Two people each do one deploy and one restore on their own
 - [ ] Test that email lands in inboxes, not spam, on Gmail and Outlook
-- [ ] Switch the 4 references from crn.elghareeb.space to example.org (`public/CNAME`, `astro.config.mjs`, `src/lib/constants.ts`, `README.md`)
-- [ ] Lower the DNS TTL on Nov 30, then move example.org from the old site builder to the server on Dec 7. Keep the old site and GitHub Pages as a fallback for 30 days
+- [ ] Switch the 4 references from crn.elghareeb.space to vert-robo-con.example (`public/CNAME`, `astro.config.mjs`, `src/lib/constants.ts`, `README.md`)
+- [ ] Lower the DNS TTL on Nov 30, then move vert-robo-con.example from the old site builder to the server on Dec 7. Keep the old site and GitHub Pages as a fallback for 30 days
 - [ ] Close the old 2027 registration form with a note pointing to the new page
 
-**Gate C (Dec 7) · Launch:** the new site is live on example.org, and a test registration gets its email and opens My ERN.
+**Gate C (Dec 7) · Launch:** the new site is live on vert-robo-con.example, and a test registration gets its email and opens My VRC.
 
 ## Phase 3 · Calls, community and moderation (Dec 7 – Jan 22)
 
-By Jan 22 no page links to an external form, spreadsheet, document or shared file. Every submission lands in one moderation queue, and its sender can follow it in My ERN. Each old form closes the day its replacement goes live. Its old responses are left as they are, as decided.
+By Jan 22 no page links to an external form, spreadsheet, document or shared file. Every submission lands in one moderation queue, and its sender can follow it in My VRC. Each old form closes the day its replacement goes live. Its old responses are left as they are, as decided.
 
 Items are listed in the order their deadlines force:
 
@@ -211,11 +211,11 @@ Items are listed in the order their deadlines force:
     - approving triggers a rebuild that also regenerates the downloads
 - [ ] Make the repo JSON read-only for 2 weeks, then remove it (`scripts/geocode-orgs.ts` has already been removed)
 
-**Gate D (Jan 22):** the link check finds no external forms, spreadsheets, documents or shared files, and a test submission of each type reaches the queue, the sender's email and My ERN.
+**Gate D (Jan 22):** the link check finds no external forms, spreadsheets, documents or shared files, and a test submission of each type reaches the queue, the sender's email and My VRC.
 
-## Phase 4 · Program, My ERN and email (Jan 4 – Mar 12)
+## Phase 4 · Program, My VRC and email (Jan 4 – Mar 12)
 
-By Mar 12 the 2027 program is published and every registrant can build an agenda. My ERN covers everything a visitor ever sent, and the reminder and join-link emails have been tested end to end.
+By Mar 12 the 2027 program is published and every registrant can build an agenda. My VRC covers everything a visitor ever sent, and the reminder and join-link emails have been tested end to end.
 
 **Program (backend and frontend, Jan 4 – Feb 12):**
 
@@ -229,7 +229,7 @@ By Mar 12 the 2027 program is published and every registrant can build an agenda
 - [ ] Generate PDFs in CI from the same data: the program, the white paper and the sponsor deck
 - [ ] Settle how many people pages to build
 
-**My ERN and personal data (Jan 18 – Mar 5):**
+**My VRC and personal data (Jan 18 – Mar 5):**
 
 - [ ] Complete MyERNV3:
     - pitch, internship and job-post status, with edit, withdraw, renew and close
@@ -244,7 +244,7 @@ By Mar 12 the 2027 program is published and every registrant can build an agenda
 - [ ] Send registrants a reminder, then the join link a few days before the summit
 - [ ] Finish AdminDashboardV3's "Today" view: the queue, registrations, warnings about the Slack link and backups, and recent builds
 
-**Gate E (Mar 12):** a full rehearsal passes: register, get the reminder, get the join link, open My ERN, download the data, delete it. The registration endpoint also passes a load test.
+**Gate E (Mar 12):** a full rehearsal passes: register, get the reminder, get the join link, open My VRC, download the data, delete it. The registration endpoint also passes a load test.
 
 ## Phase 5 · Summit and after (Mar 15 – Jun 2027)
 
@@ -322,7 +322,7 @@ The biggest risk is the date: seven weeks from today to a launch that also opens
 | --- | --- | --- |
 | Launch work runs late | Registration and pitches miss their published dates | Decide at Gate A. Fallback: launch the site on Dec 7, open both on Jan 11, and update the page text |
 | Only one developer | Every date roughly doubles | Hire or contract the second developer in week 1 |
-| A lot of code that only ERN owns (6–10 developer-weeks) | Hard to maintain if the developer leaves | Tests in CI, a runbook, and two people who have each deployed and restored |
+| A lot of code that only VRC owns (6–10 developer-weeks) | Hard to maintain if the developer leaves | Tests in CI, a runbook, and two people who have each deployed and restored |
 | A single physical server | An outage takes everything down | Database backups every 4 hours, restore within about 4 hours, and the static site can fall back to GitHub Pages |
 | Email lands in spam, or SES approval is slow | Receipts and magic links don't arrive | Request SES in week 1, set up SPF, DKIM and DMARC, test inbox placement. Fallback: Lettermint or Postmark |
 | An admin loses their 2FA device | Locked out of the backoffice | Recovery codes, any admin can reset another's 2FA, and an emergency procedure in the runbook |

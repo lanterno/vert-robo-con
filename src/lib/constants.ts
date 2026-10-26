@@ -1,9 +1,9 @@
 /**
- * Site-wide constants for the Example Robotics Network.
+ * Site-wide constants for the Vert Robo Con.
  *
  * Every organisation, person, event, link and statistic on this site is
  * fictional demo content. The brand lives here so it can be swapped in one place.
- * example.org is a domain reserved for documentation (RFC 2606).
+ * vert-robo-con.example is a domain reserved for documentation (RFC 2606).
  */
 
 // =============================================================================
@@ -12,12 +12,12 @@
 
 export const LINKS = {
   community: {
-    join: 'https://example.org/community/join',
+    join: 'https://vert-robo-con.example/community/join',
     codeOfConduct: '/slack#code-of-conduct',
   },
 
   social: {
-    linkedIn: 'https://example.org/social/linkedin',
+    linkedIn: 'https://vert-robo-con.example/social/linkedin',
     videos: '/summits#recordings',
   },
 
@@ -37,8 +37,8 @@ export const LINKS = {
   },
 
   contact: {
-    email: 'hello@example.org',
-    mailto: 'mailto:hello@example.org',
+    email: 'hello@vert-robo-con.example',
+    mailto: 'mailto:hello@vert-robo-con.example',
   },
 } as const;
 
@@ -47,8 +47,8 @@ export const LINKS = {
 // =============================================================================
 
 export const SITE = {
-  name: 'Example Robotics Network',
-  shortName: 'ERN',
+  name: 'Vert Robo Con',
+  shortName: 'VRC',
   tagline: 'Robots for a cooler planet',
   description: 'A fictional community that connects people building robots for climate work. All content on this site is demo data.',
   url: 'https://crn.elghareeb.space',
@@ -66,7 +66,7 @@ export const SITE = {
 // =============================================================================
 
 export const SUMMIT = {
-  name: 'Example Robotics Summit',
+  name: 'Vert Robo Con Summit',
   current: {
     year: '2026',
     dates: 'May 19-21, 2026',

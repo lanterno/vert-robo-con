@@ -1,5 +1,5 @@
 {
-  "siteName": "Example Robotics Network",
+  "siteName": "Vert Robo Con",
   "tagline": "Robots for a cooler planet",
   "logo": "/images/logo.svg",
   "navigation": [
@@ -35,10 +35,10 @@
     }
   ],
   "footer": {
-    "copyright": "Example Robotics Network (fictional). Code under MIT.",
+    "copyright": "Vert Robo Con (fictional). Code under MIT.",
     "privacyLink": "/slack#code-of-conduct"
   },
   "social": {
-    "slack": "https://example.org/community/join"
+    "slack": "https://vert-robo-con.example/community/join"
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Example Robotics Summit data
+ * Vert Robo Con Summit data
  *
  * Summit metadata, programs, speakers, partners and the recording catalogue.
  * Every person, organisation, session and recording in this file is fictional
@@ -84,7 +84,7 @@ export interface Sponsor {
 
 const avatar = (slug: string) => `/images/people/${slug}.svg`;
 const partnerLogo = (slug: string) => `/images/partners/${slug}.svg`;
-const partnerSite = (slug: string) => `https://example.org/partners/${slug}`;
+const partnerSite = (slug: string) => `https://vert-robo-con.example/partners/${slug}`;
 
 // =============================================================================
 // SUMMITS
@@ -93,7 +93,7 @@ const partnerSite = (slug: string) => `https://example.org/partners/${slug}`;
 export const SUMMITS: Record<string, Summit> = {
   '2026': {
     year: '2026',
-    name: 'Example Robotics Summit 2026',
+    name: 'Vert Robo Con Summit 2026',
     dates: 'May 19-21, 2026',
     dateRange: { start: '2026-05-19', end: '2026-05-21' },
     location: 'Online',
@@ -109,7 +109,7 @@ export const SUMMITS: Record<string, Summit> = {
   },
   '2025': {
     year: '2025',
-    name: 'Example Robotics Summit 2025',
+    name: 'Vert Robo Con Summit 2025',
     dates: 'June 10-12, 2025',
     dateRange: { start: '2025-06-10', end: '2025-06-12' },
     location: 'Online',
@@ -458,10 +458,10 @@ export const SPEAKERS_2025: Speaker[] = [
 
 export const SPONSORS_2025: Sponsor[] = [
   {
-    id: 'ern',
-    name: 'Example Robotics Network',
-    logoUrl: partnerLogo('ern'),
-    websiteUrl: partnerSite('ern'),
+    id: 'vrc',
+    name: 'Vert Robo Con',
+    logoUrl: partnerLogo('vrc'),
+    websiteUrl: partnerSite('vrc'),
     tier: 'organizing',
   },
   {
@@ -518,9 +518,9 @@ export const SPONSORS_2025: Sponsor[] = [
 export const SPONSORS_2026: Sponsor[] = [
   {
     id: 'ern-2026',
-    name: 'Example Robotics Network',
-    logoUrl: partnerLogo('ern'),
-    websiteUrl: partnerSite('ern'),
+    name: 'Vert Robo Con',
+    logoUrl: partnerLogo('vrc'),
+    websiteUrl: partnerSite('vrc'),
     tier: 'organizing',
   },
   {
@@ -770,7 +770,7 @@ export const ORGANIZERS: TeamMember[] = [
     id: 'elif-brandvold-team',
     name: 'Elif Brandvold',
     role: 'Treasurer',
-    organization: 'Example Robotics Network',
+    organization: 'Vert Robo Con',
     photoUrl: avatar('elif-brandvold'),
   },
   {

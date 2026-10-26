@@ -1,6 +1,6 @@
 # Architecture & Design Philosophy
 
-This document explains the technology choices behind the website of the Example Robotics Network (ERN), a fictional community used as demo content. Every tool was selected because it represents the **state of the art** in its category — not out of familiarity or convenience.
+This document explains the technology choices behind the website of the Vert Robo Con (VRC), a fictional community used as demo content. Every tool was selected because it represents the **state of the art** in its category — not out of familiarity or convenience.
 
 > All people, organisations, events, statistics and images on the site are fictional and synthetic. See the "Demo content" section of the [README](README.md).
 

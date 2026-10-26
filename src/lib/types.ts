@@ -1,5 +1,5 @@
 /**
- * TypeScript types for the Example Robotics Network map (fictional demo data)
+ * TypeScript types for the Vert Robo Con map (fictional demo data)
  */
 
 export interface OrganizationEntry {

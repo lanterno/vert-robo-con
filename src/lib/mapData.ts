@@ -1,8 +1,8 @@
 /**
- * Data for the Example Robotics Network map.
+ * Data for the Vert Robo Con map.
  *
  * Every organisation in src/data/organizations.json is fictional demo data:
- * invented names, example.org websites and city-level coordinates only.
+ * invented names, vert-robo-con.example websites and city-level coordinates only.
  */
 
 import type { OrganizationEntry } from './types';

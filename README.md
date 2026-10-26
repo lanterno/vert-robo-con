@@ -1,12 +1,12 @@
-# Example Robotics Network
+# Vert Robo Con
 
-A demo website for the **Example Robotics Network** (ERN), a fictional community of people who build robots for climate work. Tagline: *Robots for a cooler planet*. Preview: [crn.elghareeb.space](https://crn.elghareeb.space).
+A demo website for the **Vert Robo Con** (VRC), a fictional community of people who build robots for climate work. Tagline: *Robots for a cooler planet*. Preview: [crn.elghareeb.space](https://crn.elghareeb.space).
 
 **Stack:** Astro 5 · Tailwind v3 · TinaCMS · Bun · TypeScript (strict) · GitHub Pages
 
 ## Demo content
 
-Everything on this site is made up. All people, organisations, events, statistics and images are fictional and synthetic, created for this project. No third-party content is included: no real names, photos, logos, copied text, videos or links to real documents. Email addresses and external links use the reserved `example.org` domain.
+Everything on this site is made up. All people, organisations, events, statistics and images are fictional and synthetic, created for this project. No third-party content is included: no real names, photos, logos, copied text, videos or links to real documents. Email addresses and external links use the reserved `vert-robo-con.example` domain.
 
 The code is MIT-licensed (see [`LICENSE`](LICENSE)).
 

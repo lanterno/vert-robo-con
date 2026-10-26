@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1320" height="750" viewBox="0 0 1320 750" role="img" aria-labelledby="t d" font-family="Inter, Helvetica, Arial, sans-serif">
-<title id="t">ERN roadmap timeline</title>
+<title id="t">VRC roadmap timeline</title>
 <desc id="d">Six phases from Oct 19, 2026 to Jun 30, 2027, each ending at a gate A to F. The new site launches and registration opens on Dec 7, 2026. The fictional 2027 summit runs Apr 20 to 22, 2027.</desc>
 <rect width="1320" height="750" fill="#FFFFFF"/>
 <text x="40" y="52" font-size="26" font-weight="700" fill="#1F2937">The new site launches Dec 7, about four months before the summit</text>
@@ -43,7 +43,7 @@
 <rect x="605.8" y="408" width="143.9" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <text x="761.6" y="426" font-size="17" font-weight="700" fill="#1F2937">D</text>
 <line x1="440" y1="490" x2="1250" y2="490" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="484" font-size="20" fill="#1F2937">4 · Program, My ERN, email</text>
+<text x="40" y="484" font-size="20" fill="#1F2937">4 · Program, My VRC, email</text>
 <text x="40" y="510" font-size="16" fill="#6B7280">Jan 4 – Mar 12</text>
 <rect x="693.3" y="478" width="209.5" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <text x="914.9" y="496" font-size="17" font-weight="700" fill="#1F2937">E</text>

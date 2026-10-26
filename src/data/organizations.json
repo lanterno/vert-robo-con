@@ -2,7 +2,7 @@
   {
     "id": "org-001",
     "name": "Ploverhollow Dynamics",
-    "website": "https://example.org/orgs/ploverhollow-dynamics",
+    "website": "https://vert-robo-con.example/orgs/ploverhollow-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -29,7 +29,7 @@
   {
     "id": "org-002",
     "name": "Cobblehollow Labs",
-    "website": "https://example.org/orgs/cobblehollow-labs",
+    "website": "https://vert-robo-con.example/orgs/cobblehollow-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -56,7 +56,7 @@
   {
     "id": "org-003",
     "name": "Ploverridge Instruments",
-    "website": "https://example.org/orgs/ploverridge-instruments",
+    "website": "https://vert-robo-con.example/orgs/ploverridge-instruments",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2009,
@@ -85,7 +85,7 @@
   {
     "id": "org-004",
     "name": "Puffinhollow Labs",
-    "website": "https://example.org/orgs/puffinhollow-labs",
+    "website": "https://vert-robo-con.example/orgs/puffinhollow-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2023,
@@ -113,7 +113,7 @@
   {
     "id": "org-005",
     "name": "Osierfen Robotics",
-    "website": "https://example.org/orgs/osierfen-robotics",
+    "website": "https://vert-robo-con.example/orgs/osierfen-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2013,
@@ -143,7 +143,7 @@
   {
     "id": "org-006",
     "name": "Bramblestead Works",
-    "website": "https://example.org/orgs/bramblestead-works",
+    "website": "https://vert-robo-con.example/orgs/bramblestead-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2010,
@@ -170,7 +170,7 @@
   {
     "id": "org-007",
     "name": "Cloverreach Systems",
-    "website": "https://example.org/orgs/cloverreach-systems",
+    "website": "https://vert-robo-con.example/orgs/cloverreach-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2008,
@@ -197,7 +197,7 @@
   {
     "id": "org-008",
     "name": "Gorseburrow Instruments",
-    "website": "https://example.org/orgs/gorseburrow-instruments",
+    "website": "https://vert-robo-con.example/orgs/gorseburrow-instruments",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2024,
@@ -222,7 +222,7 @@
   {
     "id": "org-009",
     "name": "Tansywick Dynamics",
-    "website": "https://example.org/orgs/tansywick-dynamics",
+    "website": "https://vert-robo-con.example/orgs/tansywick-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -249,7 +249,7 @@
   {
     "id": "org-010",
     "name": "Driftfield Labs",
-    "website": "https://example.org/orgs/driftfield-labs",
+    "website": "https://vert-robo-con.example/orgs/driftfield-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2019,
@@ -277,7 +277,7 @@
   {
     "id": "org-011",
     "name": "Mosscombe Dynamics",
-    "website": "https://example.org/orgs/mosscombe-dynamics",
+    "website": "https://vert-robo-con.example/orgs/mosscombe-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2013,
@@ -306,7 +306,7 @@
   {
     "id": "org-012",
     "name": "Bramblehollow Dynamics",
-    "website": "https://example.org/orgs/bramblehollow-dynamics",
+    "website": "https://vert-robo-con.example/orgs/bramblehollow-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2010,
@@ -335,7 +335,7 @@
   {
     "id": "org-013",
     "name": "Rowanburrow Instruments",
-    "website": "https://example.org/orgs/rowanburrow-instruments",
+    "website": "https://vert-robo-con.example/orgs/rowanburrow-instruments",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2017,
@@ -365,7 +365,7 @@
   {
     "id": "org-014",
     "name": "Mossfield Labs",
-    "website": "https://example.org/orgs/mossfield-labs",
+    "website": "https://vert-robo-con.example/orgs/mossfield-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2012,
@@ -395,7 +395,7 @@
   {
     "id": "org-015",
     "name": "Pebblefield Autonomy",
-    "website": "https://example.org/orgs/pebblefield-autonomy",
+    "website": "https://vert-robo-con.example/orgs/pebblefield-autonomy",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2023,
@@ -420,7 +420,7 @@
   {
     "id": "org-016",
     "name": "Fernreach Labs",
-    "website": "https://example.org/orgs/fernreach-labs",
+    "website": "https://vert-robo-con.example/orgs/fernreach-labs",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2019,
@@ -445,7 +445,7 @@
   {
     "id": "org-017",
     "name": "Puffinlark Systems",
-    "website": "https://example.org/orgs/puffinlark-systems",
+    "website": "https://vert-robo-con.example/orgs/puffinlark-systems",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2018,
@@ -470,7 +470,7 @@
   {
     "id": "org-018",
     "name": "Nettlelark Collective",
-    "website": "https://example.org/orgs/nettlelark-collective",
+    "website": "https://vert-robo-con.example/orgs/nettlelark-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2018,
@@ -497,7 +497,7 @@
   {
     "id": "org-019",
     "name": "Tideholm Instruments",
-    "website": "https://example.org/orgs/tideholm-instruments",
+    "website": "https://vert-robo-con.example/orgs/tideholm-instruments",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2019,
@@ -522,7 +522,7 @@
   {
     "id": "org-020",
     "name": "Shoallark Works",
-    "website": "https://example.org/orgs/shoallark-works",
+    "website": "https://vert-robo-con.example/orgs/shoallark-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2008,
@@ -549,7 +549,7 @@
   {
     "id": "org-021",
     "name": "Kelpcombe Robotics",
-    "website": "https://example.org/orgs/kelpcombe-robotics",
+    "website": "https://vert-robo-con.example/orgs/kelpcombe-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2014,
@@ -576,7 +576,7 @@
   {
     "id": "org-022",
     "name": "Mossford Autonomy",
-    "website": "https://example.org/orgs/mossford-autonomy",
+    "website": "https://vert-robo-con.example/orgs/mossford-autonomy",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2012,
@@ -601,7 +601,7 @@
   {
     "id": "org-023",
     "name": "Alderfen Autonomy",
-    "website": "https://example.org/orgs/alderfen-autonomy",
+    "website": "https://vert-robo-con.example/orgs/alderfen-autonomy",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2010,
@@ -626,7 +626,7 @@
   {
     "id": "org-024",
     "name": "Marramburrow Field Robotics",
-    "website": "https://example.org/orgs/marramburrow-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/marramburrow-field-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -653,7 +653,7 @@
   {
     "id": "org-025",
     "name": "Fernford Autonomy",
-    "website": "https://example.org/orgs/fernford-autonomy",
+    "website": "https://vert-robo-con.example/orgs/fernford-autonomy",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2013,
@@ -678,7 +678,7 @@
   {
     "id": "org-026",
     "name": "Cloverwhistle Dynamics",
-    "website": "https://example.org/orgs/cloverwhistle-dynamics",
+    "website": "https://vert-robo-con.example/orgs/cloverwhistle-dynamics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2020,
@@ -703,7 +703,7 @@
   {
     "id": "org-027",
     "name": "Quillford Robotics",
-    "website": "https://example.org/orgs/quillford-robotics",
+    "website": "https://vert-robo-con.example/orgs/quillford-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2021,
@@ -733,7 +733,7 @@
   {
     "id": "org-028",
     "name": "Driftburrow Labs",
-    "website": "https://example.org/orgs/driftburrow-labs",
+    "website": "https://vert-robo-con.example/orgs/driftburrow-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -762,7 +762,7 @@
   {
     "id": "org-029",
     "name": "Heathmere Dynamics",
-    "website": "https://example.org/orgs/heathmere-dynamics",
+    "website": "https://vert-robo-con.example/orgs/heathmere-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2021,
@@ -789,7 +789,7 @@
   {
     "id": "org-030",
     "name": "Tidefield Robotics",
-    "website": "https://example.org/orgs/tidefield-robotics",
+    "website": "https://vert-robo-con.example/orgs/tidefield-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2010,
@@ -814,7 +814,7 @@
   {
     "id": "org-031",
     "name": "Rillholm Autonomy",
-    "website": "https://example.org/orgs/rillholm-autonomy",
+    "website": "https://vert-robo-con.example/orgs/rillholm-autonomy",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2023,
@@ -844,7 +844,7 @@
   {
     "id": "org-032",
     "name": "Quillhollow Labs",
-    "website": "https://example.org/orgs/quillhollow-labs",
+    "website": "https://vert-robo-con.example/orgs/quillhollow-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -873,7 +873,7 @@
   {
     "id": "org-033",
     "name": "Junipercombe Labs",
-    "website": "https://example.org/orgs/junipercombe-labs",
+    "website": "https://vert-robo-con.example/orgs/junipercombe-labs",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2009,
@@ -898,7 +898,7 @@
   {
     "id": "org-034",
     "name": "Bramblefield Dynamics",
-    "website": "https://example.org/orgs/bramblefield-dynamics",
+    "website": "https://vert-robo-con.example/orgs/bramblefield-dynamics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2024,
@@ -923,7 +923,7 @@
   {
     "id": "org-035",
     "name": "Osiergrove Dynamics",
-    "website": "https://example.org/orgs/osiergrove-dynamics",
+    "website": "https://vert-robo-con.example/orgs/osiergrove-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2019,
@@ -951,7 +951,7 @@
   {
     "id": "org-036",
     "name": "Aldercombe Labs",
-    "website": "https://example.org/orgs/aldercombe-labs",
+    "website": "https://vert-robo-con.example/orgs/aldercombe-labs",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2021,
@@ -976,7 +976,7 @@
   {
     "id": "org-037",
     "name": "Alderdale Machines",
-    "website": "https://example.org/orgs/alderdale-machines",
+    "website": "https://vert-robo-con.example/orgs/alderdale-machines",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2017,
@@ -1001,7 +1001,7 @@
   {
     "id": "org-038",
     "name": "Quillmere Instruments",
-    "website": "https://example.org/orgs/quillmere-instruments",
+    "website": "https://vert-robo-con.example/orgs/quillmere-instruments",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2023,
@@ -1026,7 +1026,7 @@
   {
     "id": "org-039",
     "name": "Thistlegrove Collective",
-    "website": "https://example.org/orgs/thistlegrove-collective",
+    "website": "https://vert-robo-con.example/orgs/thistlegrove-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2016,
@@ -1054,7 +1054,7 @@
   {
     "id": "org-040",
     "name": "Sedgeridge Dynamics",
-    "website": "https://example.org/orgs/sedgeridge-dynamics",
+    "website": "https://vert-robo-con.example/orgs/sedgeridge-dynamics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2020,
@@ -1079,7 +1079,7 @@
   {
     "id": "org-041",
     "name": "Nettleburrow Works",
-    "website": "https://example.org/orgs/nettleburrow-works",
+    "website": "https://vert-robo-con.example/orgs/nettleburrow-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -1106,7 +1106,7 @@
   {
     "id": "org-042",
     "name": "Lichenmere Autonomy",
-    "website": "https://example.org/orgs/lichenmere-autonomy",
+    "website": "https://vert-robo-con.example/orgs/lichenmere-autonomy",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2011,
@@ -1133,7 +1133,7 @@
   {
     "id": "org-043",
     "name": "Osierhollow Machines",
-    "website": "https://example.org/orgs/osierhollow-machines",
+    "website": "https://vert-robo-con.example/orgs/osierhollow-machines",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2024,
@@ -1158,7 +1158,7 @@
   {
     "id": "org-044",
     "name": "Mosswick Dynamics",
-    "website": "https://example.org/orgs/mosswick-dynamics",
+    "website": "https://vert-robo-con.example/orgs/mosswick-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2017,
@@ -1186,7 +1186,7 @@
   {
     "id": "org-045",
     "name": "Tansyfen Robotics",
-    "website": "https://example.org/orgs/tansyfen-robotics",
+    "website": "https://vert-robo-con.example/orgs/tansyfen-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2010,
@@ -1211,7 +1211,7 @@
   {
     "id": "org-046",
     "name": "Alderfield Collective",
-    "website": "https://example.org/orgs/alderfield-collective",
+    "website": "https://vert-robo-con.example/orgs/alderfield-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -1240,7 +1240,7 @@
   {
     "id": "org-047",
     "name": "Puffinholm Systems",
-    "website": "https://example.org/orgs/puffinholm-systems",
+    "website": "https://vert-robo-con.example/orgs/puffinholm-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2015,
@@ -1267,7 +1267,7 @@
   {
     "id": "org-048",
     "name": "Sorrelmere Robotics",
-    "website": "https://example.org/orgs/sorrelmere-robotics",
+    "website": "https://vert-robo-con.example/orgs/sorrelmere-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2013,
@@ -1292,7 +1292,7 @@
   {
     "id": "org-049",
     "name": "Marramhollow Instruments",
-    "website": "https://example.org/orgs/marramhollow-instruments",
+    "website": "https://vert-robo-con.example/orgs/marramhollow-instruments",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2020,
@@ -1317,7 +1317,7 @@
   {
     "id": "org-050",
     "name": "Thistleburrow Field Robotics",
-    "website": "https://example.org/orgs/thistleburrow-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/thistleburrow-field-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2013,
@@ -1344,7 +1344,7 @@
   {
     "id": "org-051",
     "name": "Nettleholm Labs",
-    "website": "https://example.org/orgs/nettleholm-labs",
+    "website": "https://vert-robo-con.example/orgs/nettleholm-labs",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2013,
@@ -1369,7 +1369,7 @@
   {
     "id": "org-052",
     "name": "Puffinridge Dynamics",
-    "website": "https://example.org/orgs/puffinridge-dynamics",
+    "website": "https://vert-robo-con.example/orgs/puffinridge-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -1397,7 +1397,7 @@
   {
     "id": "org-053",
     "name": "Driftgrove Labs",
-    "website": "https://example.org/orgs/driftgrove-labs",
+    "website": "https://vert-robo-con.example/orgs/driftgrove-labs",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2015,
@@ -1422,7 +1422,7 @@
   {
     "id": "org-054",
     "name": "Loamfen Systems",
-    "website": "https://example.org/orgs/loamfen-systems",
+    "website": "https://vert-robo-con.example/orgs/loamfen-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2012,
@@ -1449,7 +1449,7 @@
   {
     "id": "org-055",
     "name": "Brackhollow Collective",
-    "website": "https://example.org/orgs/brackhollow-collective",
+    "website": "https://vert-robo-con.example/orgs/brackhollow-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2011,
@@ -1479,7 +1479,7 @@
   {
     "id": "org-056",
     "name": "Rowanwick Collective",
-    "website": "https://example.org/orgs/rowanwick-collective",
+    "website": "https://vert-robo-con.example/orgs/rowanwick-collective",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2023,
@@ -1504,7 +1504,7 @@
   {
     "id": "org-057",
     "name": "Tidecombe Field Robotics",
-    "website": "https://example.org/orgs/tidecombe-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/tidecombe-field-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2015,
@@ -1534,7 +1534,7 @@
   {
     "id": "org-058",
     "name": "Brackstead Collective",
-    "website": "https://example.org/orgs/brackstead-collective",
+    "website": "https://vert-robo-con.example/orgs/brackstead-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2013,
@@ -1561,7 +1561,7 @@
   {
     "id": "org-059",
     "name": "Gorsecombe Works",
-    "website": "https://example.org/orgs/gorsecombe-works",
+    "website": "https://vert-robo-con.example/orgs/gorsecombe-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2009,
@@ -1588,7 +1588,7 @@
   {
     "id": "org-060",
     "name": "Bramblemere Works",
-    "website": "https://example.org/orgs/bramblemere-works",
+    "website": "https://vert-robo-con.example/orgs/bramblemere-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -1616,7 +1616,7 @@
   {
     "id": "org-061",
     "name": "Thistleholm Instruments",
-    "website": "https://example.org/orgs/thistleholm-instruments",
+    "website": "https://vert-robo-con.example/orgs/thistleholm-instruments",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2008,
@@ -1646,7 +1646,7 @@
   {
     "id": "org-062",
     "name": "Clovermere Dynamics",
-    "website": "https://example.org/orgs/clovermere-dynamics",
+    "website": "https://vert-robo-con.example/orgs/clovermere-dynamics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2020,
@@ -1671,7 +1671,7 @@
   {
     "id": "org-063",
     "name": "Brackcombe Collective",
-    "website": "https://example.org/orgs/brackcombe-collective",
+    "website": "https://vert-robo-con.example/orgs/brackcombe-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2016,
@@ -1698,7 +1698,7 @@
   {
     "id": "org-064",
     "name": "Cobblecombe Works",
-    "website": "https://example.org/orgs/cobblecombe-works",
+    "website": "https://vert-robo-con.example/orgs/cobblecombe-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2014,
@@ -1725,7 +1725,7 @@
   {
     "id": "org-065",
     "name": "Tidedale Instruments",
-    "website": "https://example.org/orgs/tidedale-instruments",
+    "website": "https://vert-robo-con.example/orgs/tidedale-instruments",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2011,
@@ -1755,7 +1755,7 @@
   {
     "id": "org-066",
     "name": "Cobbleford Robotics",
-    "website": "https://example.org/orgs/cobbleford-robotics",
+    "website": "https://vert-robo-con.example/orgs/cobbleford-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2024,
@@ -1780,7 +1780,7 @@
   {
     "id": "org-067",
     "name": "Sedgeford Dynamics",
-    "website": "https://example.org/orgs/sedgeford-dynamics",
+    "website": "https://vert-robo-con.example/orgs/sedgeford-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2013,
@@ -1810,7 +1810,7 @@
   {
     "id": "org-068",
     "name": "Quillreach Systems",
-    "website": "https://example.org/orgs/quillreach-systems",
+    "website": "https://vert-robo-con.example/orgs/quillreach-systems",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2020,
@@ -1835,7 +1835,7 @@
   {
     "id": "org-069",
     "name": "Wrenford Collective",
-    "website": "https://example.org/orgs/wrenford-collective",
+    "website": "https://vert-robo-con.example/orgs/wrenford-collective",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2009,
@@ -1860,7 +1860,7 @@
   {
     "id": "org-070",
     "name": "Rilldale Field Robotics",
-    "website": "https://example.org/orgs/rilldale-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/rilldale-field-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2012,
@@ -1885,7 +1885,7 @@
   {
     "id": "org-071",
     "name": "Tidegrove Works",
-    "website": "https://example.org/orgs/tidegrove-works",
+    "website": "https://vert-robo-con.example/orgs/tidegrove-works",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2012,
@@ -1910,7 +1910,7 @@
   {
     "id": "org-072",
     "name": "Sorrelholm Works",
-    "website": "https://example.org/orgs/sorrelholm-works",
+    "website": "https://vert-robo-con.example/orgs/sorrelholm-works",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2023,
@@ -1935,7 +1935,7 @@
   {
     "id": "org-073",
     "name": "Sedgewhistle Works",
-    "website": "https://example.org/orgs/sedgewhistle-works",
+    "website": "https://vert-robo-con.example/orgs/sedgewhistle-works",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2011,
@@ -1960,7 +1960,7 @@
   {
     "id": "org-074",
     "name": "Puffinburrow Robotics",
-    "website": "https://example.org/orgs/puffinburrow-robotics",
+    "website": "https://vert-robo-con.example/orgs/puffinburrow-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2016,
@@ -1990,7 +1990,7 @@
   {
     "id": "org-075",
     "name": "Osierfield Dynamics",
-    "website": "https://example.org/orgs/osierfield-dynamics",
+    "website": "https://vert-robo-con.example/orgs/osierfield-dynamics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2024,
@@ -2015,7 +2015,7 @@
   {
     "id": "org-076",
     "name": "Driftford Instruments",
-    "website": "https://example.org/orgs/driftford-instruments",
+    "website": "https://vert-robo-con.example/orgs/driftford-instruments",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2011,
@@ -2044,7 +2044,7 @@
   {
     "id": "org-077",
     "name": "Osiercombe Robotics",
-    "website": "https://example.org/orgs/osiercombe-robotics",
+    "website": "https://vert-robo-con.example/orgs/osiercombe-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2016,
@@ -2069,7 +2069,7 @@
   {
     "id": "org-078",
     "name": "Fernwhistle Collective",
-    "website": "https://example.org/orgs/fernwhistle-collective",
+    "website": "https://vert-robo-con.example/orgs/fernwhistle-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2012,
@@ -2096,7 +2096,7 @@
   {
     "id": "org-079",
     "name": "Alderford Works",
-    "website": "https://example.org/orgs/alderford-works",
+    "website": "https://vert-robo-con.example/orgs/alderford-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2008,
@@ -2126,7 +2126,7 @@
   {
     "id": "org-080",
     "name": "Gorsestead Systems",
-    "website": "https://example.org/orgs/gorsestead-systems",
+    "website": "https://vert-robo-con.example/orgs/gorsestead-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2012,
@@ -2153,7 +2153,7 @@
   {
     "id": "org-081",
     "name": "Kelpmere Collective",
-    "website": "https://example.org/orgs/kelpmere-collective",
+    "website": "https://vert-robo-con.example/orgs/kelpmere-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -2182,7 +2182,7 @@
   {
     "id": "org-082",
     "name": "Thistlemere Collective",
-    "website": "https://example.org/orgs/thistlemere-collective",
+    "website": "https://vert-robo-con.example/orgs/thistlemere-collective",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2015,
@@ -2207,7 +2207,7 @@
   {
     "id": "org-083",
     "name": "Brackford Systems",
-    "website": "https://example.org/orgs/brackford-systems",
+    "website": "https://vert-robo-con.example/orgs/brackford-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2018,
@@ -2234,7 +2234,7 @@
   {
     "id": "org-084",
     "name": "Quillburrow Field Robotics",
-    "website": "https://example.org/orgs/quillburrow-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/quillburrow-field-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2011,
@@ -2259,7 +2259,7 @@
   {
     "id": "org-085",
     "name": "Gorsereach Systems",
-    "website": "https://example.org/orgs/gorsereach-systems",
+    "website": "https://vert-robo-con.example/orgs/gorsereach-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2019,
@@ -2288,7 +2288,7 @@
   {
     "id": "org-086",
     "name": "Juniperburrow Systems",
-    "website": "https://example.org/orgs/juniperburrow-systems",
+    "website": "https://vert-robo-con.example/orgs/juniperburrow-systems",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2010,
@@ -2313,7 +2313,7 @@
   {
     "id": "org-087",
     "name": "Bramblegrove Collective",
-    "website": "https://example.org/orgs/bramblegrove-collective",
+    "website": "https://vert-robo-con.example/orgs/bramblegrove-collective",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2009,
@@ -2338,7 +2338,7 @@
   {
     "id": "org-088",
     "name": "Juniperdale Robotics",
-    "website": "https://example.org/orgs/juniperdale-robotics",
+    "website": "https://vert-robo-con.example/orgs/juniperdale-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2019,
@@ -2363,7 +2363,7 @@
   {
     "id": "org-089",
     "name": "Sedgelark Autonomy",
-    "website": "https://example.org/orgs/sedgelark-autonomy",
+    "website": "https://vert-robo-con.example/orgs/sedgelark-autonomy",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -2393,7 +2393,7 @@
   {
     "id": "org-090",
     "name": "Tidelark Machines",
-    "website": "https://example.org/orgs/tidelark-machines",
+    "website": "https://vert-robo-con.example/orgs/tidelark-machines",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2010,
@@ -2418,7 +2418,7 @@
   {
     "id": "org-091",
     "name": "Ploverfield Instruments",
-    "website": "https://example.org/orgs/ploverfield-instruments",
+    "website": "https://vert-robo-con.example/orgs/ploverfield-instruments",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2021,
@@ -2448,7 +2448,7 @@
   {
     "id": "org-092",
     "name": "Bracklark Machines",
-    "website": "https://example.org/orgs/bracklark-machines",
+    "website": "https://vert-robo-con.example/orgs/bracklark-machines",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2009,
@@ -2475,7 +2475,7 @@
   {
     "id": "org-093",
     "name": "Cloverstead Dynamics",
-    "website": "https://example.org/orgs/cloverstead-dynamics",
+    "website": "https://vert-robo-con.example/orgs/cloverstead-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2021,
@@ -2504,7 +2504,7 @@
   {
     "id": "org-094",
     "name": "Ploverlark Instruments",
-    "website": "https://example.org/orgs/ploverlark-instruments",
+    "website": "https://vert-robo-con.example/orgs/ploverlark-instruments",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2015,
@@ -2529,7 +2529,7 @@
   {
     "id": "org-095",
     "name": "Rilllark Autonomy",
-    "website": "https://example.org/orgs/rilllark-autonomy",
+    "website": "https://vert-robo-con.example/orgs/rilllark-autonomy",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -2557,7 +2557,7 @@
   {
     "id": "org-096",
     "name": "Loamfield Robotics",
-    "website": "https://example.org/orgs/loamfield-robotics",
+    "website": "https://vert-robo-con.example/orgs/loamfield-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -2587,7 +2587,7 @@
   {
     "id": "org-097",
     "name": "Tansyfield Autonomy",
-    "website": "https://example.org/orgs/tansyfield-autonomy",
+    "website": "https://vert-robo-con.example/orgs/tansyfield-autonomy",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2009,
@@ -2612,7 +2612,7 @@
   {
     "id": "org-098",
     "name": "Quilldale Systems",
-    "website": "https://example.org/orgs/quilldale-systems",
+    "website": "https://vert-robo-con.example/orgs/quilldale-systems",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2012,
@@ -2637,7 +2637,7 @@
   {
     "id": "org-099",
     "name": "Sorrellark Collective",
-    "website": "https://example.org/orgs/sorrellark-collective",
+    "website": "https://vert-robo-con.example/orgs/sorrellark-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2010,
@@ -2665,7 +2665,7 @@
   {
     "id": "org-100",
     "name": "Driftstead Machines",
-    "website": "https://example.org/orgs/driftstead-machines",
+    "website": "https://vert-robo-con.example/orgs/driftstead-machines",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2008,
@@ -2690,7 +2690,7 @@
   {
     "id": "org-101",
     "name": "Pebblereach Collective",
-    "website": "https://example.org/orgs/pebblereach-collective",
+    "website": "https://vert-robo-con.example/orgs/pebblereach-collective",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2011,
@@ -2719,7 +2719,7 @@
   {
     "id": "org-102",
     "name": "Osierwick Systems",
-    "website": "https://example.org/orgs/osierwick-systems",
+    "website": "https://vert-robo-con.example/orgs/osierwick-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2019,
@@ -2746,7 +2746,7 @@
   {
     "id": "org-103",
     "name": "Brackwick Labs",
-    "website": "https://example.org/orgs/brackwick-labs",
+    "website": "https://vert-robo-con.example/orgs/brackwick-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2008,
@@ -2773,7 +2773,7 @@
   {
     "id": "org-104",
     "name": "Nettlereach Field Robotics",
-    "website": "https://example.org/orgs/nettlereach-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/nettlereach-field-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2019,
@@ -2798,7 +2798,7 @@
   {
     "id": "org-105",
     "name": "Brambleford Robotics",
-    "website": "https://example.org/orgs/brambleford-robotics",
+    "website": "https://vert-robo-con.example/orgs/brambleford-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2023,
@@ -2828,7 +2828,7 @@
   {
     "id": "org-106",
     "name": "Shoalford Autonomy",
-    "website": "https://example.org/orgs/shoalford-autonomy",
+    "website": "https://vert-robo-con.example/orgs/shoalford-autonomy",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2015,
@@ -2853,7 +2853,7 @@
   {
     "id": "org-107",
     "name": "Kelpford Systems",
-    "website": "https://example.org/orgs/kelpford-systems",
+    "website": "https://vert-robo-con.example/orgs/kelpford-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -2883,7 +2883,7 @@
   {
     "id": "org-108",
     "name": "Wrenmere Labs",
-    "website": "https://example.org/orgs/wrenmere-labs",
+    "website": "https://vert-robo-con.example/orgs/wrenmere-labs",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2020,
@@ -2910,7 +2910,7 @@
   {
     "id": "org-109",
     "name": "Fernburrow Machines",
-    "website": "https://example.org/orgs/fernburrow-machines",
+    "website": "https://vert-robo-con.example/orgs/fernburrow-machines",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2016,
@@ -2940,7 +2940,7 @@
   {
     "id": "org-110",
     "name": "Nettlehollow Dynamics",
-    "website": "https://example.org/orgs/nettlehollow-dynamics",
+    "website": "https://vert-robo-con.example/orgs/nettlehollow-dynamics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2019,
@@ -2970,7 +2970,7 @@
   {
     "id": "org-111",
     "name": "Fernstead Autonomy",
-    "website": "https://example.org/orgs/fernstead-autonomy",
+    "website": "https://vert-robo-con.example/orgs/fernstead-autonomy",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2022,
@@ -2999,7 +2999,7 @@
   {
     "id": "org-112",
     "name": "Sedgedale Robotics",
-    "website": "https://example.org/orgs/sedgedale-robotics",
+    "website": "https://vert-robo-con.example/orgs/sedgedale-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2009,
@@ -3026,7 +3026,7 @@
   {
     "id": "org-113",
     "name": "Rillreach Systems",
-    "website": "https://example.org/orgs/rillreach-systems",
+    "website": "https://vert-robo-con.example/orgs/rillreach-systems",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2018,
@@ -3053,7 +3053,7 @@
   {
     "id": "org-114",
     "name": "Thistlereach Robotics",
-    "website": "https://example.org/orgs/thistlereach-robotics",
+    "website": "https://vert-robo-con.example/orgs/thistlereach-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2023,
@@ -3078,7 +3078,7 @@
   {
     "id": "org-115",
     "name": "Brackreach Works",
-    "website": "https://example.org/orgs/brackreach-works",
+    "website": "https://vert-robo-con.example/orgs/brackreach-works",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2018,
@@ -3103,7 +3103,7 @@
   {
     "id": "org-116",
     "name": "Tideridge Works",
-    "website": "https://example.org/orgs/tideridge-works",
+    "website": "https://vert-robo-con.example/orgs/tideridge-works",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2015,
@@ -3130,7 +3130,7 @@
   {
     "id": "org-117",
     "name": "Thistlewick Field Robotics",
-    "website": "https://example.org/orgs/thistlewick-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/thistlewick-field-robotics",
     "isRobotics": true,
     "isDeployed": true,
     "founded": 2016,
@@ -3160,7 +3160,7 @@
   {
     "id": "org-118",
     "name": "Heathlark Field Robotics",
-    "website": "https://example.org/orgs/heathlark-field-robotics",
+    "website": "https://vert-robo-con.example/orgs/heathlark-field-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2020,
@@ -3185,7 +3185,7 @@
   {
     "id": "org-119",
     "name": "Heathstead Autonomy",
-    "website": "https://example.org/orgs/heathstead-autonomy",
+    "website": "https://vert-robo-con.example/orgs/heathstead-autonomy",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2023,
@@ -3210,7 +3210,7 @@
   {
     "id": "org-120",
     "name": "Bramblereach Robotics",
-    "website": "https://example.org/orgs/bramblereach-robotics",
+    "website": "https://vert-robo-con.example/orgs/bramblereach-robotics",
     "isRobotics": true,
     "isDeployed": false,
     "founded": 2020,

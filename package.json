@@ -1,9 +1,9 @@
 {
-  "name": "example-robotics-network",
+  "name": "vert-robo-con",
   "type": "module",
   "version": "1.0.0",
   "license": "MIT",
-  "description": "Example Robotics Network - fictional demo site",
+  "description": "Vert Robo Con - fictional demo site",
   "scripts": {
     "dev": "tinacms dev -c \"astro dev\"",
     "build": "tinacms build && astro build",
