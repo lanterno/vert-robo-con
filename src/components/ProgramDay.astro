@@ -13,7 +13,7 @@ interface Props {
 
 const { programDay, defaultOpen = false } = Astro.props;
 
-const dayColors = ['from-crn-blue', 'from-teal-500', 'from-orange-500', 'from-purple-500'];
+const dayColors = ['from-vrc-blue', 'from-teal-500', 'from-orange-500', 'from-purple-500'];
 const gradientClass = dayColors[(programDay.day - 1) % dayColors.length];
 const recordingCount = programDay.sessions.reduce((acc, s) => acc + s.videos.length, 0);
 ---
@@ -79,7 +79,7 @@ const recordingCount = programDay.sessions.reduce((acc, s) => acc + s.videos.len
                   <p class="text-gray-600 text-sm mt-1">{session.description}</p>
                 )}
               </div>
-              <span class="text-sm text-crn-blue font-medium whitespace-nowrap">
+              <span class="text-sm text-vrc-blue font-medium whitespace-nowrap">
                 {session.time}
               </span>
             </div>

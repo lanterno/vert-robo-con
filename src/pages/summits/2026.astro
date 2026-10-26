@@ -36,8 +36,8 @@ const tabs = [
   description={`${summit?.name} — ${summit?.dates}. ${summit?.tagline}`}
 >
   {/* Hero Section */}
-  <section class="relative overflow-hidden bg-crn-navy text-white">
-    <div class="absolute inset-0 bg-gradient-to-br from-crn-navy via-crn-blue-dark to-crn-blue"></div>
+  <section class="relative overflow-hidden bg-vrc-navy text-white">
+    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-blue"></div>
     <div class="absolute inset-0 opacity-25" style="background-image: radial-gradient(circle at 20% 30%, rgba(22,163,74,0.35), transparent 50%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.3), transparent 50%);"></div>
 
     <div class="relative container mx-auto px-4 py-20 lg:py-28">
@@ -48,12 +48,12 @@ const tabs = [
 
       <div class="grid lg:grid-cols-12 gap-12 items-center max-w-7xl mx-auto">
         <div class="lg:col-span-7">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-crn-green/15 border border-crn-green/40 rounded-full text-crn-green text-xs font-semibold uppercase tracking-wider mb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-vrc-green/15 border border-vrc-green/40 rounded-full text-vrc-green text-xs font-semibold uppercase tracking-wider mb-6">
             {recordingsAvailable ? 'Past Edition · Recording Placeholders' : 'Past Edition · No Recordings Yet'}
           </div>
           <h1 class="font-heading font-bold text-5xl md:text-6xl lg:text-7xl leading-[0.95] mb-6">
             Example Robotics
-            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-crn-green via-emerald-400 to-teal-300">Summit 2026</span>
+            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-vrc-green via-emerald-400 to-teal-300">Summit 2026</span>
           </h1>
           <p class="text-lg md:text-xl text-white/75 max-w-2xl mb-6 leading-relaxed">{summit?.tagline}</p>
           <div class="flex flex-wrap gap-6 text-white/70 mb-10 text-sm">
@@ -68,7 +68,7 @@ const tabs = [
           </div>
           <a
             href={LINKS.summit.agenda2026}
-            class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-crn-navy font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-crn-green hover:text-white transition-colors"
+            class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-vrc-navy font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-green hover:text-white transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             View Full Agenda
@@ -109,7 +109,7 @@ const tabs = [
       <nav class="flex gap-1 overflow-x-auto scrollbar-hide py-2" aria-label="Summit sections">
         {tabs.map((tab, idx) => (
           <button
-            class={`summit-tab flex items-center gap-2 px-6 py-3 font-semibold text-sm uppercase tracking-wide whitespace-nowrap rounded-lg transition-colors ${idx === 0 ? 'bg-crn-blue text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+            class={`summit-tab flex items-center gap-2 px-6 py-3 font-semibold text-sm uppercase tracking-wide whitespace-nowrap rounded-lg transition-colors ${idx === 0 ? 'bg-vrc-blue text-white' : 'text-gray-600 hover:bg-gray-100'}`}
             data-tab={tab.id}
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +179,7 @@ const tabs = [
   </div>
 
   {/* Past Summits CTA */}
-  <section class="py-16 bg-crn-blue">
+  <section class="py-16 bg-vrc-blue">
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-2xl md:text-3xl font-heading font-bold text-white mb-4">
         Look Back at 2025
@@ -189,7 +189,7 @@ const tabs = [
       </p>
       <a
         href="/summits/2025"
-        class="inline-flex items-center gap-2 px-8 py-4 bg-white text-crn-blue font-semibold uppercase tracking-wider hover:bg-gray-100 transition-colors rounded-lg"
+        class="inline-flex items-center gap-2 px-8 py-4 bg-white text-vrc-blue font-semibold uppercase tracking-wider hover:bg-gray-100 transition-colors rounded-lg"
       >
         Open the 2025 Edition
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,10 +211,10 @@ const tabs = [
         const targetId = tab.getAttribute('data-tab');
 
         tabs.forEach(t => {
-          t.classList.remove('bg-crn-blue', 'text-white');
+          t.classList.remove('bg-vrc-blue', 'text-white');
           t.classList.add('text-gray-600', 'hover:bg-gray-100');
         });
-        tab.classList.add('bg-crn-blue', 'text-white');
+        tab.classList.add('bg-vrc-blue', 'text-white');
         tab.classList.remove('text-gray-600', 'hover:bg-gray-100');
 
         contents.forEach(content => {

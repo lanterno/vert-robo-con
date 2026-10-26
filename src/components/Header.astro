@@ -28,7 +28,7 @@ function isActive(href: string, current: string): boolean {
       <!-- Logo -->
       <a href="/" class="flex items-center gap-3 group">
         <img src="/images/logo.svg" alt={`${SITE.shortName} logo`} class="w-10 h-10" />
-        <span class="font-heading text-lg md:text-xl lg:text-2xl font-bold text-crn-blue tracking-wide uppercase">
+        <span class="font-heading text-lg md:text-xl lg:text-2xl font-bold text-vrc-blue tracking-wide uppercase">
           <span class="hidden sm:inline">{SITE.name}</span>
           <span class="sm:hidden">{SITE.shortName}</span>
         </span>
@@ -41,13 +41,13 @@ function isActive(href: string, current: string): boolean {
             href={item.href}
             class={`relative py-2 text-sm font-semibold uppercase tracking-wider transition-colors ${
               isActive(item.href, currentPath) 
-                ? 'text-crn-blue' 
-                : 'text-gray-700 hover:text-crn-blue'
+                ? 'text-vrc-blue' 
+                : 'text-gray-700 hover:text-vrc-blue'
             }`}
           >
             {item.label}
             {isActive(item.href, currentPath) && (
-              <span class="absolute bottom-0 left-0 w-full h-0.5 bg-crn-blue"></span>
+              <span class="absolute bottom-0 left-0 w-full h-0.5 bg-vrc-blue"></span>
             )}
           </a>
         ))}
@@ -56,7 +56,7 @@ function isActive(href: string, current: string): boolean {
       <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-btn"
-        class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-crn-blue focus:ring-offset-2"
+        class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-vrc-blue focus:ring-offset-2"
         aria-label="Toggle menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -95,8 +95,8 @@ function isActive(href: string, current: string): boolean {
               href={item.href}
               class={`px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wider transition-all ${
                 isActive(item.href, currentPath) 
-                  ? 'text-crn-blue bg-crn-blue/10' 
-                  : 'text-gray-700 hover:text-crn-blue hover:bg-gray-50'
+                  ? 'text-vrc-blue bg-vrc-blue/10' 
+                  : 'text-gray-700 hover:text-vrc-blue hover:bg-gray-50'
               }`}
             >
               {item.label}
@@ -108,7 +108,7 @@ function isActive(href: string, current: string): boolean {
         <div class="mt-4 pt-4 border-t border-gray-100">
           <a 
             href="/slack"
-            class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-crn-green text-white font-semibold text-sm uppercase tracking-wider rounded-lg hover:bg-crn-green-dark transition-colors"
+            class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-vrc-green text-white font-semibold text-sm uppercase tracking-wider rounded-lg hover:bg-vrc-green-dark transition-colors"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
             Join Community

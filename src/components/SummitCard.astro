@@ -13,7 +13,7 @@ interface Props {
 const { summit, featured = false } = Astro.props;
 
 const statusColors = {
-  upcoming: 'bg-crn-green text-white',
+  upcoming: 'bg-vrc-green text-white',
   past: 'bg-gray-500 text-white',
 };
 
@@ -24,7 +24,7 @@ const cardClass = featured
 
 <a href={`/summits/${summit.year}`} class={cardClass}>
   {/* Background gradient */}
-  <div class={`absolute inset-0 ${summit.status === 'upcoming' ? 'bg-gradient-to-br from-crn-blue via-crn-blue-dark to-crn-navy' : 'bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900'}`}></div>
+  <div class={`absolute inset-0 ${summit.status === 'upcoming' ? 'bg-gradient-to-br from-vrc-blue via-vrc-blue-dark to-vrc-navy' : 'bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900'}`}></div>
   
   {/* Decorative elements */}
   <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>

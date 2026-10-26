@@ -19,7 +19,7 @@
   
   /* Improved focus states for accessibility */
   :focus-visible {
-    @apply outline-none ring-2 ring-crn-blue ring-offset-2;
+    @apply outline-none ring-2 ring-vrc-blue ring-offset-2;
   }
   
   /* Remove default outline for mouse users */
@@ -34,7 +34,7 @@
   
   /* Improved text selection colors */
   ::selection {
-    @apply bg-crn-blue text-white;
+    @apply bg-vrc-blue text-white;
   }
 }
 
@@ -42,38 +42,38 @@
   /* Skip to content link for screen readers */
   .skip-link {
     @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
-           focus:z-[100] focus:px-4 focus:py-2 focus:bg-crn-blue focus:text-white 
+           focus:z-[100] focus:px-4 focus:py-2 focus:bg-vrc-blue focus:text-white 
            focus:rounded-lg focus:font-semibold;
   }
   
   .section-title {
-    @apply text-crn-blue text-3xl md:text-4xl font-heading font-bold tracking-[0.2em] uppercase text-center;
+    @apply text-vrc-blue text-3xl md:text-4xl font-heading font-bold tracking-[0.2em] uppercase text-center;
   }
   
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-crn-blue text-white font-semibold 
-           uppercase tracking-wider hover:bg-crn-blue-dark transition-all duration-200
-           focus:ring-2 focus:ring-crn-blue focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-vrc-blue text-white font-semibold 
+           uppercase tracking-wider hover:bg-vrc-blue-dark transition-all duration-200
+           focus:ring-2 focus:ring-vrc-blue focus:ring-offset-2;
   }
   
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-crn-blue text-crn-blue 
-           font-semibold uppercase tracking-wider hover:bg-crn-blue hover:text-white 
-           transition-all duration-200 focus:ring-2 focus:ring-crn-blue focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-vrc-blue text-vrc-blue 
+           font-semibold uppercase tracking-wider hover:bg-vrc-blue hover:text-white 
+           transition-all duration-200 focus:ring-2 focus:ring-vrc-blue focus:ring-offset-2;
   }
   
   .link-arrow {
-    @apply inline-flex items-center gap-1 text-crn-blue font-semibold uppercase tracking-wider 
+    @apply inline-flex items-center gap-1 text-vrc-blue font-semibold uppercase tracking-wider 
            hover:underline underline-offset-4 transition-colors;
   }
   
   .nav-link {
     @apply text-sm font-semibold uppercase tracking-wider text-gray-800 
-           hover:text-crn-blue transition-colors duration-200;
+           hover:text-vrc-blue transition-colors duration-200;
   }
   
   .nav-link-active {
-    @apply nav-link text-crn-blue underline underline-offset-4;
+    @apply nav-link text-vrc-blue underline underline-offset-4;
   }
   
   /* Card hover effect */

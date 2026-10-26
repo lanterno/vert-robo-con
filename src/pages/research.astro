@@ -37,19 +37,19 @@ const formats = [
 
 <BaseLayout title="Research" description={`Working Notes on Climate Robots - a fictional white paper from the ${SITE.name}.`}>
   {/* ─── HERO ─── */}
-  <section class="relative overflow-hidden bg-crn-navy text-white">
-    <div class="absolute inset-0 bg-gradient-to-br from-crn-navy via-crn-blue-dark to-crn-blue"></div>
+  <section class="relative overflow-hidden bg-vrc-navy text-white">
+    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-blue"></div>
     <div class="absolute inset-0 opacity-25" style="background-image: radial-gradient(circle at 20% 30%, rgba(22,163,74,0.35), transparent 50%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.3), transparent 50%);"></div>
 
     <div class="relative container mx-auto px-4 py-20 lg:py-28">
       <div class="grid lg:grid-cols-12 gap-12 items-center max-w-7xl mx-auto">
         <div class="lg:col-span-7">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-crn-green/15 border border-crn-green/40 rounded-full text-crn-green text-xs font-semibold uppercase tracking-wider mb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-vrc-green/15 border border-vrc-green/40 rounded-full text-vrc-green text-xs font-semibold uppercase tracking-wider mb-6">
             2026 Edition · Fictional Demo
           </div>
           <h1 class="font-heading font-bold text-5xl md:text-6xl lg:text-7xl leading-[0.95] mb-6">
             Working Notes
-            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-crn-green via-emerald-400 to-teal-300">on Climate Robots</span>
+            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-vrc-green via-emerald-400 to-teal-300">on Climate Robots</span>
           </h1>
           <p class="text-lg md:text-xl text-white/75 max-w-2xl mb-10 leading-relaxed">
             A short white paper, written as demo content, that asks a simple question: when does sending a robot into the field actually help the climate, and when is it a distraction?
@@ -57,7 +57,7 @@ const formats = [
           <div class="flex flex-wrap gap-3">
             <a
               href={LINKS.research.whitePaper}
-              class="inline-flex items-center gap-2 px-6 py-3.5 bg-crn-green text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-crn-green-dark transition-colors shadow-lg shadow-crn-green/25"
+              class="inline-flex items-center gap-2 px-6 py-3.5 bg-vrc-green text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-green-dark transition-colors shadow-lg shadow-vrc-green/25"
             >
               Read the Paper
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -73,7 +73,7 @@ const formats = [
 
         <div class="lg:col-span-5">
           <div class="relative">
-            <div class="absolute -inset-4 bg-gradient-to-br from-crn-green/20 to-crn-blue/20 rounded-3xl blur-2xl"></div>
+            <div class="absolute -inset-4 bg-gradient-to-br from-vrc-green/20 to-vrc-blue/20 rounded-3xl blur-2xl"></div>
             <img
               src="/images/white-paper.svg"
               alt="Illustration of a white paper cover with a tile pattern"
@@ -91,7 +91,7 @@ const formats = [
     <div class="container mx-auto px-4">
       <div class="grid lg:grid-cols-12 gap-12 items-start max-w-7xl mx-auto">
         <div class="lg:col-span-5">
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-blue mb-3">
+          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
             Abstract
           </div>
           <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-6 leading-tight">
@@ -120,7 +120,7 @@ const formats = [
           <ol class="space-y-3 mb-8">
             {contents.map(c => (
               <li class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                <span class="w-8 h-8 shrink-0 bg-crn-blue text-white rounded-lg flex items-center justify-center font-heading font-bold">{c.n}</span>
+                <span class="w-8 h-8 shrink-0 bg-vrc-blue text-white rounded-lg flex items-center justify-center font-heading font-bold">{c.n}</span>
                 <span class="text-gray-800 font-semibold pt-1">{c.title}</span>
               </li>
             ))}
@@ -138,7 +138,7 @@ const formats = [
   <section class="py-20 lg:py-24 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-blue mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
           Two Ways In
         </div>
         <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-4">
@@ -155,12 +155,12 @@ const formats = [
             href={f.href}
             class="group relative overflow-hidden rounded-2xl bg-white shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-8 flex flex-col"
           >
-            <div class="w-14 h-14 bg-crn-blue/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-crn-blue group-hover:scale-110 transition-all duration-300">
-              <svg class="w-7 h-7 text-crn-blue group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={f.icon}/></svg>
+            <div class="w-14 h-14 bg-vrc-blue/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-vrc-blue group-hover:scale-110 transition-all duration-300">
+              <svg class="w-7 h-7 text-vrc-blue group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={f.icon}/></svg>
             </div>
             <h3 class="font-heading font-bold text-xl text-gray-900 mb-2">{f.label}</h3>
             <p class="text-gray-600 mb-6 flex-1">{f.description}</p>
-            <span class="inline-flex items-center gap-1 text-crn-blue font-bold uppercase tracking-wider text-sm group-hover:gap-2 transition-all">
+            <span class="inline-flex items-center gap-1 text-vrc-blue font-bold uppercase tracking-wider text-sm group-hover:gap-2 transition-all">
               Open
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </span>
@@ -173,8 +173,8 @@ const formats = [
   {/* ─── FEEDBACK CTA ─── */}
   <section id="feedback" class="py-20 bg-white scroll-mt-24">
     <div class="container mx-auto px-4">
-      <div class="relative overflow-hidden bg-gradient-to-br from-crn-blue to-crn-blue-dark rounded-3xl max-w-5xl mx-auto p-10 md:p-16">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-crn-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative overflow-hidden bg-gradient-to-br from-vrc-blue to-vrc-blue-dark rounded-3xl max-w-5xl mx-auto p-10 md:p-16">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-vrc-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
 
         <div class="relative grid md:grid-cols-2 gap-8 items-center">
@@ -187,7 +187,7 @@ const formats = [
             </p>
           </div>
           <div class="flex md:justify-end">
-            <a href={LINKS.contact.mailto} class="inline-flex items-center gap-3 px-8 py-4 bg-white text-crn-blue font-bold uppercase tracking-wider rounded-lg hover:bg-crn-green hover:text-white transition-colors shadow-xl">
+            <a href={LINKS.contact.mailto} class="inline-flex items-center gap-3 px-8 py-4 bg-white text-vrc-blue font-bold uppercase tracking-wider rounded-lg hover:bg-vrc-green hover:text-white transition-colors shadow-xl">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
               Send Feedback
             </a>

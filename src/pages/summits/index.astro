@@ -71,9 +71,9 @@ const speakers2026Count = SPEAKERS_2026.length;
   description="The Example Robotics Summit is a fictional, free online gathering about robots built for climate work. Every speaker, partner and recording on this page is demo content."
 >
   {/* ─── HERO ─── */}
-  <section class="relative overflow-hidden bg-crn-navy text-white">
+  <section class="relative overflow-hidden bg-vrc-navy text-white">
     {/* Background gradient + grain */}
-    <div class="absolute inset-0 bg-gradient-to-br from-crn-navy via-crn-blue-dark to-crn-blue"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-blue"></div>
     <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 20% 20%, rgba(22,163,74,0.25), transparent 40%), radial-gradient(circle at 80% 80%, rgba(59,130,246,0.25), transparent 40%);"></div>
     <div class="absolute inset-0 opacity-[0.07]" style="background-image: url('data:image/svg+xml,%3Csvg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M0 39h40M39 0v40\" stroke=\"%23ffffff\" stroke-width=\"1\" fill=\"none\"/%3E%3C/svg%3E');"></div>
 
@@ -81,13 +81,13 @@ const speakers2026Count = SPEAKERS_2026.length;
       <div class="grid lg:grid-cols-12 gap-12 items-center">
         {/* Left: copy */}
         <div class="lg:col-span-7">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-crn-green/15 border border-crn-green/40 rounded-full text-crn-green text-xs font-semibold uppercase tracking-wider mb-6">
-            <span class="w-1.5 h-1.5 bg-crn-green rounded-full"></span>
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-vrc-green/15 border border-vrc-green/40 rounded-full text-vrc-green text-xs font-semibold uppercase tracking-wider mb-6">
+            <span class="w-1.5 h-1.5 bg-vrc-green rounded-full"></span>
             {upcomingSummit ? 'Next Edition' : `Latest: ${latestPastSummit?.dates}`}
           </div>
           <h1 class="font-heading font-bold text-5xl md:text-6xl lg:text-7xl leading-[0.95] mb-6">
             Robots for a
-            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-crn-green to-teal-300">Cooler Planet</span>
+            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-vrc-green to-teal-300">Cooler Planet</span>
           </h1>
           <p class="text-lg md:text-xl text-white/75 max-w-2xl mb-10 leading-relaxed">
             Once a year the Example Robotics Summit puts builders, field scientists and funders on the same call for a few afternoons of talks, panels and pitches about robots that do climate work. The next edition is planned for April 20-22, 2027, online and free.
@@ -96,7 +96,7 @@ const speakers2026Count = SPEAKERS_2026.length;
             {latestPastSummit && (
               <a
                 href={`/summits/${latestPastSummit.year}`}
-                class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-crn-navy font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-crn-green hover:text-white transition-colors"
+                class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-vrc-navy font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-green hover:text-white transition-colors"
               >
                 Explore Summit {latestPastSummit.year}
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -138,7 +138,7 @@ const speakers2026Count = SPEAKERS_2026.length;
         <div class="grid lg:grid-cols-12 gap-12 items-start max-w-7xl mx-auto">
           {/* Left: copy + chips */}
           <div class="lg:col-span-7">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-blue mb-3">
+            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
               Most Recent Edition
             </div>
             <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-4 leading-tight">
@@ -159,22 +159,22 @@ const speakers2026Count = SPEAKERS_2026.length;
             {/* Inline stats */}
             <div class="grid grid-cols-3 gap-6 mb-10 max-w-md">
               <div>
-                <div class="font-heading font-bold text-4xl text-crn-blue">{SUMMIT_2026_PROGRAM.length}</div>
+                <div class="font-heading font-bold text-4xl text-vrc-blue">{SUMMIT_2026_PROGRAM.length}</div>
                 <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Days</div>
               </div>
               <div>
-                <div class="font-heading font-bold text-4xl text-crn-blue">{totalSessionsCount}</div>
+                <div class="font-heading font-bold text-4xl text-vrc-blue">{totalSessionsCount}</div>
                 <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Sessions</div>
               </div>
               <div>
-                <div class="font-heading font-bold text-4xl text-crn-blue">{speakers2026Count}</div>
+                <div class="font-heading font-bold text-4xl text-vrc-blue">{speakers2026Count}</div>
                 <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Speakers</div>
               </div>
             </div>
 
             <a
               href={`/summits/${latestPastSummit.year}`}
-              class="inline-flex items-center gap-2 px-6 py-3 bg-crn-blue text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-crn-blue-dark transition-colors"
+              class="inline-flex items-center gap-2 px-6 py-3 bg-vrc-blue text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-blue-dark transition-colors"
             >
               View Program & Speakers
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -201,7 +201,7 @@ const speakers2026Count = SPEAKERS_2026.length;
                 </a>
               ))}
             </div>
-            <a href={`/summits/${latestPastSummit.year}#speakers`} class="inline-flex items-center gap-1 text-crn-blue font-semibold text-sm uppercase tracking-wider mt-4 hover:underline">
+            <a href={`/summits/${latestPastSummit.year}#speakers`} class="inline-flex items-center gap-1 text-vrc-blue font-semibold text-sm uppercase tracking-wider mt-4 hover:underline">
               See all {speakers2026Count} speakers →
             </a>
           </div>
@@ -216,12 +216,12 @@ const speakers2026Count = SPEAKERS_2026.length;
     <div class="relative container mx-auto px-4">
       <div class="grid lg:grid-cols-12 gap-10 items-center max-w-7xl mx-auto">
         <div class="lg:col-span-5">
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-green mb-3">
+          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-green mb-3">
             On-Demand Library
           </div>
           <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4 leading-tight">
             Catch Up on the
-            <span class="block text-crn-green">2025 Sessions</span>
+            <span class="block text-vrc-green">2025 Sessions</span>
           </h2>
           <p class="text-white/70 text-lg mb-8 leading-relaxed">
             {SUMMIT_2025_VIDEOS.length} recording slots from the first edition: a glacier keynote, two pitch rounds, and talks on wetlands, city heat, insurance and repair. This is a demo site, so each slot shows a placeholder instead of a video.
@@ -229,7 +229,7 @@ const speakers2026Count = SPEAKERS_2026.length;
           <div class="flex flex-wrap gap-3">
             <a
               href="/summits/2025"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-crn-green text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-crn-green-dark transition-colors"
+              class="inline-flex items-center gap-2 px-6 py-3 bg-vrc-green text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-green-dark transition-colors"
             >
               Browse All Sessions
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -261,7 +261,7 @@ const speakers2026Count = SPEAKERS_2026.length;
   <section class="py-20 lg:py-24 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-blue mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
           The Summit Archive
         </div>
         <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-4">
@@ -279,14 +279,14 @@ const speakers2026Count = SPEAKERS_2026.length;
             class="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
           >
             {/* Year backdrop */}
-            <div class={`absolute inset-0 bg-gradient-to-br ${summit.year === '2026' ? 'from-crn-blue via-crn-blue-dark to-crn-navy' : 'from-gray-700 via-gray-800 to-gray-900'} opacity-95`}></div>
+            <div class={`absolute inset-0 bg-gradient-to-br ${summit.year === '2026' ? 'from-vrc-blue via-vrc-blue-dark to-vrc-navy' : 'from-gray-700 via-gray-800 to-gray-900'} opacity-95`}></div>
             <div class="absolute -bottom-8 -right-4 font-heading font-bold text-[12rem] leading-none text-white/[0.08]">
               {summit.year}
             </div>
 
             <div class="relative p-8 md:p-10 text-white min-h-[280px] flex flex-col">
               <div class="flex items-center gap-2 mb-4">
-                <span class={`inline-block w-2 h-2 rounded-full ${summit.status === 'upcoming' ? 'bg-crn-green animate-pulse' : 'bg-white/40'}`}></span>
+                <span class={`inline-block w-2 h-2 rounded-full ${summit.status === 'upcoming' ? 'bg-vrc-green animate-pulse' : 'bg-white/40'}`}></span>
                 <span class="text-xs uppercase tracking-wider font-semibold">
                   {summit.status === 'upcoming' ? 'Upcoming' : 'Past Edition'}
                 </span>
@@ -330,7 +330,7 @@ const speakers2026Count = SPEAKERS_2026.length;
     <div class="container mx-auto px-4">
       <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 max-w-5xl mx-auto gap-4">
         <div>
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-blue mb-3">
+          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
             The Team
           </div>
           <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 leading-tight">
@@ -354,7 +354,7 @@ const speakers2026Count = SPEAKERS_2026.length;
   <section id="partners" class="py-20 lg:py-24 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-blue mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
           Partners
         </div>
         <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-4">
@@ -372,7 +372,7 @@ const speakers2026Count = SPEAKERS_2026.length;
       <div class="text-center mt-12">
         <a
           href={LINKS.contact.mailto}
-          class="inline-flex items-center gap-2 px-6 py-3 bg-crn-blue text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-crn-blue-dark transition-colors"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-vrc-blue text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-blue-dark transition-colors"
         >
           Become a Partner
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -382,13 +382,13 @@ const speakers2026Count = SPEAKERS_2026.length;
   </section>
 
   {/* ─── IMPACT NUMBERS ─── */}
-  <section class="py-20 bg-crn-navy text-white relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-crn-navy via-crn-blue-dark to-crn-navy"></div>
+  <section class="py-20 bg-vrc-navy text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-navy"></div>
     <img src="/images/summit-crowd.svg" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover opacity-[0.15]" loading="lazy" />
     <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 70% 30%, rgba(22,163,74,0.3), transparent 50%);"></div>
     <div class="relative container mx-auto px-4">
       <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-crn-green mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-green mb-3">
           By the Numbers
         </div>
         <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4">
@@ -398,19 +398,19 @@ const speakers2026Count = SPEAKERS_2026.length;
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-crn-green mb-2 tabular-nums">{editionsHeld}</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{editionsHeld}</div>
           <div class="text-sm uppercase tracking-wider text-white/60">Summits Held</div>
         </div>
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-crn-green mb-2 tabular-nums">{totalAttendeesAllEditions}+</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{totalAttendeesAllEditions}+</div>
           <div class="text-sm uppercase tracking-wider text-white/60">Total Attendees</div>
         </div>
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-crn-green mb-2 tabular-nums">{totalSessionsAllEditions}</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{totalSessionsAllEditions}</div>
           <div class="text-sm uppercase tracking-wider text-white/60">Sessions</div>
         </div>
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-crn-green mb-2 tabular-nums">{maxCountries}</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{maxCountries}</div>
           <div class="text-sm uppercase tracking-wider text-white/60">Countries</div>
         </div>
       </div>
@@ -420,8 +420,8 @@ const speakers2026Count = SPEAKERS_2026.length;
   {/* ─── COMMUNITY CTA ─── */}
   <section class="py-20 bg-white">
     <div class="container mx-auto px-4">
-      <div class="relative overflow-hidden bg-gradient-to-br from-crn-blue to-crn-blue-dark rounded-3xl max-w-5xl mx-auto p-10 md:p-16">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-crn-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative overflow-hidden bg-gradient-to-br from-vrc-blue to-vrc-blue-dark rounded-3xl max-w-5xl mx-auto p-10 md:p-16">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-vrc-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
 
         <div class="relative grid md:grid-cols-2 gap-8 items-center">
@@ -436,7 +436,7 @@ const speakers2026Count = SPEAKERS_2026.length;
           <div class="flex md:justify-end">
             <a
               href="/slack"
-              class="inline-flex items-center gap-3 px-8 py-4 bg-white text-crn-blue font-bold uppercase tracking-wider rounded-lg hover:bg-crn-green hover:text-white transition-colors shadow-xl"
+              class="inline-flex items-center gap-3 px-8 py-4 bg-white text-vrc-blue font-bold uppercase tracking-wider rounded-lg hover:bg-vrc-green hover:text-white transition-colors shadow-xl"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8M8 14h5m-9 6l3-3h11a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 001 1.732"/>

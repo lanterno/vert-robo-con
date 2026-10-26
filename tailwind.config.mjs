@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        crn: {
+        vrc: {
           blue: '#1e40af',
           'blue-dark': '#1e3a8a',
           'blue-light': '#3b82f6',
