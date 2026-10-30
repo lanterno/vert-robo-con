@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1320" height="890" viewBox="0 0 1320 890" role="img" aria-labelledby="t d" font-family="Inter, Helvetica, Arial, sans-serif">
 <title id="t">VRC roadmap timeline</title>
-<desc id="d">Six stages built one after another by one developer, from Nov 2, 2026 to Jun 30, 2027. The new public site goes live on Dec 7, 2026 and registration opens on Jan 11, 2027. The fictional 2027 summit runs Apr 20 to 22, 2027.</desc>
+<desc id="d">Seven milestones built one after another by one developer, from Nov 2, 2026 to Jun 30, 2027. The new public site goes live on Dec 7, 2026 and registration opens on Jan 11, 2027. The fictional 2027 summit runs Apr 20 to 22, 2027.</desc>
 <rect width="1320" height="890" fill="#FFFFFF"/>
 <text x="40" y="52" font-size="26" font-weight="700" fill="#1F2937">The new site goes live Dec 7, and registration opens Jan 11</text>
-<text x="40" y="86" font-size="17" fill="#6B7280">Six stages built one at a time by one developer, from Nov 2. Fictional demo plan.</text>
+<text x="40" y="86" font-size="17" fill="#6B7280">Seven milestones built one at a time by one developer, from Nov 2. Fictional demo plan.</text>
 <line x1="440" y1="156" x2="1250" y2="156" stroke="#D1D5DB" stroke-width="2"/>
 <line x1="493.2" y1="156" x2="493.2" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="493.2" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Nov 2026</text>
@@ -24,31 +24,31 @@
 <line x1="605.8" y1="156" x2="605.8" y2="840" stroke="#2563EB" stroke-width="2" stroke-dasharray="4 4"/>
 <line x1="715.2" y1="156" x2="715.2" y2="840" stroke="#2563EB" stroke-width="2" stroke-dasharray="4 4"/>
 <line x1="440" y1="210" x2="1250" y2="210" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="204" font-size="20" fill="#1F2937">1 · Public site without a database</text>
+<text x="40" y="204" font-size="20" fill="#1F2937">M1 · Public site without a database</text>
 <text x="40" y="230" font-size="16" fill="#6B7280">Nov 2 – Nov 27</text>
 <rect x="496.3" y="198" width="78.2" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="280" x2="1250" y2="280" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="274" font-size="20" fill="#1F2937">2 · Foundations</text>
+<text x="40" y="274" font-size="20" fill="#1F2937">M2 · Foundations</text>
 <text x="40" y="300" font-size="16" fill="#6B7280">Nov 30 – Dec 18</text>
 <rect x="583.9" y="268" width="56.3" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="350" x2="1250" y2="350" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="344" font-size="20" fill="#1F2937">3 · Registration and the admin core</text>
+<text x="40" y="344" font-size="20" fill="#1F2937">M3 · Registration and the admin core</text>
 <text x="40" y="370" font-size="16" fill="#6B7280">Dec 21 – Jan 8</text>
 <rect x="649.5" y="338" width="56.3" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="420" x2="1250" y2="420" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="414" font-size="20" fill="#1F2937">4 · Pitch calls and moderation</text>
+<text x="40" y="414" font-size="20" fill="#1F2937">M4 · Pitch calls and moderation</text>
 <text x="40" y="440" font-size="16" fill="#6B7280">Jan 11 – Feb 5</text>
 <rect x="715.2" y="408" width="78.2" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="490" x2="1250" y2="490" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="484" font-size="20" fill="#1F2937">5 · Program and summit emails</text>
+<text x="40" y="484" font-size="20" fill="#1F2937">M5 · Program and summit emails</text>
 <text x="40" y="510" font-size="16" fill="#6B7280">Feb 8 – Mar 19</text>
 <rect x="802.8" y="478" width="122.0" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="560" x2="1250" y2="560" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="554" font-size="20" fill="#1F2937">Buffer, freeze and the summit</text>
+<text x="40" y="554" font-size="20" fill="#1F2937">M6 · Summit: buffer and freeze</text>
 <text x="40" y="580" font-size="16" fill="#6B7280">Mar 22 – Apr 23</text>
 <rect x="934.1" y="548" width="100.1" height="24" rx="12" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="5 4"/>
 <line x1="440" y1="630" x2="1250" y2="630" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="624" font-size="20" fill="#1F2937">6 · After the summit</text>
+<text x="40" y="624" font-size="20" fill="#1F2937">M7 · After the summit</text>
 <text x="40" y="650" font-size="16" fill="#6B7280">Apr 26 – Jun 30</text>
 <rect x="1043.6" y="618" width="203.3" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="700" x2="1250" y2="700" stroke="#E5E7EB" stroke-width="1"/>

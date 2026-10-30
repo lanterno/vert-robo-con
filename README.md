@@ -29,7 +29,7 @@ bun run preview        # preview the built dist/ locally
 
 `bun run dev` rewrites tracked files under `tina/`. Discard those changes with `git checkout -- tina/` and delete `tina/__generated__/types.js`.
 
-There is **no test suite, no type-check script, no linter and no formatter** yet. `bun astro check` needs `@astrojs/check`, which isn't a dependency, so it stops and asks to install it with npm. Tests and checks come with [#12](https://github.com/lanterno/vert-robo-con/issues/12).
+There is **no test suite, no type-check script, no linter and no formatter** yet. `bun astro check` needs `@astrojs/check`, which isn't a dependency, so it stops and asks to install it with npm. Checks come with [#76](https://github.com/lanterno/vert-robo-con/issues/76).
 
 ## Pages
 
@@ -84,7 +84,7 @@ The `/map` page reads the fictional dataset in `src/data/organizations.json` at 
 
 ## Editing content
 
-Edit the files in the repo. The TinaCMS editor saves to `src/content/`, but no page reads from there, so its edits don't change the site. TinaCMS is removed in [#10](https://github.com/lanterno/vert-robo-con/issues/10).
+Edit the files in the repo. The TinaCMS editor saves to `src/content/`, but no page reads from there, so its edits don't change the site. TinaCMS is removed in [#75](https://github.com/lanterno/vert-robo-con/issues/75).
 
 - Page copy lives in the route files under `src/pages/`
 - The navigation lives in `src/components/Header.astro`
