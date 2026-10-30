@@ -66,7 +66,7 @@ There is **no test suite, no type-check script, no linter and no formatter** yet
 │   ├── pages/             # File-based routes
 │   └── styles/global.css  # Tailwind + utility classes
 ├── tina/config.ts         # TinaCMS schema (page + siteSettings collections)
-├── docs/                  # Roadmap and its timeline image
+├── docs/                  # Roadmap
 └── ARCHITECTURE.md        # Today's site and the approved target architecture
 ```
 
