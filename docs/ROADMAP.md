@@ -13,7 +13,7 @@ One developer builds everything, one stage at a time. Work that needs no databas
 - **Apr 20–22, 2027:** the summit.
 - **Until Jun 30:** the recordings, then the features that can wait until after the summit.
 
-The dates assume one developer working full time with no holiday break. Each week off moves every later date by a week. The work is tracked as GitHub issues, and each stage below lists the issues it covers.
+The dates assume one developer working full time with no holiday break. Each week off moves every later date by a week. The work is tracked as GitHub issues, listed in [#74](https://github.com/lanterno/vert-robo-con/issues/74), and each stage below lists the issues it covers.
 
 ![Timeline: six stages from Nov 2026 to Jun 2027, new public site on Dec 7, registration on Jan 11, summit on Apr 20–22](roadmap-timeline.svg)
 
@@ -80,7 +80,7 @@ Everything a visitor reads, built from the data files already in the repo. It ke
     - Home (#27), Summit (#28), past programs (#29), Watch (#30)
     - Research reader (#31), Map with its data downloads (#32), People (#33), News (#34)
     - Get Involved (#35), Jobs layout (#36), Contact and the Privacy draft (#37)
-- [ ] Redirects, 404, sitemap, social cards and Cloudflare Web Analytics (#38)
+- [ ] Redirects, 404, sitemap and social cards (#38), and Cloudflare Web Analytics (#8)
 - [ ] Smoke tests, accessibility checks and the link check against the static build (part of #12)
 
 Forms that don't exist yet show their state, such as "Opens Jan 11" or "Coming soon", instead of linking to an outside tool.
