@@ -1,63 +1,66 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="750" viewBox="0 0 1320 750" role="img" aria-labelledby="t d" font-family="Inter, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="890" viewBox="0 0 1320 890" role="img" aria-labelledby="t d" font-family="Inter, Helvetica, Arial, sans-serif">
 <title id="t">VRC roadmap timeline</title>
-<desc id="d">Six phases from Oct 19, 2026 to Jun 30, 2027, each ending at a gate A to F. The new site launches and registration opens on Dec 7, 2026. The fictional 2027 summit runs Apr 20 to 22, 2027.</desc>
-<rect width="1320" height="750" fill="#FFFFFF"/>
-<text x="40" y="52" font-size="26" font-weight="700" fill="#1F2937">The new site launches Dec 7, about four months before the summit</text>
-<text x="40" y="86" font-size="17" fill="#6B7280">Six phases, each ending at a gate (A–F), with two developers from Oct 19. Fictional demo plan.</text>
+<desc id="d">Six stages built one after another by one developer, from Nov 2, 2026 to Jun 30, 2027. The new public site goes live on Dec 7, 2026 and registration opens on Jan 11, 2027. The fictional 2027 summit runs Apr 20 to 22, 2027.</desc>
+<rect width="1320" height="890" fill="#FFFFFF"/>
+<text x="40" y="52" font-size="26" font-weight="700" fill="#1F2937">The new site goes live Dec 7, and registration opens Jan 11</text>
+<text x="40" y="86" font-size="17" fill="#6B7280">Six stages built one at a time by one developer, from Nov 2. Fictional demo plan.</text>
 <line x1="440" y1="156" x2="1250" y2="156" stroke="#D1D5DB" stroke-width="2"/>
-<line x1="493.2" y1="156" x2="493.2" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="493.2" y1="156" x2="493.2" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="493.2" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Nov 2026</text>
-<line x1="587.0" y1="156" x2="587.0" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="587.0" y1="156" x2="587.0" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="587.0" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Dec</text>
-<line x1="683.9" y1="156" x2="683.9" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="683.9" y1="156" x2="683.9" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="683.9" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Jan 2027</text>
-<line x1="780.9" y1="156" x2="780.9" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="780.9" y1="156" x2="780.9" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="780.9" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Feb</text>
-<line x1="868.5" y1="156" x2="868.5" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="868.5" y1="156" x2="868.5" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="868.5" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Mar</text>
-<line x1="965.4" y1="156" x2="965.4" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="965.4" y1="156" x2="965.4" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="965.4" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Apr</text>
-<line x1="1059.2" y1="156" x2="1059.2" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="1059.2" y1="156" x2="1059.2" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="1059.2" y="140" font-size="17" fill="#6B7280" text-anchor="middle">May</text>
-<line x1="1156.2" y1="156" x2="1156.2" y2="700" stroke="#E5E7EB" stroke-width="1"/>
+<line x1="1156.2" y1="156" x2="1156.2" y2="840" stroke="#E5E7EB" stroke-width="1"/>
 <text x="1156.2" y="140" font-size="17" fill="#6B7280" text-anchor="middle">Jun</text>
-<line x1="605.8" y1="156" x2="605.8" y2="700" stroke="#2563EB" stroke-width="2" stroke-dasharray="4 4"/>
+<line x1="605.8" y1="156" x2="605.8" y2="840" stroke="#2563EB" stroke-width="2" stroke-dasharray="4 4"/>
+<line x1="715.2" y1="156" x2="715.2" y2="840" stroke="#2563EB" stroke-width="2" stroke-dasharray="4 4"/>
 <line x1="440" y1="210" x2="1250" y2="210" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="204" font-size="20" fill="#1F2937">0 · Foundations</text>
-<text x="40" y="230" font-size="16" fill="#6B7280">Oct 19 – Nov 6</text>
-<rect x="452.5" y="198" width="56.3" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
-<text x="520.8" y="216" font-size="17" font-weight="700" fill="#1F2937">A</text>
+<text x="40" y="204" font-size="20" fill="#1F2937">1 · Public site without a database</text>
+<text x="40" y="230" font-size="16" fill="#6B7280">Nov 2 – Nov 27</text>
+<rect x="496.3" y="198" width="78.2" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="280" x2="1250" y2="280" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="274" font-size="20" fill="#1F2937">1 · Public site in the V3 look</text>
-<text x="40" y="300" font-size="16" fill="#6B7280">Oct 19 – Nov 20</text>
-<rect x="452.5" y="268" width="100.1" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
-<text x="564.6" y="286" font-size="17" font-weight="700" fill="#1F2937">B</text>
+<text x="40" y="274" font-size="20" fill="#1F2937">2 · Foundations</text>
+<text x="40" y="300" font-size="16" fill="#6B7280">Nov 30 – Dec 18</text>
+<rect x="583.9" y="268" width="56.3" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="350" x2="1250" y2="350" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="344" font-size="20" fill="#1F2937">2 · Backoffice and registration</text>
-<text x="40" y="370" font-size="16" fill="#6B7280">Nov 2 – Dec 7</text>
-<rect x="496.3" y="338" width="109.5" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
-<text x="617.8" y="356" font-size="17" font-weight="700" fill="#1F2937">C</text>
+<text x="40" y="344" font-size="20" fill="#1F2937">3 · Registration and the admin core</text>
+<text x="40" y="370" font-size="16" fill="#6B7280">Dec 21 – Jan 8</text>
+<rect x="649.5" y="338" width="56.3" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="420" x2="1250" y2="420" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="414" font-size="20" fill="#1F2937">3 · Calls and community</text>
-<text x="40" y="440" font-size="16" fill="#6B7280">Dec 7 – Jan 22</text>
-<rect x="605.8" y="408" width="143.9" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
-<text x="761.6" y="426" font-size="17" font-weight="700" fill="#1F2937">D</text>
+<text x="40" y="414" font-size="20" fill="#1F2937">4 · Pitch calls and moderation</text>
+<text x="40" y="440" font-size="16" fill="#6B7280">Jan 11 – Feb 5</text>
+<rect x="715.2" y="408" width="78.2" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="490" x2="1250" y2="490" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="484" font-size="20" fill="#1F2937">4 · Program, My VRC, email</text>
-<text x="40" y="510" font-size="16" fill="#6B7280">Jan 4 – Mar 12</text>
-<rect x="693.3" y="478" width="209.5" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
-<text x="914.9" y="496" font-size="17" font-weight="700" fill="#1F2937">E</text>
+<text x="40" y="484" font-size="20" fill="#1F2937">5 · Program and summit emails</text>
+<text x="40" y="510" font-size="16" fill="#6B7280">Feb 8 – Mar 19</text>
+<rect x="802.8" y="478" width="122.0" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="560" x2="1250" y2="560" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="554" font-size="20" fill="#1F2937">5 · Summit and after</text>
-<text x="40" y="580" font-size="16" fill="#6B7280">Mar 15 – Jun 30</text>
-<rect x="912.2" y="548" width="334.6" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
-<text x="1258.9" y="566" font-size="17" font-weight="700" fill="#1F2937">F</text>
+<text x="40" y="554" font-size="20" fill="#1F2937">Buffer, freeze and the summit</text>
+<text x="40" y="580" font-size="16" fill="#6B7280">Mar 22 – Apr 23</text>
+<rect x="934.1" y="548" width="100.1" height="24" rx="12" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="5 4"/>
 <line x1="440" y1="630" x2="1250" y2="630" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="624" font-size="20" fill="#1F2937" font-weight="700">Launch, registration opens</text>
-<text x="40" y="650" font-size="16" fill="#6B7280">Dec 7</text>
-<rect x="594.8" y="619" width="22" height="22" fill="#2563EB" stroke="#FFFFFF" stroke-width="2" transform="rotate(45 605.8 630)"/>
+<text x="40" y="624" font-size="20" fill="#1F2937">6 · After the summit</text>
+<text x="40" y="650" font-size="16" fill="#6B7280">Apr 26 – Jun 30</text>
+<rect x="1043.6" y="618" width="203.3" height="24" rx="12" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/>
 <line x1="440" y1="700" x2="1250" y2="700" stroke="#E5E7EB" stroke-width="1"/>
-<text x="40" y="694" font-size="20" fill="#1F2937">Summit 2027 (fictional)</text>
-<text x="40" y="720" font-size="16" fill="#6B7280">Apr 20–22</text>
-<rect x="1017.0" y="689" width="22" height="22" fill="#9CA3AF" stroke="#FFFFFF" stroke-width="2" transform="rotate(45 1028.0 700)"/>
+<text x="40" y="694" font-size="20" fill="#1F2937" font-weight="700">New public site live</text>
+<text x="40" y="720" font-size="16" fill="#6B7280">Mon Dec 7</text>
+<rect x="594.8" y="689" width="22" height="22" fill="#2563EB" stroke="#FFFFFF" stroke-width="2" transform="rotate(45 605.8 700)"/>
+<line x1="440" y1="770" x2="1250" y2="770" stroke="#E5E7EB" stroke-width="1"/>
+<text x="40" y="764" font-size="20" fill="#1F2937" font-weight="700">Registration opens</text>
+<text x="40" y="790" font-size="16" fill="#6B7280">Mon Jan 11</text>
+<rect x="704.2" y="759" width="22" height="22" fill="#2563EB" stroke="#FFFFFF" stroke-width="2" transform="rotate(45 715.2 770)"/>
+<line x1="440" y1="840" x2="1250" y2="840" stroke="#E5E7EB" stroke-width="1"/>
+<text x="40" y="834" font-size="20" fill="#1F2937">Summit 2027 (fictional)</text>
+<text x="40" y="860" font-size="16" fill="#6B7280">Apr 20–22</text>
+<rect x="1017.0" y="829" width="22" height="22" fill="#9CA3AF" stroke="#FFFFFF" stroke-width="2" transform="rotate(45 1028.0 840)"/>
 </svg>
