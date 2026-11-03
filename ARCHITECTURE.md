@@ -9,12 +9,11 @@ A static Astro 5 site with no server, database or tests.
 | Part | What it is |
 | --- | --- |
 | Build | Astro 5 with `output: 'static'`, built with Bun. 9 pages, all rendered at build time |
-| Hosting | GitHub Pages on a preview domain. `.github/workflows/deploy.yml` runs `bun run build:static` on every push to `main` |
+| Hosting | GitHub Pages on a preview domain. `.github/workflows/deploy.yml` runs `bun run build` on every push to `main` |
 | Content | TypeScript and JSON in the repo: `src/lib/summits-data.ts`, `src/lib/constants.ts`, `src/data/organizations.json`. Changing content means a commit and a rebuild |
 | Styling | Tailwind CSS v3 with the `vrc-*` colour tokens, and fonts from Google Fonts |
 | Map | Leaflet and its marker-cluster plugin loaded from unpkg, with tiles from CARTO and Esri. The data is the JSON file, also served at `/data/organizations.json` |
 | Types | TypeScript on Astro's strict preset, plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature` |
-| TinaCMS | Installed, with a schema in `tina/config.ts`, but no page reads its content. Removed in [#75](docs/issues/75-remove-tinacms.md) |
 
 ## Target
 
