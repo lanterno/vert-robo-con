@@ -13,7 +13,7 @@ One developer builds it, one milestone at a time. Everything the next summit dep
 | Who | Today | After this roadmap |
 | --- | --- | --- |
 | Visitors | Read about past summits and browse the map | A faster site in the new look that works on phones: the summit and its program, recordings, research, news, people, jobs, and a filterable map with open data downloads |
-| Attendees | Can't register on the site | Register in a minute, get a calendar invite, a reminder and the join link, save sessions to a personal agenda, and manage it all in My VRC |
+| Attendees | Can't register on the site | Hear when registration opens, register in a minute, get a calendar invite, a reminder and the join link, save sessions to a personal agenda, and manage it all in My VRC |
 | Founders and researchers | Can't pitch on the site | Pitch to the summit, save a draft and finish later, and follow the review in My VRC |
 | Community members | Follow an outside link to join | Ask to join and get the invite once approved, choose which emails to get, post and find jobs, and suggest organisations for the map |
 | The organising team | Ask a developer for every change | Set up each edition, review every submission in one queue, build the program, and see what needs attention on a dashboard, behind a secure sign-in |
@@ -36,7 +36,7 @@ The milestones ship in this order. Each one is a [GitHub milestone](https://gith
 | M0 · Decisions | The choices that shape the product. Only privacy is still open |
 | M1 · Public site without a database | The new public site, live for every visitor |
 | M2 · Foundations | Nothing visible yet: sign-in, email and storage, ready for the features that need them |
-| M3 · Registration and the admin core | Registration for the next summit, My VRC, and the first admin screens |
+| M3 · Registration and the admin core | Summit sign-ups, registration for the next summit, My VRC, and the first admin screens |
 | M4 · Pitch calls and moderation | Pitching, joining the network and the contact form, all reviewed in one queue |
 | M5 · Program and summit emails | The program with a personal agenda, reminders and join links |
 | M6 · Summit | A calm, watched summit |
@@ -62,6 +62,8 @@ Nothing changes for visitors yet. This milestone gives the product what the inte
 
 ### M3 · Registration and the admin core
 
+**Anyone** can sign up for summit news. They confirm their address, then hear when registration opens, when the pitch calls open, and when the program is published. Every email has a one-click unsubscribe.
+
 **Attendees** can register for the next summit. They get a confirmation with a calendar invite and a sign-in link, and in My VRC they can see, cancel, download or delete their registration.
 
 **The team** sets each edition's details and registration window without a developer, sees and exports registrations, manages admins, and checks that the system is healthy. The site moves to its own server, and the map stops loading tiles from third parties.
@@ -74,6 +76,9 @@ Before registration opens: someone outside the project reviews the sign-in code,
 
 **Tracked here:**
 
+- [ ] Summit sign-ups: an email address and the "Summit news" topic, with double opt-in, one-click unsubscribe and the spam check. The "notify me" forms on the home, summit, register and contact pages, and "Remind me" on the pitch cards, use it. Until M7 they offer only this topic, and sign-ups for other topics (videos, news, jobs, the footer digest) show "Coming soon"
+- [ ] An automatic "Registration is open" email to everyone signed up, when the registration window opens
+- [ ] "Download my data" and "Delete everything" in My VRC include the sign-up
 - [ ] A banner across the site, set in Settings or on an edition, to announce registration (AdminSettingsV3, AdminEditionV3)
 
 ### M4 · Pitch calls and moderation
@@ -92,6 +97,7 @@ Before registration opens: someone outside the project reviews the sign-in code,
 
 **Tracked here:**
 
+- [ ] An automatic email to summit sign-ups when each pitch call opens
 - [ ] "Ask the authors" on the research pages opens the contact form with the research topic chosen (ResearchV3)
 
 ### M5 · Program and summit emails
@@ -106,6 +112,7 @@ Before registration opens: someone outside the project reviews the sign-in code,
 
 **Tracked here:**
 
+- [ ] An automatic email to summit sign-ups when the program is published
 - [ ] Upcoming deadlines on the dashboard, from the edition and call dates (AdminDashboardV3)
 
 ### M6 · Summit
@@ -122,7 +129,7 @@ Recordings come first: each session links its video, and speakers' pages show wh
 2. The community suggests organisations and corrections for the map, and the team moderates them (#55, #56)
 3. A jobs board, and applications for internships (#57, #58)
 4. The smaller forms: sponsors, speaker recommendations, volunteers, programme interest, research topics and reports of concern (#59), then an end-to-end check of every submission type (#60)
-5. My VRC shows every submission and email preferences (#63), data download and retention cover everything (#64), and topic emails with a monthly digest (#65)
+5. My VRC shows every submission and email preferences (#63), data download and retention cover everything (#64), and the other topic emails: the monthly digest, job alerts and new videos (#65)
 6. Printable PDFs of the program, the white paper and the sponsor deck (#68)
 7. The old tools are switched off (#72), then a retrospective and a maintenance routine (#73)
 
@@ -141,7 +148,6 @@ Recordings come first: each session links its video, and speakers' pages show wh
 
 - **Privacy (#5):** the legal entity, the legal basis and how long data is kept. It's needed before registration opens, because no form may collect personal data until it's settled.
 - **When registration opens (#3):** the designs show registration opening together with the new site, but on this plan it arrives two milestones later, in M3. At the end of M1, choose between keeping this order, or building registration first and launching it in today's look. The opening date is an admin setting, so either choice is a setting, not a code change.
-- **"Notify me" before registration opens (#65):** the designs offer "Email me when registration opens" and pitch reminders before those open, but topic emails arrive in M7, after the summit. Either a small summit sign-up moves into M3, or those widgets stay hidden until M7.
 - **Old form responses (#72):** what happens to responses collected by the old tools. Decided after the summit.
 
 ## Decisions made
@@ -155,6 +161,7 @@ Recordings come first: each session links its video, and speakers' pages show wh
 | Email provider and domain | Chosen when the server is set up | #6, #18 |
 | Copy | The copy on the design canvas ships as it is | #7 |
 | Analytics | Cloudflare Web Analytics, which uses no cookies | #8, #38 |
+| Summit sign-ups | In M3, so people hear when registration and the pitch calls open. The other topic emails stay in M7 | — |
 
 ## How it's built
 
@@ -209,24 +216,24 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 
 **HomeV3**, and the phone's Home tab
 - M1: the hero, the summit card with the edition state, map stats, ways in, principles and the latest news (#27)
+- M3: "notify me" for summit news (tracked here)
 - M4: the join sheet, for Slack or email-only updates (#53)
-- M7: the "notify me" sign-ups (#65)
+- M7: "notify me" for the other topics: the digest, new videos and job alerts (#65)
 
 **SummitV3**
 - M1: the summit overview and edition pages, with speakers and the person drawer, partners, and recaps of past editions. The edition state comes from its dates (#28)
-- M3: "Register free" and the registration states: opens soon, open, closing soon (#40)
+- M3: "Register free" and the registration states: opens soon, open, closing soon (#40); "notify me" and the pitch cards' "Remind me", for summit news (tracked here)
 - M4: the startup and research pitch cards open (#51)
 - M5: the live state, with what's on now and next and "Open my agenda" (#62)
-- M7: recordings in editing, then published (#71); the sponsor and speaker forms (#59); "notify me" and the pitch reminders (#65)
+- M7: recordings in editing, then published (#71); the sponsor and speaker forms (#59)
 
 **ProgramV3**
 - M1: past programs with day tabs, filters, search, time zones, session pages and an `.ics` file per session (#29)
-- M5: the 2027 program, provisional and then published; starred sessions saved to the registration, a personal calendar feed, join links for registrants, and the Now/Next strip (#61, #62)
-- M7: recordings on each session (#71), the program as a PDF (#68), and "email me when the program is published" (#65); transcript downloads (tracked here)
+- M5: the 2027 program, provisional and then published; starred sessions saved to the registration, a personal calendar feed, join links for registrants, and the Now/Next strip (#61, #62); "email me when the program is published", for summit news (tracked here)
+- M7: recordings on each session (#71) and the program as a PDF (#68); transcript downloads (tracked here)
 
 **RegisterV3**
-- M3: the form, its confirmation with calendar links, and the opens-soon, closing-soon and closed states (#40)
-- M7: "notify me when registration opens" (#65)
+- M3: the form, its confirmation with calendar links, and the opens-soon, closing-soon and closed states (#40); "notify me when registration opens" (tracked here)
 
 **GetInvolvedV3**
 - M1: who it's for, sponsor tiers, the FAQ, volunteer roles, and community projects with their status (#35)
@@ -254,6 +261,7 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 
 **ContactV3**
 - M1: the FAQ, routing by topic, and the email fallback (#37)
+- M3: on the summit topic, "notify me" (tracked here) and "Email me my manage link" (#14)
 - M4: the contact form and the 2-step consulting enquiry (#54)
 - M7: "Book an intro call" after a consulting enquiry (tracked here)
 
