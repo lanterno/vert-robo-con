@@ -120,6 +120,7 @@ Recordings come first: each session links its video, and speakers' pages show wh
 
 - **Privacy (#5):** the legal entity, the legal basis and how long data is kept. It's needed before registration opens, because no form may collect personal data until it's settled.
 - **When registration opens (#3):** the designs show registration opening together with the new site, but on this plan it arrives two milestones later, in M3. At the end of M1, choose between keeping this order, or building registration first and launching it in today's look. The opening date is an admin setting, so either choice is a setting, not a code change.
+- **"Notify me" before registration opens (#65):** the designs offer "Email me when registration opens" and pitch reminders before those open, but topic emails arrive in M7, after the summit. Either a small summit sign-up moves into M3, or those widgets stay hidden until M7.
 - **Old form responses (#72):** what happens to responses collected by the old tools. Decided after the summit.
 
 ## Decisions made
@@ -137,6 +138,45 @@ Recordings come first: each session links its video, and speakers' pages show wh
 ## How it's built
 
 One TypeScript web app serves the public site, My VRC and the admin, with one database on one server. Visitors sign in with email links, and the team signs in with a password and two-factor authentication. There is no separate CMS, newsletter tool or sign-in service to run. The details are in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
+
+## Working on it
+
+This section is for whoever picks up the build, whether a person or an agent.
+
+### Where things are decided
+
+- **The issue says what to build.** Each one lists its routes, its design boards, a checklist, and what it depends on.
+- **[`ARCHITECTURE.md`](../ARCHITECTURE.md) says how.** Where a design board disagrees with it, the architecture wins.
+- **The design canvas shows the look, the copy and every state.** Build only the parts the issue asks for, not everything on the board.
+- **This file says the order**, and which parts of each board belong to which milestone ("The designs, stage by stage" below).
+
+### Where to start
+
+Work through the milestones in order. Within a milestone, follow each issue's "Depends on" line. M1 goes like this:
+
+1. #75 removes TinaCMS, and #76 adds the checks that every later pull request runs
+2. #24 adds the design tokens and fonts, then #25 the shared components. #26, the data layer, can be built alongside them
+3. The pages, #27–#37, in any order
+4. #38 (redirects, 404, sitemap and analytics), once the home page is in
+
+M2 starts with #10 (server mode) and #11 (the database), and the rest follow their dependencies. Two decisions fall along the way: when registration opens (#3), at the end of M1, and privacy (#5), before M3 starts.
+
+### Taking an issue
+
+- **Read three things first:** the issue, its design boards, and each board's lines below. Build what the current milestone's line says.
+- **Later parts wait.** Parts from later milestones show their state, such as "Coming soon", and never link to a form or file outside the site.
+- **Some things wait for an issue.** Don't build anything under "Not planned" or "In the designs, without a milestone yet" until an issue exists for it.
+- **Every page** works on a phone, passes the accessibility and link checks (#76), and uses synthetic data only.
+- **When it's done,** close the issue from the pull request, and tick it in #74.
+- **Commits** have one goal each. Tests go in their own commit, right after the code they cover. Frontend and backend changes never share a commit. Messages follow the existing style, `type(scope): Sentence`, for example `docs: Rewrite the roadmap for one developer`.
+
+### Reading the designs
+
+- **Where the canvas is:** it's at <https://claude.ai/artifact/QAypGFVvBEvBA8EhqBXGTx>, and only its owner can open it, so ask for access. It has two pages: "V3 · Built-in" for the public site and My VRC, and "V3 · Backoffice" for the admin.
+- **The files:** each board is one file, `project/<Board>.dc.html`. Read the whole file. Boards run to 700–1,100 lines, mostly inline styles, and the details are spread throughout.
+- **The canvas-control bar:** the grey "Canvas control" bar at the top of a board is not part of the page. It switches between the states the page has to handle, such as opens soon, open, closed, errors and empty. Each one is a state to build and test.
+- **Phone layouts:** PhoneV3 shows the phone layout. Every other page follows the same patterns at phone width.
+- **Copy and placeholders:** the copy ships as it is (#7). Text in `[BRACKETS]` is a placeholder. Fill it from the synthetic data (#26), or leave it as a placeholder; never invent real-looking facts.
 
 ## The designs, stage by stage
 
@@ -268,6 +308,8 @@ These were removed from the boards because the plan rules them out. Older notes 
 
 ### In the designs, without a milestone yet
 
+Leave these out until an issue exists for one.
+
 - A site-wide banner (AdminSettingsV3, AdminEditionV3)
 - "Propose a project" (GetInvolvedV3) and "Ask the authors" (ResearchV3)
 - "Book an intro call" after a consulting enquiry (ContactV3)
@@ -275,7 +317,6 @@ These were removed from the boards because the plan rules them out. Older notes 
 - Making registration questions required or optional, and versions of the consent wording (AdminEditionV3)
 - Upcoming deadlines and the map snapshot on the dashboard (AdminDashboardV3)
 - Transcript downloads (ProgramV3, WatchV3)
-- "Notify me" before M7. The designs offer "Email me when registration opens" and pitch reminders before those open, but topic emails arrive in M7 (#65), after the summit
 
 ## Risks
 
