@@ -138,32 +138,142 @@ Recordings come first: each session links its video, and speakers' pages show wh
 
 One TypeScript web app serves the public site, My VRC and the admin, with one database on one server. Visitors sign in with email links, and the team signs in with a password and two-factor authentication. There is no separate CMS, newsletter tool or sign-in service to run. The details are in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 
-## Page by page
+## The designs, stage by stage
 
-| Page (design board) | First version, read-only | Interactive features |
-| --- | --- | --- |
-| HomeV3 | M1 | Join the network, M4 |
-| SummitV3 | M1 | "Register" and the live edition state, M3 |
-| ProgramV3 | M1, past editions | Personal agenda, calendar feed and join links, M5 |
-| RegisterV3 | — | M3 |
-| GetInvolvedV3 | M1 | Pitch calls, M4; the smaller forms, M7 |
-| MyVRCV3 | — | Registrations, M3; pitches and join requests, M4; everything else, M7 |
-| PhoneV3 | M1 | Follows each desktop page |
-| MapV3 | M1, with data downloads | Self-hosted map tiles, M3; suggestions, M7 |
-| ResearchV3 | M1, the reader | Suggest an edit, M7 |
-| WatchV3 | M1 | New-video emails, M7 |
-| JobsV3 | M1, layout only | Listings and applications, M7 |
-| ContactV3 | M1, FAQ and email link | Contact and consulting forms, M4 |
-| NewsV3 | M1 | Monthly digest signup, M7 |
-| PeopleV3 | M1 | — |
-| PrivacyV3 | M1, draft | Final text before registration opens (#5) |
-| AdminEditionV3, AdminRegistrationsV3, AdminUsersV3, AdminSettingsV3, AdminSystemV3 | — | M3 |
-| AdminDashboardV3 | — | First version M3, full version M5 |
-| AdminQueueV3, AdminPitchesV3 | — | M4 |
-| AdminProgramV3 | — | M5 |
-| AdminContentV3, AdminMapV3 | — | M7 |
+The V3 design canvas has 15 public boards and 12 admin boards. Most boards ship in pieces: a first version when the page or screen is built, then each interactive part in the milestone that builds the feature behind it. Until a part ships, the page shows its state, such as "Coming soon", and never sends people to an outside tool.
 
-StackV3 is a reference board for an earlier stack proposal; #1 replaces it.
+The notes on the admin boards describe an earlier stack: Payload, listmonk, authentik, a tailnet and site rebuilds. Where they differ from [`ARCHITECTURE.md`](../ARCHITECTURE.md), the architecture wins. StackV3 is that earlier stack's overview, and #1 replaces it.
+
+### Public pages
+
+**HomeV3**, and the phone's Home tab
+- M1: the hero, the summit card with the edition state, map stats, ways in, principles and the latest news (#27)
+- M4: the join sheet, for Slack or email-only updates (#53)
+- M7: the "notify me" sign-ups (#65)
+
+**SummitV3**
+- M1: the summit overview and edition pages, with speakers and the person drawer, partners, and recaps of past editions. The edition state comes from its dates (#28)
+- M3: "Register free" and the registration states: opens soon, open, closing soon (#40)
+- M4: the startup and research pitch cards open (#51)
+- M5: the live state, with what's on now and next and "Open my agenda" (#62)
+- M7: recordings in editing, then published (#71); the sponsor and speaker forms (#59); "notify me" and the pitch reminders (#65)
+
+**ProgramV3**
+- M1: past programs with day tabs, filters, search, time zones, session pages and an `.ics` file per session (#29)
+- M5: the 2027 program, provisional and then published; starred sessions saved to the registration, a personal calendar feed, join links for registrants, and the Now/Next strip (#61, #62)
+- M7: recordings on each session (#71), the program as a PDF (#68), and "email me when the program is published" (#65)
+
+**RegisterV3**
+- M3: the form, its confirmation with calendar links, and the opens-soon, closing-soon and closed states (#40)
+- M7: "notify me when registration opens" (#65)
+
+**GetInvolvedV3**
+- M1: who it's for, sponsor tiers, the FAQ, volunteer roles, and community projects with their status (#35)
+- M4: the startup and research pitch forms with "Save and finish later" (#51), and the join sheet (#53)
+- M7: sponsor interest, recommend a speaker, volunteer, and register interest in a programme (#59); the sponsor deck as a PDF (#68)
+
+**MapV3**, and the phone's Map tab
+- M1: the map on MapLibre with filters, search, organisation cards, a keyboard-friendly list, and CSV, JSON and GeoJSON downloads with "How to cite" (#32)
+- M3: the basemap served from our own server (#77)
+- M4: the join sheet (#53)
+- M7: the data moves into the database (#55); "Suggest an organisation" and "Suggest an edit" (#56)
+
+**ResearchV3**
+- M1: the white paper reader and the three codes, with contents, deep links and citations in APA and BibTeX (#31)
+- M7: suggest an edit, propose a research topic, join the research team, and report a concern (#59); the white paper as a PDF (#68)
+
+**WatchV3**
+- M1: the library with shelves and filters, video pages with the privacy-enhanced player, and the series (#30)
+- M7: the 2027 recordings, marked "Recording in editing" until each is published (#71); "email me new videos" (#65)
+
+**JobsV3**
+- M1: the layout, an empty state, and the internship tracks with their status (#36)
+- M7: listings with filters and "Post a job", reviewed before they appear (#57); internship applications with a link to a CV (#58); job alerts (#65)
+
+**ContactV3**
+- M1: the FAQ, routing by topic, and the email fallback (#37)
+- M4: the contact form and the 2-step consulting enquiry (#54)
+
+**NewsV3**
+- M1: the list, the posts, redirects from old `/blog/` links, and RSS (#34)
+- M7: the digest sign-up (#65); the team writes posts in the admin (#45)
+
+**PeopleV3**
+- M1: the team, speakers by edition and white paper authors, with the person drawer (#33)
+- M7: "Appears in" links to the 2027 recordings (#71); the team edits people in the admin (#45)
+
+**PrivacyV3**
+- M1: the draft page (#37)
+- Before registration opens in M3: the final text (#5). The draft names Umami and listmonk; the final text names Cloudflare Web Analytics (#8) and the app's own emails instead
+
+### My VRC and phone
+
+**MyVRCV3**
+- M3: sign-in by emailed link, a new link when it expires, and the registration: view, cancel, re-confirm, add to calendar, download my data, delete everything (#14, #41)
+- M4: pitch status with edit and withdraw (#51), and the join request (#53)
+- M5: the personal agenda and its calendar feed (#62)
+- M7: map suggestions, job posts, internship applications and email preferences (#63); download and delete cover everything (#64)
+
+**PhoneV3**: each page's phone layout ships with that page, and the tab bar with the shared components in M1 (#25). The register sheet comes with registration in M3, and the agenda with the program in M5.
+
+### Admin
+
+**AdminDashboardV3**
+- M3: registrations today and in total, with a chart by day; warnings for failed jobs, old backups and bounces (#48)
+- M5: the Today view, with queue counts and the oldest item, days until the summit, Slack link expiry and recent admin activity (#67)
+
+**AdminEditionV3**
+- M3: editions with dates, the daily window, format, price and the registration window, a timeline of the states, and a diff before saving (#39)
+- M4: the open, close and decision dates of each pitch call (#51)
+- M5: the program state, draft and then published (#61)
+- M7: the recordings state (#71)
+
+**AdminRegistrationsV3**
+- M3: search, filters, details, re-sending the link, cancelling on someone's behalf, and an audited CSV export (#43)
+- M5: the reminder and join-link emails, with a delivery report and a re-send to anyone missed (#66)
+
+**AdminPitchesV3**: M4. Any admin scores pitches on the rubric, sees the average and spread, and holds decisions until they are released together. Accepted pitches can then become sessions (#52)
+
+**AdminQueueV3**
+- M4: one queue for join requests, contact messages and consulting enquiries, with approve, reject with a reason, ask for changes, and close (#50, #53, #54)
+- M7: map suggestions (#56), job posts (#57), internship applications (#58) and the smaller forms (#59)
+
+**AdminProgramV3**: M5. A day grid with drafts and clash warnings, a provisional marker and publish, accepted pitches turned into sessions, and "Copy the 2026 structure" (#61)
+
+**AdminMapV3**: M7. The organisations move into the database, and the downloads are generated from them (#55). Suggestions are reviewed field by field, pins can be nudged, and places are geocoded once, on approval (#56)
+
+**AdminContentV3**: M7. News, videos and series, people, partners and documents, with drafts, scheduled publishing and image upload (#45)
+
+**AdminSettingsV3**
+- M3: switches for the programmes, each internship track, the research team and geocoding; the contact address for each topic; the Slack invite link (#46)
+- The Slack link is first used in M4 (#53), and geocoding in M7 (#56)
+
+**AdminUsersV3**: M3. Admins with their 2FA methods, invites and removals by the owner, 2FA resets with a reason, and the audit log (#44)
+
+**AdminSystemV3**
+- M3: background jobs with retry, email template previews with a test send, the last backup, and the running version with recent deploys (#47)
+- M5: the delivery report for the summit emails (#66)
+
+### In the designs, but not planned
+
+- The "List me in the public member directory" checkbox on the join sheet, and its row on PrivacyV3. PeopleV3 already marks the directory as undecided, and it is listed under "Not planned" below
+- File uploads for pitch decks, project PDFs and CVs (GetInvolvedV3, JobsV3). People send links instead (#58)
+- Site builds, the build queue and rolling back a release (AdminSystemV3, and the build status on other admin screens). Admin changes go live at once, and a rollback restarts the previous version (#19)
+- The "External tools" tab (AdminUsersV3), which opens listmonk, Umami, Beszel and Uptime Kuma. Uptime alerts come from Uptime Kuma at another provider (#21)
+- An admin reachable only on a tailnet. The admin is protected by sign-in with two-factor authentication (#13)
+- Syncing video details from YouTube (AdminContentV3). Videos are edited in the admin (#45)
+- Patch-day and restore-drill checklists in the admin (AdminSystemV3). They live in the runbook (#23, #73)
+
+### In the designs, without a milestone yet
+
+- A site-wide banner (AdminSettingsV3, AdminEditionV3)
+- "Propose a project" (GetInvolvedV3) and "Ask the authors" (ResearchV3)
+- "Book an intro call" after a consulting enquiry (ContactV3)
+- Version history with restore for editions and map organisations (AdminEditionV3, AdminMapV3)
+- Making registration questions required or optional, and versions of the consent wording (AdminEditionV3)
+- Upcoming deadlines and the map snapshot on the dashboard (AdminDashboardV3)
+- Transcript downloads (ProgramV3, WatchV3)
+- "Notify me" before M7. The designs offer "Email me when registration opens" and pitch reminders before those open, but topic emails arrive in M7 (#65), after the summit
 
 ## Risks
 
