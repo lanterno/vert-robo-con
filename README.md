@@ -29,7 +29,7 @@ bun run preview        # preview the built dist/ locally
 
 `bun run dev` rewrites tracked files under `tina/`. Discard those changes with `git checkout -- tina/` and delete `tina/__generated__/types.js`.
 
-There is **no test suite, no type-check script, no linter and no formatter** yet. `bun astro check` needs `@astrojs/check`, which isn't a dependency, so it stops and asks to install it with npm. Checks come with [#76](https://github.com/lanterno/vert-robo-con/issues/76).
+There is **no test suite, no type-check script, no linter and no formatter** yet. `bun astro check` needs `@astrojs/check`, which isn't a dependency, so it stops and asks to install it with npm. Checks come with [#76](docs/issues/76-static-site-ci-checks-and-a-daily-rebuild.md).
 
 ## Pages
 
@@ -66,7 +66,10 @@ There is **no test suite, no type-check script, no linter and no formatter** yet
 │   ├── pages/             # File-based routes
 │   └── styles/global.css  # Tailwind + utility classes
 ├── tina/config.ts         # TinaCMS schema (page + siteSettings collections)
-├── docs/                  # Roadmap
+├── project/               # The 26 V3 design boards, plus canvas.json, their index
+├── docs/
+│   ├── ROADMAP.md         # Plan from today's site to the V3 designs
+│   └── issues/            # The 77 implementation issues, one file each
 └── ARCHITECTURE.md        # Today's site and the approved target architecture
 ```
 
@@ -84,7 +87,7 @@ The `/map` page reads the fictional dataset in `src/data/organizations.json` at 
 
 ## Editing content
 
-Edit the files in the repo. The TinaCMS editor saves to `src/content/`, but no page reads from there, so its edits don't change the site. TinaCMS is removed in [#75](https://github.com/lanterno/vert-robo-con/issues/75).
+Edit the files in the repo. The TinaCMS editor saves to `src/content/`, but no page reads from there, so its edits don't change the site. TinaCMS is removed in [#75](docs/issues/75-remove-tinacms.md).
 
 - Page copy lives in the route files under `src/pages/`
 - The navigation lives in `src/components/Header.astro`
@@ -96,4 +99,5 @@ Edit the files in the repo. The TinaCMS editor saves to `src/content/`, but no p
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md): today's site and the approved target architecture
 - [`docs/ROADMAP.md`](docs/ROADMAP.md): plan from today's site to the V3 designs
-- [Issue #74](https://github.com/lanterno/vert-robo-con/issues/74): every implementation issue, by milestone
+- [`docs/issues/`](docs/issues/README.md): the 77 implementation issues, one file each, grouped by milestone
+- [`project/`](project): the 26 V3 design boards the build works from

@@ -29,7 +29,7 @@ One developer builds it, one milestone at a time. Everything the next summit dep
 
 ## Milestones
 
-The milestones ship in this order. Each one is a [GitHub milestone](https://github.com/lanterno/vert-robo-con/milestones) with the same name, and [#74](https://github.com/lanterno/vert-robo-con/issues/74) lists every issue.
+The milestones ship in this order. [`docs/issues/`](issues/README.md) has every issue, grouped by milestone, and [#74](issues/74-plan-from-today-s-site-to-the-v3-designs.md) lists them in build order.
 
 | Milestone | What people get |
 | --- | --- |
@@ -144,11 +144,13 @@ Recordings come first: each session links its video, and speakers' pages show wh
 - [ ] The map snapshot on the dashboard (AdminDashboardV3)
 - [ ] Transcript downloads for recordings (ProgramV3, WatchV3)
 
-## Open decisions
+## Open decisions and checkpoints
 
-- **Privacy (#5):** the legal entity, the legal basis and how long data is kept. It's needed before registration opens, because no form may collect personal data until it's settled.
-- **When registration opens (#3):** the designs show registration opening together with the new site, but on this plan it arrives two milestones later, in M3. At the end of M1, choose between keeping this order, or building registration first and launching it in today's look. The opening date is an admin setting, so either choice is a setting, not a code change.
-- **Old form responses (#72):** what happens to responses collected by the old tools. Decided after the summit.
+Privacy is the only question with no answer yet. The other two are settled, with a date to look at them again.
+
+- **Privacy (#5), open:** the legal entity, the legal basis and how long data is kept. It's needed before registration opens, because no form may collect personal data until it's settled.
+- **When registration opens (#3), checkpoint at the end of M1:** Dec 7 for registration and Dec 8 for the startup pitch call. The designs show registration opening together with the new site, while on this plan it arrives two milestones later, in M3. If registration isn't ready by then, the fallback is to launch the site on Dec 7 and open both on Jan 11. The dates are admin settings, so either way it is a setting, not a code change.
+- **Old form responses (#72), after the summit:** what happens to responses collected by the old tools.
 
 ## Decisions made
 
@@ -173,7 +175,7 @@ This section is for whoever picks up the build, whether a person or an agent.
 
 ### Where things are decided
 
-- **The issue says what to build.** Each one lists its routes, its design boards, a checklist, and what it depends on. Smaller work with no issue is listed under its milestone as "Tracked here", and its line in "The designs, stage by stage" is its spec.
+- **The issue says what to build.** Each one lists its routes, its design boards, a checklist, and what it depends on. They are in [`docs/issues/`](issues/README.md), one file each; `#N` anywhere in these docs means the file there that starts with that number. Smaller work with no issue is listed under its milestone as "Tracked here", and its line in "The designs, stage by stage" is its spec.
 - **[`ARCHITECTURE.md`](../ARCHITECTURE.md) says how.** Where a design board disagrees with it, the architecture wins.
 - **The design canvas shows the look, the copy and every state.** Build only the parts the issue asks for, not everything on the board.
 - **This file says the order**, and which parts of each board belong to which milestone ("The designs, stage by stage" below).
@@ -195,13 +197,15 @@ M2 starts with #10 (server mode) and #11 (the database), and the rest follow the
 - **Later parts wait.** Parts from later milestones show their state, such as "Coming soon", and never link to a form or file outside the site.
 - **Some things stay out.** Don't build anything under "Not planned" or "Taken out of the designs".
 - **Every page** works on a phone, passes the accessibility and link checks (#76), and uses synthetic data only.
-- **When it's done,** close the issue from the pull request and tick it in #74. For work tracked here, tick its box in this file in the same pull request.
+- **When it's done,** tick the issue's checklist in its file under [`docs/issues/`](issues/README.md), set its state to closed, and tick it in #74. For work tracked here, tick its box in this file. All of it goes in the same commit as the work.
 - **Commits** have one goal each. Tests go in their own commit, right after the code they cover. Frontend and backend changes never share a commit. Messages follow the existing style, `type(scope): Sentence`, for example `docs: Rewrite the roadmap for one developer`.
 
 ### Reading the designs
 
-- **Where the canvas is:** it's at <https://claude.ai/artifact/QAypGFVvBEvBA8EhqBXGTx>, and only its owner can open it, so ask for access. It has two pages: "V3 · Built-in" for the public site and My VRC, and "V3 · Backoffice" for the admin.
-- **The files:** each board is one file, `project/<Board>.dc.html`. Read the whole file. Boards run to 700–1,100 lines, mostly inline styles, and the details are spread throughout.
+- **The boards are in the repo,** under [`project/`](../project), one file per board: `project/<Board>.dc.html`. Read the whole file. Boards run to 700–1,100 lines, mostly inline styles, and the details are spread throughout. Nothing has to be fetched to build a page.
+- **[`project/canvas.json`](../project/canvas.json)** is the board index: every board's file name, its title, its size, and which of the two canvas pages it belongs to — `v3` for the public site and My VRC, `admin` for the admin.
+- **The canvas** is at <https://claude.ai/artifact/QAypGFVvBEvBA8EhqBXGTx>, and is public. It is the nicer way to look at a board, but `project/` is the copy that is built from. If the two disagree, re-export the board rather than building from the canvas.
+- **The boards load fonts from Google** and expect a `support.js` that only the canvas provides. Both are canvas scaffolding, not the spec: #24 self-hosts the fonts, and the site ships no third-party font requests.
 - **The canvas-control bar:** the grey "Canvas control" bar at the top of a board is not part of the page. It switches between the states the page has to handle, such as opens soon, open, closed, errors and empty. Each one is a state to build and test.
 - **Phone layouts:** PhoneV3 shows the phone layout. Every other page follows the same patterns at phone width.
 - **Copy and placeholders:** the copy ships as it is (#7). Text in `[BRACKETS]` is a placeholder. Fill it from the synthetic data (#26), or leave it as a placeholder; never invent real-looking facts.

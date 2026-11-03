@@ -4,7 +4,7 @@
 
 ---
 
-> **Approved for now (Oct 29).** Since then: the email provider is server configuration chosen at server setup (#15, #18), analytics is Cloudflare Web Analytics (#8, #38), and the map keeps a hosted tile service until the site runs on our server (#77). The current description is [`ARCHITECTURE.md`](https://github.com/lanterno/vert-robo-con/blob/main/ARCHITECTURE.md).
+> **Approved for now (Oct 29).** Since then: the email provider is server configuration chosen at server setup (#15, #18), analytics is Cloudflare Web Analytics (#8, #38), and the map keeps a hosted tile service until the site runs on our server (#77). The current description is [`ARCHITECTURE.md`](../../ARCHITECTURE.md).
 
 Rethought from scratch on Oct 27, 2026. This replaces both the Payload plan in `docs/ROADMAP.md` and the Django proposal. Every other issue in this repo assumes it.
 

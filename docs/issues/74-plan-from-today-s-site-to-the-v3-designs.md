@@ -4,7 +4,7 @@
 
 ---
 
-The work to take the site from today's static Astro build to the V3 designs. The architecture is in #1 and [`ARCHITECTURE.md`](https://github.com/lanterno/vert-robo-con/blob/main/ARCHITECTURE.md), and the plan is in [`docs/ROADMAP.md`](https://github.com/lanterno/vert-robo-con/blob/main/docs/ROADMAP.md). One developer builds it, one milestone at a time (#2).
+The work to take the site from today's static Astro build to the V3 designs. The architecture is in #1 and [`ARCHITECTURE.md`](../../ARCHITECTURE.md), and the plan is in [`docs/ROADMAP.md`](../ROADMAP.md). One developer builds it, one milestone at a time (#2).
 
 How the issues are written:
 - Each issue names the boards it implements, from the "Vert Robo Con redesign" canvas.

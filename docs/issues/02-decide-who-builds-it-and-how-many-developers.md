@@ -4,7 +4,7 @@
 
 ---
 
-> **Decided Oct 29:** one developer, the repo owner. On Oct 30 the milestones were re-planned for one developer, in order: the public site without a database (M1), the foundations (M2), then registration (M3). See [`docs/ROADMAP.md`](https://github.com/lanterno/vert-robo-con/blob/main/docs/ROADMAP.md).
+> **Decided Oct 29:** one developer, the repo owner. On Oct 30 the milestones were re-planned for one developer, in order: the public site without a database (M1), the foundations (M2), then registration (M3). See [`docs/ROADMAP.md`](../ROADMAP.md).
 
 Every date in the milestones assumes **two developers from Nov 2**: one mostly frontend (M2 public pages), one mostly backend (M1 foundations), both on M3 registration.
 

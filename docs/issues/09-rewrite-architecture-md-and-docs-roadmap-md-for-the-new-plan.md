@@ -9,7 +9,7 @@ Both files described the Payload, listmonk and authentik plan. On Oct 30 they we
 ## Done when
 
 - [x] `ARCHITECTURE.md` describes the one-app shape, its processes, data flow and trust boundaries
-- [x] `docs/ROADMAP.md` gives the milestones, gates and dates, and links to the milestones on GitHub
+- [x] `docs/ROADMAP.md` gives the milestones, gates and dates, and links to the issues in `docs/issues/`
 - [ ] `README.md` explains local setup with Docker Compose and the seeded database
 
 ---
