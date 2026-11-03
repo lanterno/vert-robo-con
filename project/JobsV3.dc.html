@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Jobs and internships (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+.flink{color:#0A1222;text-decoration:none}
+.flink:hover{color:#0138AC;text-decoration:underline}
+.mi:hover{background:#F3F4F2}
+.stretch::after{content:"";position:absolute;inset:0;border-radius:16px}
+.jc:hover .jt{color:#0138AC}
+.s7{grid-column:span 7}.s5{grid-column:span 5}
+@media (max-width: 960px){.grid12>*{grid-column:1/-1 !important}.tgrid>*{grid-column:1/-1 !important}.stick{position:static !important}}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+</style>
+</helmet>
+<div style="position: relative; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EAEC; border-bottom: 1px solid #D5D8DE; padding: 8px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">VIEW</span>
+<div role="group" aria-label="Canvas view" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 10px; background: #D9DBDF">
+<sc-for list="{{viewOpts}}" as="o" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" aria-current="{{i.current}}" onClick="{{closeMenu}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</header>
+
+<main>
+<!-- TITLE -->
+<section style="padding: 56px 32px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 32px 64px">
+<div style="flex: 1.4 1 560px; display: flex; flex-direction: column; gap: 20px">
+<nav aria-label="Breadcrumb" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><span>COMMUNITY</span> / <span aria-current="page" style="color: #0A1222">{{crumb}}</span></nav>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 88px; line-height: 0.92; letter-spacing: -0.045em">Jobs building <span style="color: #0138AC">robots for a cooler planet</span></h1>
+<p style="margin: 0; max-width: 620px; font-size: 20px; line-height: 1.5; color: #3D4556">Roles at organizations on our map, shared by the community and reviewed by an admin before they go live.</p>
+</div>
+<div style="flex: 0 1 460px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px">
+<sc-if value="{{n.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{n.open}}" aria-expanded="false" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>Get new jobs by email</button>
+</sc-if>
+<button type="button" onClick="{{openPost}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>Post a job</button>
+</div>
+
+<!-- notify-me: expanded -->
+<sc-if value="{{n.isOpen}}" hint-placeholder-val="{{ false }}">
+<div style="width: 100%; max-width: 460px; box-sizing: border-box; border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #ffffff">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">JOB ALERTS FOR</span>
+<button type="button" aria-label="Close job alerts" onClick="{{n.cancel}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</span>
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2; letter-spacing: -0.02em">{{n.summary}}</strong>
+<span style="font-size: 13px; color: #646B7A">Saved from the filters you have set now. Change them from any alert email.</span>
+<div style="display: flex; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email
+<input type="email" autocomplete="email" value="{{n.email}}" onChange="{{n.setEmail}}" placeholder="name@example.org" aria-invalid="{{n.inv}}" style="{{n.inputStyle}}">
+</label>
+<button type="button" onClick="{{n.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{n.err}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address like name@example.org</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{nTopics}}" as="t" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">One email to confirm, then only the topics you pick. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{n.pending}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>CHECK YOUR INBOX TO CONFIRM</span>
+<button type="button" onClick="{{n.confirm}}" style="min-height: 32px; padding: 0 12px; border: 1px dashed #A7ADB8; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; cursor: pointer">SIMULATE: CONFIRM EMAIL (CANVAS ONLY)</button>
+</div>
+</sc-if>
+<sc-if value="{{n.subscribed}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; font-size: 15px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST · {{n.summaryUpper}}</span>
+<a href="MyVRCV3.dc.html" style="font-weight: 500">Manage</a></span>
+</sc-if>
+</div>
+</div>
+
+<div role="tablist" aria-label="Jobs and internships" style="align-self: flex-start; display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: #F3F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2">
+<button type="button" role="tab" aria-selected="{{t.selected}}" aria-controls="{{t.panel}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{t.count}}</span></button>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- ================= JOBS TAB ================= -->
+<sc-if value="{{isJobs}}" hint-placeholder-val="{{ true }}">
+<div id="panel-jobs" role="tabpanel" aria-label="Jobs">
+<!-- filters -->
+<section aria-label="Filter jobs" style="border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB; padding: 20px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px">
+<div role="group" aria-labelledby="f-role" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span id="f-role" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A; margin-right: 4px">ROLE</span>
+<sc-for list="{{roleOpts}}" as="r" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{r.pressed}}" onClick="{{r.pick}}" style="{{r.style}}">{{r.label}}</button>
+</sc-for>
+</div>
+<div role="group" aria-labelledby="f-dom" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span id="f-dom" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A; margin-right: 4px">DOMAIN</span>
+<sc-for list="{{domOpts}}" as="d" hint-placeholder-count="4">
+<button type="button" aria-pressed="{{d.pressed}}" onClick="{{d.pick}}" style="{{d.style}}"><span aria-hidden="true" style="{{d.dot}}"></span>{{d.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<label style="position: relative; flex: 0 1 240px; min-width: 200px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Location</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 14px; pointer-events: none"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+<select value="{{loc}}" onChange="{{onLoc}}" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 15px; background: #ffffff; color: #0A1222">
+<option value="">All locations</option>
+<option value="remote">Remote</option>
+<option value="fr">France</option>
+<option value="de">Germany</option>
+<option value="nl">Netherlands</option>
+<option value="uk">United Kingdom</option>
+<option value="us">United States</option>
+</select>
+</label>
+<label style="position: relative; flex: 0 1 340px; min-width: 220px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search jobs</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Search role, place or robot type" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 15px; background: #ffffff">
+</label>
+<sc-if value="{{anyFilter}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{clearFilters}}" style="min-height: 44px; padding: 0 8px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Clear filters</button>
+</sc-if>
+<span role="status" style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{countLabel}}</span>
+</div>
+</div>
+</section>
+
+<!-- list + detail -->
+<section style="padding: 32px 32px 96px">
+<div style="max-width: 1280px; margin: 0 auto">
+<sc-if value="{{hasJobs}}" hint-placeholder-val="{{ true }}">
+<div class="grid12" style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px; align-items: start">
+<div class="s7" style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+<ul aria-label="Job listings" style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{jobs}}" as="j" hint-placeholder-count="6">
+<li class="jc" style="{{j.card}}">
+<button type="button" class="stretch" onClick="{{j.pick}}" aria-current="{{j.current}}" style="padding: 0; border: 0; background: transparent; font: inherit; color: #0A1222; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="{{j.roleChip.style}}"><span aria-hidden="true" style="{{j.roleChip.dot}}"></span>{{j.roleChip.label}}</span>
+<sc-if value="{{j.closing}}" hint-placeholder-val="{{ false }}"><span style="{{j.closeChip.style}}"><span aria-hidden="true" style="{{j.closeChip.dot}}"></span>{{j.closeChip.label}}</span></sc-if>
+</span>
+<span class="jt" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">[JOB TITLE]</span>
+</button>
+<a href="MapV3.dc.html" style="position: relative; z-index: 1; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; color: #0A1222; text-decoration: none"><span aria-hidden="true" style="{{j.dot}}"></span>[EMPLOYER]<span style="font-weight: 400; color: #646B7A">· {{j.typeLabel}} · on the map</span></a>
+<span style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{j.meta}}</span>
+<sc-if value="{{j.salary}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; font-weight: 500; color: #0A1222">[SALARY RANGE]</span></sc-if>
+</span>
+</li>
+</sc-for>
+</ul>
+<p style="margin: 8px 0 0; padding: 16px 20px; border-radius: 16px; background: #F3F4F2; font-size: 15px; color: #3D4556">Members also share roles in Slack #jobs. An admin approves each Slack request, usually within 24–48 hours: <a href="HomeV3.dc.html#join" style="font-weight: 500">join the network →</a></p>
+</div>
+
+<!-- detail -->
+<aside class="s5 stick" aria-label="Job details" style="position: sticky; top: 96px; border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 20px; min-width: 0">
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="{{det.roleChip.style}}"><span aria-hidden="true" style="{{det.roleChip.dot}}"></span>{{det.roleChip.label}}</span>
+<sc-if value="{{det.closing}}" hint-placeholder-val="{{ false }}"><span style="{{det.closeChip.style}}"><span aria-hidden="true" style="{{det.closeChip.dot}}"></span>{{det.closeChip.label}}</span></sc-if>
+</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.02em">[JOB TITLE]</h2>
+<div style="display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 16px; background: #F3F4F2">
+<span aria-hidden="true" style="width: 44px; height: 44px; flex: 0 0 auto; border-radius: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center"><span style="{{det.bigDot}}"></span></span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; line-height: 1.35; min-width: 0">
+<strong style="font-weight: 600; font-size: 16px">[EMPLOYER]</strong>
+<span style="font-size: 14px; color: #646B7A">{{det.typeLabel}} · listed on the global map</span>
+</span>
+<a href="MapV3.dc.html" style="flex: 0 0 auto; font-size: 14px; font-weight: 500; text-decoration: none">See on the map →</a>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #E5E7EB; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden">
+<sc-for list="{{det.facts}}" as="f" hint-placeholder-count="4">
+<div style="background: #ffffff; padding: 14px 16px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="margin: 2px 0 0; font-size: 15px; font-weight: 600">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">ABOUT THE ROLE</span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">[JOB DESCRIPTION]</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="#" style="flex: 1 1 220px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Apply on employer site
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">(opens the employer’s site)</span></a>
+<button type="button" onClick="{{share}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v12M7 8l5-5 5 5"></path></svg>Share</button>
+</div>
+<sc-if value="{{shared}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #0B7A47"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>Link copied</span>
+</sc-if>
+<span style="padding-top: 16px; border-top: 1px solid #E5E7EB; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><span>EXPIRES [DATE]</span><span>REVIEWED BY AN ADMIN</span></span>
+</aside>
+</div>
+</sc-if>
+
+<!-- empty state -->
+<sc-if value="{{noJobs}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px dashed #D5D8DE; border-radius: 24px; padding: 64px 32px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #F3F4F2; color: #646B7A; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5M8 11h6"></path></svg></span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em">No jobs match these filters</h2>
+<p style="margin: 0; max-width: 480px; font-size: 16px; color: #3D4556">Nothing for <strong style="font-weight: 600; color: #0A1222">{{n.summary}}</strong> right now. Clear the filters, or get an email when a role like this is posted.</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px">
+<button type="button" onClick="{{clearFilters}}" style="min-height: 48px; padding: 0 20px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Clear filters</button>
+<sc-if value="{{e.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{e.open}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>Get alerted when one does</button>
+</sc-if>
+</div>
+<sc-if value="{{e.isOpen}}" hint-placeholder-val="{{ false }}">
+<div style="width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 8px; text-align: left">
+<span style="display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em">JOB ALERTS · FILTERS SAVED</span>
+<div style="display: flex; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email
+<input type="email" autocomplete="email" value="{{e.email}}" onChange="{{e.setEmail}}" placeholder="name@example.org" aria-invalid="{{e.inv}}" style="{{e.inputStyle}}">
+</label>
+<button type="button" onClick="{{e.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{e.err}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address like name@example.org</span></sc-if>
+<span style="font-size: 13px; color: #646B7A">One email to confirm. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{e.pending}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>CHECK YOUR INBOX TO CONFIRM</span>
+<button type="button" onClick="{{e.confirm}}" style="min-height: 32px; padding: 0 12px; border: 1px dashed #A7ADB8; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; cursor: pointer">SIMULATE: CONFIRM EMAIL (CANVAS ONLY)</button>
+</div>
+</sc-if>
+<sc-if value="{{e.subscribed}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a href="MyVRCV3.dc.html" style="font-weight: 500">Manage</a></span>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</section>
+</div>
+</sc-if>
+
+<!-- ================= INTERNSHIPS TAB ================= -->
+<sc-if value="{{isIntern}}" hint-placeholder-val="{{ false }}">
+<section id="panel-intern" role="tabpanel" aria-label="Internships" style="border-top: 1px solid #E5E7EB; padding: 48px 32px 96px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 720px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">INTERNSHIPS · 4 TRACKS · REMOTE</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Work with the network</h2>
+<p style="margin: 0; font-size: 18px; color: #3D4556">Short remote placements for anyone studying or starting out. Tell us what you want to learn. Each track shows its own status, so you can see what’s open today.</p>
+</div>
+<span style="font-size: 16px; color: #3D4556">Questions about internships? <a href="mailto:hello@vert-robo-con.example" style="font-weight: 500; text-decoration: none">hello@vert-robo-con.example</a></span>
+</div>
+
+<div class="tgrid" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{tracks}}" as="t" hint-placeholder-count="4">
+<article class="lift" style="{{t.card}}">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{t.n}} · TRACK</span>
+<span style="{{t.chip.style}}"><span aria-hidden="true" style="{{t.chip.dot}}"></span>{{t.chip.label}}</span>
+</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">{{t.name}}</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{t.desc}}</p>
+<sc-if value="{{t.hasReq}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 14px; color: #3D4556"><strong style="font-weight: 600; color: #0A1222">You’ll need:</strong> {{t.req}}</p></sc-if>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>6–12 WEEKS · PART TIME · REMOTE</span>
+<div style="margin-top: auto; padding-top: 8px; display: flex; flex-direction: column; gap: 10px">
+<sc-if value="{{t.canApply}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{t.apply}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Apply
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</sc-if>
+<sc-if value="{{t.nIdle}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{t.open}}" aria-expanded="false" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>Notify me when it opens</button>
+</sc-if>
+<sc-if value="{{t.nOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email me when {{t.name}} opens
+<input type="email" autocomplete="email" value="{{t.email}}" onChange="{{t.setEmail}}" placeholder="name@example.org" aria-invalid="{{t.inv}}" style="{{t.inputStyle}}">
+</label>
+<button type="button" onClick="{{t.submit}}" style="min-height: 48px; padding: 0 16px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{t.err}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address like name@example.org</span></sc-if>
+<span style="font-size: 13px; color: #646B7A">One email when it opens. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{t.nPending}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>CHECK YOUR INBOX TO CONFIRM</span>
+<button type="button" onClick="{{t.confirm}}" style="min-height: 32px; padding: 0 12px; border: 1px dashed #A7ADB8; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; cursor: pointer">SIMULATE: CONFIRM EMAIL (CANVAS ONLY)</button>
+</div>
+</sc-if>
+<sc-if value="{{t.nSub}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a href="MyVRCV3.dc.html" style="font-weight: 500">Manage</a></span>
+</sc-if>
+</div>
+</article>
+</sc-for>
+</div>
+
+<div style="border-radius: 24px; background: #F3F4F2; padding: 32px; display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: flex-start">
+<div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">AFTER YOU APPLY</span>
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.15; letter-spacing: -0.02em">Follow every step from one link</strong>
+<span style="font-size: 15px; color: #3D4556">Your receipt email links to <a href="MyVRCV3.dc.html">My VRC</a>, where you can see your status. No account needed.</span>
+</div>
+<ol style="flex: 2 1 560px; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px">
+<sc-for list="{{internSteps}}" as="st" hint-placeholder-count="4">
+<li style="{{st.style}}"><span style="{{st.num}}">{{st.n}}</span><strong style="font-weight: 600; font-size: 15px; line-height: 1.35">{{st.t}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{st.w}}</span></li>
+</sc-for>
+</ol>
+</div>
+</div>
+</section>
+</sc-if>
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px; max-width: 420px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">An open community for the people who build, fund and run robots for a cooler planet.</p>
+<sc-if value="{{f.idle}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 400px">
+<div style="display: flex; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Monthly digest
+<input type="email" autocomplete="email" value="{{f.email}}" onChange="{{f.setEmail}}" placeholder="name@example.org" aria-invalid="{{f.inv}}" style="{{f.inputStyle}}">
+</label>
+<button type="button" onClick="{{f.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Subscribe</button>
+</div>
+<sc-if value="{{f.err}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address like name@example.org</span></sc-if>
+<span style="font-size: 13px; color: #646B7A">One email a month. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{f.pending}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>CHECK YOUR INBOX TO CONFIRM</span>
+<button type="button" onClick="{{f.confirm}}" style="min-height: 32px; padding: 0 12px; border: 1px dashed #A7ADB8; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; cursor: pointer">SIMULATE: CONFIRM EMAIL (CANVAS ONLY)</button>
+</div>
+</sc-if>
+<sc-if value="{{f.subscribed}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a href="MyVRCV3.dc.html" style="font-weight: 500">Manage</a></span>
+</sc-if>
+</div>
+<sc-for list="{{footGroups}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="5"><a class="flink" href="{{l.href}}">{{l.label}}</a></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<div style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="HomeV3.dc.html#join" aria-label="Slack: join the network" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2zM13 3v6h2a2 2 0 0 0 0-4M11 21v-6H9a2 2 0 0 0 0 4"></path></svg></a>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- ================= SIDE SHEET ================= -->
+<sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 30">
+<button type="button" aria-label="Close" onClick="{{closeSheet}}" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: rgba(10,18,34,0.42); cursor: pointer"></button>
+<div role="dialog" aria-modal="true" aria-labelledby="sheet-title" onKeyDown="{{sheetKey}}" style="position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%; box-sizing: border-box; background: #ffffff; padding: 28px 32px 40px; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 24px; overflow-y: auto">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{sheet.kicker}}</span>
+<button type="button" aria-label="Close" onClick="{{closeSheet}}" style="width: 40px; height: 40px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</span>
+<sc-if value="{{sheet.formMode}}" hint-placeholder-val="{{ true }}">
+<h2 id="sheet-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{sheet.title}}</h2>
+<p style="margin: 0; font-size: 15px; color: #3D4556">{{sheet.sub}}</p>
+</sc-if>
+</div>
+
+<!-- error summary (both forms) -->
+<sc-if value="{{errBox.on}}" hint-placeholder-val="{{ false }}">
+<div role="alert" aria-labelledby="err-title" style="padding: 16px 18px; border-radius: 16px; background: #FEF3F2; border: 1px solid #F4C7C3; display: flex; flex-direction: column; gap: 8px">
+<h3 id="err-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.02em; color: #B42318">{{errBox.title}}</h3>
+<ul style="margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 2px; color: #B42318">
+<sc-for list="{{errBox.list}}" as="x" hint-placeholder-count="2">
+<li><a href="{{x.href}}" style="color: #B42318; font-size: 15px; font-weight: 500">{{x.msg}}</a></li>
+</sc-for>
+</ul>
+</div>
+</sc-if>
+
+<!-- POST A JOB FORM -->
+<sc-if value="{{showPostForm}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+
+<!-- employer combobox -->
+<div id="pj-f-emp" style="display: flex; flex-direction: column; gap: 6px">
+<label for="pj-emp" style="font-size: 15px; font-weight: 500">Employer</label>
+<sc-if value="{{emp.hasSel}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 6px 0 14px; border: 1px solid #D5D8DE; border-radius: 12px">
+<span aria-hidden="true" style="{{emp.dot}}"></span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; line-height: 1.3; min-width: 0"><strong style="font-weight: 600; font-size: 16px">{{emp.name}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{emp.meta}}</span></span>
+<button type="button" onClick="{{emp.change}}" style="min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; background: #F3F4F2; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Change</button>
+</div>
+<span style="font-size: 13px; color: #646B7A">Your listing links to this organization’s map card.</span>
+</sc-if>
+<sc-if value="{{emp.searching}}" hint-placeholder-val="{{ true }}">
+<div style="position: relative">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 16px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="pj-emp" type="text" role="combobox" aria-autocomplete="list" aria-controls="pj-emp-list" aria-expanded="{{emp.expanded}}" aria-invalid="{{pe.emp.inv}}" value="{{emp.q}}" onChange="{{emp.onQ}}" onClick="{{emp.openList}}" placeholder="Search organizations on the map" style="{{emp.style}}">
+<sc-if value="{{emp.listOpen}}" hint-placeholder-val="{{ false }}">
+<ul id="pj-emp-list" role="listbox" aria-label="Organizations on the map" style="position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 5; margin: 0; padding: 6px; list-style: none; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); max-height: 320px; overflow-y: auto">
+<sc-for list="{{emp.opts}}" as="o" hint-placeholder-count="4">
+<li role="option" aria-selected="false"><button type="button" class="mi" onClick="{{o.pick}}" style="width: 100%; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer"><span aria-hidden="true" style="{{o.dot}}"></span><span style="flex: 1 1 auto">{{o.name}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{o.meta}}</span></button></li>
+</sc-for>
+<sc-if value="{{emp.noMatch}}" hint-placeholder-val="{{ false }}"><li style="padding: 10px; font-size: 14px; color: #646B7A">No organization on the map matches “{{emp.q}}”.</li></sc-if>
+<li role="option" aria-selected="false" style="border-top: 1px solid #E5E7EB; margin-top: 4px; padding-top: 4px"><button type="button" class="mi" onClick="{{emp.addNew}}" style="width: 100%; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: #0138AC; text-align: left; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>{{emp.newLabel}}</button></li>
+</ul>
+</sc-if>
+</div>
+<span style="font-size: 13px; color: #646B7A">Pick from the 120 organizations on the map, or add a new one.</span>
+</sc-if>
+<sc-if value="{{emp.isNew}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 16px; background: #F3F4F2">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">NEW ORGANIZATION</span><button type="button" onClick="{{emp.change}}" style="min-height: 32px; padding: 0 4px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Search the map instead</button></span>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Organization name
+<input id="pj-emp" type="text" autocomplete="organization" value="{{emp.newName}}" onChange="{{pf.newName}}" aria-invalid="{{pe.emp.inv}}" style="{{pe.emp.st}}"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Website <span style="font-weight: 400; color: #646B7A">(optional)</span>
+<input type="url" value="{{emp.site}}" onChange="{{pf.site}}" placeholder="https://" style="{{inpOk}}"></label>
+<span style="font-size: 13px; color: #646B7A">We’ll also suggest it for the map. An admin reviews it before it appears there.</span>
+</div>
+</sc-if>
+<sc-if value="{{pe.emp.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.emp.msg}}</span></sc-if>
+</div>
+
+<div id="pj-f-title" style="display: flex; flex-direction: column; gap: 6px">
+<label for="pj-title" style="font-size: 15px; font-weight: 500">Job title</label>
+<input id="pj-title" type="text" maxlength="80" value="{{p.title}}" onChange="{{pf.title}}" aria-invalid="{{pe.title.inv}}" style="{{pe.title.st}}">
+<span style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span>Use the title from your own posting.</span><span style="font-family: 'Geist Mono', monospace">{{p.titleCount}}</span></span>
+<sc-if value="{{pe.title.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.title.msg}}</span></sc-if>
+</div>
+
+<div id="pj-f-role" style="display: flex; flex-direction: column; gap: 6px">
+<label for="pj-role" style="font-size: 15px; font-weight: 500">Role type</label>
+<select id="pj-role" value="{{p.role}}" onChange="{{pf.role}}" aria-invalid="{{pe.role.inv}}" style="{{pe.role.st}}">
+<option value="">Choose a role type</option>
+<option value="Engineering">Engineering</option>
+<option value="Research">Research</option>
+<option value="Operations">Operations</option>
+<option value="Business">Business</option>
+<option value="Internship">Internship</option>
+</select>
+<sc-if value="{{pe.role.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.role.msg}}</span></sc-if>
+</div>
+
+<div id="pj-f-loc" style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<label for="pj-loc" style="font-size: 15px; font-weight: 500">Location</label>
+<button type="button" role="switch" aria-checked="{{remote.checked}}" onClick="{{remote.toggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 4px; border: 0; background: transparent; font: inherit; font-size: 15px; color: #0A1222; cursor: pointer">
+<span aria-hidden="true" style="{{remote.track}}"><span style="{{remote.knob}}"></span></span>Remote</button>
+</span>
+<sc-if value="{{remote.off}}" hint-placeholder-val="{{ true }}">
+<input id="pj-loc" type="text" value="{{p.loc}}" onChange="{{pf.loc}}" placeholder="City, country" aria-invalid="{{pe.loc.inv}}" style="{{pe.loc.st}}">
+</sc-if>
+<sc-if value="{{remote.on}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 12px; background: #F3F4F2; font-size: 15px; color: #3D4556">Listed as Remote. Add time zones in the description if they matter.</span>
+</sc-if>
+<sc-if value="{{pe.loc.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.loc.msg}}</span></sc-if>
+</div>
+
+<div id="pj-f-desc" style="display: flex; flex-direction: column; gap: 6px">
+<label for="pj-desc" style="font-size: 15px; font-weight: 500">Description</label>
+<textarea id="pj-desc" rows="8" value="{{p.desc}}" onChange="{{pf.desc}}" aria-invalid="{{pe.desc.inv}}" aria-describedby="pj-desc-help" placeholder="What the role does, who you’re looking for, and how the work helps the climate." style="{{p.descStyle}}"></textarea>
+<span style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span id="pj-desc-help">Plain text. Line breaks and links are kept.</span><span style="{{p.descCountStyle}}">{{p.descCount}}</span></span>
+<sc-if value="{{pe.desc.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.desc.msg}}</span></sc-if>
+</div>
+
+<div id="pj-f-apply" style="display: flex; flex-direction: column; gap: 6px">
+<label for="pj-apply" style="font-size: 15px; font-weight: 500">Apply link or email</label>
+<input id="pj-apply" type="text" value="{{p.apply}}" onChange="{{pf.apply}}" placeholder="https:// or jobs@example.org" aria-invalid="{{pe.apply.inv}}" style="{{pe.apply.st}}">
+<span style="font-size: 13px; color: #646B7A">People apply on your site. We never collect applications for you.</span>
+<sc-if value="{{pe.apply.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.apply.msg}}</span></sc-if>
+</div>
+
+<fieldset id="pj-f-sal" style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<legend style="padding: 0; margin-bottom: 6px; font-size: 15px; font-weight: 500">Salary range <span style="font-weight: 400; color: #646B7A">(optional)</span></legend>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 96px; gap: 8px">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #646B7A">Minimum<input type="text" inputmode="numeric" value="{{p.sMin}}" onChange="{{pf.sMin}}" aria-invalid="{{pe.sal.inv}}" style="{{pe.sal.st}}"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #646B7A">Maximum<input type="text" inputmode="numeric" value="{{p.sMax}}" onChange="{{pf.sMax}}" aria-invalid="{{pe.sal.inv}}" style="{{pe.sal.st}}"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #646B7A">Currency<select value="{{p.cur}}" onChange="{{pf.cur}}" style="{{inpOk}}">
+<option value="EUR">EUR</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option>
+</select></label>
+</div>
+<span style="font-size: 13px; color: #646B7A">Yearly, before tax. Listings with a range get more applicants.</span>
+<sc-if value="{{pe.sal.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.sal.msg}}</span></sc-if>
+</fieldset>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span id="pj-len" style="font-size: 15px; font-weight: 500">Listing length</span>
+<div role="radiogroup" aria-labelledby="pj-len" style="align-self: flex-start; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{lenOpts}}" as="l" hint-placeholder-count="3">
+<button type="button" role="radio" aria-checked="{{l.checked}}" onClick="{{l.pick}}" style="{{l.style}}">{{l.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">You can renew or close it early from the link we email you.</span>
+</div>
+
+<div id="pj-f-email" style="display: flex; flex-direction: column; gap: 6px">
+<label for="pj-email" style="font-size: 15px; font-weight: 500">Your email</label>
+<input id="pj-email" type="email" autocomplete="email" value="{{p.email}}" onChange="{{pf.email}}" aria-invalid="{{pe.email.inv}}" style="{{pe.email.st}}">
+<span style="font-size: 13px; color: #646B7A">We send the edit, renew and close link here. It isn’t shown on the listing.</span>
+<sc-if value="{{pe.email.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.email.msg}}</span></sc-if>
+</div>
+
+<div id="pj-f-consent" style="display: flex; flex-direction: column; gap: 6px">
+<button type="button" role="checkbox" aria-checked="{{pc.checked}}" onClick="{{pc.toggle}}" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer">
+<span style="{{pc.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>I can post this role for this organization, and the details are accurate.</button>
+<sc-if value="{{pe.consent.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{pe.consent.msg}}</span></sc-if>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We use your email only to manage this listing. <a href="PrivacyV3.dc.html" style="font-weight: 500">How we use this →</a></p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 20px; border-top: 1px solid #E5E7EB">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<button type="button" onClick="{{submitPost}}" style="flex: 1 1 auto; display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 52px; padding: 0 24px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 17px; font-weight: 500; cursor: pointer">Submit for review</button>
+<button type="button" onClick="{{closeSheet}}" style="min-height: 52px; padding: 0 12px; border: 0; background: transparent; color: #3D4556; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Cancel</button>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #646B7A">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</div>
+</sc-if>
+
+<!-- INTERNSHIP APPLICATION FORM -->
+<sc-if value="{{showInternForm}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span id="in-track-lbl" style="font-size: 15px; font-weight: 500">Track</span>
+<sc-if value="{{trk.locked}}" hint-placeholder-val="{{ true }}">
+<div role="group" aria-labelledby="in-track-lbl" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 0 6px 0 14px; border-radius: 12px; background: #EEF2FB">
+<span style="display: inline-flex; align-items: center; gap: 8px; color: #0138AC; font-weight: 600; font-size: 16px"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>{{trk.name}}</span>
+<button type="button" onClick="{{trk.unlock}}" style="min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; background: #ffffff; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Change</button>
+</div>
+</sc-if>
+<sc-if value="{{trk.unlocked}}" hint-placeholder-val="{{ false }}">
+<select id="in-track" aria-labelledby="in-track-lbl" value="{{trk.id}}" onChange="{{trk.set}}" style="{{inpOk}}">
+<option value="map">Map data</option>
+<option value="summit">Summit production</option>
+<option value="writing" disabled>Writing &amp; editing (coming soon)</option>
+<option value="own">Your own idea</option>
+</select>
+<span style="font-size: 13px; color: #646B7A">Tracks marked coming soon can’t take applications yet.</span>
+</sc-if>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px">
+<sc-for list="{{iText}}" as="x" hint-placeholder-count="4">
+<div id="{{x.wrapId}}" style="display: flex; flex-direction: column; gap: 6px">
+<label for="{{x.id}}" style="font-size: 15px; font-weight: 500">{{x.label}}</label>
+<input id="{{x.id}}" type="{{x.type}}" autocomplete="{{x.ac}}" value="{{x.value}}" onChange="{{x.on}}" aria-invalid="{{x.inv}}" style="{{x.st}}">
+<sc-if value="{{x.errOn}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{x.msg}}</span></sc-if>
+</div>
+</sc-for>
+</div>
+
+<div id="in-f-tz" style="display: flex; flex-direction: column; gap: 6px">
+<label for="in-tz" style="font-size: 15px; font-weight: 500">Time zone</label>
+<select id="in-tz" value="{{i.tz}}" onChange="{{ifn.tz}}" aria-invalid="{{ie.tz.inv}}" style="{{ie.tz.st}}">
+<option value="">Choose your time zone</option>
+<option value="-8">UTC−08:00 · Pacific</option>
+<option value="-5">UTC−05:00 · Eastern</option>
+<option value="0">UTC±00:00 · London, Lisbon</option>
+<option value="1">UTC+01:00 · Central Europe</option>
+<option value="2">UTC+02:00 · Eastern Europe</option>
+<option value="5.5">UTC+05:30 · India</option>
+<option value="8">UTC+08:00 · Singapore</option>
+<option value="10">UTC+10:00 · Sydney</option>
+</select>
+<sc-if value="{{ie.tz.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{ie.tz.msg}}</span></sc-if>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px">
+<div id="in-f-hours" style="display: flex; flex-direction: column; gap: 6px">
+<label for="in-hours" style="font-size: 15px; font-weight: 500">Hours per week</label>
+<select id="in-hours" value="{{i.hours}}" onChange="{{ifn.hours}}" aria-invalid="{{ie.hours.inv}}" style="{{ie.hours.st}}">
+<option value="">Choose</option>
+<option value="10">Up to 10 (part time)</option>
+<option value="20">10 to 20 (part time)</option>
+<option value="30">20 to 30 (part time)</option>
+<option value="40">Full time</option>
+</select>
+<sc-if value="{{ie.hours.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{ie.hours.msg}}</span></sc-if>
+</div>
+<div id="in-f-start" style="display: flex; flex-direction: column; gap: 6px">
+<label for="in-start" style="font-size: 15px; font-weight: 500">Start window</label>
+<select id="in-start" value="{{i.start}}" onChange="{{ifn.start}}" aria-invalid="{{ie.start.inv}}" style="{{ie.start.st}}">
+<option value="">Choose a month</option>
+<option value="2026-11">November 2026</option>
+<option value="2026-12">December 2026</option>
+<option value="2027-01">January 2027</option>
+<option value="2027-02">February 2027</option>
+<option value="2027-03">March 2027</option>
+<option value="2027-04">April 2027</option>
+</select>
+<sc-if value="{{ie.start.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{ie.start.msg}}</span></sc-if>
+</div>
+</div>
+
+<div id="in-f-why" style="display: flex; flex-direction: column; gap: 6px">
+<label for="in-why" style="font-size: 15px; font-weight: 500">{{trk.whyLabel}}</label>
+<textarea id="in-why" rows="5" value="{{i.why}}" onChange="{{ifn.why}}" aria-invalid="{{ie.why.inv}}" style="{{i.whyStyle}}"></textarea>
+<span style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span>{{trk.whyHelp}}</span><span style="{{i.whyCountStyle}}">{{i.whyCount}}</span></span>
+<sc-if value="{{ie.why.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{ie.why.msg}}</span></sc-if>
+</div>
+
+<div id="in-f-link" style="display: flex; flex-direction: column; gap: 6px">
+<label for="in-link" style="font-size: 15px; font-weight: 500">Portfolio or CV link</label>
+<input id="in-link" type="url" value="{{i.link}}" onChange="{{ifn.link}}" placeholder="https://" aria-invalid="{{ie.link.inv}}" aria-describedby="in-link-help" style="{{ie.link.st}}">
+<span id="in-link-help" style="font-size: 13px; color: #646B7A">{{file.help}}</span>
+<sc-if value="{{ie.link.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{ie.link.msg}}</span></sc-if>
+</div>
+
+<div id="in-f-consent" style="display: flex; flex-direction: column; gap: 6px">
+<button type="button" role="checkbox" aria-checked="{{ic.checked}}" onClick="{{ic.toggle}}" style="display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer">
+<span style="{{ic.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>Vert Robo Con can keep my application to review it and contact me about it.</button>
+<sc-if value="{{ie.consent.on}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">{{ie.consent.msg}}</span></sc-if>
+<p style="margin: 0; font-size: 13px; color: #646B7A">Only the internship team sees it, and you can delete it from your status link. <a href="PrivacyV3.dc.html" style="font-weight: 500">How we use this →</a></p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 20px; border-top: 1px solid #E5E7EB">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<button type="button" onClick="{{submitIntern}}" style="flex: 1 1 auto; display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 52px; padding: 0 24px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 17px; font-weight: 500; cursor: pointer">Send application</button>
+<button type="button" onClick="{{closeSheet}}" style="min-height: 52px; padding: 0 12px; border: 0; background: transparent; color: #3D4556; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Cancel</button>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #646B7A">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</div>
+</sc-if>
+
+<!-- CONFIRMATION (both forms) -->
+<sc-if value="{{showConf}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; color: #0B7A47; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<h2 id="sheet-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.03em">{{conf.title}}</h2>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{conf.sub}}</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #F3F4F2">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">REFERENCE</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 15px; font-weight: 500">{{conf.ref}}</span></span>
+<span style="{{conf.chip.style}}"><span aria-hidden="true" style="{{conf.chip.dot}}"></span>{{conf.chip.label}}</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h3 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</h3>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{conf.steps}}" as="st" hint-placeholder-count="4">
+<li style="{{st.style}}"><span style="{{st.num}}">{{st.n}}</span><strong style="font-weight: 600; font-size: 15px; line-height: 1.35">{{st.t}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{st.w}}</span></li>
+</sc-for>
+</ol>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Track status
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+<button type="button" onClick="{{conf.again}}" style="min-height: 48px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">{{conf.againLabel}}</button>
+</div>
+<p style="margin: 0; padding-top: 20px; border-top: 1px solid #E5E7EB; font-size: 14px; color: #646B7A">We’ve emailed a receipt and a link to manage this to <strong style="font-weight: 600; color: #0A1222">{{conf.email}}</strong>.</p>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2488}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = {
+tab: 'jobs', roles: [], loc: '', domains: [], q: '', sel: 'j1', shared: false, menu: null,
+nState: 'idle', nEmail: '', nErr: false, nTopics: ['jobs'],
+eState: 'idle', eEmail: '', eErr: false,
+fState: 'idle', fEmail: '', fErr: false,
+sheet: null,
+p: this.freshP(), pTried: false, pDone: false,
+track: 'map', trackLocked: true,
+i: this.freshI(), iTried: false, iDone: false,
+tn: {}
+};
+}
+freshP() {
+return { emp: null, empQ: '', empOpen: false, empNew: false, newName: '', site: '', title: '', role: '', remote: false, loc: '', desc: '', apply: '', sMin: '', sMax: '', cur: 'EUR', len: 60, email: '', consent: false };
+}
+freshI() {
+return { name: '', email: '', uni: '', country: '', tz: '', hours: '', start: '', why: '', link: '', file: false, consent: false };
+}
+renderVals() {
+const S = this.state;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const URL_RE = /^https?:\/\/[^\s]+\.[^\s]+$/;
+const TONE = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#A7ADB8'] };
+const chip = (tone, label) => ({ label,
+style: 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: ' + TONE[tone][0] + '; color: ' + TONE[tone][1] + '; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em; white-space: nowrap',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + TONE[tone][2] });
+const dot = (c, s) => 'flex: 0 0 auto; display: inline-block; width: ' + (s || 8) + 'px; height: ' + (s || 8) + 'px; border-radius: 50%; background: ' + c;
+const inp = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; font: inherit; font-size: 16px; background: #ffffff; color: #0A1222';
+const area = (bad) => inp(bad) + '; display: block; min-height: 150px; padding: 12px 14px; resize: vertical; line-height: 1.5';
+const pill = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const seg = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 0; border-radius: 9px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const toggle = (arr, v) => (arr.includes(v) ? arr.filter((x) => x !== v) : arr.concat([v]));
+const box = (on, bad) => 'width: 22px; height: 22px; flex: 0 0 auto; margin-top: 1px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; ' + (on ? 'background: #0138AC; border: 1px solid #0138AC; color: #ffffff' : 'background: #ffffff; border: 1px solid ' + (bad ? '#B42318' : '#A7ADB8') + '; color: transparent');
+const stepStyle = (first) => 'display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 2px solid ' + (first ? '#0138AC' : '#E5E7EB');
+const numStyle = (first) => 'width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 13px; ' + (first ? 'background: #0138AC; color: #ffffff' : 'background: #EEF2FB; color: #0138AC');
+const mkSteps = (arr) => arr.map((x, i) => ({ n: String(i + 1), t: x[0], w: x[1], style: stepStyle(i === 0), num: numStyle(i === 0) }));
+
+// ---------- data ----------
+const DOM = {
+air: { label: 'Air', type: 'Aerial robotics', color: '#6D5BD0' },
+land: { label: 'Land', type: 'Ground robotics', color: '#1F9D5C' },
+sea: { label: 'Sea', type: 'Ocean robotics', color: '#0B6FB8' },
+materials: { label: 'Materials', type: 'Robotic arms', color: '#D9822B' }
+};
+const ROLES = ['Engineering', 'Research', 'Operations', 'Business', 'Internship'];
+const LOCS = { remote: 'Remote', fr: 'France', de: 'Germany', nl: 'Netherlands', uk: 'United Kingdom', us: 'United States' };
+const JOBS = [
+{ id: 'j1', role: 'Engineering', dom: 'sea', loc: 'remote', kind: 'Full-time', salary: true },
+{ id: 'j2', role: 'Research', dom: 'land', loc: 'nl', kind: 'Full-time', salary: false },
+{ id: 'j3', role: 'Operations', dom: 'air', loc: 'de', kind: 'Contract', salary: true },
+{ id: 'j4', role: 'Engineering', dom: 'materials', loc: 'us', kind: 'Full-time', salary: false, closing: true },
+{ id: 'j5', role: 'Business', dom: 'sea', loc: 'uk', kind: 'Part-time', salary: false },
+{ id: 'j6', role: 'Internship', dom: 'land', loc: 'fr', kind: 'Internship', salary: true }
+];
+const OT = { Ocean: '#0B6FB8', Aerial: '#6D5BD0', Ground: '#1F9D5C', Arm: '#D9822B' };
+const ORGS = [
+['Ploverhollow Dynamics', 'Brazil', 'Ocean'], ['Osiercombe Robotics', 'US', 'Ocean'], ['Gorseburrow Instruments', 'UK', 'Ocean'], ['Puffinburrow Robotics', 'Germany', 'Ocean'],
+['Cloverwhistle Dynamics', 'US', 'Ground'], ['Alderfen Autonomy', 'Spain', 'Ground'], ['Brackwick Labs', 'France', 'Ocean'], ['Thistleburrow Field Robotics', 'Australia', 'Aerial'],
+['Sorrelmere Robotics', 'UK', 'Aerial'], ['Loamfield Robotics', 'Norway', 'Aerial'], ['Junipercombe Labs', 'France', 'Aerial'], ['Shoallark Works', 'Germany', 'Ground'],
+['Driftstead Machines', 'Kenya', 'Ground'], ['Tidedale Instruments', 'Japan', 'Arm'], ['Quillhollow Labs', 'US', 'Arm'], ['Fernburrow Machines', 'Netherlands', 'Arm']
+].map(([name, country, type]) => ({ name, country, type, meta: (country + ' · ' + (type === 'Arm' ? 'Robotic arm' : type)).toUpperCase() }));
+const TR = [
+{ id: 'map', n: '01', name: 'Map data', status: 'open', desc: 'Check and update entries on the organization map, and follow up on suggestions from members.', req: 'Care with detail and some spreadsheet experience' },
+{ id: 'summit', n: '02', name: 'Summit production', status: 'open', desc: 'Help run the online summit: speaker briefings, captions, the live stream and cutting recordings afterwards.', req: 'Any event or video work you can show us' },
+{ id: 'writing', n: '03', name: 'Writing & editing', status: 'soon', desc: 'Edit field notes and news posts, and help prepare the next edition of the white paper.', req: 'Writing you can show us' },
+{ id: 'own', n: '04', name: 'Your own idea', status: 'open', desc: 'Tell us what you want to learn and what you would work on. We will say honestly whether we can support it.', req: '' }
+];
+const TRK = {};
+TR.forEach((t) => { TRK[t.id] = t; });
+
+// ---------- notify-me (generic) ----------
+const notify = (k) => {
+const st = S[k + 'State'];
+const email = S[k + 'Email'];
+const err = S[k + 'Err'];
+const set = (o) => { const x = {}; Object.keys(o).forEach((key) => { x[k + key] = o[key]; }); this.setState(x); };
+return { idle: st === 'idle', isOpen: st === 'open', pending: st === 'pending', subscribed: st === 'subscribed',
+email, err, inv: err ? 'true' : 'false', inputStyle: inp(err),
+open: () => set({ State: 'open' }), cancel: () => set({ State: 'idle', Err: false }),
+setEmail: (e) => set({ Email: e.target.value, Err: false }),
+submit: () => (EMAIL_RE.test(email.trim()) ? set({ State: 'pending', Err: false }) : set({ Err: true })),
+confirm: () => set({ State: 'subscribed' }) };
+};
+
+// ---------- jobs ----------
+const q = S.q.trim().toLowerCase();
+const list = JOBS.filter((j) => (!S.roles.length || S.roles.includes(j.role))
+&& (!S.loc || j.loc === S.loc)
+&& (!S.domains.length || S.domains.includes(j.dom))
+&& (!q || [j.role, DOM[j.dom].label, DOM[j.dom].type, LOCS[j.loc], j.kind].join(' ').toLowerCase().includes(q)));
+const selJob = list.find((j) => j.id === S.sel) || list[0];
+const jobs = list.map((j) => {
+const on = selJob && j.id === selJob.id;
+return { closing: !!j.closing, salary: j.salary,
+roleChip: chip('neutral', j.role.toUpperCase()), closeChip: chip('amber', 'CLOSES IN 3 DAYS'),
+dot: dot(DOM[j.dom].color), typeLabel: DOM[j.dom].type,
+meta: (LOCS[j.loc] + ' · ' + j.kind + ' · Posted [N] days ago').toUpperCase(),
+current: on ? 'true' : 'false',
+card: 'position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px 24px; border-radius: 16px; ' + (on ? 'border: 1px solid #0138AC; box-shadow: 0 0 0 1px #0138AC; background: #FAFBFE' : 'border: 1px solid #E5E7EB; background: #ffffff'),
+pick: () => this.setState({ sel: j.id, shared: false }) };
+});
+const det = selJob ? {
+closing: !!selJob.closing, roleChip: chip('neutral', selJob.role.toUpperCase()), closeChip: chip('amber', 'CLOSES IN 3 DAYS'),
+typeLabel: DOM[selJob.dom].type, bigDot: dot(DOM[selJob.dom].color, 14),
+facts: [['LOCATION', LOCS[selJob.loc]], ['TYPE', selJob.kind], ['SALARY', selJob.salary ? '[SALARY RANGE]' : 'Not listed'], ['DOMAIN', DOM[selJob.dom].label]].map(([k, v]) => ({ k, v }))
+} : { closing: false, roleChip: chip('neutral', ''), closeChip: chip('amber', ''), typeLabel: '', bigDot: dot('#A7ADB8', 14), facts: [] };
+
+const roleOpts = ROLES.map((r) => { const on = S.roles.includes(r); return { label: r, pressed: on ? 'true' : 'false', style: pill(on), pick: () => this.setState({ roles: toggle(S.roles, r) }) }; });
+const domOpts = Object.keys(DOM).map((d) => { const on = S.domains.includes(d); return { label: DOM[d].label, pressed: on ? 'true' : 'false', style: pill(on), dot: dot(DOM[d].color), pick: () => this.setState({ domains: toggle(S.domains, d) }) }; });
+const anyFilter = !!(S.roles.length || S.loc || S.domains.length || q);
+const parts = S.roles.concat(S.loc ? [LOCS[S.loc]] : [], S.domains.map((d) => DOM[d].label));
+if (q) parts.push('“' + S.q.trim() + '”');
+const summary = parts.length ? parts.join(' · ') : 'All new jobs';
+
+const n = notify('n');
+n.summary = summary;
+n.summaryUpper = summary.toUpperCase();
+const nTopics = [['jobs', 'Job alerts'], ['digest', 'Monthly digest']].map(([k, label]) => {
+const on = S.nTopics.includes(k);
+return { label, pressed: on ? 'true' : 'false', pick: () => this.setState({ nTopics: toggle(S.nTopics, k) }),
+style: 'display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #EEF2FB; color: #0138AC; border: 1px solid #BFD0F5' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE') };
+});
+
+const tabs = [['jobs', 'Jobs', String(JOBS.length)], ['intern', 'Internships', '4 TRACKS']].map(([k, label, count]) => {
+const on = S.tab === k;
+return { label, count, selected: on ? 'true' : 'false', panel: k === 'jobs' ? 'panel-jobs' : 'panel-intern',
+style: 'min-height: 44px; padding: 0 18px; border: 0; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556'),
+pick: () => this.setState({ tab: k }) };
+});
+
+// ---------- internships ----------
+const tnOf = (id) => S.tn[id] || { st: 'idle', email: '', err: false };
+const setTn = (id, o) => this.setState({ tn: { ...S.tn, [id]: { ...tnOf(id), ...o } } });
+const openIntern = (id) => () => this.setState({ sheet: 'intern', tab: 'intern', track: id, trackLocked: true, i: this.freshI(), iTried: false, iDone: false });
+const tracks = TR.map((t, idx) => {
+const ns = tnOf(t.id);
+const isOpen = t.status === 'open';
+return { n: t.n, name: t.name, desc: t.desc, req: t.req, hasReq: !!t.req,
+chip: isOpen ? chip('blue', 'OPEN') : chip('neutral', t.status === 'later' ? 'COMING LATER' : 'COMING SOON'),
+card: 'grid-column: span 3; border: 1px solid #E5E7EB; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; background: #ffffff',
+canApply: isOpen, apply: openIntern(t.id),
+nIdle: !isOpen && ns.st === 'idle', nOpen: ns.st === 'open', nPending: ns.st === 'pending', nSub: ns.st === 'subscribed',
+email: ns.email, err: ns.err, inv: ns.err ? 'true' : 'false', inputStyle: inp(ns.err),
+open: () => setTn(t.id, { st: 'open' }),
+setEmail: (e) => setTn(t.id, { email: e.target.value, err: false }),
+submit: () => (EMAIL_RE.test(ns.email.trim()) ? setTn(t.id, { st: 'pending', err: false }) : setTn(t.id, { err: true })),
+confirm: () => setTn(t.id, { st: 'subscribed' }) };
+});
+const internSteps = mkSteps([['Received', 'NOW'], ['In review', 'REPLY WITHIN 24–48 HOURS'], ['Interview', 'WITHIN [N] DAYS'], ['Decision', 'WITHIN [N] DAYS']]);
+
+// ---------- post a job ----------
+const P = S.p;
+const setP = (o) => this.setState({ p: { ...P, ...o } });
+const pf = {};
+['newName', 'site', 'title', 'role', 'loc', 'desc', 'apply', 'sMin', 'sMax', 'cur', 'email'].forEach((k) => { pf[k] = (e) => setP({ [k]: e.target.value, empOpen: false }); });
+const selOrg = ORGS.find((o) => o.name === P.emp);
+const pErr = {};
+if (!(selOrg || (P.empNew && P.newName.trim()))) pErr.emp = P.empNew ? 'Enter the organization’s name' : 'Choose an employer from the map, or add a new organization';
+if (!P.title.trim()) pErr.title = 'Enter a job title';
+if (!P.role) pErr.role = 'Choose a role type';
+if (!P.remote && !P.loc.trim()) pErr.loc = 'Enter a location, or switch on Remote';
+if (!P.desc.trim()) pErr.desc = 'Add a description of the role';
+else if (P.desc.length > 2000) pErr.desc = 'Shorten the description to 2,000 characters';
+if (!(URL_RE.test(P.apply.trim()) || EMAIL_RE.test(P.apply.trim()))) pErr.apply = 'Enter an apply link starting with https:// or an email address';
+const mn = parseFloat(P.sMin);
+const mx = parseFloat(P.sMax);
+if ((P.sMin && isNaN(mn)) || (P.sMax && isNaN(mx))) pErr.sal = 'Use numbers only for the salary';
+else if (P.sMin && P.sMax && mn > mx) pErr.sal = 'The minimum is higher than the maximum';
+if (!EMAIL_RE.test(P.email.trim())) pErr.email = 'Enter your email address like name@example.org';
+if (!P.consent) pErr.consent = 'Confirm you can post this role';
+const P_KEYS = ['emp', 'title', 'role', 'loc', 'desc', 'apply', 'sal', 'email', 'consent'];
+const mkE = (errs, tried) => (k) => { const on = tried && !!errs[k]; return { on, inv: on ? 'true' : 'false', msg: errs[k] || '', st: inp(on) }; };
+const pe = {};
+const peF = mkE(pErr, S.pTried);
+P_KEYS.forEach((k) => { pe[k] = peF(k); });
+const eq = P.empQ.trim().toLowerCase();
+const empOpts = ORGS.filter((o) => !eq || (o.name + ' ' + o.country).toLowerCase().includes(eq)).slice(0, 6)
+.map((o) => ({ name: o.name, meta: o.meta, dot: dot(OT[o.type]), pick: () => setP({ emp: o.name, empOpen: false, empNew: false }) }));
+const emp = {
+hasSel: !!selOrg, searching: !selOrg && !P.empNew, isNew: P.empNew,
+name: selOrg ? selOrg.name : '', meta: selOrg ? selOrg.meta : '', dot: dot(selOrg ? OT[selOrg.type] : '#A7ADB8', 10),
+q: P.empQ, newName: P.newName, site: P.site,
+onQ: (e) => setP({ empQ: e.target.value, empOpen: true }),
+openList: () => setP({ empOpen: true }),
+listOpen: P.empOpen, expanded: P.empOpen ? 'true' : 'false',
+opts: empOpts, noMatch: empOpts.length === 0,
+newLabel: eq ? 'Add “' + P.empQ.trim() + '” as a new organization' : 'My organization isn’t on the map',
+addNew: () => setP({ empNew: true, empOpen: false, newName: P.empQ.trim() }),
+change: () => setP({ emp: null, empNew: false, empQ: '', empOpen: true }),
+style: inp(pe.emp.on) + '; padding-left: 40px'
+};
+const remote = { on: P.remote, off: !P.remote, checked: P.remote ? 'true' : 'false',
+toggle: () => setP({ remote: !P.remote, empOpen: false }),
+track: 'position: relative; width: 34px; height: 20px; border-radius: 999px; background: ' + (P.remote ? '#0138AC' : '#C9CDD5') + '; display: inline-block',
+knob: 'position: absolute; top: 2px; left: ' + (P.remote ? '16px' : '2px') + '; width: 16px; height: 16px; border-radius: 50%; background: #ffffff' };
+const lenOpts = [30, 60, 90].map((d) => { const on = P.len === d; return { label: d + ' days', checked: on ? 'true' : 'false', style: seg(on), pick: () => setP({ len: d, empOpen: false }) }; });
+const pc = { checked: P.consent ? 'true' : 'false', toggle: () => setP({ consent: !P.consent, empOpen: false }), box: box(P.consent, pe.consent.on) };
+const overDesc = P.desc.length > 2000;
+const p = { ...P, titleCount: P.title.length + ' / 80',
+descStyle: area(pe.desc.on || overDesc), descCount: P.desc.length.toLocaleString('en-US') + ' / 2,000',
+descCountStyle: MONO + (overDesc ? 'color: #B42318' : 'color: #646B7A') };
+const submitPost = () => (Object.keys(pErr).length ? this.setState({ pTried: true, p: { ...P, empOpen: false } }) : this.setState({ pDone: true, pTried: false }));
+
+// ---------- internship application ----------
+const I = S.i;
+const setI = (o) => this.setState({ i: { ...I, ...o } });
+const ifn = {};
+['name', 'email', 'uni', 'country', 'tz', 'hours', 'start', 'why', 'link'].forEach((k) => { ifn[k] = (e) => setI({ [k]: e.target.value }); });
+const iErr = {};
+if (!I.name.trim()) iErr.name = 'Enter your name';
+if (!EMAIL_RE.test(I.email.trim())) iErr.email = 'Enter an email address like name@example.org';
+if (!I.uni.trim()) iErr.uni = 'Enter your school, university or program';
+if (!I.country.trim()) iErr.country = 'Enter the country you live in';
+if (!I.tz) iErr.tz = 'Choose your time zone';
+if (!I.hours) iErr.hours = 'Choose how many hours a week you can give';
+if (!I.start) iErr.start = 'Choose when you could start';
+if (!I.why.trim()) iErr.why = S.track === 'own' ? 'Describe your project idea' : 'Tell us why you chose this track';
+else if (I.why.length > 500) iErr.why = 'Shorten this to 500 characters';
+if (!URL_RE.test(I.link.trim())) iErr.link = 'Add a link starting with https://';
+if (!I.consent) iErr.consent = 'Agree so we can review your application';
+const I_KEYS = ['name', 'email', 'uni', 'country', 'tz', 'hours', 'start', 'why', 'link', 'consent'];
+const ie = {};
+const ieF = mkE(iErr, S.iTried);
+I_KEYS.forEach((k) => { ie[k] = ieF(k); });
+const iText = [['name', 'Full name', 'text', 'name'], ['email', 'Email', 'email', 'email'], ['uni', 'School, university or program', 'text', 'organization'], ['country', 'Country', 'text', 'country-name']]
+.map(([k, label, type, ac]) => ({ id: 'in-' + k, wrapId: 'in-f-' + k, label, type, ac, value: I[k], on: ifn[k], inv: ie[k].inv, st: ie[k].st, errOn: ie[k].on, msg: ie[k].msg }));
+const overWhy = I.why.length > 500;
+const i = { ...I, whyStyle: area(ie.why.on || overWhy), whyCount: I.why.length + ' / 500', whyCountStyle: MONO + (overWhy ? 'color: #B42318' : 'color: #646B7A') };
+const cur = TRK[S.track];
+const trk = { id: S.track, name: cur.name + ' track', locked: S.trackLocked, unlocked: !S.trackLocked,
+unlock: () => this.setState({ trackLocked: false }),
+set: (e) => this.setState({ track: e.target.value }),
+whyLabel: S.track === 'own' ? 'Your project idea' : 'Why this track',
+whyHelp: S.track === 'own' ? 'What you would do, and what you need from us.' : 'What draws you to it, and what you would bring.' };
+const file = { none: !I.file, has: I.file, toggle: () => setI({ file: !I.file }),
+help: 'A shared drive file, personal site or LinkedIn profile.' };
+const ic = { checked: I.consent ? 'true' : 'false', toggle: () => setI({ consent: !I.consent }), box: box(I.consent, ie.consent.on) };
+const submitIntern = () => (Object.keys(iErr).length ? this.setState({ iTried: true }) : this.setState({ iDone: true, iTried: false }));
+
+// ---------- sheet ----------
+const isPost = S.sheet === 'post';
+const isIntern = S.sheet === 'intern';
+const done = (isPost && S.pDone) || (isIntern && S.iDone);
+const errs = isPost ? pErr : iErr;
+const keys = isPost ? P_KEYS : I_KEYS;
+const tried = isPost ? S.pTried : S.iTried;
+const errList = (tried && !done) ? keys.filter((k) => errs[k]).map((k) => ({ msg: errs[k], href: '#' + (isPost ? 'pj-f-' : 'in-f-') + k })) : [];
+const errBox = { on: errList.length > 0, list: errList, title: errList.length === 1 ? 'Fix 1 thing to continue' : 'Fix ' + errList.length + ' things to continue' };
+const sheet = isPost
+? { kicker: done ? 'POST A JOB · SUBMITTED' : 'POST A JOB · REVIEWED BY AN ADMIN', title: 'Post a job', sub: 'An admin reviews every listing before it goes live. It then stays up for the length you choose.', formMode: !done }
+: { kicker: done ? 'INTERNSHIP · SUBMITTED' : 'INTERNSHIP APPLICATION', title: 'Apply for an internship', sub: 'About five minutes. Every field is required unless it says optional.', formMode: !done };
+const first = I.name.trim().split(' ')[0];
+const conf = isPost
+? { title: 'Thanks, we’ve got it', sub: 'An admin reviews it before it goes live, usually within 24–48 hours. We’ll email you a link to edit, renew or close the listing.', ref: 'JOB-0219', chip: chip('neutral', 'IN REVIEW'),
+steps: mkSteps([['Received', 'NOW'], ['Admin review', 'USUALLY 24–48 HOURS'], ['Live on the board', 'FOR ' + P.len + ' DAYS'], ['Renew or close', 'FROM YOUR EMAIL LINK']]),
+email: P.email.trim() || '[EMAIL]', againLabel: 'Post another job',
+again: () => this.setState({ p: this.freshP(), pTried: false, pDone: false }) }
+: { title: first ? 'Thanks, ' + first + ', we’ve got it' : 'Thanks, we’ve got it', sub: 'Your application for the ' + cur.name + ' track is in. Follow it from the link in your email.', ref: 'INT-0088', chip: chip('neutral', 'IN REVIEW'),
+steps: mkSteps([['Received', 'NOW'], ['In review', 'REPLY WITHIN 24–48 HOURS'], ['Interview', 'WITHIN [N] DAYS'], ['Decision', 'WITHIN [N] DAYS']]),
+email: I.email.trim() || '[EMAIL]', againLabel: 'Back to internships',
+again: () => this.setState({ sheet: null, tab: 'intern' }) };
+const openPost = () => this.setState({ sheet: 'post', p: this.freshP(), pTried: false, pDone: false });
+
+// ---------- canvas control ----------
+const active = isPost ? 'post' : isIntern ? 'isheet' : S.tab === 'intern' ? 'itab' : list.length === 0 ? 'empty' : 'jobs';
+const viewOpts = [
+['jobs', 'JOBS', () => this.setState({ tab: 'jobs', sheet: null, roles: [], domains: [], loc: '', q: '' })],
+['empty', 'EMPTY STATE', () => this.setState({ tab: 'jobs', sheet: null, roles: ['Business'], domains: ['air'], loc: '', q: '' })],
+['post', 'POST A JOB SHEET', () => this.setState({ tab: 'jobs', sheet: 'post', p: this.freshP(), pTried: false, pDone: false })],
+['itab', 'INTERNSHIPS', () => this.setState({ tab: 'intern', sheet: null })],
+['isheet', 'INTERNSHIP SHEET', openIntern('map')]
+].map(([k, label, pick]) => { const on = active === k; return { label, pick, pressed: on ? 'true' : 'false',
+style: 'min-height: 32px; padding: 0 12px; border: 0; border-radius: 8px; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 2px rgba(10,18,34,0.16)' : 'background: transparent; color: #3D4556') }; });
+
+// ---------- header menus (same as HomeV3) ----------
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', 'HomeV3.dc.html#join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => {
+const on = S.menu === key;
+const here = key === 'community';
+return { label: MENUS[key].label, id: 'menu-' + key, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on || here ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => this.setState({ menu: on ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) this.setState({ menu: null }); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], current: i[2] === 'JobsV3.dc.html' ? 'page' : 'false' })) };
+});
+
+// footer (same groups as HomeV3; this board has no join sheet, so Join goes to HomeV3's)
+const footGroups = [
+['SUMMIT', 'Summit', [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']]],
+['LEARN', 'Learn', [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']]],
+['COMMUNITY', 'Community', [['Join', 'HomeV3.dc.html#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']]],
+['ABOUT', 'About', [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']]]
+].map((g) => ({ title: g[0], label: g[1], links: g[2].map(([label, href]) => ({ label, href })) }));
+
+return {
+menus, menuOpen: !!S.menu, closeMenu: () => this.setState({ menu: null }),
+viewOpts, tabs, crumb: S.tab === 'jobs' ? 'JOBS' : 'INTERNSHIPS',
+isJobs: S.tab === 'jobs', isIntern: S.tab === 'intern',
+n, nTopics, e: notify('e'), f: notify('f'),
+openPost,
+roleOpts, domOpts, loc: S.loc, onLoc: (ev) => this.setState({ loc: ev.target.value }),
+q: S.q, onQ: (ev) => this.setState({ q: ev.target.value }),
+anyFilter, clearFilters: () => this.setState({ roles: [], domains: [], loc: '', q: '' }),
+countLabel: list.length === JOBS.length ? JOBS.length + ' JOBS · NEWEST FIRST' : 'SHOWING ' + list.length + ' OF ' + JOBS.length,
+jobs, hasJobs: list.length > 0, noJobs: list.length === 0, det,
+shared: S.shared, share: () => this.setState({ shared: true }),
+tracks, internSteps,
+sheetOpen: isPost || isIntern, closeSheet: () => this.setState({ sheet: null }), sheet, errBox,
+sheetKey: (e) => { if (e && e.key === 'Escape') this.setState({ sheet: null }); },
+showPostForm: isPost && !S.pDone, showInternForm: isIntern && !S.iDone, showConf: done, conf,
+emp, pf, pe, p, remote, lenOpts, pc, inpOk: inp(false), submitPost,
+iText, ifn, ie, i, trk, file, ic, submitIntern,
+footGroups
+};
+}
+}
+</script>
+</body>
+</html>

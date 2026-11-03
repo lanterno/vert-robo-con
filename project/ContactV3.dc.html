@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contact (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.flink{color:#0A1222;text-decoration:none}
+.flink:hover{color:#0138AC;text-decoration:underline}
+.rrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #E5E7EB;color:#0A1222;text-decoration:none}
+.rrow:hover{color:#0138AC}
+.topic:hover{border-color:#0A1222 !important}
+</style>
+</helmet>
+<div style="position: relative; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EBEE; border-bottom: 1px dashed #A7ADB8; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="font-size: 13px; color: #3D4556">Preview state</span>
+<div role="group" aria-label="Preview state" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 10px; background: #F3F4F2">
+<sc-for list="{{presets}}" as="p" hint-placeholder-count="7">
+<button type="button" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #3D4556">Simulate error on next send</span>
+<div role="group" aria-label="Simulate error on next send" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 10px; background: #F3F4F2">
+<sc-for list="{{modes}}" as="p" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" aria-current="{{i.current}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</header>
+
+<!-- HERO -->
+<section style="padding: 56px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+<nav aria-label="Breadcrumb" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><span>ABOUT</span> / <span style="color: #0A1222">CONTACT</span></nav>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px 64px">
+<h1 style="margin: 0; flex: 1.4 1 560px; font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 88px; line-height: 0.95; letter-spacing: -0.045em">How can we <span style="color: #0138AC">help?</span></h1>
+<p style="margin: 0; flex: 1 1 360px; max-width: 460px; padding-bottom: 6px; font-size: 20px; line-height: 1.5; color: #3D4556">Pick a topic so your message reaches the right people. We usually reply within 24–48 hours.</p>
+</div>
+</div>
+</section>
+
+<!-- FAQ STRIP -->
+<section aria-labelledby="faq-title" style="padding: 48px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
+<h2 id="faq-title" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">QUICK ANSWERS · YOU MIGHT NOT NEED TO WRITE</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; align-items: start">
+<sc-for list="{{faqs}}" as="f" hint-placeholder-count="4">
+<div style="{{f.card}}">
+<h3 style="margin: 0; font-size: 17px">
+<button type="button" aria-expanded="{{f.expanded}}" aria-controls="{{f.id}}" onClick="{{f.toggle}}" style="width: 100%; min-height: 64px; padding: 18px 20px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; border: 0; background: transparent; font: inherit; font-size: 17px; font-weight: 600; line-height: 1.35; text-align: left; color: #0A1222; cursor: pointer">{{f.q}}
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px"><path d="{{f.icon}}"></path></svg></button>
+</h3>
+<sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{f.id}}" style="padding: 0 20px 20px; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 15px; color: #3D4556">{{f.a}}</p>
+<a href="{{f.href}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; text-decoration: none">{{f.cta}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- TOPIC PICKER + PANEL -->
+<section id="topics" style="padding: 80px 32px 112px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px 48px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">01 — PICK A TOPIC</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 52px; line-height: 0.98; letter-spacing: -0.035em">What’s it about?</h2>
+</div>
+<p style="margin: 0; max-width: 440px; font-size: 16px; color: #3D4556">Some topics have a faster route than a message. Your topic tells us who should answer. There’s no chat bot.</p>
+</div>
+<div role="group" aria-label="Topic" style="display: flex; flex-wrap: wrap; gap: 10px">
+<sc-for list="{{topics}}" as="t" hint-placeholder-count="10">
+<button type="button" class="topic" aria-pressed="{{t.pressed}}" aria-controls="contact-panel" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 32px 48px; align-items: flex-start">
+
+<!-- LEFT: panel -->
+<div id="contact-panel" style="flex: 1.7 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+<sc-if value="{{noTopic}}" hint-placeholder-val="{{ true }}">
+<div style="border: 1px dashed #D5D8DE; border-radius: 24px; padding: 40px 32px; display: flex; flex-direction: column; gap: 10px">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.02em">Pick a topic above to get started</strong>
+<p style="margin: 0; font-size: 16px; color: #3D4556; max-width: 560px">For map listings, speaker nominations and jobs we’ll point you to the form that gets it done fastest. Everything else gets a short message form, sent to the right team.</p>
+</div>
+</sc-if>
+
+<!-- SUMMIT ROUTE -->
+<sc-if value="{{isSummit}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="border-radius: 24px; background: #F3F4F2; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="{{ui.chipBlue}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>OPENS MON 7 DEC 2026</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">Summit 2027 · Registration opens Monday, December 7, 2026</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556"><strong style="font-weight: 600; color: #0A1222">April 20–22, 2027</strong> · Online · Free · open to everyone. We’ll email you the day it opens.</p>
+<div style="{{nS.wrap}}">
+<sc-if value="{{nS.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nS.expand}}" style="{{nS.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>{{nS.label}}</button>
+</sc-if>
+<sc-if value="{{nS.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px"><span style="{{nS.lab}}">Email</span><input type="email" autocomplete="email" value="{{nS.email}}" onChange="{{nS.setEmail}}" placeholder="you@example.org" aria-invalid="{{nS.invalid}}" style="{{nS.input}}"></label>
+<button type="button" onClick="{{nS.submit}}" style="{{ui.btnP}}">Notify me</button>
+</div>
+<sc-if value="{{nS.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nS.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nS.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{nS.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px"><span style="{{nS.text}}"><strong style="{{nS.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nS.email}}.</span><button type="button" onClick="{{nS.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nS.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nS.manage}}">Manage</a></div>
+</sc-if>
+</div>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 28px 32px; display: flex; flex-direction: column; gap: 12px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Already registered?</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">We’ll email you a fresh link to manage your registration: change details, add sessions to your calendar or cancel. No password needed.</p>
+<sc-if value="{{ml.idle}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="ml-email" style="{{ui.label}}">Email you registered with</label>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<input id="ml-email" type="email" autocomplete="email" value="{{ml.email}}" onChange="{{ml.setEmail}}" aria-invalid="{{ml.invalid}}" aria-describedby="ml-email-err" placeholder="you@example.org" style="{{ml.input}}">
+<button type="button" onClick="{{ml.send}}" style="{{ui.btnS}}">Email me my manage link</button>
+</div>
+<sc-if value="{{ml.err}}" hint-placeholder-val="{{ false }}"><span id="ml-email-err" role="alert" style="{{ui.err}}">Enter an email address like name@example.org.</span></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ml.sent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>LINK SENT</span>
+<span style="font-size: 15px; color: #3D4556">If {{ml.email}} is registered, the link is on its way.</span>
+<button type="button" onClick="{{ml.reset}}" style="{{ui.btnT}}">Use a different email</button>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<!-- SPEAKING ROUTE -->
+<sc-if value="{{isSpeaking}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 24px; background: #F3F4F2; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="{{ui.eyebrow}}">SPEAKING · FASTER ROUTE</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">Recommend a speaker in one short form</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556; max-width: 560px">Nominations, including your own, go straight to the program team with everything they need. You get a reference so you can track it.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="GetInvolvedV3.dc.html" style="{{ui.btnP}}">Recommend a speaker
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+<a href="GetInvolvedV3.dc.html" style="{{ui.btnS}}">See all summit calls</a>
+</div>
+</div>
+</sc-if>
+
+<!-- MAP ROUTE -->
+<sc-if value="{{isMap}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 24px; background: #0138AC; color: #ffffff; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #BFD0F5">MAP LISTING · FASTER ROUTE</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">The fastest way is to suggest it directly on the map</h3>
+<p style="margin: 0; font-size: 16px; color: #E4EAF8; max-width: 560px">The suggest form checks for duplicates as you type, and an admin reviews every suggestion before it’s published. Corrections to an existing listing start from its detail card.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="MapV3.dc.html" style="{{ui.btnWhite}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>Suggest an organization</a>
+<a href="MapV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 4px; color: #ffffff; font-size: 15px; font-weight: 500">Download the data (CSV · JSON)</a>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #BFD0F5">GENERATED FROM THE MAP · LICENCE: CC BY 4.0</span>
+</div>
+</sc-if>
+
+<!-- JOBS ROUTE -->
+<sc-if value="{{isJobs}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 24px; background: #F3F4F2; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="{{ui.eyebrow}}">JOBS &amp; INTERNSHIPS · FASTER ROUTE</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">Roles have their own board</h3>
+<div style="background: #ffffff; border-radius: 16px; padding: 4px 20px; display: flex; flex-direction: column">
+<sc-for list="{{jobLinks}}" as="j" hint-placeholder-count="3">
+<a class="rrow" href="{{j.href}}" style="{{j.row}}"><span style="display: flex; flex-direction: column; line-height: 1.35"><strong style="font-weight: 600; font-size: 16px">{{j.label}}</strong><span style="font-size: 14px; color: #646B7A">{{j.desc}}</span></span>
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showStillWrite}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{revealForm}}" aria-controls="contact-form" style="{{ui.btnT}}">Still want to write to us? Show the message form</button>
+</sc-if>
+
+<!-- GENERIC MESSAGE FORM -->
+<sc-if value="{{form.open}}" hint-placeholder-val="{{ false }}">
+<div id="contact-form" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">02 — YOUR MESSAGE</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.02em">{{form.title}}</h3>
+<p style="margin: 0; font-size: 15px; color: #646B7A">Sorted by topic so the right person answers. Every field is required unless it says optional.</p>
+</div>
+<sc-if value="{{form.hasHint}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; padding: 14px 16px; border-radius: 12px; background: #EEF2FB; color: #0A1222; font-size: 15px">{{form.hintText}} <a href="{{form.hintHref}}" style="font-weight: 500">{{form.hintLink}}</a></p>
+</sc-if>
+<sc-if value="{{form.isError}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-size: 15px"><strong style="font-weight: 600">We couldn’t send that.</strong> Your message is saved on this device. Try again.</span>
+<button type="button" onClick="{{form.retry}}" style="{{ui.btnRed}}">Try again</button>
+</div>
+</sc-if>
+<sc-if value="{{form.isRate}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-size: 15px"><strong style="font-weight: 600">Too many messages in a short time.</strong> Please wait a minute. Your message is saved on this device.</span>
+<button type="button" onClick="{{form.retry}}" style="{{ui.btnRed}}">Try again</button>
+</div>
+</sc-if>
+<sc-if value="{{form.hasSummary}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600; font-size: 16px">{{form.summaryTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px; font-size: 15px"><sc-for list="{{form.summary}}" as="e" hint-placeholder-count="3"><li><a href="{{e.href}}" style="color: #B42318">{{e.text}}</a></li></sc-for></ul>
+</div>
+</sc-if>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="contact-name" style="{{ui.label}}">Name</label>
+<input id="contact-name" aria-describedby="contact-name-err" type="text" autocomplete="name" value="{{form.name}}" onChange="{{form.setName}}" onBlur="{{form.blurName}}" aria-invalid="{{form.nameInv}}" style="{{form.nameInput}}">
+<sc-if value="{{form.nameErr}}" hint-placeholder-val="{{ false }}"><span id="contact-name-err" style="{{ui.err}}">{{form.nameErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="contact-email" style="{{ui.label}}">Email</label>
+<input id="contact-email" aria-describedby="contact-email-err" type="email" autocomplete="email" value="{{form.email}}" onChange="{{form.setEmail}}" onBlur="{{form.blurEmail}}" aria-invalid="{{form.emailInv}}" style="{{form.emailInput}}">
+<sc-if value="{{form.emailErr}}" hint-placeholder-val="{{ false }}"><span id="contact-email-err" style="{{ui.err}}">{{form.emailErr}}</span></sc-if>
+</div>
+<sc-if value="{{form.isPress}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="contact-pub" style="{{ui.label}}">Publication</label>
+<input id="contact-pub" aria-describedby="contact-pub-err" type="text" value="{{form.pub}}" onChange="{{form.setPub}}" onBlur="{{form.blurPub}}" aria-invalid="{{form.pubInv}}" style="{{form.pubInput}}">
+<sc-if value="{{form.pubErr}}" hint-placeholder-val="{{ false }}"><span id="contact-pub-err" style="{{ui.err}}">{{form.pubErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="contact-deadline" style="{{ui.label}}">Deadline <span style="{{ui.opt}}">(optional)</span></label>
+<input id="contact-deadline" type="date" value="{{form.deadline}}" onChange="{{form.setDeadline}}" style="{{form.plainInput}}">
+<span style="{{ui.help}}">We use this to prioritize press requests.</span>
+</div>
+</sc-if>
+<sc-if value="{{form.isSponsor}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="contact-org" style="{{ui.label}}">Organization</label>
+<input id="contact-org" aria-describedby="contact-org-err" type="text" autocomplete="organization" value="{{form.org}}" onChange="{{form.setOrg}}" onBlur="{{form.blurOrg}}" aria-invalid="{{form.orgInv}}" style="{{form.orgInput}}">
+<sc-if value="{{form.orgErr}}" hint-placeholder-val="{{ false }}"><span id="contact-org-err" style="{{ui.err}}">{{form.orgErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 14px 16px; border-radius: 12px; background: #F3F4F2">
+<span style="font-size: 15px; color: #3D4556">Tiers, benefits and what past sponsors got.</span>
+<a href="GetInvolvedV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; text-decoration: none">See packages
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+</sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="contact-msg" style="{{ui.label}}">Message</label>
+<textarea id="contact-msg" aria-describedby="contact-msg-err" rows="7" maxlength="1500" value="{{form.msg}}" onChange="{{form.setMsg}}" onBlur="{{form.blurMsg}}" aria-invalid="{{form.msgInv}}" style="{{form.msgInput}}"></textarea>
+<span style="display: flex; justify-content: space-between; gap: 12px"><span style="{{ui.help}}">Links are fine. Please don’t send attachments yet; we’ll ask if we need them.</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{form.count}}</span></span>
+<sc-if value="{{form.msgErr}}" hint-placeholder-val="{{ false }}"><span id="contact-msg-err" style="{{ui.err}}">{{form.msgErr}}</span></sc-if>
+</div>
+<div id="contact-consent" style="display: flex; align-items: flex-start; gap: 6px">
+<button type="button" role="checkbox" aria-checked="{{form.consentChecked}}" aria-labelledby="contact-consent-label" aria-describedby="contact-consent-err" aria-invalid="{{form.consentInv}}" onClick="{{form.toggleConsent}}" style="{{ui.cbBtn}}"><span aria-hidden="true" style="{{form.consentBox}}"><sc-if value="{{form.consent}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></sc-if></span></button>
+<span style="padding-top: 10px; display: flex; flex-direction: column; gap: 4px"><span id="contact-consent-label" style="font-size: 15px; font-weight: 500">We use your name and email only to reply to this message. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+<sc-if value="{{form.consentErr}}" hint-placeholder-val="{{ false }}"><span id="contact-consent-err" style="{{ui.err}}">{{form.consentErr}}</span></sc-if></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<span style="display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+<button type="button" onClick="{{form.send}}" style="{{ui.btnP}}">Send message
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</sc-if>
+
+<!-- GENERIC SENT CONFIRMATION -->
+<sc-if value="{{form.sent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 22px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.025em">Thanks, we’ve got it.</h3>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">REFERENCE · <span style="color: #0A1222">MSG-1093</span></span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{form.sentLine}}</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">WHAT HAPPENS NEXT</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">{{form.step1}}</strong><span style="font-size: 15px; color: #3D4556">Every message is logged, so nothing gets lost.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">A reply within 24–48 hours</strong><span style="font-size: 15px; color: #3D4556">Quote MSG-1093 if you need to follow up.</span></span></li>
+</ol>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="HomeV3.dc.html#join" style="{{ui.btnP}}">Join the network</a>
+<button type="button" onClick="{{form.again}}" style="{{ui.btnS}}">Send another message</button>
+</div>
+<p style="margin: 0; font-size: 14px; color: #646B7A">We’ve emailed you a copy and a link to manage this to {{form.email}}. <a href="MyVRCV3.dc.html">Manage this</a></p>
+</div>
+</sc-if>
+
+<!-- CONSULTING ENQUIRY -->
+<sc-if value="{{cf.open}}" hint-placeholder-val="{{ false }}">
+<div id="consult-form" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">CONSULTING ENQUIRY</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.02em">Start an enquiry</h3>
+<p style="margin: 0; font-size: 15px; color: #646B7A">Practical advice on policy, research, partners and getting to market, from members who have done the work. Two short steps.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; gap: 12px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em">
+<span style="color: #0A1222">{{cf.stepLabel}}</span><sc-if value="{{cf.dirty}}" hint-placeholder-val="{{ false }}"><span role="status" style="display: inline-flex; align-items: center; gap: 6px; color: #0B7A47"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>SAVED JUST NOW</span></sc-if>
+</div>
+<ol aria-label="Steps" style="margin: 0; padding: 0; list-style: none; display: flex; gap: 6px">
+<sc-for list="{{cf.segs}}" as="s" hint-placeholder-count="2">
+<li aria-current="{{s.current}}" style="flex: 1; display: flex; flex-direction: column; gap: 6px"><span style="{{s.lab}}">{{s.label}}</span><span aria-hidden="true" style="{{s.bar}}"></span></li>
+</sc-for>
+</ol>
+</div>
+<sc-if value="{{cf.isError}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-size: 15px"><strong style="font-weight: 600">We couldn’t send that.</strong> Your answers are saved on this device. Try again.</span>
+<button type="button" onClick="{{cf.retry}}" style="{{ui.btnRed}}">Try again</button>
+</div>
+</sc-if>
+<sc-if value="{{cf.isRate}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-size: 15px"><strong style="font-weight: 600">Too many messages in a short time.</strong> Please wait a minute. Your answers are saved.</span>
+<button type="button" onClick="{{cf.retry}}" style="{{ui.btnRed}}">Try again</button>
+</div>
+</sc-if>
+<sc-if value="{{cf.hasSummary}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600; font-size: 16px">{{cf.summaryTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px; font-size: 15px"><sc-for list="{{cf.summary}}" as="e" hint-placeholder-count="3"><li><a href="{{e.href}}" style="color: #B42318">{{e.text}}</a></li></sc-for></ul>
+</div>
+</sc-if>
+
+<sc-if value="{{cf.step1}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span id="c-type-label" style="{{ui.label}}">Organization type</span>
+<div id="c-type" role="radiogroup" aria-labelledby="c-type-label" aria-describedby="c-type-err" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{cf.types}}" as="t" hint-placeholder-count="7"><button type="button" role="radio" aria-checked="{{t.checked}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<sc-if value="{{cf.typeErr}}" hint-placeholder-val="{{ false }}"><span id="c-type-err" style="{{ui.err}}">{{cf.typeErr}}</span></sc-if>
+</div>
+<fieldset id="c-eng" aria-describedby="c-eng-err" style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 6px">
+<legend style="{{ui.legend}}">Engagement type</legend>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{cf.engs}}" as="t" hint-placeholder-count="5"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<span style="{{ui.help}}">Choose all that apply.</span>
+<sc-if value="{{cf.engErr}}" hint-placeholder-val="{{ false }}"><span id="c-eng-err" style="{{ui.err}}">{{cf.engErr}}</span></sc-if>
+</fieldset>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-desc" style="{{ui.label}}">Tell us about your project</label>
+<textarea id="c-desc" aria-describedby="c-desc-err" rows="6" maxlength="1000" value="{{cf.desc}}" onChange="{{cf.setDesc}}" onBlur="{{cf.blurDesc}}" aria-invalid="{{cf.descInv}}" style="{{cf.descInput}}"></textarea>
+<span style="display: flex; justify-content: space-between; gap: 12px"><span style="{{ui.help}}">Goals, where you are now and who else is involved.</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{cf.count}}</span></span>
+<sc-if value="{{cf.descErr}}" hint-placeholder-val="{{ false }}"><span id="c-desc-err" style="{{ui.err}}">{{cf.descErr}}</span></sc-if>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span id="c-time-label" style="{{ui.label}}">Ideal timeline</span>
+<div id="c-time" role="radiogroup" aria-labelledby="c-time-label" aria-describedby="c-time-err" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{cf.times}}" as="t" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{t.checked}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<sc-if value="{{cf.timeErr}}" hint-placeholder-val="{{ false }}"><span id="c-time-err" style="{{ui.err}}">{{cf.timeErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-budget" style="{{ui.label}}">Budget range <span style="{{ui.opt}}">(optional)</span></label>
+<select id="c-budget" value="{{cf.budget}}" onChange="{{cf.setBudget}}" style="{{cf.selectStyle}}">
+<option value="">Choose a range</option>
+<option value="[RANGES]">[RANGES]</option>
+<option value="Prefer not to say">Prefer not to say</option>
+</select>
+</div>
+</div>
+<div style="display: flex; justify-content: flex-end">
+<button type="button" onClick="{{cf.next}}" style="{{ui.btnP}}">Continue</button>
+</div>
+</sc-if>
+
+<sc-if value="{{cf.step2}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-name" style="{{ui.label}}">Name</label>
+<input id="c-name" aria-describedby="c-name-err" type="text" autocomplete="name" value="{{cf.name}}" onChange="{{cf.setName}}" onBlur="{{cf.blurName}}" aria-invalid="{{cf.nameInv}}" style="{{cf.nameInput}}">
+<sc-if value="{{cf.nameErr}}" hint-placeholder-val="{{ false }}"><span id="c-name-err" style="{{ui.err}}">{{cf.nameErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-email" style="{{ui.label}}">Work email</label>
+<input id="c-email" aria-describedby="c-email-err" type="email" autocomplete="email" value="{{cf.email}}" onChange="{{cf.setEmail}}" onBlur="{{cf.blurEmail}}" aria-invalid="{{cf.emailInv}}" style="{{cf.emailInput}}">
+<sc-if value="{{cf.emailErr}}" hint-placeholder-val="{{ false }}"><span id="c-email-err" style="{{ui.err}}">{{cf.emailErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-org" style="{{ui.label}}">Organization</label>
+<input id="c-org" aria-describedby="c-org-err" type="text" autocomplete="organization" value="{{cf.org}}" onChange="{{cf.setOrg}}" onBlur="{{cf.blurOrg}}" aria-invalid="{{cf.orgInv}}" style="{{cf.orgInput}}">
+<sc-if value="{{cf.orgErr}}" hint-placeholder-val="{{ false }}"><span id="c-org-err" style="{{ui.err}}">{{cf.orgErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-web" style="{{ui.label}}">Website <span style="{{ui.opt}}">(optional)</span></label>
+<input id="c-web" type="url" autocomplete="url" value="{{cf.web}}" onChange="{{cf.setWeb}}" placeholder="https://" style="{{cf.webInput}}">
+</div>
+</div>
+<div id="c-consent" style="display: flex; align-items: flex-start; gap: 6px">
+<button type="button" role="checkbox" aria-checked="{{cf.consentChecked}}" aria-labelledby="c-consent-label" aria-describedby="c-consent-err" aria-invalid="{{cf.consentInv}}" onClick="{{cf.toggleConsent}}" style="{{ui.cbBtn}}"><span aria-hidden="true" style="{{cf.consentBox}}"><sc-if value="{{cf.consent}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></sc-if></span></button>
+<span style="padding-top: 10px; display: flex; flex-direction: column; gap: 4px"><span id="c-consent-label" style="font-size: 15px; font-weight: 500">We use these details only to reply about this enquiry. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+<sc-if value="{{cf.consentErr}}" hint-placeholder-val="{{ false }}"><span id="c-consent-err" style="{{ui.err}}">{{cf.consentErr}}</span></sc-if></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
+<button type="button" onClick="{{cf.back}}" style="{{ui.btnT}}">Back</button>
+<button type="button" onClick="{{cf.submit}}" style="{{ui.btnP}}">Send enquiry</button>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
+<button type="button" onClick="{{cf.saveLater}}" style="{{ui.btnT}}">Save and finish later</button>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+<sc-if value="{{cf.saved}}" hint-placeholder-val="{{ false }}"><p role="status" style="margin: 0; padding: 12px 14px; border-radius: 12px; background: #EEF2FB; color: #0138AC; font-size: 14px">{{cf.savedText}}</p></sc-if>
+</sc-if>
+</div>
+</sc-if>
+
+<!-- CONSULTING CONFIRMATION -->
+<sc-if value="{{cf.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 22px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.025em">Thanks, we’ve got it.</h3>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">REFERENCE · <span style="color: #0A1222">CON-0042</span></span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">We’ll reply within 24–48 hours.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">WHAT HAPPENS NEXT</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Imogen Calder reads your enquiry</strong><span style="font-size: 15px; color: #3D4556">Expect a reply within 24–48 hours.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">An intro call to scope the work</strong><span style="font-size: 15px; color: #3D4556">We bring in people from the network who fit the project.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">3</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">A short written proposal</strong><span style="font-size: 15px; color: #3D4556">Options, timeline and costs.</span></span></li>
+</ol>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<a href="MyVRCV3.dc.html" style="{{ui.btnP}}">Track status</a>
+<a href="#" style="{{ui.btnS}}">Book an intro call
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">OPTIONAL · OPENS [SCHEDULER]</span>
+</div>
+<p style="margin: 0; font-size: 14px; color: #646B7A">We’ve emailed a receipt and a link to manage this to {{cf.email}}. <a href="MyVRCV3.dc.html">Manage this</a></p>
+</div>
+</sc-if>
+</div>
+
+<!-- RIGHT: aside -->
+<aside aria-label="Consulting and email" style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div class="lift" style="border-radius: 24px; background: #0A1222; color: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #9AA3B5">ABOUT THE CONSULTING COORDINATOR</span>
+<span style="display: flex; align-items: center; gap: 16px">
+<span role="img" aria-label="Imogen Calder" style="width: 72px; height: 72px; border-radius: 50%; flex: 0 0 auto; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 22px; font-weight: 500">IC</span>
+<span style="display: flex; flex-direction: column; line-height: 1.3">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.02em">Imogen Calder</strong>
+<span style="font-size: 15px; color: #C8CEDA">Consulting coordinator · Vert Robo Con</span>
+</span>
+</span>
+<p style="margin: 0; font-size: 15px; color: #C8CEDA">Imogen reads every enquiry first and matches it with members who have done that kind of work, from tender paperwork to maintenance logs and data licences.</p>
+<p style="margin: 0; padding-top: 16px; border-top: 1px solid #2E3850; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.015em">Practical advice on policy, research, partners and getting to market, from members who have done the work</p>
+<p style="margin: 0; font-size: 14px; color: #9AA3B5">Open to startups, companies, investors, foundations, public bodies, NGOs and universities.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+<a href="#consult-form" onClick="{{startEnquiry}}" style="{{ui.btnWhite}}">Start an enquiry</a>
+<a href="PeopleV3.dc.html" style="color: #ffffff; font-size: 15px; font-weight: 500">View profile</a>
+<a href="https://vert-robo-con.example/social/linkedin/imogen-calder" style="color: #9AA3B5; font-size: 14px">LinkedIn</a>
+</div>
+</div>
+
+<div style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 24px 28px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PREFER EMAIL?</span>
+<p style="margin: 4px 0 8px; font-size: 15px; color: #3D4556">Write to us directly. We’ll respond within 24–48 hours.</p>
+<sc-for list="{{roles}}" as="r" hint-placeholder-count="1">
+<a class="rrow" href="{{r.href}}"><span style="display: flex; flex-direction: column; line-height: 1.35; min-width: 0"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{r.label}}</span><span style="font-size: 15px; font-weight: 500; overflow-wrap: anywhere">{{r.addr}}</span></span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></a>
+</sc-for>
+</div>
+</aside>
+
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px; max-width: 420px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; font-size: 15px; color: #646B7A">An open community for people who build, fund and use robots that help a warming planet.</p>
+<span style="margin-top: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">THE MONTHLY DIGEST</span>
+<div style="{{nF.wrap}}">
+<sc-if value="{{nF.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nF.expand}}" style="{{nF.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>{{nF.label}}</button>
+</sc-if>
+<sc-if value="{{nF.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 4px"><span style="{{nF.lab}}">Email</span><input type="email" autocomplete="email" value="{{nF.email}}" onChange="{{nF.setEmail}}" placeholder="you@example.org" aria-invalid="{{nF.invalid}}" style="{{nF.input}}"></label>
+<button type="button" onClick="{{nF.submit}}" style="{{ui.btnPs}}">Notify me</button>
+</div>
+<sc-if value="{{nF.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nF.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nF.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{nF.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px"><span style="{{nF.text}}"><strong style="{{nF.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nF.email}}.</span><button type="button" onClick="{{nF.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nF.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nF.manage}}">Manage</a></div>
+</sc-if>
+</div>
+</div>
+<sc-for list="{{footer}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="5"><a class="flink" href="{{l.href}}" aria-current="{{l.current}}" onClick="{{l.go}}">{{l.label}}</a></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<div style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="HomeV3.dc.html#join" aria-label="Slack: join the network" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2zM13 3v6h2a2 2 0 0 0 0-4M11 21v-6H9a2 2 0 0 0 0 4"></path></svg></a>
+</div>
+</div>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const n = (topics) => ({ st: 'idle', email: '', err: false, topics: topics });
+this.state = Object.assign({
+preset: 'default', mode: 'ok', menu: null, topic: null, showForm: false, faq: [],
+n_summit: n(['Summit announcements']), n_foot: n(['Monthly digest']),
+mlEmail: '', mlErr: false, mlSent: false
+}, this.form0(), this.consult0());
+}
+form0() {
+return { fName: '', fEmail: '', fMsg: '', fPub: '', fDeadline: '', fOrg: '', fConsent: false,
+fTried: false, fBlurName: false, fBlurEmail: false, fBlurMsg: false, fBlurPub: false, fBlurOrg: false, fStatus: 'idle' };
+}
+consult0() {
+return { cStep: 1, cType: '', cEng: [], cDesc: '', cTime: '', cBudget: '', cName: '', cEmail: '', cOrg: '', cWeb: '', cConsent: false,
+cTried1: false, cTried2: false, cBlur: [], cStatus: 'idle', cSaved: false, cDirty: false };
+}
+renderVals() {
+const st = this.state;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const okEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim());
+const btn = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; ';
+const btnSm = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; ';
+const chip = (bg, fg) => 'align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + bg + '; color: ' + fg + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap';
+const ui = {
+btnP: btn + 'border: 0; background: #0138AC; color: #ffffff',
+btnPs: btnSm + 'border: 0; background: #0138AC; color: #ffffff',
+btnS: btn + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnWhite: btn + 'border: 0; background: #ffffff; color: #0A1222',
+btnRed: btnSm + 'border: 1px solid #B42318; background: #ffffff; color: #B42318',
+btnT: 'align-self: flex-start; min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-align: left',
+eyebrow: MONO + 'font-size: 12px; letter-spacing: 0.06em; color: #646B7A',
+label: 'font-size: 15px; font-weight: 500; color: #0A1222',
+legend: 'font-size: 15px; font-weight: 500; color: #0A1222; padding: 0; margin-bottom: 2px',
+opt: 'font-weight: 400; color: #646B7A',
+help: 'font-size: 13px; color: #646B7A',
+err: 'display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #B42318',
+chipBlue: chip('#EEF2FB', '#0138AC'),
+chipGreen: chip('#E8F6EE', '#0B7A47'),
+canvasLink: 'align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 8px; background: #F3F4F2; color: #3D4556; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em; cursor: pointer',
+cbBtn: 'flex: 0 0 auto; width: 44px; height: 44px; margin-left: -10px; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; padding: 0',
+stepNum: 'flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 13px; font-weight: 500'
+};
+const input = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 16px; color: #0A1222';
+const area = (bad) => input(bad) + '; padding: 12px 14px; resize: vertical; line-height: 1.5; min-height: 160px';
+const pill = (on) => 'display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on
+? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const box = (on, bad) => 'width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: flex; align-items: center; justify-content: center; ' + (on ? 'background: #0138AC; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid ' + (bad ? '#B42318' : '#A7ADB8'));
+const srOnly = 'position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap';
+const seg = (on) => 'min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const summaryTitle = (n) => n === 1 ? 'There’s 1 problem to fix' : 'There are ' + n + ' problems to fix';
+
+// canvas presets
+const F = this.form0(), C = this.consult0();
+const filled = { fName: 'Alex Example', fEmail: 'alex@example.org', fMsg: 'Could you tell me more about how university labs can get involved in the network?', fConsent: true };
+const cFilled = { cType: 'Startup', cEng: ['Partnerships', 'Go-to-market'], cDesc: 'We are preparing a first field pilot of an ocean-monitoring robot and want advice on partners and on policy in our first two markets.', cTime: 'This quarter', cBudget: 'Prefer not to say', cDirty: true };
+const P = [
+['default', 'Default', {}],
+['errors', 'Form errors', { topic: 'press', fTried: true }],
+['sent', 'Message sent', Object.assign({}, filled, { topic: 'press', fPub: 'Example Weekly', fStatus: 'sent' })],
+['error', 'Network error', Object.assign({}, filled, { topic: 'else', fStatus: 'error' })],
+['rate', 'Rate limit', Object.assign({}, filled, { topic: 'else', fStatus: 'rate' })],
+['c2', 'Consulting · step 2', Object.assign({}, cFilled, { topic: 'consulting', cStep: 2 })],
+['cdone', 'Consulting sent', Object.assign({}, cFilled, { topic: 'consulting', cStep: 2, cName: 'Alex Example', cEmail: 'alex@example.org', cOrg: 'Example Robotics', cConsent: true, cStatus: 'sent' })]
+];
+const presets = P.map((p) => ({ label: p[1], pressed: st.preset === p[0] ? 'true' : 'false', style: seg(st.preset === p[0]),
+pick: () => this.setState(Object.assign({}, F, C, { topic: null, showForm: false, menu: null, mlEmail: '', mlErr: false, mlSent: false }, p[2], { preset: p[0] })) }));
+const modes = [['ok', 'Off'], ['error', 'Network error'], ['rate', 'Rate limit']].map((m) => ({ label: m[1], pressed: st.mode === m[0] ? 'true' : 'false', style: seg(st.mode === m[0]),
+pick: () => this.setState({ mode: m[0] }) }));
+
+// header menus
+const closeMenu = () => this.setState({ menu: null });
+const openConsulting = () => this.setState(Object.assign({ topic: 'consulting', showForm: false, menu: null }, this.state.cStatus === 'sent' ? this.consult0() : {}));
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', 'HomeV3.dc.html#join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => {
+const on = st.menu === key;
+const here = key === 'about';
+return { label: MENUS[key].label, id: 'menu-' + key, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on || here ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => this.setState({ menu: on ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) this.setState({ menu: null }); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], current: i[0] === 'Contact' ? 'page' : 'false', go: i[0] === 'Consulting' ? openConsulting : closeMenu })) };
+});
+
+// notify-me component
+const nm = (key, label, all, compact) => {
+const k = 'n_' + key;
+const s = st[k];
+const setN = (p) => this.setState({ [k]: Object.assign({}, this.state[k], p) });
+return {
+idle: s.st === 'idle', open: s.st === 'open', pending: s.st === 'pending', done: s.st === 'done',
+label: label, email: s.email, err: s.err, invalid: s.err ? 'true' : 'false',
+expand: () => setN({ st: 'open' }),
+setEmail: (e) => setN({ email: e.target.value, err: false }),
+submit: () => (okEmail(this.state[k].email) ? setN({ st: 'pending', err: false }) : setN({ err: true })),
+confirm: () => setN({ st: 'done' }),
+topics: all.map((t) => {
+const on = s.topics.indexOf(t) > -1;
+return { label: t, pressed: on ? 'true' : 'false', style: pill(on),
+toggle: () => { const cur = this.state[k].topics; setN({ topics: on ? cur.filter((x) => x !== t) : cur.concat([t]) }); } };
+}),
+wrap: 'display: flex; flex-direction: column; gap: 8px',
+ghost: (compact ? btnSm : btn) + 'align-self: flex-start; background: #ffffff; color: #0A1222; border: 1px solid #D5D8DE',
+lab: compact ? srOnly : 'font-size: 14px; font-weight: 500; color: #0A1222',
+input: input(s.err) + (compact ? '; min-height: 44px' : ''),
+text: 'font-size: 15px; color: #3D4556',
+strong: 'font-weight: 600; color: #0A1222',
+errStyle: 'font-size: 13px; font-weight: 500; color: #B42318',
+manage: 'font-size: 15px; font-weight: 500; color: #0138AC'
+};
+};
+const nS = nm('summit', 'Email me when it opens', ['Summit announcements', 'Program published', 'Recordings', 'Monthly digest'], false);
+const nF = nm('foot', 'Get the monthly digest', ['Monthly digest', 'Summit announcements', 'New videos', 'Job alerts'], true);
+
+// FAQ
+const FAQ = [
+['When is the next summit?', 'Vert Robo Con Summit 2027 runs April 20–22, 2027, online. It’s free and open to everyone, with no cap on places. Registration opens Monday, December 7, 2026, and you can ask us to email you when it does.', 'Summit 2027', 'SummitV3.dc.html'],
+['How do I get my organization on the map?', 'Suggest it directly on the map. An admin reviews every suggestion before it’s published, and you get a reference to track it.', 'Suggest an organization', 'MapV3.dc.html'],
+['How do I join the Slack?', 'Join the network and choose Slack. An admin approves each request by hand, then we email your invite, typically within 24–48 hours. Then say hello in #welcome and tell us what you work on.', 'Join the network', 'HomeV3.dc.html#join'],
+['Where are past recordings?', 'Sessions from past summits are free to watch here, including all 12 recordings from 2025.', 'Go to Watch', 'WatchV3.dc.html']
+];
+const faqs = FAQ.map((f, i) => {
+const on = st.faq.indexOf(i) > -1;
+return { q: f[0], a: f[1], cta: f[2], href: f[3], id: 'faq-' + i, open: on, expanded: on ? 'true' : 'false',
+icon: on ? 'M5 12h14' : 'M12 5v14M5 12h14',
+card: 'border: 1px solid ' + (on ? '#0A1222' : '#E5E7EB') + '; border-radius: 20px; background: #ffffff',
+toggle: () => { const cur = this.state.faq; this.setState({ faq: on ? cur.filter((x) => x !== i) : cur.concat([i]) }); } };
+});
+
+// topics
+const TOPICS = [
+['summit', 'Summit & registration', 'Summit', 'route'],
+['speaking', 'Speaking or recommend a speaker', 'Program', 'route'],
+['sponsorship', 'Sponsorship', 'Partnerships', 'form'],
+['research', 'White paper & research', 'Research', 'form'],
+['map', 'Map listing', 'Map', 'route'],
+['jobs', 'Jobs & internships', 'Jobs', 'route'],
+['consulting', 'Consulting', 'Consulting', 'consult'],
+['press', 'Press', 'Press', 'form'],
+['volunteering', 'Volunteering', 'Volunteer', 'form'],
+['else', 'Something else', 'General', 'form']
+];
+const cur = TOPICS.find((t) => t[0] === st.topic) || null;
+const kind = cur ? cur[3] : null;
+const topics = TOPICS.map((t) => {
+const on = st.topic === t[0];
+return { label: t[1], pressed: on ? 'true' : 'false',
+style: 'display: inline-flex; align-items: center; min-height: 56px; padding: 0 22px; border-radius: 999px; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #0A1222; border: 1px solid #D5D8DE'),
+pick: () => this.setState(Object.assign({ topic: t[0], showForm: false, menu: null }, this.state.fStatus === 'sent' ? this.form0() : { fStatus: 'idle' })) };
+});
+
+// generic form
+const fErrs = (s) => {
+const out = [];
+if (!s.fName.trim()) out.push(['name', 'contact-name', 'Enter your name.']);
+if (!s.fEmail.trim()) out.push(['email', 'contact-email', 'Enter your email address.']);
+else if (!okEmail(s.fEmail)) out.push(['email', 'contact-email', 'Enter an email address like name@example.org.']);
+if (s.topic === 'press' && !s.fPub.trim()) out.push(['pub', 'contact-pub', 'Enter the publication you’re writing for.']);
+if (s.topic === 'sponsorship' && !s.fOrg.trim()) out.push(['org', 'contact-org', 'Enter your organization.']);
+if (!s.fMsg.trim()) out.push(['msg', 'contact-msg', 'Write your message.']);
+if (!s.fConsent) out.push(['consent', 'contact-consent', 'Confirm we can use your details to reply.']);
+return out;
+};
+const fe = fErrs(st);
+const showF = { name: st.fTried || st.fBlurName, email: st.fTried || st.fBlurEmail, msg: st.fTried || st.fBlurMsg, pub: st.fTried || st.fBlurPub, org: st.fTried || st.fBlurOrg, consent: st.fTried };
+const fErr = (k) => { if (!showF[k]) return ''; const e = fe.find((x) => x[0] === k); return e ? e[2] : ''; };
+const genericVisible = !!cur && kind !== 'consult' && (kind === 'form' || st.showForm);
+const HINTS = {
+research: ['Want to help write the next edition of the white paper?', 'Write the next edition →', 'ResearchV3.dc.html'],
+volunteering: ['Open volunteer roles are listed with the summit calls.', 'See volunteer roles →', 'GetInvolvedV3.dc.html']
+};
+const hint = HINTS[st.topic];
+const team = cur ? (cur[0] === 'else' ? 'general enquiries' : cur[2]) : '';
+const form = {
+open: genericVisible && st.fStatus !== 'sent', sent: genericVisible && st.fStatus === 'sent',
+title: cur && cur[0] !== 'else' ? 'Write to the ' + cur[2] + ' team' : 'Write to us',
+hasHint: !!hint, hintText: hint ? hint[0] : '', hintLink: hint ? hint[1] : '', hintHref: hint ? hint[2] : '#',
+isPress: st.topic === 'press', isSponsor: st.topic === 'sponsorship',
+isError: st.fStatus === 'error', isRate: st.fStatus === 'rate',
+hasSummary: st.fTried && fe.length > 0, summaryTitle: summaryTitle(fe.length),
+summary: fe.map((e) => ({ text: e[2], href: '#' + e[1] })),
+name: st.fName, email: st.fEmail, msg: st.fMsg, pub: st.fPub, deadline: st.fDeadline, org: st.fOrg, consent: st.fConsent,
+setName: (e) => this.setState({ fName: e.target.value }), blurName: () => this.setState({ fBlurName: true }),
+setEmail: (e) => this.setState({ fEmail: e.target.value }), blurEmail: () => this.setState({ fBlurEmail: true }),
+setMsg: (e) => this.setState({ fMsg: e.target.value.slice(0, 1500) }), blurMsg: () => this.setState({ fBlurMsg: true }),
+setPub: (e) => this.setState({ fPub: e.target.value }), setDeadline: (e) => this.setState({ fDeadline: e.target.value }), setOrg: (e) => this.setState({ fOrg: e.target.value }),
+blurPub: () => this.setState({ fBlurPub: true }), blurOrg: () => this.setState({ fBlurOrg: true }),
+nameErr: fErr('name'), emailErr: fErr('email'), msgErr: fErr('msg'), pubErr: fErr('pub'), orgErr: fErr('org'), consentErr: fErr('consent'),
+nameInv: fErr('name') ? 'true' : 'false', emailInv: fErr('email') ? 'true' : 'false', msgInv: fErr('msg') ? 'true' : 'false', pubInv: fErr('pub') ? 'true' : 'false', orgInv: fErr('org') ? 'true' : 'false', consentInv: fErr('consent') ? 'true' : 'false',
+nameInput: input(!!fErr('name')), emailInput: input(!!fErr('email')), pubInput: input(!!fErr('pub')), orgInput: input(!!fErr('org')), plainInput: input(false), msgInput: area(!!fErr('msg')),
+count: st.fMsg.length.toLocaleString('en-US') + ' / 1,500',
+consentChecked: st.fConsent ? 'true' : 'false', consentBox: box(st.fConsent, !!fErr('consent')),
+toggleConsent: () => this.setState({ fConsent: !this.state.fConsent }),
+send: () => {
+if (fErrs(this.state).length) { this.setState({ fTried: true, fStatus: 'idle' }); return; }
+const m = this.state.mode;
+this.setState({ fTried: true, fStatus: m === 'ok' ? 'sent' : m });
+},
+retry: () => this.setState({ mode: 'ok', fStatus: 'sent' }),
+again: () => this.setState(Object.assign(this.form0(), { fName: this.state.fName, fEmail: this.state.fEmail })),
+sentLine: 'Message sent to the ' + team + ' team · we usually reply within 24–48 hours.',
+step1: 'The ' + team + ' team reads it'
+};
+
+// summit: manage link
+const ml = {
+idle: !st.mlSent, sent: st.mlSent, email: st.mlEmail, err: st.mlErr, invalid: st.mlErr ? 'true' : 'false',
+input: input(st.mlErr) + '; flex: 1 1 240px; width: auto',
+setEmail: (e) => this.setState({ mlEmail: e.target.value, mlErr: false }),
+send: () => (okEmail(this.state.mlEmail) ? this.setState({ mlSent: true, mlErr: false }) : this.setState({ mlErr: true })),
+reset: () => this.setState({ mlSent: false, mlEmail: '' })
+};
+
+// jobs links
+const jobLinks = [
+['Browse jobs', 'Open roles in robots for the climate', 'JobsV3.dc.html'],
+['Browse internships', 'Opens the Internships tab', 'JobsV3.dc.html'],
+['Post a job', 'An admin reviews each post before it goes live', 'JobsV3.dc.html']
+].map((j, i) => ({ label: j[0], desc: j[1], href: j[2], row: i === 0 ? 'border-top: 0' : '' }));
+
+// consulting
+const c1Errs = (s) => {
+const out = [];
+if (!s.cType) out.push(['type', 'c-type', 'Choose your organization type.']);
+if (!s.cEng.length) out.push(['eng', 'c-eng', 'Choose at least one engagement type.']);
+if (!s.cDesc.trim()) out.push(['desc', 'c-desc', 'Tell us about your project.']);
+if (!s.cTime) out.push(['time', 'c-time', 'Choose an ideal timeline.']);
+return out;
+};
+const c2Errs = (s) => {
+const out = [];
+if (!s.cName.trim()) out.push(['name', 'c-name', 'Enter your name.']);
+if (!s.cEmail.trim()) out.push(['email', 'c-email', 'Enter your work email.']);
+else if (!okEmail(s.cEmail)) out.push(['email', 'c-email', 'Enter an email address like name@example.org.']);
+if (!s.cOrg.trim()) out.push(['org', 'c-org', 'Enter your organization.']);
+if (!s.cConsent) out.push(['consent', 'c-consent', 'Confirm we can use these details to reply.']);
+return out;
+};
+const e1 = c1Errs(st), e2 = c2Errs(st);
+const cErr = (list, tried, k) => { if (!tried) return ''; const e = list.find((x) => x[0] === k); return e ? e[2] : ''; };
+const cB = (k) => st.cBlur.indexOf(k) > -1;
+const blurC = (k) => () => { const b = this.state.cBlur; if (b.indexOf(k) < 0) this.setState({ cBlur: b.concat([k]) }); };
+const ce1 = (k) => cErr(e1, st.cTried1 || cB(k), k), ce2 = (k) => cErr(e2, st.cTried2 || cB(k), k);
+const step = st.cStep;
+const curErrs = step === 1 ? (st.cTried1 ? e1 : []) : (st.cTried2 ? e2 : []);
+const radio = (list, key) => list.map((v) => {
+const on = st[key] === v;
+return { label: v, checked: on ? 'true' : 'false', style: pill(on), pick: () => this.setState({ [key]: v, cDirty: true }) };
+});
+const cf = {
+open: kind === 'consult' && st.cStatus !== 'sent', done: kind === 'consult' && st.cStatus === 'sent',
+step1: step === 1, step2: step === 2, dirty: st.cDirty,
+stepLabel: step === 1 ? 'STEP 1 OF 2 · PROJECT' : 'STEP 2 OF 2 · CONTACT',
+segs: [['01 PROJECT', 1], ['02 CONTACT', 2]].map((s) => ({ label: s[0], current: s[1] === step ? 'step' : 'false',
+lab: MONO + 'font-size: 11px; letter-spacing: 0.06em; color: ' + (s[1] <= step ? '#0138AC' : '#646B7A'),
+bar: 'height: 4px; border-radius: 999px; background: ' + (s[1] <= step ? '#0138AC' : '#E5E7EB') })),
+isError: st.cStatus === 'error', isRate: st.cStatus === 'rate',
+hasSummary: curErrs.length > 0, summaryTitle: summaryTitle(curErrs.length),
+summary: curErrs.map((e) => ({ text: e[2], href: '#' + e[1] })),
+types: radio(['Startup', 'Company', 'Investor', 'Foundation', 'Government', 'NGO', 'University'], 'cType'),
+times: radio(['This month', 'This quarter', 'Later'], 'cTime'),
+engs: ['Policy', 'Research', 'Partnerships', 'Go-to-market', 'Other'].map((v) => {
+const on = st.cEng.indexOf(v) > -1;
+return { label: v, pressed: on ? 'true' : 'false', style: pill(on),
+toggle: () => { const c = this.state.cEng; this.setState({ cEng: on ? c.filter((x) => x !== v) : c.concat([v]), cDirty: true }); } };
+}),
+typeErr: ce1('type'), engErr: ce1('eng'), descErr: ce1('desc'), timeErr: ce1('time'),
+desc: st.cDesc, setDesc: (e) => this.setState({ cDesc: e.target.value.slice(0, 1000), cDirty: true }),
+descInv: ce1('desc') ? 'true' : 'false', descInput: area(!!ce1('desc')),
+count: st.cDesc.length.toLocaleString('en-US') + ' / 1,000',
+budget: st.cBudget, setBudget: (e) => this.setState({ cBudget: e.target.value, cDirty: true }),
+selectStyle: input(false) + '; appearance: auto',
+next: () => (c1Errs(this.state).length ? this.setState({ cTried1: true }) : this.setState({ cTried1: true, cStep: 2 })),
+back: () => this.setState({ cStep: 1, cStatus: 'idle' }),
+name: st.cName, email: st.cEmail, org: st.cOrg, web: st.cWeb, consent: st.cConsent,
+setName: (e) => this.setState({ cName: e.target.value, cDirty: true }), setEmail: (e) => this.setState({ cEmail: e.target.value, cDirty: true }),
+setOrg: (e) => this.setState({ cOrg: e.target.value, cDirty: true }), setWeb: (e) => this.setState({ cWeb: e.target.value, cDirty: true }),
+blurDesc: blurC('desc'), blurName: blurC('name'), blurEmail: blurC('email'), blurOrg: blurC('org'),
+nameErr: ce2('name'), emailErr: ce2('email'), orgErr: ce2('org'), consentErr: ce2('consent'),
+nameInv: ce2('name') ? 'true' : 'false', emailInv: ce2('email') ? 'true' : 'false', orgInv: ce2('org') ? 'true' : 'false', consentInv: ce2('consent') ? 'true' : 'false',
+nameInput: input(!!ce2('name')), emailInput: input(!!ce2('email')), orgInput: input(!!ce2('org')), webInput: input(false),
+consentChecked: st.cConsent ? 'true' : 'false', consentBox: box(st.cConsent, !!ce2('consent')),
+toggleConsent: () => this.setState({ cConsent: !this.state.cConsent, cDirty: true }),
+submit: () => {
+if (c2Errs(this.state).length) { this.setState({ cTried2: true, cStatus: 'idle' }); return; }
+const m = this.state.mode;
+this.setState({ cTried2: true, cStatus: m === 'ok' ? 'sent' : m });
+},
+retry: () => this.setState({ mode: 'ok', cStatus: 'sent' }),
+saveLater: () => this.setState({ cSaved: true }),
+saved: st.cSaved,
+savedText: okEmail(st.cEmail) ? 'Saved. We’ve emailed a link to finish this enquiry to ' + st.cEmail.trim() + '.' : 'Add your work email above and we’ll email you a link to finish later.'
+};
+
+// role addresses
+const roles = [
+['EMAIL US', 'hello@vert-robo-con.example']
+].map((r) => ({ label: r[0], addr: r[1], href: 'mailto:' + r[1] }));
+
+const footer = [
+['SUMMIT', 'Summit', [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']]],
+['LEARN', 'Learn', [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']]],
+['COMMUNITY', 'Community', [['Join', 'HomeV3.dc.html#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']]],
+['ABOUT', 'About', [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']]]
+].map((g) => ({ title: g[0], label: g[1], links: g[2].map((l) => ({ label: l[0], href: l[1], current: l[0] === 'Contact' ? 'page' : 'false', go: l[0] === 'Consulting' ? openConsulting : () => {} })) }));
+
+return {
+ui, presets, modes, menus, menuOpen: !!st.menu, closeMenu,
+faqs, topics, noTopic: !cur,
+isSummit: st.topic === 'summit', isSpeaking: st.topic === 'speaking', isMap: st.topic === 'map', isJobs: st.topic === 'jobs',
+showStillWrite: kind === 'route' && !st.showForm,
+revealForm: () => this.setState({ showForm: true }),
+startEnquiry: openConsulting,
+form, nS, nF, ml, jobLinks, cf, roles, footer
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Summit edition (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px;display:inline-flex;align-items:center;gap:4px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.sublink:hover{color:#0A1222 !important}
+.flink{color:#0A1222;text-decoration:none}.flink:hover{color:#0138AC;text-decoration:underline}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.spk:hover{border-color:#D5D8DE !important;background:#F7F8F9 !important}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+</style>
+</helmet>
+<div style="font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EAEC; border-bottom: 1px solid #D5D8DE; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; color: #3D4556">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="font-weight: 500; color: #0A1222">Preview state</span>
+<div role="group" aria-label="Preview state (2027 only)" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 11px; background: #DCDEE2">
+<sc-for list="{{states}}" as="s" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{s.pressed}}" aria-disabled="{{s.disabled}}" onClick="{{s.pick}}" style="{{s.style}}">{{s.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{psHint}}" hint-placeholder-val="{{ false }}"><span>Select 2027 in the edition picker to preview states.</span></sc-if>
+</div>
+
+<div style="position: relative">
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}"><div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div></sc-if>
+
+<!-- HEADER -->
+<header style="position: relative; z-index: 10; background: #ffffff; border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html" aria-current="page" style="background: #F3F4F2; color: #0A1222">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6"><a class="mitem" href="{{i.href}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a></sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<div style="display: flex; align-items: center; gap: 8px">
+<sc-if value="{{regPill}}" hint-placeholder-val="{{ false }}">
+<a href="RegisterV3.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-size: 15px; font-weight: 500; text-decoration: none"><span aria-hidden="true" style="{{regDot}}"></span>Register for 2027</a>
+</sc-if>
+<button type="button" onClick="{{openJoin}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Join the network</button>
+</div>
+</div>
+</header>
+
+<!-- HERO / OVERVIEW -->
+<section id="overview" style="padding: 56px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px">
+<nav aria-label="Breadcrumb" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><a href="SummitV3.dc.html" style="color: #646B7A; text-decoration: none">SUMMITS</a> / <span style="color: #0A1222">{{year}}</span></nav>
+<div role="group" aria-label="Edition" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{editions}}" as="e" hint-placeholder-count="4">
+<button type="button" aria-pressed="{{e.pressed}}" onClick="{{e.pick}}" style="{{e.style}}">{{e.y}}<sc-if value="{{e.hasTag}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #0138AC">UPCOMING</span></sc-if></button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 40px 64px; align-items: flex-end">
+<div style="flex: 1.3 1 560px; display: flex; flex-direction: column; gap: 24px">
+<span style="{{hero.chip}}"><span aria-hidden="true" style="{{hero.dot}}"></span>{{hero.chipLabel}}</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 96px; line-height: 0.92; letter-spacing: -0.045em">Vert Robo Con Summit <span style="color: #0138AC">{{year}}</span></h1>
+<p style="margin: 0; max-width: 620px; font-size: 20px; color: #3D4556">{{hero.dek}}</p>
+</div>
+<dl style="flex: 1 1 340px; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #E5E7EB; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden">
+<sc-for list="{{hero.facts}}" as="f" hint-placeholder-count="4">
+<div style="background: #ffffff; padding: 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="margin: 4px 0 0; font-weight: 600">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px">
+<sc-for list="{{hero.pre}}" as="l" hint-placeholder-count="1"><a href="{{l.href}}" style="{{l.style}}">{{l.label}}</a></sc-for>
+<sc-if value="{{hero.hasNotify}}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{hn.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{hn.expand}}" style="{{hn.btnStyle}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"></path></svg>{{hn.label}}</button></sc-if>
+<sc-if value="{{hn.open}}" hint-placeholder-val="{{ false }}"><div style="flex: 1 1 520px; max-width: 600px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email<input type="email" value="{{hn.email}}" onChange="{{hn.onEmail}}" placeholder="name@example.org" aria-invalid="{{hn.invalid}}" style="{{hn.inputStyle}}"></label>
+<button type="button" onClick="{{hn.submit}}" style="min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Notify me</button>
+<button type="button" onClick="{{hn.cancel}}" style="min-height: 48px; padding: 0 10px; border: 0; background: none; color: #3D4556; font: inherit; font-size: 15px; cursor: pointer">Cancel</button>
+</div>
+<sc-if value="{{hn.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{hn.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<span style="font-size: 13px; color: #646B7A">Only the topics you pick, unsubscribe in one click. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div></sc-if>
+<sc-if value="{{hn.pending}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; min-height: 48px; padding: 8px 16px; box-sizing: border-box; border-radius: 14px; background: #EEF2FB; font-size: 15px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg><span><strong style="font-weight: 600">Check your inbox to confirm.</strong> We sent a link to {{hn.email}}.</span><button type="button" onClick="{{hn.confirm}}" style="{{canvasLink}}">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{hn.done}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: 14px; background: #E8F6EE; color: #0B7A47; font-size: 15px; font-weight: 500"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>You’re on the list · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></div></sc-if>
+</sc-if>
+<sc-for list="{{hero.post}}" as="l" hint-placeholder-count="1"><a href="{{l.href}}" style="{{l.style}}">{{l.label}}</a></sc-for>
+</div>
+<sc-if value="{{hero.hasNote}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 15px; color: #646B7A">{{hero.note}}</p></sc-if>
+</div>
+
+<!-- live: now / next -->
+<sc-if value="{{live27}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px">
+<div style="border-radius: 20px; background: #0A1222; color: #ffffff; padding: 22px 24px; display: flex; flex-direction: column; gap: 6px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #7FD6A8"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #1DB46C"></span>HAPPENING NOW · DAY 2 · [HH:MM]–[HH:MM] UTC</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.02em">[SESSION TITLE]</span>
+<a href="MyVRCV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; margin-top: 6px; border-radius: 12px; background: #ffffff; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>Join from My VRC</a>
+<span style="font-size: 13px; color: #9AA3B5">Registered attendees find their join link in My VRC.</span>
+</div>
+<div style="border-radius: 20px; border: 1px solid #E5E7EB; padding: 22px 24px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">NEXT · [HH:MM] UTC</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.02em">[SESSION TITLE]</span>
+<a href="ProgramV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500; text-decoration: none">See the rest of day 2 →</a>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{heroImg}}" hint-placeholder-val="{{ true }}">
+<div style="border-radius: 28px; overflow: hidden; aspect-ratio: 21 / 8; background: #DDE6F5">
+<img src="{{heroImgSrc}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block">
+</div>
+</sc-if>
+
+<!-- 2024 recap: lite player -->
+<sc-if value="{{is24}}" hint-placeholder-val="{{ false }}">
+<div style="max-width: 900px; display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{vidIdle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{playVid}}" aria-label="Play the Vert Robo Con Summit 2024 recap" style="position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #0A1222; cursor: pointer">
+<img src="img/summit-grid.svg" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7">
+<span aria-hidden="true" style="position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; color: #0A1222"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+<span style="position: absolute; left: 16px; bottom: 16px; display: flex; gap: 8px"><span style="padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px">RECAP · SUMMIT 2024</span><span style="padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px">[MM:SS]</span></span>
+</button>
+</sc-if>
+<sc-if value="{{vidOn}}" hint-placeholder-val="{{ false }}">
+<div style="aspect-ratio: 16 / 9; border-radius: 20px; background: #0A1222; color: #C8CEDA; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; box-sizing: border-box; text-align: center">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #7FD6A8">PLAYING · PRIVACY-ENHANCED PLAYER · S24-RECAP</span>
+<span style="max-width: 440px; font-size: 15px">The embedded player loads here only after you press play, so the video host sets no cookies before that.</span>
+<button type="button" onClick="{{stopVid}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #2E3850; border-radius: 12px; background: transparent; color: #ffffff; font: inherit; font-size: 15px; cursor: pointer">Back to poster</button>
+</div>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+<button type="button" aria-expanded="{{vtxExpanded}}" onClick="{{toggleTx}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{txLabel}}</button>
+<a href="https://vert-robo-con.example/watch/s24-recap" style="font-size: 14px; color: #646B7A">Open the video page</a>
+</div>
+<sc-if value="{{vtx}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div role="tablist" aria-label="About this video" style="align-self: flex-start; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{vtabs}}" as="v" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{v.selected}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button></sc-for>
+</div>
+<div role="tabpanel" style="display: flex; gap: 16px; font-size: 16px; color: #3D4556"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A; padding-top: 3px">{{vstamp}}</span><span>{{vpanel}}</span></div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</section>
+
+<!-- SUBNAV -->
+<nav aria-label="On this page" style="position: sticky; top: 0; z-index: 5; margin-top: 56px; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 32px; font-size: 15px; font-weight: 500">
+<sc-for list="{{subnav}}" as="n" hint-placeholder-count="6"><a class="sublink" href="{{n.href}}" aria-current="{{n.current}}" onClick="{{n.pick}}" style="{{n.style}}">{{n.label}}</a></sc-for>
+<sc-if value="{{agendaPill}}" hint-placeholder-val="{{ false }}"><a href="MyVRCV3.dc.html" style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 999px; color: #0A1222; font-size: 14px; text-decoration: none"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg>My agenda (0)</a></sc-if>
+</div>
+</nav>
+
+<!-- GET INVOLVED (2027 only) -->
+<sc-if value="{{is27}}" hint-placeholder-val="{{ true }}">
+<section id="involved" style="padding: 96px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">GET INVOLVED · SUMMIT 2027</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">{{giTitle}}</h2>
+</div>
+<a href="GetInvolvedV3.dc.html" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none">All calls and ways to help →</a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<sc-for list="{{gi}}" as="g" hint-placeholder-count="4">
+<article style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<span style="{{g.chipStyle}}"><span aria-hidden="true" style="{{g.dotStyle}}"></span>{{g.chipL}}</span>
+<a href="GetInvolvedV3.dc.html" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em; color: #0A1222; text-decoration: none">{{g.title}}</a>
+<p style="margin: 0; font-size: 15px; color: #3D4556">{{g.body}}</p>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+<sc-if value="{{g.isLink}}" hint-placeholder-val="{{ false }}"><a href="GetInvolvedV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none">{{g.cta}}</a></sc-if>
+<sc-if value="{{g.showIdle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{g.expand}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"></path></svg>Remind me</button></sc-if>
+<sc-if value="{{g.open}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email<input type="email" value="{{g.email}}" onChange="{{g.onEmail}}" placeholder="name@example.org" aria-invalid="{{g.invalid}}" style="{{g.inputStyle}}"></label>
+<sc-if value="{{g.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org.</span></sc-if>
+<div style="display: flex; gap: 6px"><button type="button" onClick="{{g.submit}}" style="min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Remind me</button><button type="button" onClick="{{g.cancel}}" style="min-height: 44px; padding: 0 10px; border: 0; background: none; color: #3D4556; font: inherit; font-size: 15px; cursor: pointer">Cancel</button></div>
+</sc-if>
+<sc-if value="{{g.pending}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; background: #EEF2FB; font-size: 14px"><span><strong style="font-weight: 600">Check your inbox to confirm.</strong> Then we’ll email {{g.email}} when it opens.</span><button type="button" onClick="{{g.confirm}}" style="{{canvasLink}}">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{g.done}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 14px; background: #E8F6EE; color: #0B7A47; font-size: 14px; font-weight: 500">You’re on the list · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></div></sc-if>
+</div>
+</article>
+</sc-for>
+</div>
+</div>
+</section>
+</sc-if>
+
+<!-- PROGRAM -->
+<section id="program" style="{{programBg}}">
+<div style="max-width: 1280px; margin: 0 auto">
+
+<sc-if value="{{post27}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PROGRAM · APRIL 20–22, 2027 · ALL TIMES UTC</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">{{post27Title}}</h2>
+<p style="margin: 0; font-size: 18px; color: #3D4556">{{post27Body}}</p>
+</div>
+<a href="ProgramV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Full program →</a>
+</div>
+</sc-if>
+
+<sc-if value="{{pre27}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PROGRAM · PROPOSED TRACKS · [TRACKS TBC]</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Program announced [DATE]</h2>
+<p style="margin: 0; font-size: 18px; color: #3D4556">Three days online, April 20–22, 2027. These are the tracks we are planning around. Sessions, times and speakers follow with the program.</p>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>DRAFT PROGRAM</span>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+<sc-for list="{{tracks}}" as="k" hint-placeholder-count="4">
+<li style="background: #ffffff; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 40px; min-height: 140px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">TRACK {{k.n}}</span>
+<span style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">{{k.t}}</span><span style="font-size: 14px; color: #646B7A">Sessions announced with the program</span></span>
+</li>
+</sc-for>
+</ul>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px">
+<sc-if value="{{pn.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{pn.expand}}" style="{{pn.btnStyle}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"></path></svg>{{pn.label}}</button></sc-if>
+<sc-if value="{{pn.open}}" hint-placeholder-val="{{ false }}"><div style="flex: 1 1 520px; max-width: 600px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email<input type="email" value="{{pn.email}}" onChange="{{pn.onEmail}}" placeholder="name@example.org" aria-invalid="{{pn.invalid}}" style="{{pn.inputStyle}}"></label>
+<button type="button" onClick="{{pn.submit}}" style="min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Notify me</button>
+<button type="button" onClick="{{pn.cancel}}" style="min-height: 48px; padding: 0 10px; border: 0; background: none; color: #3D4556; font: inherit; font-size: 15px; cursor: pointer">Cancel</button>
+</div>
+<sc-if value="{{pn.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{pn.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<span style="font-size: 13px; color: #646B7A">Only the topics you pick, unsubscribe in one click. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div></sc-if>
+<sc-if value="{{pn.pending}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; min-height: 48px; padding: 8px 16px; box-sizing: border-box; border-radius: 14px; background: #EEF2FB; font-size: 15px"><span><strong style="font-weight: 600">Check your inbox to confirm.</strong> We sent a link to {{pn.email}}.</span><button type="button" onClick="{{pn.confirm}}" style="{{canvasLink}}">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{pn.done}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: 14px; background: #E8F6EE; color: #0B7A47; font-size: 15px; font-weight: 500">You’re on the list · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></div></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{is26}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 64px; align-items: flex-start">
+<div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 20px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PROGRAM · ALL TIMES UTC</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Three days, ten sessions</h2>
+<div role="tablist" aria-label="Summit days" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3">
+<button type="button" role="tab" aria-selected="{{d.selected}}" onClick="{{d.pick}}" style="{{d.style}}">
+<span style="display: flex; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 12px; opacity: 0.75"><span>{{d.label}}</span><span>{{d.date}}</span></span>
+<span style="font-weight: 600; font-size: 16px; line-height: 1.35">{{d.theme}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+<div style="flex: 2 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div role="group" aria-label="Filter by session type" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="4"><button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}</button></sc-for>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{sessions}}" as="s" hint-placeholder-count="6">
+<li style="{{s.cardStyle}}">
+<span style="flex: 0 0 120px; font-family: 'Geist Mono', monospace; font-size: 13px; color: #646B7A; padding-top: 3px">{{s.time}}</span>
+<span style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 6px">
+<span style="{{s.badge}}">{{s.kindLabel}}</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2; letter-spacing: -0.015em">{{s.title}}</span>
+</span>
+<a href="ProgramV3.dc.html" aria-label="{{s.aria}}" style="{{s.recStyle}}"><span aria-hidden="true" style="{{s.recDot}}"></span>RECORDING IN EDITING</a>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{noSessions}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 32px; border: 1px dashed #D5D8DE; border-radius: 16px; text-align: center; color: #646B7A; display: flex; flex-direction: column; align-items: center; gap: 8px"><span>No sessions of that type on this day.</span><button type="button" onClick="{{clearKind}}" style="min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 999px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Show all sessions</button></div>
+</sc-if>
+<a href="ProgramV3.dc.html" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none">Open the full program: search, time zones, add to calendar →</a>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{is25}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PROGRAM · JUNE 10–12, 2025</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Three days, 12 sessions</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<sc-for list="{{p25}}" as="d" hint-placeholder-count="4">
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{d.d}}</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2; letter-spacing: -0.015em">{{d.theme}}</span>
+<ul style="margin: 0; padding: 0 0 0 18px; font-size: 15px; color: #3D4556; display: flex; flex-direction: column; gap: 4px"><sc-for list="{{d.items}}" as="it" hint-placeholder-count="3"><li>{{it.t}}</li></sc-for></ul>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px 28px"><a href="ProgramV3.dc.html" style="font-weight: 500; text-decoration: none">Open the 2025 program →</a><a href="WatchV3.dc.html" style="font-weight: 500; text-decoration: none">Watch all 12 sessions →</a></div>
+</div>
+</sc-if>
+
+<sc-if value="{{is24}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PROGRAM · SEPTEMBER 24–25, 2024</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Two days, where it started</h2>
+<p style="margin: 0; font-size: 18px; color: #3D4556">The 2024 sessions live in Watch, each with its speakers, summary and transcript.</p>
+</div>
+<a href="WatchV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 16px; font-weight: 500; text-decoration: none">All 2024 sessions →</a>
+</div>
+</sc-if>
+</div>
+</section>
+
+<!-- KEYNOTES + SPEAKERS (share the person drawer) -->
+<div style="position: relative">
+
+<sc-if value="{{hasKeynotes}}" hint-placeholder-val="{{ false }}">
+<section id="keynotes" style="background: #F3F4F2; padding: 96px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Keynotes</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{keynotes}}" as="k" hint-placeholder-count="3">
+<article class="lift" style="background: #ffffff; border-radius: 24px; padding: 12px; display: flex; flex-direction: column; gap: 16px">
+<button type="button" onClick="{{k.open}}" aria-label="{{k.aria}}" style="padding: 0; border: 0; background: none; cursor: pointer; display: block"><img src="{{k.photo}}" alt="{{k.name}}" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 16px; display: block"></button>
+<div style="padding: 0 12px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0B7A47">{{k.when}}</span>
+<h3 style="margin: 0"><button type="button" onClick="{{k.open}}" style="padding: 0; border: 0; background: none; cursor: pointer; text-align: left; color: #0A1222; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.02em">{{k.name}}</button></h3>
+<p style="margin: 0; font-size: 15px; color: #646B7A">{{k.role}}</p>
+<sc-if value="{{k.soon}}" hint-placeholder-val="{{ true }}"><span style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Recording in editing</span></sc-if>
+<sc-if value="{{k.watch}}" hint-placeholder-val="{{ false }}"><a href="WatchV3.dc.html" style="margin-top: 8px; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; font-size: 15px; font-weight: 500; text-decoration: none"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>Watch · {{k.dur}}</a></sc-if>
+</div>
+</article>
+</sc-for>
+</div>
+</div>
+</section>
+</sc-if>
+
+<section id="speakers" style="padding: 96px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Speakers</h2>
+<sc-if value="{{hasGrid}}" hint-placeholder-val="{{ false }}">
+<label style="position: relative; flex: 0 1 340px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search speakers</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Search by name or institution" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 15px">
+</label>
+</sc-if>
+</div>
+<sc-if value="{{hasGrid}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px">
+<sc-for list="{{speakers}}" as="p" hint-placeholder-count="9">
+<button type="button" class="spk" onClick="{{p.open}}" style="display: flex; align-items: center; gap: 14px; padding: 12px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<sc-if value="{{p.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{p.photo}}" alt="" style="width: 56px; height: 56px; border-radius: 12px; object-fit: cover; flex: 0 0 auto"></sc-if>
+<sc-if value="{{p.noPhoto}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; flex: 0 0 auto; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500">{{p.ini}}</span></sc-if>
+<span style="display: flex; flex-direction: column; min-width: 0; line-height: 1.35"><strong style="font-weight: 600; font-size: 15px">{{p.name}}</strong><span style="font-size: 13px; color: #646B7A">{{p.org}}</span></span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{noSpeakers}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 32px; border: 1px dashed #D5D8DE; border-radius: 16px; text-align: center; color: #646B7A; display: flex; flex-direction: column; align-items: center; gap: 8px"><span>No speakers match that search.</span><button type="button" onClick="{{clearQ}}" style="min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 999px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear search</button></div>
+</sc-if>
+</sc-if>
+<sc-if value="{{spkEmpty}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 32px; border: 1px dashed #D5D8DE; border-radius: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px">
+<span style="display: flex; flex-direction: column; gap: 4px"><strong style="font-weight: 600; font-size: 18px">{{spkEmptyTitle}}</strong><span style="font-size: 15px; color: #646B7A">{{spkEmptyBody}}</span></span>
+<a href="{{spkEmptyHref}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none">{{spkEmptyCta}}</a>
+</div>
+</sc-if>
+</div>
+</section>
+
+<!-- PERSON DRAWER -->
+<sc-if value="{{hasPerson}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 20">
+<button type="button" aria-label="Close profile" onClick="{{closeP}}" style="position: absolute; inset: 0; width: 100%; border: 0; background: rgba(10,18,34,0.4); cursor: pointer"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="person-name" tabindex="-1" onKeyDown="{{drawerKey}}" style="{{drawerStyle}}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SPEAKER</span>
+<button type="button" aria-label="Close" onClick="{{closeP}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="display: flex; align-items: center; gap: 16px">
+<sc-if value="{{pr.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{pr.photo}}" alt="{{pr.alt}}" style="width: 88px; height: 88px; border-radius: 20px; object-fit: cover; flex: 0 0 auto"></sc-if>
+<sc-if value="{{pr.noPhoto}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 88px; height: 88px; border-radius: 50%; flex: 0 0 auto; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 24px; font-weight: 500">{{pr.ini}}</span></sc-if>
+<span style="display: flex; flex-direction: column; gap: 2px"><span id="person-name" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">{{pr.name}}</span><span style="font-size: 15px; color: #3D4556">{{pr.role}} · {{pr.org}}</span></span>
+</div>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{pr.bio}}</p>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">APPEARS IN</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{pr.app}}" as="a" hint-placeholder-count="2">
+<li style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px">
+<sc-if value="{{a.play}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 32px; height: 32px; flex: 0 0 auto; border-radius: 50%; background: #0138AC; color: #ffffff; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span></sc-if>
+<sc-if value="{{a.soon}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 32px; height: 32px; flex: 0 0 auto; border-radius: 50%; background: #F3F4F2; color: #646B7A; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span></sc-if>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; line-height: 1.35"><span style="font-size: 15px; font-weight: 500">{{a.label}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{a.meta}}</span></span>
+<sc-if value="{{a.play}}" hint-placeholder-val="{{ false }}"><a href="WatchV3.dc.html" style="font-size: 14px; font-weight: 500; text-decoration: none">Watch</a></sc-if>
+</li>
+</sc-for>
+</ul>
+</div>
+<div style="display: flex; gap: 16px; font-size: 14px"><sc-if value="{{pr.hasWeb}}" hint-placeholder-val="{{ false }}"><a href="{{pr.web}}" style="color: #646B7A">Website</a></sc-if><a href="{{pr.li}}" style="color: #646B7A">LinkedIn</a></div>
+</div>
+</aside>
+</div>
+</sc-if>
+</div>
+
+<!-- RECORDINGS -->
+<section id="recordings" style="padding: 0 32px 96px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Recordings</h2>
+<sc-if value="{{recLink}}" hint-placeholder-val="{{ false }}"><a href="WatchV3.dc.html" style="font-weight: 500; text-decoration: none">{{recLinkLabel}}</a></sc-if>
+</div>
+
+<sc-if value="{{live27}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 32px; border: 1px dashed #D5D8DE; border-radius: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>BEING RECORDED</span>
+<span style="font-size: 16px; color: #3D4556">Every 2027 session is recorded. Each one is published here and in Watch once it is edited, after the summit.</span>
+<a href="WatchV3.dc.html" style="font-weight: 500; text-decoration: none">Browse Watch →</a>
+</div>
+</sc-if>
+
+<sc-if value="{{pre27}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 32px; border: 1px dashed #D5D8DE; border-radius: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>NOT PUBLISHED YET</span>
+<span style="font-size: 16px; color: #3D4556">Every 2027 session is recorded and published here after the summit. Until then, the 2025 sessions are free to watch.</span>
+<a href="WatchV3.dc.html" style="font-weight: 500; text-decoration: none">Browse Watch →</a>
+</div>
+</sc-if>
+
+<sc-if value="{{recEditing}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: center">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 14px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>RECORDINGS IN EDITING</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; letter-spacing: -0.02em">{{recEd.count}}</span>
+<span role="progressbar" aria-label="Recordings published" aria-valuemin="0" aria-valuemax="{{recEd.max}}" aria-valuenow="0" aria-valuetext="{{recEd.count}}" style="display: block; height: 8px; border-radius: 999px; background: #F3F4F2; overflow: hidden"><span style="display: block; width: 0%; height: 100%; background: #0138AC"></span></span>
+<span style="font-size: 15px; color: #646B7A">{{recEd.line}}</span>
+</div>
+<div style="flex: 1 1 360px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px">
+<sc-if value="{{rn.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{rn.expand}}" style="{{rn.btnStyle}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"></path></svg>{{rn.label}}</button></sc-if>
+<sc-if value="{{rn.open}}" hint-placeholder-val="{{ false }}"><div style="flex: 1 1 100%; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email<input type="email" value="{{rn.email}}" onChange="{{rn.onEmail}}" placeholder="name@example.org" aria-invalid="{{rn.invalid}}" style="{{rn.inputStyle}}"></label>
+<button type="button" onClick="{{rn.submit}}" style="min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Notify me</button>
+<button type="button" onClick="{{rn.cancel}}" style="min-height: 48px; padding: 0 10px; border: 0; background: none; color: #3D4556; font: inherit; font-size: 15px; cursor: pointer">Cancel</button>
+</div>
+<sc-if value="{{rn.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{rn.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<span style="font-size: 13px; color: #646B7A">Only the topics you pick, unsubscribe in one click. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div></sc-if>
+<sc-if value="{{rn.pending}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; min-height: 48px; padding: 8px 16px; box-sizing: border-box; border-radius: 14px; background: #EEF2FB; font-size: 15px"><span><strong style="font-weight: 600">Check your inbox to confirm.</strong> We sent a link to {{rn.email}}.</span><button type="button" onClick="{{rn.confirm}}" style="{{canvasLink}}">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{rn.done}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: 14px; background: #E8F6EE; color: #0B7A47; font-size: 15px; font-weight: 500">You’re on the list · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></div></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{is25}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{rec25}}" as="r" hint-placeholder-count="3">
+<a href="WatchV3.dc.html" class="lift" style="display: flex; flex-direction: column; gap: 14px; color: #0A1222; text-decoration: none; border-radius: 20px">
+<span style="position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden; background: #0A1222">
+<img src="{{r.photo}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8">
+<span aria-hidden="true" style="position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; color: #0A1222"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+<span style="position: absolute; left: 14px; bottom: 14px; padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px">{{r.dur}}</span>
+</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">RECORDING · SUMMIT 2025</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2; letter-spacing: -0.015em">{{r.title}}</span>
+</a>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{is24}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 32px; border: 1px solid #E5E7EB; border-radius: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px">
+<span style="font-size: 16px; color: #3D4556">The recap video is at the top of this page. Every 2024 session is in Watch.</span>
+<a href="WatchV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">All 2024 sessions →</a>
+</div>
+</sc-if>
+</div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners" style="padding: 0 32px 96px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{partnerEyebrow}}</span>
+<sc-if value="{{partnerNoteOn}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 17px; color: #3D4556">{{partnerNote}}</p></sc-if>
+<ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<sc-for list="{{partners}}" as="p" hint-placeholder-count="6">
+<li style="{{p.style}}"><span style="{{p.tierStyle}}">{{p.tier}}</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.2">{{p.name}}</span></li>
+</sc-for>
+<li style="display: flex"><a href="GetInvolvedV3.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 28px 20px; min-height: 108px; box-sizing: border-box; border: 1.5px dashed #D5D8DE; border-radius: 16px; text-align: center; text-decoration: none"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{sponsorTile.k}}</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; color: #0138AC">{{sponsorTile.t}}</span></a></li>
+</ul>
+</div>
+</section>
+
+<!-- PAST EDITIONS -->
+<section id="past" style="background: #F3F4F2; padding: 96px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">ARCHIVE</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Past editions</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{past}}" as="p" hint-placeholder-count="3">
+<article style="{{p.cardStyle}}">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>{{p.chipL}}</span>
+<a href="#overview" onClick="{{p.pick}}" aria-current="{{p.current}}" style="display: flex; flex-direction: column; color: #0A1222; text-decoration: none"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 64px; line-height: 1; letter-spacing: -0.04em">{{p.y}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A; margin-top: 8px">{{p.dates}}</span></a>
+<p style="margin: 0; font-size: 15px; color: #3D4556">{{p.line}}</p>
+<div style="margin-top: auto; display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 15px; font-weight: 500; color: #9AA3B5"><a href="ProgramV3.dc.html" style="text-decoration: none; padding: 8px 0">Program</a><span aria-hidden="true" style="padding: 8px 0">·</span><a href="WatchV3.dc.html" style="text-decoration: none; padding: 8px 0">Recordings</a><span aria-hidden="true" style="padding: 8px 0">·</span><a href="#speakers" onClick="{{p.pick}}" style="text-decoration: none; padding: 8px 0">Speakers</a></div>
+</article>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 380px; font-size: 15px; color: #646B7A">Monthly digest: summit news, new videos and jobs from the network, in one email.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px">
+<sc-if value="{{fn.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{fn.expand}}" style="{{fn.btnStyle}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>{{fn.label}}</button></sc-if>
+<sc-if value="{{fn.open}}" hint-placeholder-val="{{ false }}"><div style="flex: 1 1 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email<input type="email" value="{{fn.email}}" onChange="{{fn.onEmail}}" placeholder="name@example.org" aria-invalid="{{fn.invalid}}" style="{{fn.inputStyle}}"></label>
+<button type="button" onClick="{{fn.submit}}" style="min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Notify me</button>
+<button type="button" onClick="{{fn.cancel}}" style="min-height: 48px; padding: 0 10px; border: 0; background: none; color: #3D4556; font: inherit; font-size: 15px; cursor: pointer">Cancel</button>
+</div>
+<sc-if value="{{fn.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{fn.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<span style="font-size: 13px; color: #646B7A">Only the topics you pick, unsubscribe in one click. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div></sc-if>
+<sc-if value="{{fn.pending}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; min-height: 48px; padding: 8px 16px; box-sizing: border-box; border-radius: 14px; background: #EEF2FB; font-size: 15px"><span><strong style="font-weight: 600">Check your inbox to confirm.</strong> We sent a link to {{fn.email}}.</span><button type="button" onClick="{{fn.confirm}}" style="{{canvasLink}}">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{fn.done}}" hint-placeholder-val="{{ false }}"><div role="status" style="display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: 14px; background: #E8F6EE; color: #0B7A47; font-size: 15px; font-weight: 500">You’re on the list · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></div></sc-if>
+</div>
+<div style="display: flex; gap: 4px; margin-left: -10px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<button type="button" aria-label="Slack: join the network" onClick="{{openJoin}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border: 0; border-radius: 10px; background: transparent; cursor: pointer"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v8M15 13v8M3 15h8M13 9h8"></path></svg></button>
+</div>
+</div>
+<sc-for list="{{footGroups}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 140px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.head}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="5"><sc-if value="{{l.isLink}}" hint-placeholder-val="{{ true }}"><a class="flink" href="{{l.href}}">{{l.t}}</a></sc-if><sc-if value="{{l.isBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="flink" onClick="{{l.go}}" style="align-self: flex-start; padding: 0; border: 0; background: none; font: inherit; font-size: 15px; line-height: inherit; text-align: left; cursor: pointer">{{l.t}}</button></sc-if></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">
+<span>© 2026 VERT ROBO CON</span>
+<span style="display: inline-flex; align-items: center; gap: 10px">NEXT SUMMIT: 2027 · APRIL 20–22<button type="button" onClick="{{nextNotify}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 999px; background: #ffffff; color: #0138AC; font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer">Notify me</button></span>
+</div>
+</div>
+</footer>
+
+<!-- JOIN SHEET -->
+<sc-if value="{{joinOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 40">
+<button type="button" aria-label="Close" onClick="{{closeJoin}}" style="position: absolute; inset: 0; width: 100%; border: 0; background: rgba(10,18,34,0.4); cursor: pointer"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="join-title" tabindex="-1" onKeyDown="{{joinKey}}" style="position: absolute; top: 0; right: 0; width: 480px; max-width: 100%; min-height: 1000px; box-sizing: border-box; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 id="join-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Join the network</h2>
+<button type="button" aria-label="Close" onClick="{{closeJoin}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<sc-if value="{{joinForm}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 16px; color: #3D4556">Free and open to everyone who builds, funds or studies robots for the climate.</p>
+<sc-if value="{{jHasErrors}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="padding: 16px; border-radius: 14px; background: #FEF3F2; color: #B42318; display: flex; flex-direction: column; gap: 6px; font-size: 15px">
+<strong style="font-weight: 600">Please fix these to continue:</strong>
+<sc-for list="{{jErrors}}" as="x" hint-placeholder-count="2"><a href="{{x.href}}" style="color: #B42318">{{x.msg}}</a></sc-for>
+</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="j-name" style="font-size: 15px; font-weight: 500">Full name</label>
+<input id="j-name" type="text" value="{{jf.name}}" onChange="{{jName}}" onBlur="{{jBlurName}}" autocomplete="name" aria-invalid="{{jInv.name}}" style="{{jSty.name}}">
+<sc-if value="{{jShow.name}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter your full name.</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="j-email" style="font-size: 15px; font-weight: 500">Email</label>
+<input id="j-email" type="email" value="{{jf.email}}" onChange="{{jEmail}}" onBlur="{{jBlurEmail}}" autocomplete="email" aria-invalid="{{jInv.email}}" style="{{jSty.email}}">
+<span style="font-size: 13px; color: #646B7A">We send your invite or the digest here. Nothing else without asking.</span>
+<sc-if value="{{jShow.email}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org.</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="j-role" style="font-size: 15px; font-weight: 500">Role <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<select id="j-role" value="{{jf.role}}" onChange="{{jRole}}" style="{{jSty.select}}">
+<option value="">Choose one</option>
+<option value="Researcher">Researcher</option>
+<option value="Founder or startup">Founder or startup</option>
+<option value="Investor or funder">Investor or funder</option>
+<option value="Policy or government">Policy or government</option>
+<option value="NGO">NGO</option>
+<option value="Student">Student</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="j-country" style="font-size: 15px; font-weight: 500">Country <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<input id="j-country" type="text" role="combobox" aria-autocomplete="list" aria-expanded="{{jCountryExpanded}}" aria-controls="j-country-list" autocomplete="off" value="{{jf.country}}" onChange="{{jCountry}}" placeholder="Start typing, e.g. Kenya" style="{{jSty.country}}">
+<sc-if value="{{jHasSugg}}" hint-placeholder-val="{{ false }}">
+<ul id="j-country-list" role="listbox" aria-label="Countries" style="margin: 0; padding: 6px; list-style: none; border: 1px solid #E5E7EB; border-radius: 12px; background: #ffffff; box-shadow: 0 16px 32px -16px rgba(10,18,34,0.3); display: flex; flex-direction: column">
+<sc-for list="{{jSugg}}" as="c" hint-placeholder-count="4"><li role="none"><button type="button" role="option" aria-selected="false" onClick="{{c.pick}}" style="width: 100%; min-height: 40px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 15px; text-align: left; cursor: pointer; color: #0A1222">{{c.label}}</button></li></sc-for>
+</ul>
+</sc-if>
+</div>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500">Interests <span style="font-weight: 400; color: #646B7A">(optional)</span></legend>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{jInterests}}" as="t" hint-placeholder-count="7"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</fieldset>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span id="j-path-label" style="font-size: 15px; font-weight: 500">How would you like to take part?</span>
+<div role="radiogroup" aria-labelledby="j-path-label" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{jPaths}}" as="r" hint-placeholder-count="2">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.card}}">
+<span aria-hidden="true" style="{{r.ring}}"><span style="{{r.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; font-size: 16px">{{r.title}}<sc-if value="{{r.rec}}" hint-placeholder-val="{{ false }}"><span style="padding: 2px 8px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.04em">RECOMMENDED</span></sc-if></span>
+<span style="font-size: 14px; font-weight: 400; color: #3D4556">{{r.desc}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</div>
+<div id="j-coc" style="display: flex; align-items: flex-start; gap: 6px">
+<button type="button" role="checkbox" aria-checked="{{jCocChecked}}" aria-labelledby="j-coc-label" aria-invalid="{{jInv.coc}}" onClick="{{jToggleCoc}}" style="flex: 0 0 auto; width: 44px; height: 44px; margin-left: -10px; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; padding: 0"><span aria-hidden="true" style="{{jCocBox}}"><sc-if value="{{jf.coc}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></sc-if></span></button>
+<span style="padding-top: 10px; display: flex; flex-direction: column; gap: 4px"><span id="j-coc-label" style="font-size: 15px; font-weight: 500">I’ve read the <a href="ResearchV3.dc.html">code of conduct</a></span>
+<sc-if value="{{jShow.coc}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Confirm you’ve read the code of conduct.</span></sc-if></span>
+</div>
+<span style="font-size: 13px; color: #646B7A">We use your name and email to send your invite or digest, and nothing else. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+<button type="button" onClick="{{jSubmit}}" style="min-height: 48px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">{{jSubmitLabel}}</button>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-top: -8px">
+<span style="font-size: 13px; color: #646B7A">Slack requests are approved by an admin.</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</sc-if>
+
+<sc-if value="{{jDone}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<sc-if value="{{jdSlack}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #FFF4E5; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A4B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span></sc-if>
+<sc-if value="{{jdMail}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span></sc-if>
+<div role="status" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">{{jdHeadline}}</span>
+<sc-if value="{{jdSlack}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 16px; color: #3D4556">We’ve received your request to join Slack. An admin reviews every request by hand, and your invite is emailed to <strong style="color: #0A1222">{{jdEmail}}</strong> once approved, typically within 24–48 hours.</p></sc-if>
+<sc-if value="{{jdMail}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 16px; color: #3D4556">You’re subscribed to the monthly digest. Confirm your address from the email we sent to <strong style="color: #0A1222">{{jdEmail}}</strong>.</p></sc-if>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<sc-if value="{{jdSlack}}" hint-placeholder-val="{{ true }}"><span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>PENDING APPROVAL</span></sc-if>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">REFERENCE · <span style="color: #0A1222">MBR-2026-0312</span></span>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</span>
+<sc-if value="{{jdSlack}}" hint-placeholder-val="{{ true }}">
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">An admin reviews your request</strong><span style="font-size: 15px; color: #3D4556">Typically within 24–48 hours. Follow the status in <a href="MyVRCV3.dc.html">My VRC</a>.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Accept the invite</strong><span style="font-size: 15px; color: #3D4556">Slack emails it once your request is approved. Check spam if it isn’t there.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">3</span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px"><strong style="font-weight: 600">Say hello in #welcome</strong>
+<span style="padding: 14px 16px; border-radius: 12px; background: #F3F4F2; font-size: 15px; color: #0A1222">{{jdIntro}}</span>
+<span style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{jdCopy}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>Copy intro</button><span aria-live="polite" style="font-size: 14px; font-weight: 500; color: #0B7A47">{{jdCopied}}</span></span></span></li>
+<li style="display: flex; gap: 14px"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">4</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Try #jobs and #[CHANNEL]</strong><span style="font-size: 15px; color: #3D4556">Open roles, plus the people working on your topic.</span></span></li>
+</ol>
+</sc-if>
+<sc-if value="{{jdMail}}" hint-placeholder-val="{{ false }}">
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Confirm your email</strong><span style="font-size: 15px; color: #3D4556">One click on the link we just sent.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Your first digest arrives on [DATE]</strong><span style="font-size: 15px; color: #3D4556">One email a month. Unsubscribe in one click.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">3</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Switch to Slack any time</strong><span style="font-size: 15px; color: #3D4556">From the Manage link in every email.</span></span></li>
+</ol>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 12px">
+<sc-if value="{{jdResendWait}}" hint-placeholder-val="{{ true }}">
+<button type="button" disabled="disabled" aria-disabled="true" style="min-height: 44px; padding: 0 4px; border: 0; background: transparent; font: inherit; font-size: 15px; color: #646B7A; cursor: not-allowed">Didn’t get our email? Resend in <span style="font-family: 'Geist Mono', monospace">0:59</span></button>
+<button type="button" onClick="{{jdTick}}" style="{{canvasLink}}">CANVAS · Simulate: a minute passes</button>
+</sc-if>
+<sc-if value="{{jdResendReady}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{jdResend}}" style="min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Didn’t get our email? Resend</button>
+</sc-if>
+<sc-if value="{{jdResent}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; color: #0B7A47; font-weight: 500"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>Sent again to {{jdEmail}}.</span>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px"><a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Open My VRC</a><button type="button" onClick="{{closeJoin}}" style="min-height: 48px; padding: 0 20px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Back to the summit</button></div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We’ve emailed a receipt and a link to manage this to {{jdEmail}}. <a href="MyVRCV3.dc.html">{{jdManageLabel}}</a></p>
+</div>
+</sc-if>
+</aside>
+</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4900}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { menu: null, ed: '2027', ps: 'soon', sub: 'overview', day: 1, kind: 'all', q: '', person: null, pFrom: 'keynotes', nf: {}, vid: false, vtx: false, vtab: 'transcript', join: false, jf: { name: '', email: '', role: '', country: '', interests: [], path: 'slack', dir: false, coc: false }, jCountryOpen: false, jt: {}, jSub: false, jDone: false, jCopied: false, jResendReady: false, jResent: false };
+}
+renderVals() {
+const S = this.state, ed = S.ed, ps = S.ps, is27 = ed === '2027';
+const set = (p) => this.setState(p);
+const RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const M = "font-family: 'Geist Mono', monospace; ";
+const BTN = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 500; text-decoration: none; cursor: pointer; box-sizing: border-box; ';
+const P = BTN + 'background: #0138AC; color: #ffffff; border: 1px solid #0138AC';
+const G = BTN + 'background: #ffffff; color: #0A1222; border: 1px solid #D5D8DE';
+const TONE = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], grey: ['#F3F4F2', '#3D4556', '#646B7A'] };
+const chip = (t) => 'align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: ' + TONE[t][0] + '; color: ' + TONE[t][1] + '; ' + M + 'font-size: 12px; letter-spacing: 0.04em';
+const dot = (t) => 'width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; background: ' + TONE[t][2];
+const input = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 400; color: #0A1222; background: #ffffff; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE');
+const pill = (on) => 'min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const seg = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+
+// notify-me component: idle -> open -> pending -> done
+const TOPICS = ['Summit announcements', 'Program published', 'Recordings', 'Monthly digest'];
+const nf = (id, label, pre, primary) => {
+const s = S.nf[id] || { st: 'idle', email: '', err: false, sel: pre };
+const up = (p) => this.setState({ nf: { ...this.state.nf, [id]: { ...s, ...p } } });
+return { label, idle: s.st === 'idle', open: s.st === 'open', pending: s.st === 'pending', done: s.st === 'done',
+email: s.email, err: s.err, invalid: s.err ? 'true' : 'false', inputStyle: input(s.err), btnStyle: primary ? P : G,
+expand: () => up({ st: 'open' }), cancel: () => up({ st: 'idle', err: false }),
+onEmail: (e) => up({ email: e.target.value, err: false }),
+submit: () => up(RE.test(s.email.trim()) ? { st: 'pending', err: false } : { err: true }),
+confirm: () => up({ st: 'done' }),
+topics: TOPICS.map((t) => { const on = s.sel.includes(t); return { label: t, pressed: on ? 'true' : 'false', style: pill(on), toggle: () => up({ sel: on ? s.sel.filter((x) => x !== t) : s.sel.concat(t) }) }; }) };
+};
+
+// canvas control
+const PS = [['soon', 'Opens soon'], ['open', 'Open'], ['closing', 'Closing soon'], ['live', 'Live'], ['concluded', 'Concluded']];
+const states = PS.map(([k, label]) => { const on = is27 && ps === k; return { label, pressed: on ? 'true' : 'false', disabled: is27 ? 'false' : 'true',
+style: seg(on) + (is27 ? '' : '; opacity: 0.45; cursor: not-allowed'), pick: () => { if (is27) set({ ps: k }); } }; });
+const regOpen = ps === 'open' || ps === 'closing';
+const pre27 = is27 && ['soon', 'open', 'closing'].includes(ps), post27 = is27 && !pre27;
+
+// edition picker
+const editions = [['2027', true], ['2026', false], ['2025', false], ['2024', false]].map(([y, tag]) => ({ y, hasTag: tag, pressed: y === ed ? 'true' : 'false', style: seg(y === ed), pick: () => set({ ed: y, person: null, q: '', vid: false, vtx: false }) }));
+
+// hero
+const CH27 = { soon: ['blue', 'REGISTRATION OPENS DEC 7, 2026 · FREE'], open: ['blue', 'REGISTRATION OPEN · FREE'], closing: ['amber', 'CLOSES IN 3 DAYS · [DATE]'], live: ['green', 'LIVE NOW · DAY 2'], concluded: ['grey', 'CONCLUDED · RECORDINGS IN EDITING'] };
+const CHP = { '2026': ['grey', 'CONCLUDED · RECORDINGS IN EDITING'], '2025': ['grey', 'CONCLUDED · 12 RECORDINGS'], '2024': ['grey', 'CONCLUDED'] };
+const DEK = { '2027': 'Three free afternoons online about robots that measure, repair and protect the places we all depend on.',
+'2026': 'Three afternoons on methane leaks, soil carbon, flood recovery, greenhouses and training the people who keep robots running.',
+'2025': 'The first full Vert Robo Con Summit brought 240+ people from 18 countries together for three afternoons, from wetlands and water boards to glaciers and city heat.',
+'2024': 'The online pilot that started the Vert Robo Con Summit, held over two days, September 24–25, 2024.' };
+const FACTS = { '2027': [['DATES', 'Apr 20–22, 2027'], ['WHERE', 'Online · Free · open to everyone'], ['DAILY', '[HH:MM–HH:MM] UTC'], ['FORMAT', '[N] keynotes · [N] sessions']],
+'2026': [['DATES', 'May 19–21, 2026'], ['WHERE', 'Online'], ['DAILY', '15:00–18:00 UTC'], ['FORMAT', '2 keynotes · 10 sessions']],
+'2025': [['DATES', 'Jun 10–12, 2025'], ['WHERE', 'Online'], ['ATTENDEES', '240+ from 18 countries'], ['RECORDED', '12 sessions']],
+'2024': [['DATES', 'Sep 24–25, 2024'], ['WHERE', 'Online'], ['EDITION', 'The pilot edition'], ['FORMAT', '[N] sessions']] };
+const L = (label, href, primary) => ({ label, href, style: primary ? P : G });
+let pre = [], post = [], hn = null, note = '';
+if (is27) {
+if (ps === 'soon') { hn = nf('h27soon', 'Email me when registration opens', ['Summit announcements'], true); post = [L('Pitch at the summit', 'GetInvolvedV3.dc.html')]; }
+else if (ps === 'open' || ps === 'closing') { pre = [L('Register free', 'RegisterV3.dc.html', true), L('See the program', '#program')]; note = ps === 'open' ? 'Free · open to everyone, online. We email a confirmation with a link to manage your registration.' : 'Registration closes [DATE]. Free · open to everyone, and it takes one short form.'; }
+else if (ps === 'live') { pre = [L('Open my agenda', 'MyVRCV3.dc.html', true), L('Full program', 'ProgramV3.dc.html')]; }
+else { pre = [L('Full program', 'ProgramV3.dc.html', true)]; hn = nf('h27c', 'Notify me when videos land', ['Recordings'], false); }
+} else if (ed === '2026') { pre = [L('Full program', 'ProgramV3.dc.html', true)]; hn = nf('h26', 'Notify me when videos land', ['Recordings'], false); }
+else if (ed === '2025') { pre = [L('Watch all 12 sessions', 'WatchV3.dc.html', true), L('Full program', 'ProgramV3.dc.html')]; }
+else { pre = [L('All 2024 sessions', 'WatchV3.dc.html', true)]; }
+const hc = is27 ? CH27[ps] : CHP[ed];
+const hero = { chip: chip(hc[0]), dot: dot(hc[0]), chipLabel: hc[1], dek: DEK[ed], facts: FACTS[ed].map(([k, v]) => ({ k, v })),
+pre, post, hasNotify: !!hn, note, hasNote: !!note };
+
+// 2024 lite player
+const VT = { summary: ['', '[SUMMARY]'], transcript: ['[00:00]', '[TRANSCRIPT]'], chapters: ['[00:00]', '[CHAPTERS]'] };
+const vtabs = [['summary', 'Summary'], ['transcript', 'Transcript'], ['chapters', 'Chapters']].map(([k, label]) => ({ label, selected: S.vtab === k ? 'true' : 'false', style: seg(S.vtab === k), pick: () => set({ vtab: k }) }));
+
+// subnav
+const subnav = [['overview', 'Overview'], ['program', 'Program'], ['speakers', 'Speakers'], ['recordings', 'Recordings'], ['partners', 'Partners'], ['involved', 'Get involved']].map(([id, label]) => {
+const on = S.sub === id;
+return { label, href: id === 'involved' && !is27 ? 'GetInvolvedV3.dc.html' : '#' + id, current: on ? 'true' : 'false',
+style: 'color: ' + (on ? '#0A1222' : '#3D4556') + '; text-decoration: none; padding: 14px 0; border-bottom: 2px solid ' + (on ? '#0A1222' : 'transparent'), pick: () => set({ sub: id }) };
+});
+
+// get involved (2027)
+const gi = [
+{ id: 'startup', chipL: 'OPENS DEC 8', title: 'Pitch your startup', body: 'Present your company in the startup pitch session, in front of researchers, founders and funders.', remind: true },
+{ id: 'research', chipL: 'OPENS [DATE]', title: 'Pitch your research', body: 'Share your lab’s work in the research pitch session.', remind: true },
+{ id: 'sponsor', chipL: 'OPEN', title: 'Sponsor 2027', body: 'Help keep the summit free and online, and reach the whole network.', cta: 'See packages' },
+{ id: 'nominate', chipL: 'OPEN', title: 'Recommend a speaker or volunteer', body: 'Know someone the network should hear from, or want to help run the summit?', cta: 'Nominate' }
+].map((g) => { const n = nf('gi' + g.id, 'Remind me', [], false);
+if (!pre27) return { ...n, ...g, chipL: 'CLOSED', cta: '', chipStyle: chip('grey'), dotStyle: dot('grey'), isLink: false, showIdle: false, open: false, pending: false, done: false, err: false };
+return { ...n, ...g, cta: g.cta || '', chipStyle: chip('blue'), dotStyle: dot('blue'), isLink: !g.remind, showIdle: !!g.remind && n.idle }; });
+
+// program
+const KIND = { keynote: ['Keynote', '#EEF2FB', '#0138AC'], session: ['Session', '#E8F6EE', '#0B7A47'], pitch: ['Pitches', '#FFF4E5', '#8A4B00'], remarks: ['Remarks', '#F3F4F2', '#3D4556'] };
+const program = [
+{ day: 1, date: 'MAY 19', theme: 'Leaks, soil & carbon', s: [['15:00–15:50', 'Panel: Finding methane leaks sooner', 'session'], ['16:00–16:45', 'Panel: Measuring soil carbon without digging every field', 'session'], ['16:45–17:30', 'Hallway hour', 'remarks']] },
+{ day: 2, date: 'MAY 20', theme: 'Keynote double bill & recovery', s: [['15:00–15:30', 'Hollis Wexford', 'keynote'], ['15:30–16:00', 'Anaïs Brekke', 'keynote'], ['16:10–17:00', 'Panel: Robots after floods and storms', 'session'], ['17:10–17:55', 'Panel: Greenhouses and indoor farms', 'session']] },
+{ day: 3, date: 'MAY 21', theme: 'Skills & new voices', s: [['15:00–15:45', 'Panel: Training the next robot technicians', 'session'], ['15:55–16:40', 'Student lightning round', 'pitch'], ['16:50–17:20', 'Open Q&A and topic wishlist', 'remarks']] }
+];
+const days = program.map((d) => { const on = d.day === S.day; return { label: 'DAY ' + d.day, date: d.date, theme: d.theme, selected: on ? 'true' : 'false',
+style: 'display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #0A1222; border: 1px solid #E5E7EB'),
+pick: () => set({ day: d.day }) }; });
+const filters = [['all', 'All'], ['keynote', 'Keynotes'], ['session', 'Sessions'], ['pitch', 'Pitches']].map(([k, label]) => ({ label, pressed: S.kind === k ? 'true' : 'false', style: pill(S.kind === k), pick: () => set({ kind: k }) }));
+const sessions = program.find((d) => d.day === S.day).s.filter((x) => S.kind === 'all' || x[2] === S.kind).map(([time, title, kind]) => {
+const k = KIND[kind];
+return { time, title, kindLabel: k[0], aria: 'Session page, recording in editing: ' + title,
+badge: 'align-self: flex-start; padding: 2px 10px; border-radius: 999px; background: ' + k[1] + '; color: ' + k[2] + '; ' + M + 'font-size: 11px; letter-spacing: 0.04em',
+cardStyle: 'display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: flex-start; padding: 20px 24px; border-radius: 16px; border: 1px solid #E5E7EB; background: ' + (kind === 'keynote' ? '#FAFBFE' : '#ffffff'),
+recStyle: chip('grey') + '; flex: 0 0 auto; font-size: 11px; text-decoration: none', recDot: dot('grey') };
+});
+const p25 = [
+['DAY 1 · JUN 10', 'Wetlands & water agencies', ['Robots on soft ground: peat and marsh', 'Writing a robot into a public tender', 'Pitch round: water and wetland teams']],
+['DAY 2 · JUN 11', 'Ice & heat', ['Sidewalk robots and the urban heat map', 'Keynote: measuring a glacier that will not hold still', 'Batteries, sensors and minus twenty']],
+['DAY 3 · JUN 12', 'Keeping robots running', ['A technician’s wishlist for robot makers', 'Spare parts, open designs and long lives', 'Who pays when a field robot breaks?']]
+].map(([d, theme, items]) => ({ d, theme, items: items.map((t) => ({ t })) }));
+
+// people
+const B = '';
+const S26 = 'SUMMIT 2026', S25 = 'SUMMIT 2025';
+const PEOPLE = {
+hollis: ['Hollis Wexford', 'City Resilience Officer', 'City of Example', 'img/avatar-02.svg', 'Coordinated the clean-up after two river floods in one year and now writes the city’s rules for when drones and ground robots go in before people do.', [['Keynote', 'DAY 2 · 15:00 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/hollis-wexford'],
+anais: ['Anaïs Brekke', 'Programme Evaluator', 'Example Climate Fund', 'img/avatar-01.svg', 'Reads the final reports of grant-funded robot pilots and follows up a year later to see which machines are still in use, and why the others stopped.', [['Keynote', 'DAY 2 · 15:30 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/anais-brekke'],
+ruth: ['Ruth Calloway', 'Leak Survey Technician', 'Example Gas Utility', 'img/avatar-04.svg', 'Walks gas mains with a handheld detector and helped trial a pipe-crawling robot on her part of the network.', [['Panel: Finding methane leaks sooner', 'DAY 1 · 15:00 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/ruth-calloway'],
+tobias: ['Tobias Hartnell', 'Founder', 'Example Leak Sensing', 'img/avatar-05.svg', 'Builds low-cost fixed methane sensors and the alert rules that decide when a crew is sent out.', [['Panel: Finding methane leaks sooner', 'DAY 1 · 15:00 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/tobias-hartnell'],
+amaya: ['Amaya Thorne', 'Agronomist', 'Example Farmers’ Cooperative', 'img/avatar-07.svg', 'Advises member farms on soil health and runs the cooperative’s trial of a soil-sampling robot.', [['Panel: Measuring soil carbon without digging every field', 'DAY 1 · 16:00 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/amaya-thorne'],
+chidinma: ['Chidinma Varga', 'Data Scientist', 'Example Data Commons', 'img/avatar-10.svg', '[2-line bio]', [['Panel: Measuring soil carbon without digging every field', 'DAY 1 · 16:00 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/chidinma-varga'],
+esme: ['Esme Kintyre', 'Drone Pilot & Trainer', 'Example Search and Rescue Volunteers', 'img/avatar-08.svg', 'Trains volunteer pilots to fly damage surveys over flooded streets and hand the maps to emergency planners.', [['Panel: Robots after floods and storms', 'DAY 2 · 16:10 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/esme-kintyre'],
+mina: ['Mina Saarinen', 'Grower', 'Example Greenhouse Cooperative', 'img/avatar-11.svg', 'Grows tomatoes under glass and tests which automation actually cuts the heating and water bills.', [['Panel: Greenhouses and indoor farms', 'DAY 2 · 17:10 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/mina-saarinen'],
+dagny: ['Dagny Morrow', 'Apprenticeship Coordinator', 'Example Polytechnic', 'img/avatar-12.svg', 'Runs the apprenticeship that trains technicians to service field robots, from first day to certification.', [['Panel: Training the next robot technicians', 'DAY 3 · 15:00 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/dagny-morrow'],
+femi: ['Femi Garrow', 'MSc Student', 'Example University', 'img/avatar-13.svg', 'Studies how small ground robots can map standing water after heavy rain.', [['Student lightning round', 'DAY 3 · 15:55 UTC · ' + S26, 0]], 'https://vert-robo-con.example/people/femi-garrow'],
+tamsin: ['Tamsin Ocampo', 'Glaciologist', 'Example University', 'img/avatar-09.svg', 'Has lost more weather stations to crevasses than she likes to admit, and now designs instrument sleds that can be dug out and reused.', [['Keynote: Measuring a glacier that will not hold still', 'DAY 2 · VIDEO 33:40 · ' + S25, 1], ['Batteries, sensors and minus twenty', 'DAY 2 · VIDEO 38:15 · ' + S25, 1]], 'https://vert-robo-con.example/people/tamsin-ocampo'],
+odile: ['Odile Farrow', 'Peatland Restoration Officer', 'Example Wetlands Trust', 'img/avatar-06.svg', 'Plans ditch-blocking work on upland bogs and tests which survey tools can cross wet peat without damaging it.', [['Robots on soft ground: peat and marsh', 'DAY 1 · VIDEO 41:05 · ' + S25, 1]], 'https://vert-robo-con.example/people/odile-farrow'],
+rafael: ['Rafael Quist', 'Procurement Lead', 'Example Regional Water Board', 'img/avatar-03.svg', 'Writes the tenders that decide which inspection equipment a regional water board can buy.', [['Writing a robot into a public tender', 'DAY 1 · VIDEO 27:30 · ' + S25, 1], ['Pitch round: city and cold-climate teams', 'DAY 2 · VIDEO 42:00 · ' + S25, 1]], 'https://vert-robo-con.example/people/rafael-quist'],
+ines: ['Ines Valderrama', 'Urban Climate Analyst', 'City of Example', 'img/avatar-14.svg', 'Turns street-level temperature readings into shade and tree-planting plans for a mid-sized city.', [['Sidewalk robots and the urban heat map', 'DAY 2 · VIDEO 24:55 · ' + S25, 1]], 'https://vert-robo-con.example/people/ines-valderrama'],
+kenji: ['Kenji Albescu', 'Wind Turbine Technician & Trainer', 'Example Wind Cooperative', 'img/avatar-15.svg', 'Climbs turbines for a living and trains new technicians to work alongside blade-inspection robots.', [['A technician’s wishlist for robot makers', 'DAY 3 · VIDEO 29:10 · ' + S25, 1], ['Batteries, sensors and minus twenty', 'DAY 2 · VIDEO 38:15 · ' + S25, 1]], 'https://vert-robo-con.example/people/kenji-albescu'],
+marguerite: ['Marguerite Osterhout', 'Open-Hardware Maintainer', 'Example Open Hardware Collective', 'img/avatar-16.svg', 'Keeps the drawings, parts lists and repair guides for a family of community-built sensor rovers up to date.', [['Spare parts, open designs and long lives', 'DAY 3 · VIDEO 26:45 · ' + S25, 1]], 'https://vert-robo-con.example/people/marguerite-osterhout'],
+henrik: ['Henrik Paledo', 'Risk Engineer', 'Example Mutual', 'img/avatar-17.svg', 'Assesses what can go wrong before an insurer agrees to cover a field trial.', [['Who pays when a field robot breaks?', 'DAY 3 · VIDEO 31:20 · ' + S25, 1]], 'https://vert-robo-con.example/people/henrik-paledo'],
+yewande: ['Yewande Sorensen', 'Science Journalist & Moderator', 'Freelance', 'img/avatar-18.svg', 'Reports on environmental technology and moderated the wetlands panel and the first pitch round.', [['Robots on soft ground: peat and marsh', 'DAY 1 · VIDEO 41:05 · ' + S25, 1], ['Pitch round: water and wetland teams', 'DAY 1 · VIDEO 44:10 · ' + S25, 1]], 'https://vert-robo-con.example/people/yewande-sorensen']
+};
+const ini = (n) => n.split(' ').map((w) => w[0]).filter((c, i, a) => i === 0 || i === a.length - 1).join('');
+const openP = (id, from) => () => set({ person: id, pFrom: from });
+const KN = { '2026': [['hollis', 'DAY 2 · 15:00 UTC', 'City Resilience Officer, City of Example'], ['anais', 'DAY 2 · 15:30 UTC', 'Programme Evaluator, Example Climate Fund']],
+'2025': [['tamsin', 'DAY 2 · JUN 11', 'Glaciologist, Example University', '33:40']] };
+const keynotes = (KN[ed] || []).map(([id, when, role, dur]) => ({ name: PEOPLE[id][0], photo: B + PEOPLE[id][3], when, role, dur: dur || '', soon: !dur, watch: !!dur, aria: 'Open profile: ' + PEOPLE[id][0], open: openP(id, 'keynotes') }));
+const GRID = { '2026': ['hollis', 'anais', 'ruth', 'tobias', 'amaya', 'chidinma', 'esme', 'mina', 'dagny', 'femi'], '2025': ['tamsin', 'odile', 'rafael', 'ines', 'kenji', 'marguerite', 'henrik', 'yewande'] };
+const q = S.q.trim().toLowerCase();
+const speakers = (GRID[ed] || []).map((id) => ({ id, name: PEOPLE[id][0], org: PEOPLE[id][2], photo: B + PEOPLE[id][3], hasPhoto: !!PEOPLE[id][3], noPhoto: !PEOPLE[id][3], ini: ini(PEOPLE[id][0]), open: openP(id, 'speakers') }))
+.filter((p) => !q || (p.name + ' ' + p.org).toLowerCase().includes(q));
+const hasGrid = !!GRID[ed];
+const pp = S.person ? PEOPLE[S.person] : null;
+const pr = pp ? { name: pp[0], role: pp[1], org: pp[2], photo: B + pp[3], hasPhoto: !!pp[3], noPhoto: !pp[3], ini: ini(pp[0]), alt: pp[0], bio: pp[4], li: pp[6], web: pp[7] || '', hasWeb: !!pp[7], app: pp[5].map(([label, meta, play]) => ({ label, meta: play ? meta : meta + ' · RECORDING IN EDITING', play: !!play, soon: !play })) } : { name: '', role: '', org: '', photo: '', hasPhoto: false, noPhoto: false, ini: '', alt: '', bio: '', li: '#', web: '', hasWeb: false, app: [] };
+const closeP = () => set({ person: null });
+
+// recordings
+const rec25 = [['tamsin', '33:40', 'Tamsin Ocampo on measuring a glacier that will not hold still'], ['odile', '41:05', 'Robots on soft ground: peat and marsh'], ['rafael', '27:30', 'Writing a robot into a public tender']].map(([id, dur, title]) => ({ photo: B + PEOPLE[id][3], dur, title }));
+
+// partners
+const PT = { '2026': [['Vert Robo Con', 'ORGANIZER'], ['Example University', 'ORGANIZER'], ['Example Data Commons', 'SILVER SPONSOR'], ['Example Field Tools Co.', 'SILVER SPONSOR'], ['Example Makerspace', 'PARTNER'], ['Example Coastal Trust', 'PARTNER']],
+'2025': [['Vert Robo Con', 'ORGANIZER'], ['Example Polytechnic', 'ORGANIZER'], ['Example Climate Fund', 'GOLD SPONSOR'], ['Example Field Tools Co.', 'SILVER SPONSOR'], ['Example Data Commons', 'SILVER SPONSOR'], ['Example Wetlands Trust', 'PARTNER'], ['Example Coastal Trust', 'PARTNER'], ['Example Makerspace', 'PARTNER']],
+'2024': [['[PARTNERS 2024]', 'ORGANIZER']], '2027': [] };
+const partners = PT[ed].map(([name, tier]) => { const gold = tier === 'GOLD SPONSOR';
+return { name, tier, tierStyle: M + 'font-size: 11px; letter-spacing: 0.04em; color: ' + (gold ? '#0B7A47' : '#646B7A'), style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 28px 20px; min-height: 108px; box-sizing: border-box; border-radius: 16px; text-align: center; ' + (gold ? 'background: #E8F6EE; border: 1px solid #E8F6EE' : 'background: #ffffff; border: 1px solid #E5E7EB') }; });
+
+// past editions
+const past = [['2026', 'MAY 19–21, 2026', 'CONCLUDED · RECORDINGS IN EDITING', 'Keynotes from Hollis Wexford and Anaïs Brekke, plus eight panels and open sessions.'],
+['2025', 'JUN 10–12, 2025', 'CONCLUDED · 12 RECORDINGS', '240+ attendees from 18 countries. Keynote from Tamsin Ocampo.'],
+['2024', 'SEP 24–25, 2024', 'CONCLUDED', 'The online pilot that started the Vert Robo Con Summit, with a recap video.']].map(([y, dates, chipL, line]) => ({ y, dates, chipL, line, current: y === ed ? 'true' : 'false',
+cardStyle: 'background: #ffffff; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px; border: 1px solid ' + (y === ed ? '#0A1222' : '#ffffff'),
+pick: () => set({ ed: y, sub: 'overview', person: null, q: '' }) }));
+
+// footer
+const J0 = { name: '', email: '', role: '', country: '', interests: [], path: 'slack', dir: false, coc: false };
+const openJoin = () => set(Object.assign(this.state.jDone ? { jf: J0, jCountryOpen: false } : {}, { menu: null, join: true, jDone: false, jSub: false, jt: {}, jCopied: false, jResendReady: false, jResent: false }));
+const footGroups = [
+['Summit', 'SUMMIT', [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']]],
+['Learn', 'LEARN', [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']]],
+['Community', 'COMMUNITY', [['Join', 'join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']]],
+['About', 'ABOUT', [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']]]
+].map(([label, head, links]) => ({ label, head, links: links.map(([t, href]) => ({ t, href, isLink: href !== 'join', isBtn: href === 'join', go: openJoin })) }));
+const fs = S.nf.foot || {};
+
+// join sheet
+const jf = S.jf;
+const jv = { name: jf.name.trim() !== '', email: RE.test(jf.email.trim()), coc: !!jf.coc };
+const show = (k) => (S.jSub || !!S.jt[k]) && !jv[k];
+const jShow = { name: show('name'), email: show('email'), coc: S.jSub && !jv.coc };
+const upJ = (k) => (e) => this.setState({ jf: { ...this.state.jf, [k]: e.target.value } });
+const blurJ = (k) => () => this.setState({ jt: { ...this.state.jt, [k]: true } });
+const jErrors = [['name', '#j-name', 'Full name: enter your full name'], ['email', '#j-email', 'Email: enter an email address, like name@example.org'], ['coc', '#j-coc', 'Code of conduct: confirm you’ve read it']].filter(([k]) => !jv[k]).map(([k, href, msg]) => ({ href, msg }));
+const COUNTRIES = ['Australia', 'Brazil', 'Canada', 'Chile', 'France', 'Germany', 'India', 'Japan', 'Kenya', 'Netherlands', 'New Zealand', 'Nigeria', 'Norway', 'Singapore', 'South Africa', 'Spain', 'United Kingdom', 'United States'];
+const cq = jf.country.trim().toLowerCase();
+const jSugg = (S.jCountryOpen && cq ? COUNTRIES.filter((c) => c.toLowerCase().indexOf(cq) > -1 && c.toLowerCase() !== cq).slice(0, 5) : []).map((c) => ({ label: c, pick: () => this.setState({ jf: { ...this.state.jf, country: c }, jCountryOpen: false }) }));
+const jInterests = ['Air', 'Land', 'Sea', 'Materials', 'Policy', 'Funding', 'Jobs'].map((t) => { const on = jf.interests.indexOf(t) > -1;
+return { label: t, pressed: on ? 'true' : 'false', style: pill(on), toggle: () => { const cur = this.state.jf.interests; this.setState({ jf: { ...this.state.jf, interests: on ? cur.filter((x) => x !== t) : cur.concat([t]) } }); } }; });
+const jTopic = jf.interests.length ? jf.interests.map((x) => x.toLowerCase()).join(' and ') + ' robotics' : '[topic]';
+const cbox = (on, bad) => 'width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: flex; align-items: center; justify-content: center; ' + (on ? 'background: #0138AC; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid ' + (bad ? '#B42318' : '#A7ADB8'));
+const jPaths = [
+{ key: 'slack', title: 'Slack community', rec: true, desc: 'An admin approves each request by hand, then we email you an invite, typically within 24–48 hours.' },
+{ key: 'email', title: 'Email updates only', rec: false, desc: 'The monthly digest. No Slack account needed.' }
+].map((r) => { const on = jf.path === r.key;
+return { title: r.title, rec: r.rec, desc: r.desc, checked: on ? 'true' : 'false',
+card: 'display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 16px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ' + (on ? 'background: #EEF2FB; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid #E5E7EB'),
+ring: 'flex: 0 0 auto; margin-top: 3px; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; border: 2px solid ' + (on ? '#0138AC' : '#A7ADB8') + '; display: flex; align-items: center; justify-content: center; background: #ffffff',
+dot: 'width: 10px; height: 10px; border-radius: 50%; background: ' + (on ? '#0138AC' : 'transparent'),
+pick: () => this.setState({ jf: { ...this.state.jf, path: r.key } }) }; });
+const jSlack = jf.path === 'slack';
+const jFirstName = jf.name.trim().split(/\s+/)[0] || '[first name]';
+const closeJoin = () => set({ join: false });
+const closeMenu = () => set({ menu: null });
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', '#join', 'join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => { const on = S.menu === key;
+return { label: MENUS[key].label, id: 'menu-' + key, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => set({ menu: on ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) closeMenu(); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], go: i[3] === 'join' ? openJoin : closeMenu })) }; });
+
+return {
+menus, menuOpen: !!S.menu, closeMenu,
+states, psHint: !is27, regPill: regOpen, regDot: dot(ps === 'open' ? 'blue' : 'amber'),
+canvasLink: 'display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px dashed #9AA3B5; border-radius: 8px; background: #F3F4F2; color: #3D4556; ' + M + 'font-size: 11px; letter-spacing: 0.04em; cursor: pointer',
+year: ed, editions, is27, is26: ed === '2026', is25: ed === '2025', is24: ed === '2024',
+hero, hn: hn || nf('none', '', [], false), live27: is27 && ps === 'live',
+heroImg: ed !== '2024', heroImgSrc: is27 ? 'img/balloon.svg' : 'img/summit-grid.svg',
+vidIdle: !S.vid, vidOn: S.vid, playVid: () => set({ vid: true }), stopVid: () => set({ vid: false }),
+vtx: S.vtx, vtxExpanded: S.vtx ? 'true' : 'false', txLabel: S.vtx ? 'Hide transcript' : 'Read transcript', toggleTx: () => set({ vtx: !S.vtx, vtab: 'transcript' }),
+vtabs, vstamp: VT[S.vtab][0], vpanel: VT[S.vtab][1],
+subnav, agendaPill: is27 && (regOpen || ps === 'live'),
+gi, giTitle: pre27 ? 'Take part in 2027' : 'The 2027 calls are closed', pre27, post27,
+post27Title: ps === 'live' ? 'Three days, happening now' : 'Three days, now on the record',
+post27Body: ps === 'live' ? 'Every session, time and speaker is in the full program, with your agenda and calendar files.' : 'Every session and speaker from 2027 is in the full program. Recordings follow in Watch as they are edited.',
+programBg: 'padding: 96px 32px; background: ' + (is27 ? '#F3F4F2' : '#ffffff'),
+tracks: [['01', 'Leaks & emissions'], ['02', 'Floods & recovery'], ['03', 'Farms & soil'], ['04', 'Keeping robots running']].map(([n, t]) => ({ n, t })),
+pn: nf('prog27', 'Tell me when the program is live', ['Program published'], false),
+days, filters, sessions, noSessions: sessions.length === 0, clearKind: () => set({ kind: 'all' }), p25,
+hasKeynotes: keynotes.length > 0, keynotes,
+hasGrid, speakers, noSpeakers: hasGrid && speakers.length === 0, q: S.q, onQ: (e) => set({ q: e.target.value }), clearQ: () => set({ q: '' }),
+spkEmpty: !hasGrid, spkEmptyTitle: post27 ? 'Speakers are listed in the program' : is27 ? 'Speakers not announced yet' : 'Speakers are listed with each recording',
+spkEmptyBody: post27 ? 'Every 2027 session in the full program shows who is speaking.' : is27 ? 'The 2027 lineup is announced with the program on [DATE].' : 'Open any 2024 session in Watch to see who spoke.',
+spkEmptyHref: post27 ? 'ProgramV3.dc.html' : is27 ? 'GetInvolvedV3.dc.html' : 'WatchV3.dc.html', spkEmptyCta: post27 ? 'Full program' : is27 ? 'Recommend a speaker' : 'All 2024 sessions',
+hasPerson: !!pp, pr, closeP, drawerKey: (e) => { if (e.key === 'Escape') closeP(); },
+drawerStyle: 'position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%; box-sizing: border-box; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); padding: 32px; display: flex; flex-direction: column; justify-content: ' + (S.pFrom === 'speakers' ? 'flex-end' : 'flex-start'),
+rn: nf(is27 ? 'rec27' : 'rec26', 'Notify me when videos land', ['Recordings'], false), rec25,
+recEditing: ed === '2026' || (is27 && ps === 'concluded'),
+recEd: is27 ? { count: '0 of [N] published', max: '[N]', line: '[N] keynotes and [N] sessions. Each one appears here and in Watch as soon as it is edited.' } : { count: '0 of 10 published', max: '10', line: '2 keynotes and 8 sessions. Each one appears here and in Watch as soon as it is edited.' },
+recLink: ed === '2025', recLinkLabel: 'Watch all 12 sessions →',
+partnerEyebrow: is27 ? 'PARTNERS · 2027' : 'ORGANIZED WITH', partners,
+partnerNoteOn: is27, partnerNote: pre27 ? 'Partners for 2027 are announced [DATE]. Packages are open now.' : 'Partners for 2027: [PARTNERS 2027].',
+sponsorTile: pre27 || !is27 ? { k: 'PACKAGES OPEN', t: 'Sponsor 2027 →' } : { k: 'NEXT EDITION', t: 'Sponsor the next summit →' },
+past, footGroups, fn: nf('foot', 'Get the monthly digest', ['Monthly digest'], false),
+nextNotify: () => this.setState({ nf: { ...this.state.nf, foot: { st: 'open', email: fs.email || '', err: false, sel: ['Summit announcements', 'Monthly digest'] } } }),
+joinOpen: S.join, openJoin, closeJoin, joinKey: (e) => { if (e.key === 'Escape') closeJoin(); },
+joinForm: !S.jDone, jDone: S.jDone, jf, jShow,
+jInv: { name: jShow.name ? 'true' : 'false', email: jShow.email ? 'true' : 'false', coc: jShow.coc ? 'true' : 'false' },
+jPaths, jCocChecked: jf.coc ? 'true' : 'false', jCocBox: cbox(jf.coc, jShow.coc), jToggleCoc: () => this.setState({ jf: { ...this.state.jf, coc: !this.state.jf.coc } }),
+jDirChecked: jf.dir ? 'true' : 'false', jDirBox: cbox(jf.dir, false), jToggleDir: () => this.setState({ jf: { ...this.state.jf, dir: !this.state.jf.dir } }),
+jRole: upJ('role'), jCountry: (e) => this.setState({ jf: { ...this.state.jf, country: e.target.value }, jCountryOpen: true }),
+jSugg, jHasSugg: jSugg.length > 0, jCountryExpanded: jSugg.length ? 'true' : 'false', jInterests,
+jSubmitLabel: jSlack ? 'Request to join' : 'Join', jdSlack: jSlack, jdMail: !jSlack,
+jdHeadline: jSlack ? 'Request received, ' + jFirstName + '.' : 'Welcome, ' + jFirstName + '.',
+jdEmail: jf.email.trim() || '[email]', jdManageLabel: jSlack ? 'Track your request' : 'Manage this',
+jdIntro: 'Hi, I’m ' + (jf.name.trim() || '[name]') + ', I work on ' + jTopic + ' in ' + (jf.country.trim() || '[country]') + '…',
+jdCopy: () => set({ jCopied: true }), jdCopied: S.jCopied ? 'Copied' : '',
+jdResendWait: !S.jResendReady, jdResendReady: S.jResendReady && !S.jResent, jdResent: S.jResent,
+jdTick: () => set({ jResendReady: true }), jdResend: () => set({ jResent: true }),
+jSty: { name: input(jShow.name), email: input(jShow.email), country: input(false), select: input(false) + '; appearance: auto' },
+jName: upJ('name'), jEmail: upJ('email'), jBlurName: blurJ('name'), jBlurEmail: blurJ('email'),
+jErrors, jHasErrors: S.jSub && jErrors.length > 0,
+jFirst: jFirstName,
+jSubmit: () => { if (jErrors.length) set({ jSub: true }); else set({ jDone: true }); }
+};
+}
+}
+</script>
+</body>
+</html>

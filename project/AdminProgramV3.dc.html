@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Program builder and people</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.prow:hover{background:#F7F8F9}
+.card:hover{filter:brightness(0.985)}
+.tlink{color:#0A1222;text-decoration:none}
+.tlink:hover{color:#0138AC;text-decoration:underline}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 1850px; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 15px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the app) -->
+<div style="height: 40px; box-sizing: border-box; padding: 0 24px; display: flex; align-items: center; gap: 10px; background: #E9EAEC; border-bottom: 1px dashed #A7ADB8; font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556; white-space: nowrap; overflow: hidden">
+<span style="letter-spacing: 0.06em">CANVAS NOTE · POWERED BY:</span>
+<span style="flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis">The Program builder and the People panel read and write Postgres. Publishing sets editions.programState and goes live at once, because every admin save clears the page cache.</span>
+</div>
+
+<div style="display: flex; min-height: 1810px">
+
+<!-- SIDEBAR (same markup as AdminQueueV3; only the active item differs) -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; font-weight: 500; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="16 items need action" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">16</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- MAIN -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR (same markup as AdminQueueV3) -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>{{ed}}</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<main style="padding: 22px 24px 40px; display: flex; flex-direction: column; gap: 14px">
+
+<!-- PAGE HEADER -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT / PROGRAM &amp; PEOPLE · COLLECTIONS: SESSIONS, PEOPLE</span>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em">{{pageTitle}}</h1>
+<sc-if value="{{showPub}}" hint-placeholder-val="{{ true }}"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>PUBLISHED</span></sc-if>
+<sc-if value="{{showDirty}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipAmber}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>UNPUBLISHED CHANGES</span></sc-if>
+<sc-if value="{{showDraft}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipNeutral}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>DRAFT PROGRAM</span></sc-if>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{newSession}}" style="{{ui.btnS}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New session</button>
+<a href="ProgramV3.dc.html" style="{{ui.btnS}}">Preview on site
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+<button type="button" onClick="{{askPublish}}" aria-disabled="{{pubDisabled}}" style="{{pubBtn}}">{{pubLabel}}</button>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EDITION</span>
+<div role="group" aria-label="Edition" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{edSeg}}" as="e" hint-placeholder-count="2"><button type="button" aria-pressed="{{e.pressed}}" onClick="{{e.pick}}" style="{{e.style}}">{{e.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{e.sub}}</span></button></sc-for>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SHOW TIMES IN</span>
+<div role="group" aria-label="Time display" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{tzSeg}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">APR–MAY: US EASTERN = UTC−4 · CET SHOWN AS SUMMER TIME UTC+2</span>
+</div>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{summary}}</span>
+</div>
+
+<!-- VALIDATION STRIP -->
+<div role="status" aria-live="polite" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 10px 16px; border: 1px solid #E5E7EB; border-radius: 12px; background: #ffffff">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">CHECKS</span>
+<sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
+<span style="{{c.style}}">
+<sc-if value="{{c.ok}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+<sc-if value="{{c.bad}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.icon}}" stroke-width="2.2" stroke-linecap="round"><path d="M12 7v6M12 17h.01"></path><circle cx="12" cy="12" r="9.5"></circle></svg></sc-if>
+{{c.text}}</span>
+</sc-for>
+</div>
+
+<!-- LEGEND + HIGHLIGHT -->
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-height: 32px">
+<sc-for list="{{legend}}" as="l" hint-placeholder-count="5"><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #3D4556"><span aria-hidden="true" style="{{l.sw}}"></span>{{l.label}}</span></sc-for>
+<span style="font-size: 13px; color: #646B7A">Drag a card to move it · it snaps to 15-minute rows · click to edit</span>
+<sc-if value="{{hasHl}}" hint-placeholder-val="{{ false }}">
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 10px; padding: 4px 6px 4px 12px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-size: 13px; font-weight: 500">{{hlText}}
+<button type="button" onClick="{{clearHl}}" style="min-height: 28px; padding: 0 10px; border: 0; border-radius: 999px; background: #ffffff; color: #0138AC; font: inherit; font-size: 13px; cursor: pointer">Clear</button></span>
+</sc-if>
+</div>
+
+<!-- GRID + PEOPLE RAIL -->
+<div style="display: flex; align-items: flex-start; gap: 16px">
+
+<section aria-label="Program grid" style="flex: 1 1 auto; min-width: 0; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; background: #ffffff">
+<div style="position: sticky; top: 0; z-index: 6; display: flex; background: #ffffff; border-bottom: 1px solid #E5E7EB">
+<div style="flex: 0 0 56px; display: flex; align-items: flex-end; padding: 0 0 10px 10px; box-sizing: border-box; font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.06em; color: #646B7A">{{tzShort}}</div>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3">
+<div style="flex: 1 1 0; min-width: 0; padding: 12px 12px 10px; border-left: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.01em">{{d.dayNo}} · {{d.label}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{d.meta}}</span>
+</div>
+</sc-for>
+</div>
+<div style="position: relative; display: flex; height: 1064px">
+<div aria-hidden="true" style="position: relative; flex: 0 0 56px; background: #FAFAF9">
+<sc-for list="{{gutter}}" as="g" hint-placeholder-count="15"><span style="{{g.style}}">{{g.t}}</span></sc-for>
+</div>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3">
+<div role="group" aria-label="{{d.aria}}" style="position: relative; flex: 1 1 0; min-width: 0; height: 1064px; border-left: 1px solid #E5E7EB">
+<sc-for list="{{d.slots}}" as="sl" hint-placeholder-count="14"><div aria-hidden="true" style="{{sl.style}}" onDragOver="{{sl.over}}" onDragEnter="{{sl.enter}}" onDrop="{{sl.drop}}"></div></sc-for>
+<sc-if value="{{d.ghost}}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="{{d.ghostStyle}}"></div></sc-if>
+<sc-for list="{{d.cards}}" as="c" hint-placeholder-count="6">
+<button type="button" class="card" draggable="true" onDragStart="{{c.dstart}}" onDragEnd="{{c.dend}}" onClick="{{c.open}}" aria-label="{{c.aria}}" style="{{c.style}}">
+<sc-if value="{{c.tiny}}" hint-placeholder-val="{{ false }}">
+<span style="{{c.tinyTime}}">{{c.time}}</span>
+<span style="min-width: 0; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.title}}</span>
+</sc-if>
+<sc-if value="{{c.full}}" hint-placeholder-val="{{ true }}">
+<span style="{{c.metaStyle}}"><span>{{c.type}}</span><span aria-hidden="true">·</span><span>{{c.time}}</span>
+<sc-if value="{{c.flag}}" hint-placeholder-val="{{ false }}"><span style="margin-left: auto; padding: 0 6px; border-radius: 999px; background: #FEF3F2; color: #B42318">{{c.flagText}}</span></sc-if>
+<sc-if value="{{c.draft}}" hint-placeholder-val="{{ false }}"><span style="margin-left: auto; padding: 0 6px; border-radius: 999px; background: #F3F4F2; color: #3D4556">DRAFT</span></sc-if>
+</span>
+<span style="{{c.titleStyle}}">{{c.title}}</span>
+<sc-if value="{{c.showAv}}" hint-placeholder-val="{{ true }}">
+<span style="display: flex; align-items: center; padding-left: 6px; margin-top: 2px">
+<sc-for list="{{c.avs}}" as="a" hint-placeholder-count="3"><span title="{{a.name}}" style="{{a.style}}"><sc-if value="{{a.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{a.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{a.noImg}}" hint-placeholder-val="{{ true }}">{{a.ini}}</sc-if></span></sc-for>
+<sc-if value="{{c.more}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; font-family: 'Geist Mono', monospace; font-size: 11px; color: #3D4556">{{c.moreTxt}}</span></sc-if>
+<span style="margin-left: 8px; font-size: 12px; color: #3D4556; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.names}}</span>
+</span>
+</sc-if>
+<sc-if value="{{c.showTrack}}" hint-placeholder-val="{{ false }}"><span style="margin-top: auto; align-self: flex-start; padding: 1px 8px; border-radius: 999px; background: rgba(255,255,255,0.75); font-size: 12px; color: #3D4556">{{c.track}}</span></sc-if>
+</sc-if>
+</button>
+</sc-for>
+</div>
+</sc-for>
+
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 56px; right: 0; top: 120px; display: flex; justify-content: center; pointer-events: none; z-index: 5">
+<div style="pointer-events: auto; width: 440px; max-width: calc(100% - 48px); box-sizing: border-box; padding: 28px; border-radius: 20px; background: #ffffff; border: 1px solid #E5E7EB; box-shadow: 0 24px 48px -24px rgba(10,18,34,0.28); display: flex; flex-direction: column; gap: 10px; text-align: center; align-items: center">
+<span style="{{ui.chipCenter}}">DRAFT PROGRAM · APRIL 20–22, 2027</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">No sessions yet for Summit 2027</h2>
+<p style="margin: 0; font-size: 14px; color: #3D4556">Start from last year's day structure: the same slots as 2026, as draft shells with no speakers. Or drag an accepted pitch in from the tray below.</p>
+<button type="button" onClick="{{copy}}" style="{{ui.btnP}}">Copy structure from 2026</button>
+</div>
+</div>
+</sc-if>
+</div>
+</section>
+
+<!-- PEOPLE RAIL -->
+<sc-if value="{{railOpen}}" hint-placeholder-val="{{ true }}">
+<aside id="people-rail" aria-label="People" style="flex: 0 0 320px; width: 320px; box-sizing: border-box; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff; display: flex; flex-direction: column; max-height: 1120px">
+<div style="padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #E5E7EB">
+<div style="display: flex; align-items: center; gap: 8px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.01em">People</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{pCount}}</span>
+<button type="button" onClick="{{openNewP}}" style="{{ui.btnXsAuto}}">New person</button>
+<button type="button" aria-label="Collapse People panel" aria-expanded="true" aria-controls="people-rail" onClick="{{toggleRail}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #F3F4F2; color: #3D4556; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+<label style="position: relative; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people</span>
+<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{pq}}" onChange="{{setPq}}" placeholder="Search name or affiliation" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 12px 0 34px; border: 1px solid #D5D8DE; border-radius: 10px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<div role="group" aria-label="Filter people" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{pfSeg}}" as="f" hint-placeholder-count="3"><button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}</button></sc-for>
+</div>
+<span style="font-size: 12px; color: #646B7A">Click a person to highlight their sessions on the grid.</span>
+</div>
+<sc-if value="{{pEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 32px 20px; display: flex; flex-direction: column; gap: 6px; text-align: center; font-size: 14px; color: #646B7A"><strong style="color: #0A1222">No people match</strong><span>{{pEmptyText}}</span></div>
+</sc-if>
+<ul style="margin: 0; padding: 4px 0; list-style: none; overflow-y: auto">
+<sc-for list="{{plist}}" as="p" hint-placeholder-count="10">
+<li style="border-bottom: 1px solid #EEF0F3">
+<button type="button" class="prow" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.rowStyle}}">
+<span style="{{p.style}}"><sc-if value="{{p.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{p.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{p.noImg}}" hint-placeholder-val="{{ true }}">{{p.ini}}</sc-if></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+<span style="font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+<span style="font-size: 12.5px; color: #646B7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.org}}</span>
+</span>
+<span style="{{p.countStyle}}">{{p.count}}</span>
+</button>
+</li>
+</sc-for>
+</ul>
+<div style="padding: 10px 14px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">COLLECTION: PEOPLE · PHOTO, BIO, ORG, EDITIONS</div>
+</aside>
+</sc-if>
+<sc-if value="{{railClosed}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{toggleRail}}" aria-label="Show People panel" aria-expanded="false" style="flex: 0 0 44px; width: 44px; min-height: 160px; border: 1px solid #E5E7EB; border-radius: 14px; background: #ffffff; color: #0A1222; font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 0">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+<span style="writing-mode: vertical-rl; font-size: 13px; font-weight: 500">People · {{pCount}}</span>
+</button>
+</sc-if>
+</div>
+
+<!-- TRAY -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<section aria-label="Unscheduled accepted pitches" style="flex: 2 1 560px; min-width: 0; border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.01em">Unscheduled · accepted pitches</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{trayCount}}</span>
+<a class="tlink" href="AdminPitchesV3.dc.html" style="margin-left: auto; font-size: 14px; color: #0138AC">Open Calls &amp; pitches</a>
+</div>
+<sc-if value="{{trayEmpty}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 14px; color: #3D4556">{{trayEmptyText}}</p></sc-if>
+<sc-if value="{{trayHas}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 13px; color: #646B7A">Sample data. Drag a pitch onto a 15-minute row, or use Place to put it in the first free slot. It becomes a draft Pitch session linked to the pitch record.</p>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{tray}}" as="t" hint-placeholder-count="4">
+<li draggable="true" onDragStart="{{t.dstart}}" onDragEnd="{{t.dend}}" style="flex: 1 1 220px; display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; border: 1px solid #D9D3F5; border-radius: 12px; background: #F2F0FC; cursor: grab">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="#646B7A"><circle cx="9" cy="6" r="1.6"></circle><circle cx="15" cy="6" r="1.6"></circle><circle cx="9" cy="12" r="1.6"></circle><circle cx="15" cy="12" r="1.6"></circle><circle cx="9" cy="18" r="1.6"></circle><circle cx="15" cy="18" r="1.6"></circle></svg>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #5B47C2">{{t.ref}} · {{t.track}}</span>
+<span style="font-size: 14px; font-weight: 600">{{t.org}}</span>
+<span style="font-size: 12.5px; color: #646B7A">{{t.name}}</span>
+</span>
+<button type="button" onClick="{{t.place}}" aria-label="{{t.placeLabel}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Place</button>
+</li>
+</sc-for>
+</ul>
+</sc-if>
+</section>
+</div>
+
+</main>
+</div>
+</div>
+
+<!-- SESSION EDITOR DRAWER (non-modal: the grid stays live) -->
+<sc-if value="{{hasSel}}" hint-placeholder-val="{{ false }}">
+<aside role="dialog" aria-modal="false" aria-labelledby="se-title" style="position: absolute; top: 40px; right: 0; bottom: 0; width: 540px; box-sizing: border-box; background: #ffffff; border-left: 1px solid #E5E7EB; box-shadow: -24px 0 48px -28px rgba(10,18,34,0.35); z-index: 20; display: flex; flex-direction: column">
+<div style="padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: flex-start; gap: 12px">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+<span style="{{dr.typeChip}}">{{dr.typeUp}}</span>
+<h2 id="se-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2; letter-spacing: -0.02em">Edit session</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{dr.where}}</span>
+</div>
+<button type="button" aria-label="Close session editor" onClick="{{dr.close}}" style="width: 40px; height: 40px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 18px 24px; display: flex; flex-direction: column; gap: 18px">
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Title</span>
+<input type="text" value="{{dr.title}}" onChange="{{dr.setTitle}}" style="{{ui.input}}"></label>
+
+<div style="display: flex; flex-direction: column; gap: 6px"><span id="se-type" style="{{ui.label}}">Type</span>
+<div role="group" aria-labelledby="se-type" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2; align-self: flex-start">
+<sc-for list="{{dr.types}}" as="o" hint-placeholder-count="5"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div></div>
+
+<div style="display: flex; flex-direction: column; gap: 6px"><span id="se-track" style="{{ui.label}}">Track</span>
+<div role="group" aria-labelledby="se-track" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2; align-self: flex-start">
+<sc-for list="{{dr.tracks}}" as="o" hint-placeholder-count="3"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div></div>
+
+<div style="display: flex; flex-direction: column; gap: 6px"><span id="se-day" style="{{ui.label}}">Day</span>
+<div role="group" aria-labelledby="se-day" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2; align-self: flex-start">
+<sc-for list="{{dr.days}}" as="o" hint-placeholder-count="3"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div></div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Start (UTC)</span>
+<div style="display: flex; align-items: center; gap: 6px">
+<button type="button" aria-label="Start 5 minutes earlier" onClick="{{dr.sMinus}}" style="{{ui.step}}">−</button>
+<span aria-live="polite" style="min-width: 64px; text-align: center; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500">{{dr.start}}</span>
+<button type="button" aria-label="Start 5 minutes later" onClick="{{dr.sPlus}}" style="{{ui.step}}">+</button>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">End (UTC)</span>
+<div style="display: flex; align-items: center; gap: 6px">
+<button type="button" aria-label="End 5 minutes earlier" onClick="{{dr.eMinus}}" style="{{ui.step}}">−</button>
+<span aria-live="polite" style="min-width: 64px; text-align: center; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500">{{dr.end}}</span>
+<button type="button" aria-label="End 5 minutes later" onClick="{{dr.ePlus}}" style="{{ui.step}}">+</button>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Length</span>
+<span style="min-height: 44px; display: flex; align-items: center; font-family: 'Geist Mono', monospace; font-size: 14px; color: #3D4556">{{dr.dur}}</span></div>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{dr.preview}}</span>
+<span style="font-size: 13px; color: #646B7A">Start moves the whole session and keeps its length. Exact times are stored in UTC.</span>
+<sc-if value="{{dr.timeWarn}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{dr.timeWarnText}}</span></sc-if>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Description</span>
+<textarea rows="4" value="{{dr.desc}}" onChange="{{dr.setDesc}}" style="{{dr.descStyle}}"></textarea>
+<span style="{{dr.descHelpStyle}}">{{dr.descHelp}}</span></label>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="{{ui.label}}">Speakers <span style="font-weight: 400; color: #646B7A">· from People</span></span>
+<sc-if value="{{dr.noSp}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #646B7A">No speakers yet.</span></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{dr.sp}}" as="a" hint-placeholder-count="3">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 3px; border-radius: 999px; background: #F3F4F2; font-size: 13px; font-weight: 500">
+<span style="{{a.style}}"><sc-if value="{{a.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{a.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{a.noImg}}" hint-placeholder-val="{{ true }}">{{a.ini}}</sc-if></span>{{a.name}}
+<button type="button" aria-label="{{a.rmLabel}}" onClick="{{a.remove}}" style="width: 24px; height: 24px; border: 0; border-radius: 50%; background: transparent; color: #646B7A; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</span>
+</sc-for>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden">
+<label style="display: block; border-bottom: 1px solid #E5E7EB">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Find a person to add</span>
+<input type="search" value="{{dr.q}}" onChange="{{dr.setQ}}" placeholder="Find a person in People" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 14px; border: 0; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<ul style="margin: 0; padding: 0; list-style: none">
+<sc-for list="{{dr.matches}}" as="m" hint-placeholder-count="4">
+<li style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 8px 0 12px; border-top: 1px solid #F0F1F3">
+<span style="{{m.style}}"><sc-if value="{{m.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{m.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.noImg}}" hint-placeholder-val="{{ true }}">{{m.ini}}</sc-if></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 500">{{m.name}}</span><span style="font-size: 12px; color: #646B7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{m.org}}</span></span>
+<button type="button" onClick="{{m.addSp}}" aria-label="{{m.spLabel}}" style="{{ui.btnXs}}">Add speaker</button>
+<button type="button" onClick="{{m.addMod}}" aria-label="{{m.modLabel}}" style="min-height: 32px; padding: 0 8px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Moderator</button>
+</li>
+</sc-for>
+</ul>
+<sc-if value="{{dr.noMatch}}" hint-placeholder-val="{{ false }}"><div style="padding: 12px 14px; font-size: 13px; color: #646B7A; border-top: 1px solid #F0F1F3">Nobody in People matches. Use New person in the People panel.</div></sc-if>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.label}}">Moderator</span>
+<sc-if value="{{dr.hasMod}}" hint-placeholder-val="{{ false }}">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 3px; border-radius: 999px; background: #EEF2FB; font-size: 13px; font-weight: 500; color: #0A1222">
+<span style="{{dr.mod.style}}"><sc-if value="{{dr.mod.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{dr.mod.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{dr.mod.noImg}}" hint-placeholder-val="{{ true }}">{{dr.mod.ini}}</sc-if></span>{{dr.mod.name}}
+<button type="button" aria-label="Remove moderator" onClick="{{dr.clearMod}}" style="width: 24px; height: 24px; border: 0; border-radius: 50%; background: transparent; color: #646B7A; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</span></sc-if>
+<sc-if value="{{dr.noMod}}" hint-placeholder-val="{{ true }}"><span style="font-size: 14px; color: #646B7A">None. Pick one with Moderator in the list above.</span></sc-if>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.label}}">Linked pitch</span>
+<sc-if value="{{dr.hasPitch}}" hint-placeholder-val="{{ false }}"><a class="tlink" href="AdminPitchesV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 10px; background: #F2F0FC; font-size: 14px; color: #0A1222"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #5B47C2">PITCH</span>{{dr.pitch}}</a></sc-if>
+<sc-if value="{{dr.noPitch}}" hint-placeholder-val="{{ true }}"><span style="font-size: 14px; color: #646B7A">None. Sessions created from an accepted pitch link here automatically.</span></sc-if>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Recording ID <span style="font-weight: 400; color: #646B7A">· YouTube, optional</span></span>
+<input type="text" value="{{dr.rec}}" onChange="{{dr.setRec}}" placeholder="[YOUTUBE ID]" style="{{ui.inputMono}}">
+<span style="font-size: 13px; color: #646B7A">Embedded through the privacy-enhanced player: <span style="font-family: 'Geist Mono', monospace; font-size: 12px">{{dr.recUrl}}</span></span></label>
+
+<div style="display: flex; flex-direction: column; gap: 6px"><span id="se-status" style="{{ui.label}}">Status</span>
+<div role="group" aria-labelledby="se-status" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2; align-self: flex-start">
+<sc-for list="{{dr.statuses}}" as="o" hint-placeholder-count="2"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">Draft marks work in progress. Publish program publishes every session of the edition.</span></div>
+</div>
+<div style="margin-top: auto; position: sticky; bottom: 0; padding: 14px 24px; border-top: 1px solid #E5E7EB; background: #ffffff; display: flex; gap: 8px">
+<button type="button" onClick="{{dr.del}}" style="min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #B42318; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Delete session</button>
+<span style="flex: 1"></span>
+<button type="button" onClick="{{dr.close}}" style="{{ui.btnP}}">Done</button>
+</div>
+</aside>
+</sc-if>
+
+<!-- NEW PERSON DRAWER (modal) -->
+<sc-if value="{{newP}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" onClick="{{closeNewP}}" style="position: absolute; top: 40px; left: 0; right: 0; bottom: 0; background: rgba(10,18,34,0.28); z-index: 30"></div>
+<aside role="dialog" aria-modal="true" aria-labelledby="np-title" style="position: absolute; top: 40px; right: 0; bottom: 0; width: 520px; box-sizing: border-box; background: #ffffff; z-index: 31; display: flex; flex-direction: column">
+<div style="padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: flex-start; gap: 12px">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">PEOPLE · NEW RECORD</span>
+<h2 id="np-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">New person</h2>
+</div>
+<button type="button" aria-label="Close" onClick="{{closeNewP}}" style="width: 40px; height: 40px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 18px 24px; display: flex; flex-direction: column; gap: 16px">
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Name</span>
+<input type="text" value="{{np.name}}" onChange="{{np.setName}}" aria-invalid="{{np.nameInv}}" placeholder="[NAME]" style="{{np.nameStyle}}">
+<sc-if value="{{np.nameErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">Enter the name as it should appear on the site.</span></sc-if></label>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Photo</span>
+<div style="display: flex; align-items: center; gap: 14px; padding: 14px; border: 1px dashed #D5D8DE; border-radius: 12px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 14px">{{np.ini}}</span>
+<span style="flex: 1; font-size: 13px; color: #646B7A">Square JPG or PNG, at least 400 px. Stored in the media collection.</span>
+<button type="button" aria-label="Upload photo" style="{{ui.btnXs}}">Upload</button>
+</div></div>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Bio</span>
+<textarea rows="4" value="{{np.bio}}" onChange="{{np.setBio}}" placeholder="Two or three sentences, third person." style="{{ui.area}}"></textarea></label>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Organization <span style="font-weight: 400; color: #646B7A">· link to a map organization</span></span>
+<select value="{{np.org}}" onChange="{{np.setOrg}}" style="{{ui.input}}">
+<option value="">Choose an organization</option>
+<option value="Cobblehollow Labs">Cobblehollow Labs</option>
+<option value="Kelpcombe Robotics">Kelpcombe Robotics</option>
+<option value="Mossfield Labs">Mossfield Labs</option>
+<option value="Osierfen Robotics">Osierfen Robotics</option>
+<option value="Ploverhollow Dynamics">Ploverhollow Dynamics</option>
+<option value="Tideholm Instruments">Tideholm Instruments</option>
+<option value="Not on the map">Not on the map (use affiliation below)</option>
+</select></label>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Affiliation shown on site</span>
+<input type="text" value="{{np.aff}}" onChange="{{np.setAff}}" placeholder="[AFFILIATION]" style="{{ui.input}}"></label>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="{{ui.label}}">Organization link <span style="font-weight: 400; color: #646B7A">· organization page only</span></span>
+<input type="url" value="{{np.li}}" onChange="{{np.setLi}}" placeholder="https://vert-robo-con.example/orgs/…" style="{{ui.input}}">
+<span style="font-size: 13px; color: #646B7A">Personal profile links are not stored.</span></label>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 6px">
+<legend style="{{ui.legend}}">Editions</legend>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{np.eds}}" as="e" hint-placeholder-count="4">
+<label style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 10px; font-size: 14px; cursor: pointer"><input type="checkbox" checked="{{e.on}}" onChange="{{e.toggle}}" style="width: 16px; height: 16px; accent-color: #0138AC">{{e.y}}</label>
+</sc-for>
+</div></fieldset>
+<label style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #F3F4F2; cursor: pointer">
+<input type="checkbox" checked="{{np.consent}}" onChange="{{np.setConsent}}" style="margin-top: 3px; width: 16px; height: 16px; accent-color: #0138AC">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">Consent to publish</span><span style="font-size: 13px; color: #3D4556">The person agreed to show their name, photo, bio and affiliation on the site. Without it the record is saved but never published.</span></span></label>
+</div>
+<div style="margin-top: auto; padding: 14px 24px; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; justify-content: flex-end">
+<button type="button" onClick="{{closeNewP}}" style="{{ui.btnS}}">Cancel</button>
+<button type="button" onClick="{{np.save}}" style="{{ui.btnP}}">Save person</button>
+</div>
+</aside>
+</sc-if>
+
+<!-- PUBLISH CONFIRMATION -->
+<sc-if value="{{confirm}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" onClick="{{cancelPublish}}" style="position: absolute; top: 40px; left: 0; right: 0; bottom: 0; background: rgba(10,18,34,0.28); z-index: 40"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="pub-title" style="position: absolute; top: 200px; left: 50%; width: 480px; margin-left: -240px; box-sizing: border-box; padding: 24px; border-radius: 20px; background: #ffffff; box-shadow: 0 32px 64px -24px rgba(10,18,34,0.45); z-index: 41; display: flex; flex-direction: column; gap: 12px">
+<h2 id="pub-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">{{pubTitle}}</h2>
+<p style="margin: 0; font-size: 15px; color: #0A1222; font-weight: 500">{{pubLine}}</p>
+<p style="margin: 0; font-size: 14px; color: #3D4556">{{pubSub}}</p>
+<sc-if value="{{pubWarn}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; padding: 10px 12px; border-radius: 10px; background: #FFF4E5; color: #8A4B00; font-size: 13px">{{pubWarnText}}</p></sc-if>
+<div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px">
+<button type="button" onClick="{{cancelPublish}}" style="{{ui.btnS}}">Cancel</button>
+<button type="button" onClick="{{doPublish}}" style="{{ui.btnP}}">Publish</button>
+</div>
+</div>
+</sc-if>
+
+<!-- DELETE SESSION CONFIRMATION -->
+<sc-if value="{{delQ.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Keep session" onClick="{{delQ.cancel}}" style="position: absolute; top: 40px; left: 0; right: 0; bottom: 0; z-index: 50; border: 0; padding: 0; background: rgba(10,18,34,0.32); cursor: default"></button>
+<div role="alertdialog" aria-modal="true" aria-labelledby="del-h" aria-describedby="del-d" style="position: absolute; z-index: 51; top: 220px; left: 50%; margin-left: -250px; width: 500px; box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{delQ.eyebrow}}</span>
+<h2 id="del-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{delQ.title}}</h2>
+<span id="del-d" style="font-size: 15px; color: #3D4556">{{delQ.body}}</span>
+<sc-if value="{{delQ.hasPitch}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 12px; background: #F2F0FC; font-size: 14px; color: #0A1222">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #5B47C2">{{delQ.pitchRef}}</span>
+<span>The pitch goes back to the Unscheduled tray.</span>
+</div>
+</sc-if>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" onClick="{{delQ.cancel}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Keep session</button>
+<button type="button" onClick="{{delQ.confirm}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Delete session</button>
+</div>
+</div>
+</sc-if>
+
+<!-- TOAST -->
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 112px; right: 32px; z-index: 70; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); font-size: 14px">
+<span style="font-weight: 500">{{toast}}</span>
+<sc-if value="{{canUndo}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{undo}}" style="min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: #141D30; color: #BFD0F5; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Undo</button>
+</sc-if>
+<button type="button" onClick="{{closeToast}}" aria-label="Dismiss notification" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1850}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const PH = { hw: 'img/avatar-01.svg', ab: 'img/avatar-02.svg', eb: 'img/avatar-03.svg', no: 'img/avatar-04.svg', rc: 'img/avatar-11.svg', at: 'img/avatar-12.svg', po: 'img/avatar-05.svg', ms: 'img/avatar-13.svg', dm: 'img/avatar-07.svg', fg: 'img/avatar-10.svg', sa: 'img/avatar-08.svg', cv: 'img/avatar-14.svg' };
+const RAW = [
+['eb','Elif Brandvold','Vert Robo Con'],['no','Noor Halloran','Example Coastal Trust'],['mv','Mireille Vos','Example University'],['kf','Kofi Ashgrove','Example Data Commons'],
+['rc','Ruth Calloway','Example Gas Utility'],['th','Tobias Hartnell','Example Leak Sensing'],['sa','Selin Aydemir','Example University'],['gp','Gregor Pazdera','Example Regional Environment Agency'],
+['at','Amaya Thorne','Example Farmers’ Cooperative'],['lb','Lorcan Beddoes','Example Field Tools Co.'],['cv','Chidinma Varga','Example Data Commons'],
+['hw','Hollis Wexford','City of Example'],['ab','Anaïs Brekke','Example Climate Fund'],
+['po','Pieter Oduro','Example County Civil Protection'],['ek','Esme Kintyre','Example Search and Rescue Volunteers'],['mf','Matías Ferland','Example Polytechnic'],['nt','Ngozi Tremaine','Example Mutual'],
+['ms','Mina Saarinen','Example Greenhouse Cooperative'],['te','Taro Ellingsen','Example Vertical Farms'],['al','Adaeze Lindholm','Example University'],['bcs','Bruno Castellane','Example Greenhouse Cooperative'],
+['dm','Dagny Morrow','Example Polytechnic'],['ir','Ishaan Reval','Example Field Tools Co.'],['cn','Colette Nyquist','Example Wind Cooperative'],
+['fg','Femi Garrow','Example University'],['lm','Lena Moravec','Example Polytechnic'],['hb','Hugo Brennerman','Example Institute of Technology'],['sd','Sakura Delmont','Example University']
+];
+const people = RAW.map((r) => ({ id: r[0], name: r[1], org: r[2], photo: PH[r[0]] ? PH[r[0]] : '', eds: r[0] === 'no' ? ['2025', '2026'] : ['2026'] }));
+[['a003', 'Sample Applicant 003', '[STARTUP NAME]'], ['a007', 'Sample Applicant 007', 'Sample Aerial Co. (sample)'], ['a029', 'Sample Applicant 029', '[STARTUP NAME]'], ['a022', 'Sample Applicant 022', 'Sample Forest Robotics Lab']].forEach((r) => people.push({ id: r[0], name: r[1], org: r[2], photo: '', eds: ['2027'] }));
+const S = (id, day, s, e, type, title, sp, desc, track) => ({ id, day, s, e, type, title, sp, mod: null, desc: desc || '', track: track || 'Main stage', rec: '', status: 'Published', pitch: '', shell: false });
+const s26 = [
+S('a1', 0, 900, 950, 'Session', 'Session 1: Finding Methane Leaks Sooner', ['rc', 'th', 'sa', 'gp'], 'Crawlers, fixed sensors and who acts on the alerts.'),
+S('a2', 0, 950, 960, 'Break', 'Short break', [], ''),
+S('a3', 0, 960, 1005, 'Session', 'Session 2: Measuring Soil Carbon Without Digging Every Field', ['at', 'lb', 'cv'], 'Sampling robots, lab costs and sharing the data.'),
+S('a4', 0, 1005, 1050, 'Remarks', 'Hallway Hour', ['kf'], 'Unstructured video rooms by topic. Not recorded.'),
+S('b1', 1, 900, 930, 'Keynote', 'Keynote: Hollis Wexford', ['hw'], 'Hollis Wexford, City of Example, on sending machines into flooded streets first: what worked, what got stuck and what the rules now say.'),
+S('b2', 1, 930, 960, 'Keynote', 'Keynote: Anaïs Brekke', ['ab'], 'Anaïs Brekke, Example Climate Fund, on which pilot robots are still in use a year later, and the warning signs in the ones that are not.'),
+S('b3', 1, 960, 970, 'Break', 'Short break', [], ''),
+S('b4', 1, 970, 1020, 'Session', 'Session 3: Robots After Floods and Storms', ['po', 'ek', 'mf', 'nt'], 'Damage surveys, safety and paying for the response.'),
+S('b5', 1, 1020, 1030, 'Break', 'Short break', [], ''),
+S('b6', 1, 1030, 1075, 'Session', 'Session 4: Greenhouses and Indoor Farms', ['ms', 'te', 'al', 'bcs'], 'Automation that cuts heating and water use.'),
+S('c1', 2, 900, 945, 'Session', 'Session 5: Training the Next Robot Technicians', ['dm', 'ir', 'cn'], 'Apprenticeships, certification and keeping trained people.'),
+S('c2', 2, 945, 955, 'Break', 'Short break', [], ''),
+S('c3', 2, 955, 1000, 'Pitch', 'Session 6: Student Lightning Round', ['fg', 'lm', 'hb', 'sd'], 'Four students get seven minutes each and one slide of open questions.', 'Research pitches'),
+S('c4', 2, 1000, 1010, 'Break', 'Short break', [], ''),
+S('c5', 2, 1010, 1040, 'Remarks', 'Open Q&A and Topic Wishlist', ['no', 'mv'], 'Attendees ask the organising team anything and vote on topics for 2027.')
+];
+this.state = {
+ed: '2026', q: '', tz: 0, rail: true, pf: '', pq: '', sel: null, hl: null, drag: null, hov: '', confirm: false, newP: false, spq: '', seq: 1,
+delAsk: null, undo: null, toast: '',
+np: this.np0(), people,
+sess: { '2026': s26, '2027': [] }, pub: { '2026': true, '2027': false }, dirty: { '2026': false, '2027': false },
+tray: [{ id: 't003', ref: 'PIT-2027-003', track: 'Startup', org: '[STARTUP NAME]', person: 'a003' }, { id: 't007', ref: 'PIT-2027-007', track: 'Startup', org: 'Sample Aerial Co. (sample)', person: 'a007' }, { id: 't029', ref: 'PIT-2027-029', track: 'Startup', org: '[STARTUP NAME]', person: 'a029' }, { id: 't022', ref: 'PIT-2027-022', track: 'Research', org: 'Sample Forest Robotics Lab', person: 'a022' }],
+site: 'live'
+};
+}
+np0() { return { name: '', aff: '', org: '', bio: '', li: '', eds: ['2027'], consent: false, tried: false }; }
+cur() { return this.state.sess[this.state.ed]; }
+commit(list, extra) { const st = this.state, ed = st.ed; this.setState(Object.assign({ toast: '', undo: null, sess: Object.assign({}, st.sess, { [ed]: list }), dirty: Object.assign({}, st.dirty, { [ed]: true }) }, extra || {})); }
+upd(id, patch) { this.commit(this.cur().map((x) => (x.id === id ? Object.assign({}, x, patch) : x))); }
+free(dur) { const list = this.cur(), w0 = this.state.ed === '2026' ? 900 : 840, w1 = this.state.ed === '2026' ? 1080 : 1050; for (let d = 0; d < 3; d++) for (let t = w0; t + dur <= w1; t += 15) if (!list.some((x) => x.day === d && x.s < t + dur && t < x.e)) return { day: d, s: t }; return { day: 0, s: w0 }; }
+pitchSession(it, day, t) { return { id: 'p' + it.id, day, s: t, e: t + 15, type: 'Pitch', track: it.track === 'Startup' ? 'Startup pitches' : 'Research pitches', title: 'Pitch: ' + it.org, sp: [it.person], mod: null, desc: '', rec: '', status: 'Draft', pitch: it.ref + ' · ' + it.org + ' · accepted (' + it.track + ' track)', trayItem: it, shell: false }; }
+placeTray(it, day, t) { const st = this.state; this.commit(this.cur().concat([this.pitchSession(it, day, t)]), { tray: st.tray.filter((x) => x.id !== it.id), drag: null, hov: '' }); }
+drop(day, t) {
+const st = this.state, dr = st.drag; if (!dr) return;
+if (dr.indexOf('tray:') === 0) { const it = st.tray.find((x) => x.id === dr.slice(5)); if (it) this.placeTray(it, day, t); return; }
+this.commit(this.cur().map((x) => (x.id === dr ? Object.assign({}, x, { day, s: t, e: t + (x.e - x.s) }) : x)), { drag: null, hov: '' });
+}
+renderVals() {
+const st = this.state, ed = st.ed, list = st.sess[ed];
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const ROW = 76, PPM = ROW / 15, T0 = ed === '2026' ? 900 : 840, T1 = ed === '2026' ? 1080 : 1050, GH = 1064;
+const OFF = [0, -240, 120], TZN = ['UTC', 'US Eastern', 'CET'];
+const hm = (m) => { m = ((m % 1440) + 1440) % 1440; const h = Math.floor(m / 60), n = m % 60; return (h < 10 ? '0' : '') + h + ':' + (n < 10 ? '0' : '') + n; };
+const L = (m) => hm(m + OFF[st.tz]);
+const chip = (bg, fg) => 'align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + bg + '; color: ' + fg + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap';
+const btn = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; white-space: nowrap; ';
+const field = 'width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; color: #0A1222';
+const ui = {
+btnP: btn + 'border: 0; background: #0138AC; color: #ffffff',
+btnS: btn + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnXs: 'display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px solid #D5D8DE; border-radius: 9px; background: #ffffff; color: #0A1222; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap',
+step: 'width: 40px; height: 44px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; font: inherit; font-size: 18px; cursor: pointer; color: #0A1222',
+label: 'font-size: 14px; font-weight: 500; color: #0A1222',
+err: 'display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #B42318',
+input: field, inputMono: field + '; ' + MONO + 'font-size: 14px',
+area: field + '; padding: 10px 14px; line-height: 1.5; resize: vertical',
+envChip: 'margin-left: auto; ' + chip('#F3F4F2', '#3D4556'), chipCenter: chip('#F3F4F2', '#3D4556') + '; align-self: center', btnXsAuto: 'margin-left: auto; display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px solid #D5D8DE; border-radius: 9px; background: #ffffff; color: #0A1222; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap', legend: 'font-size: 14px; font-weight: 500; color: #0A1222; padding: 0; margin-bottom: 6px',
+chipGreen: chip('#E8F6EE', '#0B7A47'), chipAmber: chip('#FFF4E5', '#8A4B00'), chipNeutral: chip('#F3F4F2', '#3D4556'), chipBlue: chip('#EEF2FB', '#0138AC')
+};
+const seg = (on) => 'display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const TY = {
+Keynote: { bg: '#EEF2FB', bd: '#BFD0F5', fg: '#0138AC' }, Session: { bg: '#E8F6EE', bd: '#BCE5CD', fg: '#0B7A47' },
+Pitch: { bg: '#F2F0FC', bd: '#D9D3F5', fg: '#5B47C2' }, Remarks: { bg: '#F3F4F2', bd: '#DCDFDA', fg: '#3D4556' },
+Break: { bg: '#FFFFFF', bd: '#C9CDD5', fg: '#646B7A', dash: true }
+};
+const PM = {}; st.people.forEach((p) => { PM[p.id] = p; });
+const ini = (n) => { const w = (n || '').replace(/"[^"]*"/g, ' ').split(/\s+/).filter(Boolean); return w.length ? (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase() : '+'; };
+const av = (pid, size, stack) => { const p = PM[pid] || { name: '?', photo: '' }; return { name: p.name, org: p.org, img: p.photo, hasImg: !!p.photo, noImg: !p.photo, ini: ini(p.name), style: 'width: ' + size + 'px; height: ' + size + 'px; border-radius: 50%; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; background: #EEF2FB; color: #0138AC; ' + MONO + 'font-size: ' + (size < 30 ? 9.5 : 12) + 'px; font-weight: 500; box-sizing: border-box; ' + (stack ? 'border: 2px solid #ffffff; margin-left: -6px' : '') }; };
+const DL = ed === '2026' ? ['Tue May 19', 'Wed May 20', 'Thu May 21'] : ['Tue April 20', 'Wed April 21', 'Thu April 22'];
+
+// checks
+const ov = {}; let ovN = 0; const dbl = [];
+list.forEach((a, i) => list.forEach((b, j) => {
+if (j <= i || a.day !== b.day || !(a.s < b.e && b.s < a.e)) return;
+ov[a.id] = 1; ov[b.id] = 1; ovN++;
+a.sp.concat(a.mod ? [a.mod] : []).forEach((x) => { if ((b.sp.includes(x) || b.mod === x) && PM[x] && !dbl.includes(PM[x].name)) dbl.push(PM[x].name); });
+}));
+const outN = list.filter((x) => x.s < T0 || x.e > T1).length;
+const missN = list.filter((x) => x.type !== 'Break' && !x.desc.trim()).length;
+const pl = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+const ck = (ok, okText, badText, tone) => ({ ok, bad: !ok, text: ok ? okText : badText, icon: tone === 'red' ? '#B42318' : '#D9822B', style: 'display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: ' + (ok ? '#0A1222' : (tone === 'red' ? '#B42318' : '#8A4B00')) });
+const checks = list.length === 0 ? [ck(false, '', 'No sessions yet · copy the 2026 structure or add sessions', 'amber')] : [
+ck(outN === 0, 'All sessions within ' + hm(T0) + '–' + hm(T1) + ' UTC', pl(outN, 'session') + ' outside ' + hm(T0) + '–' + hm(T1) + ' UTC', 'red'),
+ck(dbl.length === 0, 'No speaker double-booked', dbl.join(', ') + ' double-booked', 'red'),
+ck(ovN === 0, 'No overlapping sessions', pl(ovN, 'overlap') + ' on the grid', 'red'),
+ck(missN === 0, 'Every session has a description', pl(missN, 'session') + ' missing descriptions', 'amber')
+];
+
+// drag ghost
+let dragDur = 15;
+if (st.drag && st.drag.indexOf('tray:') !== 0) { const ds = list.find((x) => x.id === st.drag); if (ds) dragDur = ds.e - ds.s; }
+const hv = st.hov ? st.hov.split(':').map(Number) : null;
+const prevent = (e) => { if (e && e.preventDefault) e.preventDefault(); };
+
+const card = (x) => {
+const t = TY[x.type] || TY.Session;
+const top = Math.max(0, Math.min(GH - 16, (x.s - T0) * PPM));
+const h = Math.max(16, Math.min((x.e - x.s) * PPM, GH - top)) - 3;
+const bad = !!ov[x.id] || x.s < T0 || x.e > T1;
+const isSel = st.sel === x.id;
+const has = !!st.hl && (x.sp.includes(st.hl) || x.mod === st.hl);
+const dim = !!st.hl && !has;
+const tiny = h < 34;
+const pad = tiny ? '0 8px' : (h < 60 ? '5px 10px' : '8px 10px');
+const ring = bad ? 'box-shadow: 0 0 0 2px #B42318; ' : isSel ? 'box-shadow: 0 0 0 2px #0A1222; ' : has ? 'box-shadow: 0 0 0 2px #0138AC; ' : '';
+const style = 'position: absolute; left: 5px; right: 5px; top: ' + (top + 1) + 'px; height: ' + h + 'px; box-sizing: border-box; display: flex; flex-direction: ' + (tiny ? 'row' : 'column') + '; align-items: ' + (tiny ? 'center' : 'stretch') + '; gap: ' + (tiny ? '6px' : '3px') + '; padding: ' + pad + '; border-radius: ' + (tiny ? 7 : 10) + 'px; text-align: left; font: inherit; color: #0A1222; cursor: grab; overflow: hidden; z-index: 2; background: ' + (x.shell ? '#FFFFFF' : t.bg) + '; border: 1px ' + (t.dash || x.shell ? 'dashed' : 'solid') + ' ' + t.bd + '; ' + ring + (dim ? 'opacity: 0.38; ' : '') + (st.drag === x.id ? 'opacity: 0.45; ' : '');
+const lines = Math.min(3, Math.max(1, Math.floor((h - 66) / 19)));
+const names = x.sp.length === 1 ? (PM[x.sp[0]] || {}).name : (x.sp.length ? '' : '');
+return {
+title: x.title, time: L(x.s) + '–' + L(x.e), type: x.type.toUpperCase(), tinyTime: MONO + 'font-size: 10.5px; color: ' + t.fg + '; white-space: nowrap', style, tiny, full: !tiny,
+metaStyle: MONO + 'font-size: 10.5px; letter-spacing: 0.05em; color: ' + t.fg + '; display: flex; gap: 6px; align-items: center; white-space: nowrap',
+titleStyle: 'font-size: ' + (h < 60 ? 13 : 14) + 'px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: ' + lines + '; overflow: hidden',
+showAv: h >= 72 && x.sp.length > 0, avs: x.sp.slice(0, 5).map((pid, i) => av(pid, 24, i > 0)), more: x.sp.length > 5, moreTxt: '+' + (x.sp.length - 5), names: names || '',
+showTrack: h >= 150, track: x.track,
+flag: bad, flagText: (x.s < T0 || x.e > T1) ? 'OUTSIDE' : 'OVERLAP', draft: !bad && x.status === 'Draft',
+aria: x.type + ': ' + x.title + ', ' + DL[x.day] + ', ' + L(x.s) + ' to ' + L(x.e) + ' ' + TZN[st.tz] + (bad ? ', conflict' : '') + '. Open editor',
+open: () => this.setState({ sel: x.id, spq: '', newP: false }),
+dstart: (e) => { try { if (e && e.dataTransfer) { e.dataTransfer.setData('text/plain', x.id); e.dataTransfer.effectAllowed = 'move'; } } catch (err) {} this.setState({ drag: x.id }); },
+dend: () => this.setState({ drag: null, hov: '' })
+};
+};
+
+const days = DL.map((label, d) => {
+const mine = list.filter((x) => x.day === d).sort((a, b) => a.s - b.s);
+const slots = [];
+for (let i = 0; i < 14; i++) {
+const key = d + ':' + i, t = T0 + i * 15;
+slots.push({
+style: 'position: absolute; left: 0; right: 0; top: ' + (i * ROW) + 'px; height: ' + ROW + 'px; box-sizing: border-box; border-top: 1px ' + (i % 2 ? 'dashed #EEF0F3' : 'solid ' + (i % 4 === 0 ? '#E1E3E6' : '#EEF0F3')) + '; z-index: ' + (st.drag ? 4 : 0) + '; background: ' + (st.hov === key ? 'rgba(1,56,172,0.05)' : 'transparent'),
+over: prevent,
+enter: (e) => { prevent(e); if (this.state.hov !== key) this.setState({ hov: key }); },
+drop: (e) => { prevent(e); this.drop(d, t); }
+});
+}
+const ghost = !!st.drag && !!hv && hv[0] === d;
+return {
+label, dayNo: 'Day ' + (d + 1), aria: 'Day ' + (d + 1) + ', ' + label,
+meta: mine.length ? pl(mine.length, 'item').toUpperCase() + ' · ' + L(mine[0].s) + '–' + L(Math.max.apply(null, mine.map((x) => x.e))) + ' ' + (st.tz === 0 ? 'UTC' : TZN[st.tz].toUpperCase()) : 'NO SESSIONS',
+slots, ghost,
+ghostStyle: ghost ? 'position: absolute; left: 5px; right: 5px; top: ' + (hv[1] * ROW + 1) + 'px; height: ' + (dragDur * PPM - 3) + 'px; box-sizing: border-box; border: 2px dashed #0138AC; border-radius: 10px; background: rgba(1,56,172,0.06); z-index: 5; pointer-events: none' : '',
+cards: mine.map(card)
+};
+});
+const gutter = [];
+for (let i = 0; i <= 14; i++) gutter.push({ t: L(T0 + i * 15), style: 'position: absolute; right: 8px; top: ' + (i === 0 ? 4 : i === 14 ? GH - 18 : i * ROW - 8) + 'px; ' + MONO + 'font-size: 11px; ' + (i % 4 === 0 ? 'color: #0A1222; font-weight: 500' : 'color: #646B7A') });
+
+// people rail
+const pf = st.pf || ed;
+const scope = pf === 'all' ? st.sess['2026'].concat(st.sess['2027']) : st.sess[pf];
+const cnt = {}; scope.forEach((x) => x.sp.concat(x.mod ? [x.mod] : []).forEach((p) => { cnt[p] = (cnt[p] || 0) + 1; }));
+const q = st.pq.trim().toLowerCase();
+const plist = st.people.filter((p) => (pf === 'all' || p.eds.includes(pf)) && (!q || (p.name + ' ' + p.org).toLowerCase().includes(q))).map((p) => {
+const on = st.hl === p.id, n = cnt[p.id] || 0;
+return Object.assign(av(p.id, 36, false), {
+pressed: on ? 'true' : 'false', count: n ? pl(n, 'session') : 'None',
+countStyle: MONO + 'font-size: 11px; white-space: nowrap; color: ' + (n ? '#3D4556' : '#646B7A'),
+rowStyle: 'width: 100%; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 14px; border: 0; font: inherit; text-align: left; cursor: pointer; color: #0A1222; background: ' + (on ? '#EEF2FB' : 'transparent'),
+pick: () => this.setState({ hl: on ? null : p.id })
+});
+});
+const pfSeg = [['2026', '2026'], ['2027', '2027'], ['all', 'All editions']].map((o) => ({ label: o[1], pressed: pf === o[0] ? 'true' : 'false', style: seg(pf === o[0]) + '; flex: 1; justify-content: center; font-size: 13px; padding: 0 8px', pick: () => this.setState({ pf: o[0] }) }));
+const hlP = st.hl ? PM[st.hl] : null;
+const hlN = hlP ? list.filter((x) => x.sp.includes(st.hl) || x.mod === st.hl).length : 0;
+
+// summary + publish
+const numbered = list.filter((x) => /^Session \d/.test(x.title)).length;
+const pubPeople = {}; list.forEach((x) => x.sp.concat(x.mod ? [x.mod] : []).forEach((p) => { pubPeople[p] = 1; }));
+const peopleN = Object.keys(pubPeople).length;
+const draftN = list.filter((x) => x.status === 'Draft').length;
+const noSpN = list.filter((x) => x.type !== 'Break' && x.sp.length === 0).length;
+const pubOn = st.pub[ed], dirty = st.dirty[ed], building = st.site === 'building';
+const noList = list.length === 0;
+
+// drawer
+const s = list.find((x) => x.id === st.sel);
+let dr = {};
+if (s) {
+const t = TY[s.type] || TY.Session;
+const sq = st.spq.trim().toLowerCase();
+const pool = st.people.filter((p) => !s.sp.includes(p.id) && p.id !== s.mod && (sq ? (p.name + ' ' + p.org).toLowerCase().includes(sq) : p.eds.includes(ed))).slice(0, 4);
+const outW = s.s < T0 || s.e > T1;
+const needDesc = s.type !== 'Break' && !s.desc.trim();
+dr = {
+typeUp: s.type.toUpperCase(), typeChip: chip(t.bg, t.fg),
+where: 'DAY ' + (s.day + 1) + ' · ' + DL[s.day].toUpperCase() + ' · ' + hm(s.s) + '–' + hm(s.e) + ' UTC',
+title: s.title, setTitle: (e) => this.upd(s.id, { title: e.target.value }),
+types: ['Keynote', 'Session', 'Pitch', 'Remarks', 'Break'].map((k) => ({ label: k, pressed: s.type === k ? 'true' : 'false', style: seg(s.type === k), pick: () => this.upd(s.id, { type: k }) })),
+tracks: ['Main stage', 'Startup pitches', 'Research pitches'].map((k) => ({ label: k, pressed: s.track === k ? 'true' : 'false', style: seg(s.track === k), pick: () => this.upd(s.id, { track: k }) })),
+days: DL.map((l, i) => ({ label: 'Day ' + (i + 1) + ' · ' + l.slice(4), pressed: s.day === i ? 'true' : 'false', style: seg(s.day === i), pick: () => this.upd(s.id, { day: i }) })),
+start: hm(s.s), end: hm(s.e), dur: (s.e - s.s) + ' min',
+sMinus: () => { if (s.s - 5 >= 720) this.upd(s.id, { s: s.s - 5, e: s.e - 5 }); },
+sPlus: () => { if (s.e + 5 <= 1050) this.upd(s.id, { s: s.s + 5, e: s.e + 5 }); },
+eMinus: () => { if (s.e - 5 > s.s) this.upd(s.id, { e: s.e - 5 }); },
+ePlus: () => { if (s.e + 5 <= 1050) this.upd(s.id, { e: s.e + 5 }); },
+preview: 'US EASTERN ' + hm(s.s - 240) + '–' + hm(s.e - 240) + ' · CET ' + hm(s.s + 120) + '–' + hm(s.e + 120),
+timeWarn: outW || !!ov[s.id], timeWarnText: outW ? 'Outside the ' + hm(T0) + '–' + hm(T1) + ' UTC window.' : 'Overlaps another session on this day.',
+desc: s.desc, setDesc: (e) => this.upd(s.id, { desc: e.target.value }),
+descStyle: ui.area + (needDesc ? '; border-color: #D9822B' : ''),
+descHelp: needDesc ? 'Missing. Shown on the public program and in the .ics file.' : s.desc.length + ' characters · shown on the public program and in the .ics file',
+descHelpStyle: 'font-size: 13px; color: ' + (needDesc ? '#8A4B00' : '#646B7A'),
+noSp: s.sp.length === 0,
+sp: s.sp.map((pid) => Object.assign(av(pid, 26, false), { rmLabel: 'Remove ' + ((PM[pid] || {}).name || ''), remove: () => this.upd(s.id, { sp: s.sp.filter((x) => x !== pid) }) })),
+q: st.spq, setQ: (e) => this.setState({ spq: e.target.value }),
+matches: pool.map((p) => Object.assign(av(p.id, 28, false), { spLabel: 'Add ' + p.name + ' as speaker', modLabel: 'Set ' + p.name + ' as moderator', addSp: () => this.upd(s.id, { sp: s.sp.concat([p.id]) }), addMod: () => this.upd(s.id, { mod: p.id }) })),
+noMatch: pool.length === 0,
+hasMod: !!s.mod, noMod: !s.mod, mod: av(s.mod || '', 26, false), clearMod: () => this.upd(s.id, { mod: null }),
+hasPitch: !!s.pitch, noPitch: !s.pitch, pitch: s.pitch,
+rec: s.rec, setRec: (e) => this.upd(s.id, { rec: e.target.value.trim() }),
+recUrl: 'youtube-nocookie.com/embed/' + (s.rec || '[YOUTUBE ID]'),
+statuses: ['Draft', 'Published'].map((k) => ({ label: k, pressed: s.status === k ? 'true' : 'false', style: seg(s.status === k), pick: () => this.upd(s.id, { status: k }) })),
+del: () => this.setState({ delAsk: s.id }),
+close: () => this.setState({ sel: null, spq: '' })
+};
+}
+
+// new person
+const np = st.np;
+const setNp = (patch) => this.setState({ np: Object.assign({}, this.state.np, patch) });
+const nameBad = np.tried && !np.name.trim();
+const npv = {
+name: np.name, bio: np.bio, org: np.org, aff: np.aff, li: np.li, consent: np.consent, ini: np.name.trim() ? ini(np.name) : '+',
+setName: (e) => setNp({ name: e.target.value }), setBio: (e) => setNp({ bio: e.target.value }), setOrg: (e) => setNp({ org: e.target.value }),
+setAff: (e) => setNp({ aff: e.target.value }), setLi: (e) => setNp({ li: e.target.value }), setConsent: (e) => setNp({ consent: !!e.target.checked }),
+nameErr: nameBad, nameInv: nameBad ? 'true' : 'false', nameStyle: ui.input + (nameBad ? '; border-color: #B42318' : ''),
+eds: ['2024', '2025', '2026', '2027'].map((y) => ({ y, on: np.eds.includes(y), toggle: () => setNp({ eds: np.eds.includes(y) ? np.eds.filter((z) => z !== y) : np.eds.concat([y]) }) })),
+save: () => {
+if (!np.name.trim()) { setNp({ tried: true }); return; }
+const id = 'n' + st.seq;
+const org = np.aff.trim() || (np.org && np.org !== 'Not on the map' ? np.org : '[AFFILIATION]');
+this.setState({ people: [{ id, name: np.name.trim(), org, photo: '', eds: np.eds.length ? np.eds : [ed] }].concat(st.people), seq: st.seq + 1, newP: false, np: this.np0(), pq: '', pf: np.eds.includes(ed) || !np.eds.length ? '' : 'all', hl: null });
+}
+};
+
+const tray = ed === '2027' ? st.tray : [];
+const pitchSp = st.sess['2026'].filter((x) => x.type === 'Pitch').reduce((a, x) => a + x.sp.length, 0);
+
+// delete confirmation + undo toast
+const dq = st.delAsk ? list.find((x) => x.id === st.delAsk) : null;
+const delQ = { on: !!dq, eyebrow: '', title: '', body: '', hasPitch: false, pitchRef: '', cancel: () => this.setState({ delAsk: null }), confirm: () => this.setState({ delAsk: null }) };
+if (dq) {
+const ti = dq.pitch && dq.trayItem ? dq.trayItem : null;
+Object.assign(delQ, {
+eyebrow: 'PROGRAM · SUMMIT ' + ed + ' · ' + dq.type.toUpperCase(),
+title: 'Delete "' + dq.title + '"?',
+body: 'Removes it from Day ' + (dq.day + 1) + ' at ' + hm(dq.s) + ' UTC. Not public until you publish.',
+hasPitch: !!dq.pitch, pitchRef: 'PITCH · ' + (ti ? ti.ref + ' · ' + ti.org : dq.pitch),
+confirm: () => {
+const cur = this.state, prev = cur.sess[ed];
+const tray2 = ti && !cur.tray.some((x) => x.id === ti.id) ? cur.tray.concat([ti]) : cur.tray;
+this.commit(prev.filter((x) => x.id !== dq.id), { sel: null, spq: '', delAsk: null, tray: tray2, toast: 'Session deleted', undo: { ed, list: prev, tray: cur.tray, dirty: cur.dirty[ed] } });
+}
+});
+}
+
+return {
+ui, ed,
+// shared top bar (same markup as AdminQueueV3); the edition switcher lives in the page header (edSeg)
+q: st.q, setQ: (e) => this.setState({ q: e.target.value }),
+pageTitle: 'Program · Summit ' + ed,
+showPub: pubOn, showDirty: pubOn && dirty, showDraft: !pubOn,
+newSession: () => { const f = this.free(30); const id = 'x' + st.seq; this.commit(this.cur().concat([{ id, day: f.day, s: f.s, e: f.s + 30, type: 'Session', track: 'Main stage', title: 'New session', sp: [], mod: null, desc: '', rec: '', status: 'Draft', pitch: '', shell: false }]), { seq: st.seq + 1, sel: id, spq: '' }); },
+askPublish: () => { if (!noList) this.setState({ confirm: true, sel: null }); },
+pubDisabled: noList ? 'true' : 'false',
+pubBtn: ui.btnP + (noList ? '; background: #A7ADB8; cursor: not-allowed' : ''),
+pubLabel: pubOn && dirty ? 'Publish changes' : 'Publish program',
+edSeg: [['2027', 'Apr 20–22'], ['2026', 'May 19–21']].map((o) => ({ label: o[0], sub: o[1], pressed: ed === o[0] ? 'true' : 'false', style: seg(ed === o[0]), pick: () => this.setState({ ed: o[0], sel: null, hl: null, pf: '' }) })),
+tzSeg: TZN.map((n, i) => ({ label: n, pressed: st.tz === i ? 'true' : 'false', style: seg(st.tz === i), pick: () => this.setState({ tz: i }) })),
+tzShort: st.tz === 0 ? 'UTC' : st.tz === 1 ? 'US ET' : 'CET',
+summary: noList ? 'NO SESSIONS YET' : pl(list.length, 'item').toUpperCase() + ' · ' + numbered + ' NUMBERED SESSIONS · ' + peopleN + ' PEOPLE',
+checks,
+legend: Object.keys(TY).map((k) => ({ label: k, sw: 'width: 14px; height: 10px; border-radius: 3px; background: ' + TY[k].bg + '; border: 1px ' + (TY[k].dash ? 'dashed' : 'solid') + ' ' + TY[k].bd })),
+hasHl: !!hlP, hlText: hlP ? 'Highlighting ' + pl(hlN, 'session') + ' with ' + hlP.name : '', clearHl: () => this.setState({ hl: null }),
+days, gutter, empty: noList,
+copy: () => {
+const sh = st.sess['2026'].map((x) => {
+let title = x.title; const m = x.title.match(/^Session (\d+)/);
+if (x.type === 'Keynote') title = 'Keynote · [SPEAKER]';
+else if (m) title = 'Session ' + m[1] + ' · ' + (x.type === 'Pitch' ? (x.track === 'Startup pitches' ? 'Startup pitches' : 'Research pitches') : '[TOPIC]');
+return Object.assign({}, x, { id: 'k' + x.id, s: x.s - 60, e: x.e - 60, title, sp: [], mod: null, desc: '', rec: '', status: 'Draft', pitch: '', shell: true });
+});
+this.setState({ sess: Object.assign({}, st.sess, { '2027': st.sess['2027'].concat(sh) }), dirty: Object.assign({}, st.dirty, { '2027': true }), toast: '', undo: null });
+},
+railOpen: st.rail, railClosed: !st.rail, toggleRail: () => this.setState({ rail: !st.rail }),
+pCount: String(plist.length), pq: st.pq, setPq: (e) => this.setState({ pq: e.target.value }), pfSeg, plist,
+pEmpty: plist.length === 0, pEmptyText: q ? 'Try another name, or clear the search.' : 'No speakers for this edition yet. Accepted pitches add their presenters here.',
+openNewP: () => this.setState({ newP: true, sel: null, np: this.np0() }), closeNewP: () => this.setState({ newP: false }),
+newP: st.newP, np: npv,
+trayHas: tray.length > 0, trayEmpty: tray.length === 0,
+trayCount: ed === '2027' ? pl(tray.length, 'pitch').replace('pitchs', 'pitches').toUpperCase() : '0 PITCHES',
+trayEmptyText: ed === '2027' ? 'All accepted 2027 pitches are on the grid.' : 'No unscheduled accepted pitches for 2026. ' + pitchSp + ' pitch presenters are already in Session 6.',
+tray: tray.map((it) => ({
+ref: it.ref, track: it.track.toUpperCase(), org: it.org, name: (PM[it.person] || {}).name, placeLabel: 'Place ' + it.ref + ', ' + it.org + ', in the first free slot',
+place: () => { const f = this.free(15); this.placeTray(it, f.day, f.s); },
+dstart: (e) => { try { if (e && e.dataTransfer) e.dataTransfer.setData('text/plain', it.id); } catch (err) {} this.setState({ drag: 'tray:' + it.id }); },
+dend: () => this.setState({ drag: null, hov: '' })
+})),
+hasSel: !!s, dr,
+delQ,
+toastOn: !!st.toast, toast: st.toast, canUndo: !!st.undo,
+undo: () => { const u = this.state.undo; if (!u) return; const cur = this.state; this.setState({ sess: Object.assign({}, cur.sess, { [u.ed]: u.list }), tray: u.tray, dirty: Object.assign({}, cur.dirty, { [u.ed]: u.dirty }), ed: u.ed, undo: null, toast: '' }); },
+closeToast: () => this.setState({ toast: '', undo: null }),
+confirm: st.confirm,
+pubTitle: 'Publish the Summit ' + ed + ' program?',
+pubLine: 'Publishes ' + pl(numbered, 'session') + ' and ' + peopleN + (peopleN === 1 ? ' person page' : ' people pages') + ' · live at once',
+pubSub: pl(list.length, 'program item') + ' in total, including keynotes, remarks and breaks. Sets editions.programState to published, writes an audit event and clears the page cache, so the program is live at once. The .ics files update at once.',
+pubWarn: draftN > 0 || missN > 0 || noSpN > 0,
+pubWarnText: (draftN ? pl(draftN, 'draft session') + ' will be published. ' : '') + (missN ? pl(missN, 'session') + ' will show without a description. ' : '') + (noSpN ? pl(noSpN, 'session') + (noSpN === 1 ? ' still has' : ' still have') + ' no speakers.' : ''),
+cancelPublish: () => this.setState({ confirm: false }),
+doPublish: () => {
+this.setState({ sess: Object.assign({}, st.sess, { [ed]: list.map((x) => Object.assign({}, x, { status: 'Published' })) }), pub: Object.assign({}, st.pub, { [ed]: true }), dirty: Object.assign({}, st.dirty, { [ed]: false }), confirm: false, toast: '', undo: null });
+}
+};
+}
+}
+</script>
+</body>
+</html>

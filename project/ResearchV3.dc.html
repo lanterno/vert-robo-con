@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Research and white paper (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+.para .sug{opacity:0;transition:opacity .15s ease}
+.para:hover .sug,.para:focus-within .sug,.sug:focus-visible{opacity:1}
+.tocl{color:#3D4556;text-decoration:none}
+.tocl:hover{background:#F3F4F2;color:#0A1222}
+.ftl{color:#0A1222;text-decoration:none}
+.ftl:hover{color:#0138AC}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+</style>
+</helmet>
+<div style="font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EAED; border-bottom: 1px solid #D5D8DE; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">VIEW</span>
+<span role="group" aria-label="View" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 11px; background: #DADDE2">
+<sc-for list="{{views}}" as="v" hint-placeholder-count="2"><button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button></sc-for>
+</span>
+</span>
+<sc-if value="{{isReader}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">DOCUMENT</span>
+<span role="group" aria-label="Document" style="display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 11px; background: #DADDE2">
+<sc-for list="{{docSeg}}" as="v" hint-placeholder-count="4"><button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button></sc-for>
+</span>
+</span>
+</sc-if>
+</div>
+
+<!-- PAGE -->
+<div style="position: relative">
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html" aria-current="page" style="background: #F3F4F2; color: #0A1222">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<sc-if value="{{i.isLink}}" hint-placeholder-val="{{ true }}"><a class="mitem" href="{{i.href}}" onClick="{{i.act}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a></sc-if>
+<sc-if value="{{i.isBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="mitem" onClick="{{i.act}}" style="width: 100%; border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></button></sc-if>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<button type="button" onClick="{{openJoinTop}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Join the network</button>
+</div>
+</header>
+
+<!-- ================= LANDING ================= -->
+<sc-if value="{{isLanding}}" hint-placeholder-val="{{ true }}">
+
+<!-- HERO -->
+<section style="padding: 72px 32px 96px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 48px 72px; align-items: center">
+<div style="flex: 1.1 1 480px; display: flex; flex-direction: column; gap: 24px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHITE PAPER · 2025 EDITION · OPEN &amp; COMMUNITY-WRITTEN</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 84px; line-height: 0.94; letter-spacing: -0.045em">Where robots help the climate, and where they don’t</h1>
+<p style="margin: 0; max-width: 560px; font-size: 20px; color: #3D4556">A community-written guide to robots in climate work after the first season: what is deployed, what it costs to run, how it fails and how to buy well.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{readOnline}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Read online
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 16px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg>Download PDF · [SIZE]</a>
+<a href="#cite" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 12px; font-size: 16px; font-weight: 500; text-decoration: none">Cite</a>
+</div>
+<span style="font-size: 14px; color: #646B7A">The PDF is generated from the online edition · updated [DATE]</span>
+</div>
+<div style="flex: 1 1 440px; position: relative; padding: 32px; border-radius: 28px; background: #EEF2FB">
+<img src="img/white-paper.svg" alt="White paper cover illustration" style="width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 12px; display: block; box-shadow: 0 30px 60px -30px rgba(1,56,172,0.55)">
+<span style="position: absolute; right: 16px; bottom: -18px; padding: 10px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px">FOUR CHAPTERS</span>
+</div>
+</div>
+</section>
+
+<!-- FOUR CHAPTERS -->
+<section style="background: #F3F4F2; padding: 112px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; gap: 24px 80px; align-items: flex-end">
+<h2 style="margin: 0; flex: 1 1 400px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Four chapters</h2>
+<p style="margin: 0; flex: 1 1 420px; font-size: 18px; color: #3D4556">Written for the people who buy, run and repair robots, with numbers from real deployments wherever members could share them.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<sc-for list="{{lenses}}" as="l" hint-placeholder-count="4">
+<button type="button" class="lift" onClick="{{l.open}}" style="{{l.style}}">
+<span style="{{l.labelStyle}}">{{l.label}}</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">{{l.title}}</span>
+<span style="font-size: 16px; color: #3D4556">{{l.desc}}</span>
+<span style="margin-top: auto; padding-top: 8px; display: inline-flex; align-items: center; gap: 6px; color: #0138AC; font-size: 15px; font-weight: 500">{{l.cta}}
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+</button>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- READ IT, THEN HELP WRITE -->
+<section style="padding: 112px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<h2 style="margin: 0; flex: 1 1 520px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1; letter-spacing: -0.035em">Read it, then help write the next one</h2>
+<p style="margin: 0; max-width: 420px; font-size: 18px; color: #3D4556">We revise the paper once a year. Suggested edits are reviewed before each new edition.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<button type="button" class="lift" onClick="{{readOnline}}" style="border: 0; border-radius: 24px; background: #0138AC; color: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 16px; text-align: left; font: inherit; cursor: pointer; min-height: 300px">
+<span style="display: flex; justify-content: space-between; align-items: center; width: 100%; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #BFD0F5">READ ONLINE
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+<span style="margin-top: auto; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">Read online</span>
+<span style="font-size: 16px; color: #E4EAF8">Chapters, search and footnotes, on any screen</span>
+</button>
+<a href="#" class="lift" style="border-radius: 24px; border: 1px solid #E5E7EB; color: #0A1222; padding: 28px; display: flex; flex-direction: column; gap: 16px; text-decoration: none; min-height: 300px; box-sizing: border-box">
+<span style="display: flex; justify-content: space-between; align-items: center; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">DOWNLOAD PDF
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg></span>
+<span style="margin-top: auto; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">Download PDF</span>
+<span style="font-size: 16px; color: #3D4556">Generated from the online edition · [SIZE]</span>
+</a>
+<button type="button" class="lift" onClick="{{readOnline}}" style="border: 0; border-radius: 24px; background: #F3F4F2; color: #0A1222; padding: 28px; display: flex; flex-direction: column; gap: 16px; text-align: left; font: inherit; cursor: pointer; min-height: 300px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SUGGEST AN EDIT</span>
+<span aria-hidden="true" style="position: relative; width: 100%; box-sizing: border-box; padding: 16px 16px 16px 60px; border-radius: 14px; background: #ffffff; display: flex; flex-direction: column; gap: 8px">
+<span style="position: absolute; left: 12px; top: 12px; width: 34px; height: 34px; border-radius: 10px; border: 1px solid #D5D8DE; color: #0138AC; display: flex; align-items: center; justify-content: center">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path><path d="M9 12h6"></path></svg></span>
+<span style="height: 8px; border-radius: 4px; background: #D5D8DE; width: 92%"></span>
+<span style="height: 8px; border-radius: 4px; background: #FFF4E5; box-shadow: inset 0 -2px 0 #D9822B; width: 100%"></span>
+<span style="height: 8px; border-radius: 4px; background: #D5D8DE; width: 64%"></span>
+</span>
+<span style="margin-top: auto; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">Suggest an edit from any section</span>
+<span style="font-size: 16px; color: #3D4556">No account needed</span>
+</button>
+</div>
+</div>
+</section>
+
+<!-- VIDEO -->
+<section style="padding: 112px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 64px; align-items: flex-start">
+<div style="flex: 1.6 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{videoIdle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{playVideo}}" aria-label="Play video: Introducing the white paper" style="position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; padding: 0; border-radius: 20px; overflow: hidden; background: #0A1222; cursor: pointer">
+<img src="img/balloon.svg" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.75">
+<span style="position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: #ffffff; color: #0A1222; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+<span style="position: absolute; left: 16px; top: 16px; padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px">INTRODUCING THE WHITE PAPER</span>
+<span style="position: absolute; right: 16px; bottom: 16px; padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px">[DURATION]</span>
+</button>
+</sc-if>
+<sc-if value="{{videoPlaying}}" hint-placeholder-val="{{ false }}">
+<div role="region" aria-label="Video player: Introducing the white paper" style="position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden; background: #0A1222; color: #ffffff; box-sizing: border-box; padding: 20px; display: flex; flex-direction: column; justify-content: space-between">
+<span style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #9AA3B5">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #141D30; color: #7FD6A8"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>PLAYING</span>
+<span>privacy-enhanced player · [VIDEO ID]</span>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; letter-spacing: -0.02em; text-align: center">Introducing the white paper</span>
+<span style="display: flex; align-items: center; gap: 14px">
+<button type="button" onClick="{{stopVideo}}" aria-label="Pause" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #ffffff; color: #0A1222; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: 0 0 auto">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg></button>
+<span aria-hidden="true" style="flex: 1; height: 4px; border-radius: 999px; background: #2E3850"><span style="display: block; width: 6%; height: 4px; border-radius: 999px; background: #ffffff"></span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #C8CEDA">0:04 / [DURATION]</span>
+</span>
+</div>
+</sc-if>
+<div role="tablist" aria-label="About this video" style="margin-top: 4px; align-self: flex-start; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{vtabs}}" as="t" hint-placeholder-count="3"><button type="button" role="tab" id="{{t.tabId}}" aria-controls="vpanel" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<div id="vpanel" role="tabpanel" aria-labelledby="{{vtabCurrentId}}" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; min-height: 180px; box-sizing: border-box; font-size: 16px; color: #3D4556">
+<sc-if value="{{vSummary}}" hint-placeholder-val="{{ true }}"><p style="margin: 0">[VIDEO SUMMARY]</p><p style="margin: 12px 0 0; font-size: 14px; color: #646B7A">Speakers: [SPEAKERS]</p></sc-if>
+<sc-if value="{{vTranscript}}" hint-placeholder-val="{{ false }}"><ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{transcript}}" as="r" hint-placeholder-count="3"><li style="display: flex; gap: 14px"><span style="flex: 0 0 48px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A; padding-top: 3px">{{r.t}}</span><span>{{r.x}}</span></li></sc-for>
+</ol></sc-if>
+<sc-if value="{{vChapters}}" hint-placeholder-val="{{ false }}"><ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{vchapters}}" as="r" hint-placeholder-count="3"><li><button type="button" onClick="{{playVideo}}" style="width: 100%; display: flex; gap: 14px; align-items: center; min-height: 44px; padding: 0 10px; border: 0; border-radius: 10px; background: #F3F4F2; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC">{{r.t}}</span>{{r.x}}</button></li></sc-for>
+</ol></sc-if>
+</div>
+</div>
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">VIDEO · [DURATION]</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 44px; line-height: 1; letter-spacing: -0.035em">Introducing the white paper</h2>
+<p style="margin: 0; font-size: 15px; color: #646B7A">The privacy-enhanced player loads only after you press play.</p>
+<span style="display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 15px">
+<button type="button" onClick="{{readTranscript}}" style="min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: #0138AC; cursor: pointer">Read transcript</button>
+<a href="https://vert-robo-con.example/watch/introducing-the-white-paper" style="display: inline-flex; align-items: center; min-height: 44px; font-weight: 500">Watch on the video page</a>
+</span>
+</div>
+</div>
+</section>
+
+<!-- AUTHORS -->
+<section style="padding: 112px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">THE AUTHORS</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1; letter-spacing: -0.035em">Meet the authors</h2>
+</div>
+<p style="margin: 0; max-width: 420px; font-size: 18px; color: #3D4556">Select a name to see their chapters, talks and links.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px">
+<sc-for list="{{authors}}" as="a" hint-placeholder-count="6">
+<button type="button" class="lift" onClick="{{a.open}}" aria-label="{{a.aria}}" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 10px; background: #ffffff; color: #0A1222; font: inherit; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 12px">
+<sc-if value="{{a.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{a.photo}}" alt="{{a.name}}" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 14px; display: block"></sc-if>
+<sc-if value="{{a.noPhoto}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 100%; aspect-ratio: 1 / 1; border-radius: 14px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 34px">{{a.initials}}</span></sc-if>
+<span style="padding: 0 6px 6px; display: flex; flex-direction: column; gap: 2px; line-height: 1.35">
+<strong style="font-weight: 600; font-size: 16px">{{a.name}}</strong>
+<span style="font-size: 14px; color: #646B7A">{{a.role}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- WRITE THE NEXT EDITION -->
+<section style="padding: 112px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">NEXT EDITION</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1; letter-spacing: -0.035em">Write the next edition with us</h2>
+</div>
+<p style="margin: 0; max-width: 420px; font-size: 18px; color: #3D4556">The paper is written by the community. Bring a topic, or give a few hours a month.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+<div style="border-radius: 24px; background: #EEF2FB; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; box-shadow: inset 0 0 0 1px #BFD0F5; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>OPEN</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">Propose a topic</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Tell us what the next edition is missing. Every proposal is discussed at the next research call.</p>
+<button type="button" onClick="{{openTopic}}" style="margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Propose a topic</button>
+</div>
+<div style="border-radius: 24px; background: #F3F4F2; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; box-shadow: inset 0 0 0 1px #BFD0F5; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>OPEN</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">Join the research team</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Give a few hours a month to research, write or edit a chapter alongside the authors.</p>
+<button type="button" onClick="{{openTeam}}" style="margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Join the research team</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- CITE + ASK -->
+<section id="cite" style="padding: 112px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+<div style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">CITE THIS PAPER</span>
+<div role="tablist" aria-label="Citation format" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{citeTabs}}" as="t" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+</div>
+<code style="display: block; padding: 16px; border-radius: 12px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 13px; line-height: 1.6; color: #0A1222; white-space: pre-wrap">{{citeText}}</code>
+<span style="display: flex; align-items: center; gap: 12px">
+<button type="button" onClick="{{copyCite}}" style="{{copyStyle}}">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>{{copyLabel}}</button>
+<span role="status" style="font-size: 14px; color: #0B7A47">{{copyStatus}}</span>
+</span>
+</div>
+<div style="border-radius: 24px; background: #F3F4F2; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">QUESTIONS ABOUT THE PAPER</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em">Ask the authors</span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Questions, data requests or press about the white paper go straight to the research team. We respond within 24–48 hours.</p>
+<span style="margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+<button type="button" onClick="{{openAsk}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Ask the authors</button>
+<span style="font-size: 15px; color: #3D4556">or email <a href="mailto:hello@vert-robo-con.example" style="font-weight: 500">hello@vert-robo-con.example</a></span>
+</span>
+</div>
+</div>
+</section>
+
+<!-- JOIN CTA -->
+<section style="padding: 16px 32px 112px">
+<div style="max-width: 1280px; margin: 0 auto; box-sizing: border-box; border-radius: 32px; background: #0A1222; color: #ffffff; padding: 56px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px 64px">
+<div style="flex: 1 1 520px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #7FD6A8"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>120+ MEMBERS ON SLACK</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1; letter-spacing: -0.035em">Shape the next edition with the people who wrote it.</span>
+<span style="font-size: 17px; color: #C8CEDA">Join the network to meet the authors, hear about research calls and get the monthly digest.</span>
+</div>
+<button type="button" onClick="{{openJoinBottom}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; border: 0; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Join the network
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+</section>
+
+</sc-if>
+
+<!-- ================= READER ================= -->
+<sc-if value="{{isReader}}" hint-placeholder-val="{{ false }}">
+<div style="position: relative; z-index: 6; background: #ffffff; border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 10px 32px; min-height: 64px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<button type="button" onClick="{{backToLanding}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px 0 4px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: #3D4556; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>{{doc.back}}</button>
+<span aria-hidden="true" style="width: 1px; height: 24px; background: #E5E7EB"></span>
+<strong style="flex: 1 1 200px; min-width: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{doc.title}}</strong>
+<sc-if value="{{doc.isWp}}" hint-placeholder-val="{{ true }}">
+<label style="display: inline-flex; align-items: center">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Edition</span>
+<select value="{{edition}}" onChange="{{setEdition}}" style="min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; color: #0A1222">
+<option value="2025">2025 edition</option>
+<option value="earlier">[EARLIER EDITION]</option>
+</select>
+</label>
+</sc-if>
+<button type="button" aria-label="Search this document" aria-expanded="{{searchExpanded}}" onClick="{{toggleSearch}}" style="{{searchBtnStyle}}">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></button>
+<span role="group" aria-label="Text size" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<button type="button" aria-label="Smaller text" aria-disabled="{{fontDownDisabled}}" onClick="{{fontDown}}" style="{{fontDownStyle}}">A−</button>
+<button type="button" aria-label="Larger text" aria-disabled="{{fontUpDisabled}}" onClick="{{fontUp}}" style="{{fontUpStyle}}">A+</button>
+</span>
+<span style="position: relative" onKeyDown="{{popKey}}">
+<button type="button" aria-expanded="{{citeExpanded}}" onClick="{{toggleCite}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">Cite</button>
+<sc-if value="{{citeOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Cite this document" style="position: absolute; z-index: 30; top: calc(100% + 8px); right: 0; width: 420px; box-sizing: border-box; padding: 16px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<div role="tablist" aria-label="Citation format" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{citeTabs}}" as="t" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<button type="button" aria-label="Close" onClick="{{closeCite}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<code style="display: block; padding: 14px; border-radius: 12px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.6; white-space: pre-wrap">{{citeText}}</code>
+<span style="display: flex; align-items: center; gap: 12px">
+<button type="button" onClick="{{copyCite}}" style="{{copyStyle}}">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>{{copyLabel}}</button>
+<span role="status" style="font-size: 13px; color: #0B7A47">{{copyStatus}}</span>
+</span>
+</div>
+</sc-if>
+</span>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg>Download PDF · [SIZE]</a>
+<sc-if value="{{doc.isCoc}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{openReport}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Report a concern</button>
+</sc-if>
+</div>
+<sc-if value="{{searchOpen}}" hint-placeholder-val="{{ false }}">
+<div style="border-top: 1px solid #E5E7EB" onKeyDown="{{popKey}}">
+<div style="max-width: 1280px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<label style="position: relative; flex: 0 1 420px; min-width: 240px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search in this document</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{onQ}}" placeholder="{{searchPlaceholder}}" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 15px">
+</label>
+<span role="status" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{searchLabel}}</span>
+<button type="button" aria-label="Previous match" onClick="{{prevHit}}" style="width: 44px; height: 44px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg></button>
+<button type="button" aria-label="Next match" onClick="{{nextHit}}" style="width: 44px; height: 44px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<button type="button" onClick="{{toggleSearch}}" style="min-height: 44px; padding: 0 10px; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: #0138AC; cursor: pointer">Close</button>
+</div>
+</div>
+</sc-if>
+<div role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progressNow}}" style="height: 3px; background: #EEF2FB"><div style="{{progressStyle}}"></div></div>
+</div>
+
+<div style="max-width: 1280px; margin: 0 auto; padding: 48px 32px 112px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 40px 72px; align-items: flex-start">
+<nav aria-label="Table of contents" style="flex: 0 0 240px; position: sticky; top: 96px; display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 12px 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">CONTENTS</span>
+<sc-for list="{{toc}}" as="t" hint-placeholder-count="7">
+<a class="tocl" href="{{t.href}}" onClick="{{t.pick}}" aria-current="{{t.current}}" style="{{t.style}}"><span style="flex: 0 0 18px; font-family: 'Geist Mono', monospace; font-size: 12px">{{t.num}}</span><span>{{t.title}}</span></a>
+</sc-for>
+<span style="padding: 12px 12px 0; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{progressLabel}}</span>
+<sc-if value="{{doc.hasTocNote}}" hint-placeholder-val="{{ true }}"><span style="padding: 4px 12px 0; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{doc.tocNote}}</span></sc-if>
+</nav>
+
+<article onKeyDown="{{popKey}}" style="{{articleStyle}}">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{doc.eyebrow}}</span>
+<h1 style="margin: 8px 0 8px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 1; letter-spacing: -0.035em">{{doc.title}}</h1>
+<p style="margin: 0 0 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{doc.version}}</p>
+<sc-if value="{{doc.isCoc}}" hint-placeholder-val="{{ false }}">
+<div style="margin: 8px 0 0; border: 1px solid #E5E7EB; border-radius: 14px">
+<button type="button" aria-expanded="{{changelogExpanded}}" onClick="{{toggleChangelog}}" style="width: 100%; display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 16px; border: 0; border-radius: 14px; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">Changelog
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{changelogChevron}}"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{changelogOpen}}" hint-placeholder-val="{{ false }}">
+<ul style="margin: 0; padding: 0 16px 14px; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 15px">
+<sc-for list="{{changelog}}" as="c" hint-placeholder-count="1"><li style="display: flex; gap: 14px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; padding-top: 3px">{{c.v}} · {{c.date}}</span><span style="color: #3D4556">{{c.t}}</span></li></sc-for>
+</ul>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-for list="{{blocks}}" as="b" hint-placeholder-count="10">
+<sc-if value="{{b.isH}}" hint-placeholder-val="{{ false }}">
+<h2 id="{{b.anchor}}" style="margin: 48px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">{{b.num}}</span>{{b.title}}</h2>
+</sc-if>
+<sc-if value="{{b.isP}}" hint-placeholder-val="{{ true }}">
+<div class="para" style="position: relative">
+<button type="button" class="sug" aria-label="{{b.sugLabel}}" onClick="{{b.suggest}}" style="position: absolute; left: -54px; top: 0; width: 40px; height: 40px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; color: #0138AC; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path><path d="M9 12h6"></path></svg></button>
+<p style="margin: 0 0 20px; color: #3D4556"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span style="{{g.style}}">{{g.t}}</span></sc-for><sc-if value="{{b.hasFn}}" hint-placeholder-val="{{ false }}"><button type="button" aria-label="{{b.fnLabel}}" aria-expanded="{{b.fnExpanded}}" onClick="{{b.toggleFn}}" style="vertical-align: super; margin-left: 2px; min-width: 22px; height: 22px; padding: 0 5px; border: 0; border-radius: 6px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 11px; line-height: 22px; cursor: pointer">{{b.fn}}</button></sc-if></p>
+<sc-if value="{{b.fnOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="{{b.fnLabel}}" style="position: absolute; z-index: 8; right: 0; top: calc(100% - 12px); width: 340px; box-sizing: border-box; padding: 16px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 14px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 8px; font-size: 15px">
+<span style="display: flex; justify-content: space-between; align-items: center"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">FOOTNOTE {{b.fn}}</span>
+<button type="button" aria-label="Close footnote" onClick="{{b.closeFn}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+<span style="color: #3D4556">[FOOTNOTE TEXT]</span>
+<span style="font-size: 12px; color: #646B7A">Esc closes</span>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{b.isFig}}" hint-placeholder-val="{{ false }}">
+<figure style="margin: 8px 0 28px">
+<img src="img/forest.svg" alt="A wide forest landscape, the kind of terrain where field robots are deployed" style="width: 100%; aspect-ratio: 16 / 8; object-fit: cover; border-radius: 16px; display: block">
+<figcaption style="margin-top: 10px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">FIGURE 2.1 · [FIGURE CAPTION]</figcaption>
+</figure>
+</sc-if>
+<sc-if value="{{b.isCallout}}" hint-placeholder-val="{{ false }}">
+<aside aria-label="Field note" style="margin: 8px 0 28px; padding: 24px; border-radius: 20px; background: #F3F4F2; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">FIELD NOTE · OCEAN · SINGAPORE · 2014</span>
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Kelpcombe Robotics</strong>
+<span style="font-size: 16px; color: #3D4556">A solar-powered surface vessel that records temperature, oxygen and acidity along coastal transects for months at a time.</span>
+<a href="MapV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 16px; font-weight: 500; text-decoration: none">Kelpcombe Robotics on the map
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</aside>
+</sc-if>
+<sc-if value="{{b.isSugBtn}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{b.suggest}}" style="margin: 0 0 8px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path><path d="M9 12h6"></path></svg>Suggest a change</button>
+</sc-if>
+<sc-if value="{{b.isReport}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{b.report}}" style="margin: 0 0 8px; display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Report a concern</button>
+</sc-if>
+</sc-for>
+
+<div style="margin-top: 56px; padding: 24px; border-radius: 20px; border: 1px solid #E5E7EB; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; font-size: 16px">
+<span style="flex: 1 1 320px; color: #3D4556">{{endNote}}</span>
+<button type="button" onClick="{{endAction}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">{{endLabel}}</button>
+</div>
+</article>
+</div>
+</sc-if>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 18px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">An open community for people who build, fund and study robots for climate work.</p>
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 420px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">THE DIGEST</span>
+<sc-if value="{{nCollapsed}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nOpen}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">Get the monthly digest</button>
+</sc-if>
+<sc-if value="{{nExpanded}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email
+<input type="email" value="{{nEmail}}" onChange="{{nOnEmail}}" aria-invalid="{{nInvalid}}" placeholder="you@example.org" style="{{nInputStyle}}"></label>
+<button type="button" onClick="{{nSubmit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{nErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address like name@example.org</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{nTopics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">No spam. Unsubscribe in one click. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{nPending}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 16px; border-radius: 16px; background: #F3F4F2; display: flex; flex-direction: column; gap: 8px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>CHECK YOUR INBOX TO CONFIRM</span>
+<span style="font-size: 15px; color: #3D4556">We sent a confirmation link to {{nEmail}}.</span>
+<button type="button" onClick="{{nConfirm}}" style="align-self: flex-start; min-height: 32px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 8px; background: transparent; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A; cursor: pointer">CANVAS ONLY · SIMULATE: CONFIRM EMAIL</button>
+</div>
+</sc-if>
+<sc-if value="{{nSubscribed}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 15px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a href="MyVRCV3.dc.html">Manage</a></span>
+</sc-if>
+</div>
+<div style="display: flex; gap: 4px; margin-left: -12px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/videos" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<button type="button" aria-label="Join us on Slack" onClick="{{openJoinFoot}}" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px; cursor: pointer">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L8 21M16 3l-2 18M4 8h17M3 16h17"></path></svg></button>
+</div>
+</div>
+<sc-for list="{{footGroups}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 140px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="4"><sc-if value="{{l.isLink}}" hint-placeholder-val="{{ true }}"><a class="ftl" href="{{l.href}}" onClick="{{l.act}}">{{l.label}}</a></sc-if><sc-if value="{{l.isBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="ftl" onClick="{{l.act}}" style="align-self: flex-start; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; line-height: 1.6; text-align: left; cursor: pointer">{{l.label}}</button></sc-if></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">
+<span>© 2026 VERT ROBO CON</span>
+<span>ROBOTS FOR A COOLER PLANET.</span>
+</div>
+</div>
+</footer>
+
+<!-- ================= SIDE SHEET / DRAWER ================= -->
+<sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+<div onKeyDown="{{sheetKey}}" style="position: absolute; inset: 0; z-index: 50">
+<div aria-hidden="true" onClick="{{closeSheet}}" style="position: absolute; inset: 0; background: rgba(10,18,34,0.45)"></div>
+<aside role="dialog" aria-modal="true" aria-labelledby="sheet-title" style="position: absolute; top: 0; right: 0; width: 480px; max-width: 100%; min-height: 100%; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35)">
+<div style="{{sheetInner}}">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{sh.eyebrow}}</span>
+<h2 id="sheet-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em"><sc-if value="{{isPerson}}" hint-placeholder-val="{{ false }}"><a href="PeopleV3.dc.html" style="color: #0A1222; text-decoration: underline; text-decoration-color: #BFD0F5; text-decoration-thickness: 2px; text-underline-offset: 5px">{{sh.title}}</a></sc-if><sc-if value="{{notPerson}}" hint-placeholder-val="{{ true }}">{{sh.title}}</sc-if></h2>
+</div>
+<button type="button" aria-label="Close" onClick="{{closeSheet}}" style="flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<sc-if value="{{isForm}}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{sh.hasIntro}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 15px; color: #3D4556">{{sh.intro}}</p></sc-if>
+<sc-if value="{{sh.hasBanner}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: #FFF4E5; color: #8A4B00; font-size: 15px"><span aria-hidden="true" style="flex: 0 0 auto; width: 8px; height: 8px; margin-top: 8px; border-radius: 50%; background: #D9822B"></span>{{sh.banner}}</div>
+</sc-if>
+<sc-if value="{{sh.hasSnippet}}" hint-placeholder-val="{{ false }}">
+<figure style="margin: 0; padding: 16px; border-radius: 14px; background: #F3F4F2; display: flex; flex-direction: column; gap: 6px">
+<figcaption style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{sh.snippetSection}}</figcaption>
+<blockquote style="margin: 0; font-size: 15px; color: #3D4556">“{{sh.snippet}}”</blockquote>
+</figure>
+</sc-if>
+<sc-if value="{{hasErrors}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="padding: 14px 16px; border-radius: 12px; background: #FEF3F2; color: #B42318; display: flex; flex-direction: column; gap: 6px; font-size: 15px">
+<strong style="font-weight: 600">{{errTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px">
+<sc-for list="{{errors}}" as="e" hint-placeholder-count="2"><li><a href="{{e.href}}" style="color: #B42318">{{e.text}}</a></li></sc-for>
+</ul>
+</div>
+</sc-if>
+<sc-for list="{{fields}}" as="f" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{f.isText}}" hint-placeholder-val="{{ true }}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; font-weight: 500">{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.optLabel}}</span></span>
+<input id="{{f.domId}}" type="{{f.inputType}}" value="{{f.value}}" onChange="{{f.onChange}}" aria-invalid="{{f.invalid}}" style="{{f.inputStyle}}">
+</label>
+</sc-if>
+<sc-if value="{{f.isArea}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; font-weight: 500">{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.optLabel}}</span></span>
+<textarea id="{{f.domId}}" rows="4" value="{{f.value}}" onChange="{{f.onChange}}" aria-invalid="{{f.invalid}}" style="{{f.areaStyle}}"></textarea>
+</label>
+</sc-if>
+<sc-if value="{{f.isChips}}" hint-placeholder-val="{{ false }}">
+<div id="{{f.domId}}" role="group" aria-label="{{f.label}}" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 15px; font-weight: 500">{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.optLabel}}</span></span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{f.options}}" as="o" hint-placeholder-count="4"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{f.isSwitch}}" hint-placeholder-val="{{ false }}">
+<button type="button" role="switch" aria-checked="{{f.checkedStr}}" onClick="{{f.toggle}}" style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer; text-align: left">
+<span aria-hidden="true" style="{{f.track}}"><span style="{{f.knob}}"></span></span>{{f.label}}</button>
+</sc-if>
+<sc-if value="{{f.isCheck}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 5px; font-size: 15px">
+<label style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px">
+<input id="{{f.domId}}" type="checkbox" checked="{{f.checked}}" onChange="{{f.onCheck}}" aria-label="{{f.aria}}" aria-invalid="{{f.invalid}}" style="{{f.checkStyle}}">{{f.label}}</label>
+<sc-if value="{{f.hasLink}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{f.linkAct}}" style="min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; color: #0138AC; text-decoration: underline; text-underline-offset: 2px; cursor: pointer">{{f.linkText}}</button></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{f.hasMeta}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span>{{f.help}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px">{{f.counter}}</span></span>
+</sc-if>
+<sc-if value="{{f.hasError}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #B42318">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16v.01"></path></svg>{{f.error}}</span>
+</sc-if>
+</div>
+</sc-for>
+<p style="margin: 0; font-size: 13px; color: #646B7A">{{sh.consent}} <a href="PrivacyV3.dc.html">How we use this →</a></p>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+<button type="button" onClick="{{submit}}" style="display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">{{sh.submit}}</button>
+</sc-if>
+
+<sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 18px">
+<sc-if value="{{dn.isDoneIcon}}" hint-placeholder-val="{{ true }}">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #1DB46C; color: #ffffff; display: flex; align-items: center; justify-content: center">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+</sc-if>
+<sc-if value="{{dn.pending}}" hint-placeholder-val="{{ false }}">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #FFF4E5; display: flex; align-items: center; justify-content: center">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A4B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+</sc-if>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">{{dn.head}}</span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{dn.lede}}</p>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<sc-if value="{{dn.pending}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>PENDING APPROVAL</span></sc-if>
+<span style="padding: 6px 12px; border-radius: 999px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222">REFERENCE · {{dn.ref}}</span>
+</span>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{dn.steps}}" as="st" hint-placeholder-count="3">
+<li style="display: flex; gap: 12px; align-items: flex-start">
+<span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">{{st.n}}</span>
+<span style="display: flex; flex-direction: column; line-height: 1.4"><strong style="font-weight: 500; font-size: 15px">{{st.t}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{st.d}}</span></span>
+</li>
+</sc-for>
+</ol>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{dn.actions}}" as="a" hint-placeholder-count="2">
+<sc-if value="{{a.isLink}}" hint-placeholder-val="{{ false }}"><a href="{{a.href}}" style="{{a.style}}">{{a.label}}</a></sc-if>
+<sc-if value="{{a.isBtn}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{a.act}}" style="{{a.style}}">{{a.label}}</button></sc-if>
+</sc-for>
+</div>
+<p style="margin: 0; padding-top: 16px; border-top: 1px solid #E5E7EB; font-size: 13px; color: #646B7A">{{dn.foot}} <sc-if value="{{dn.showManage}}" hint-placeholder-val="{{ true }}"><a href="MyVRCV3.dc.html">Manage this</a></sc-if></p>
+</div>
+</sc-if>
+
+<sc-if value="{{isPerson}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: center; gap: 16px">
+<sc-if value="{{person.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{person.photo}}" alt="{{person.name}}" style="width: 88px; height: 88px; border-radius: 20px; object-fit: cover; flex: 0 0 auto"></sc-if>
+<sc-if value="{{person.noPhoto}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 88px; height: 88px; border-radius: 20px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 26px; flex: 0 0 auto">{{person.initials}}</span></sc-if>
+<span style="font-size: 15px; color: #3D4556">{{person.role}}</span>
+</div>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{person.bio}}</p>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">APPEARS IN</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{person.appears}}" as="ap" hint-placeholder-count="2">
+<li><a href="{{ap.href}}" onClick="{{ap.act}}" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px; color: #0A1222; text-decoration: none">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 36px; height: 36px; border-radius: 10px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center">
+<sc-if value="{{ap.play}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></sc-if>
+<sc-if value="{{ap.doc}}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg></sc-if>
+</span>
+<span style="display: flex; flex-direction: column; line-height: 1.35"><strong style="font-weight: 500; font-size: 15px">{{ap.t}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{ap.m}}</span></span>
+</a></li>
+</sc-for>
+</ul>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 15px; font-weight: 500">
+<a href="PeopleV3.dc.html" style="display: inline-flex; align-items: center; min-height: 44px">Full profile on People</a>
+<sc-for list="{{person.links}}" as="l" hint-placeholder-count="1"><a href="{{l.href}}" style="display: inline-flex; align-items: center; min-height: 44px">{{l.label}}</a></sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</aside>
+</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5234}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = {
+view: 'landing', doc: 'wp', menu: null,
+active: 'intro', font: 1, search: false, q: '', hit: 0, fn: null,
+cite: false, citeTab: 'apa', copied: false, video: false, vtab: 'summary', edition: '2025',
+sheet: null, top: 0, form: {}, tried: false, done: false, ctx: {}, changelog: false,
+nState: 'collapsed', nEmail: '', nTopics: ['digest'], nTried: false
+};
+}
+renderVals() {
+const s = this.state;
+const set = (o) => this.setState(o);
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const seg = (on) => 'min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const chipBtn = (on) => 'min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const BTN = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 500; text-decoration: none; cursor: pointer; ';
+const PRIMARY = BTN + 'border: 0; background: #0138AC; color: #ffffff';
+const SECONDARY = BTN + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222';
+
+/* ---------- documents ---------- */
+const P = (t, fn) => ({ t, fn });
+const DOCS = {
+wp: { title: 'Working Notes on Climate Robots', short: 'the white paper', eyebrow: 'WHITE PAPER · 2025 EDITION', back: 'White paper', version: '2025 EDITION · LAST UPDATED [DATE]', tocNote: '[CHAPTER TITLES TBC]', sug: 'Suggest an edit',
+cite: { apa: 'Vert Robo Con (2025). Working Notes on Climate Robots. [CITATION DETAILS / DOI]', bib: '@techreport{vrc2025whitepaper,\n  author = {\x7bVert Robo Con}\x7d,\n  title  = {Working Notes on Climate Robots},\n  year   = {2025},\n  note   = {[CITATION DETAILS / DOI]}\n}' },
+sections: [
+{ id: 'intro', num: '1', title: 'Introduction', paras: [P('Field robots tend to be judged on their first season. This paper looks at what happens after it: who keeps the robot running, what that costs, how it fails and what a buyer should ask before signing.', 1), P('It is written for the people who buy, run and repair robots. Numbers come from members’ own deployments wherever they could share them. [PAPER TEXT]')] },
+{ id: 'field', num: '2', title: 'Field notes', paras: [P('Short reports from members’ deployments: crawlers checking pipelines for methane, rovers logging water levels in peat, boats mapping a flood after a storm.', 2), P('[PAPER TEXT]')], fig: true, callout: true },
+{ id: 'costs', num: '3', title: 'Running costs', paras: [P('What it takes to keep a robot working each year: spare parts, batteries, software licences, insurance and staff time. [PAPER TEXT]'), P('[PAPER TEXT]')] },
+{ id: 'fail', num: '4', title: 'Failure modes', paras: [P('How field robots get stuck, break down or return bad data, and what teams changed afterwards. [PAPER TEXT]', 3)] },
+{ id: 'buy', num: '5', title: 'Buying guide', paras: [P('Questions to ask a maker before you sign, with a checklist for a first field trial. [PAPER TEXT]')] },
+{ id: 'refs', num: '–', title: 'References', paras: [P('[REFERENCES]')] }
+] },
+coc: { title: 'Code of conduct', short: 'the code of conduct', eyebrow: 'COMMUNITY · CODE OF CONDUCT', back: 'Research', version: 'LAST UPDATED [DATE] · V1.0', tocNote: '', sug: 'Suggest a change', isCoc: true,
+cite: { apa: 'Vert Robo Con. Code of conduct (v1.0). Last updated [DATE].', bib: '@misc{vrc_coc,\n  author = {\x7bVert Robo Con}\x7d,\n  title  = {Code of conduct, v1.0},\n  note   = {Last updated [DATE]}\n}' },
+sections: [
+{ id: 'respect', num: '1', title: 'Treat people with respect', paras: [P('Be patient and courteous with every member, wherever they come from and whatever they already know.')] },
+{ id: 'help', num: '2', title: 'Help where you can', paras: [P('Answer questions, pass on what you have learned and credit other people’s work.')] },
+{ id: 'everywhere', num: '3', title: 'Same rules everywhere', paras: [P('These rules apply in Slack, at the summit and anywhere else members meet. [POLICY TEXT]')] },
+{ id: 'report', num: '4', title: 'Report a concern', paras: [P('If something made you or someone else feel unsafe or unwelcome, tell us. Only the moderators [NAMES] read reports, and you can stay anonymous.')], report: true },
+{ id: 'after', num: '5', title: 'What happens after a report', paras: [P('[POLICY TEXT]')] }
+] },
+pr: { title: 'Design principles', short: 'the principles', eyebrow: 'ABOUT · PRINCIPLES', back: 'Research', version: 'LAST UPDATED [DATE] · V1.0', tocNote: '', sug: 'Suggest a change', perSection: true,
+cite: { apa: 'Vert Robo Con. Design principles (v1.0). Last updated [DATE].', bib: '@misc{vrc_principles,\n  author = {\x7bVert Robo Con}\x7d,\n  title  = {Design principles, v1.0},\n  note   = {Last updated [DATE]}\n}' },
+sections: [
+{ id: 'acc', num: '1', title: 'Count the upkeep', paras: [P('A pilot is only half the story. We ask who charges, repairs and pays for a robot in its third season, not just its first week.')] },
+{ id: 'open', num: '2', title: 'Publish the failures', paras: [P('Robots that stalled, sank or sat in a shed get written up too, so nobody pays twice for the same lesson.')] },
+{ id: 'evid', num: '3', title: 'Share the tools', paras: [P('Checklists, test plans and parts lists from one project are posted where the next project can reuse them.')] },
+{ id: 'more', num: '4', title: '[PRINCIPLE TITLE]', paras: [P('[PRINCIPLE TEXT]')] }
+] },
+dc: { title: 'Deployment code', short: 'the deployment code', eyebrow: 'COMMUNITY · DEPLOYMENT CODE', back: 'Research', version: 'LAST UPDATED [DATE] · V1.0', tocNote: '', sug: 'Suggest a change', perSection: true,
+cite: { apa: 'Vert Robo Con. Deployment code (v1.0). Last updated [DATE].', bib: '@misc{vrc_deployment,\n  author = {\x7bVert Robo Con}\x7d,\n  title  = {Deployment code, v1.0},\n  note   = {Last updated [DATE]}\n}' },
+sections: [
+{ id: 'd1', num: '1', title: '[PRINCIPLE TITLE]', paras: [P('[DEPLOYMENT CODE TEXT]')] },
+{ id: 'd2', num: '2', title: '[PRINCIPLE TITLE]', paras: [P('[DEPLOYMENT CODE TEXT]')] },
+{ id: 'd3', num: '3', title: '[PRINCIPLE TITLE]', paras: [P('[DEPLOYMENT CODE TEXT]')] }
+] }
+};
+const D = DOCS[s.doc];
+
+/* ---------- sheet helpers ---------- */
+const openSheet = (kind, top, form, ctx) => set({ sheet: kind, top: top || 0, form: form || {}, ctx: ctx || {}, tried: false, done: false, menu: null, cite: false, fn: null });
+const closeSheet = () => set({ sheet: null });
+const openDoc = (doc, sec) => set({ view: 'reader', doc, active: sec || DOCS[doc].sections[0].id, menu: null, cite: false, sheet: null, fn: null, q: '', hit: 0 });
+const Y = { authors: 2754, write: 3284, ask: 3834, cta: 4154 };
+
+/* ---------- canvas controls ---------- */
+const views = [['landing', 'Landing'], ['reader', 'Reader']].map(([k, l]) => ({ label: l, pressed: s.view === k ? 'true' : 'false', style: seg(s.view === k), pick: () => set({ view: k, sheet: null, cite: false, menu: null, fn: null }) }));
+const docSeg = [['wp', 'White paper 2025'], ['coc', 'Code of conduct'], ['pr', 'Design principles'], ['dc', 'Deployment code']].map(([k, l]) => ({ label: l, pressed: s.doc === k ? 'true' : 'false', style: seg(s.doc === k), pick: () => openDoc(k) }));
+/* join form is long (same fields as HomeV3); clamp its top so it ends inside the 5234px preview */
+const openJoin = (top) => openSheet('join', Math.min(top, 3800), { path: 'Slack community' });
+
+/* ---------- header menus (same items as HomeV3) ---------- */
+const closeMenu = () => set({ menu: null });
+const MENUS = [
+{ key: 'community', label: 'Community', items: [['Join the network', 'Slack community or email updates', '', () => openJoin(0)], ['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'], ['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'], ['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'], ['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html', () => openDoc('coc')], ['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html', () => openDoc('dc')]] },
+{ key: 'about', label: 'About', items: [['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'], ['Principles', 'How we judge a robot project', 'ResearchV3.dc.html', () => openDoc('pr')], ['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'], ['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'], ['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'], ['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+];
+const menus = MENUS.map((m) => { const open = s.menu === m.key; return { label: m.label, id: 'menu-' + m.key, open, expanded: open ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (open ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => set({ menu: open ? null : m.key }), key: (e) => { if (e && e.key === 'Escape' && this.state.menu) closeMenu(); }, items: m.items.map((i) => ({ label: i[0], desc: i[1], href: i[2] || '', isLink: !!i[2], isBtn: !i[2], act: i[3] || closeMenu })) }; });
+
+/* ---------- landing ---------- */
+const LENS = [
+{ id: 'field', label: '01 · FIELD NOTES', color: '#0B7A47', bar: '#1F9D5C', title: 'What members deployed', desc: 'Short reports on what a robot did, for how long and who looked after it.', cta: 'Read chapter 2' },
+{ id: 'costs', label: '02 · RUNNING COSTS', color: '#8A4B00', bar: '#D9822B', title: 'Who pays, and for what', desc: 'Parts, batteries, licences, insurance and staff time, year by year.', cta: 'Read chapter 3' },
+{ id: 'fail', label: '03 · FAILURE MODES', color: '#B42318', bar: '#B42318', title: 'What breaks first', desc: 'Stuck wheels, flat batteries and bad data, and what teams changed.', cta: 'Read chapter 4' },
+{ id: 'buy', label: '04 · BUYING GUIDE', color: '#0138AC', bar: '#0138AC', title: 'How to buy well', desc: 'Questions for the maker and a checklist for a first field trial.', cta: 'Read chapter 5' }
+];
+const lenses = LENS.map((l) => ({ ...l, open: () => openDoc('wp', l.id), labelStyle: MONO + 'font-size: 12px; color: ' + l.color,
+style: 'background: #ffffff; border: 0; border-top: 4px solid ' + l.bar + '; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px; font: inherit; color: #0A1222; text-align: left; cursor: pointer' }));
+
+const AUTH = [
+{ id: 'brandvold', name: 'Elif Brandvold', role: 'Founder, Vert Robo Con', photo: 'img/avatar-03.svg', li: 'https://vert-robo-con.example/social/linkedin/elif-brandvold', bio: 'Elif started Vert Robo Con as a mailing list for people who repair field robots, and edits the white paper.', talks: [['Welcome and How the Three Days Work', 'SUMMIT 2025 · VIDEO · 6:20']] },
+{ id: 'vos', name: 'Dr. Mireille Vos', role: 'Program Committee, Example University', photo: 'img/avatar-15.svg', li: 'https://vert-robo-con.example/social/linkedin/mireille-vos', talks: [['Open Q&A and topic wishlist', 'SUMMIT 2026 · RECORDING IN EDITING']] },
+{ id: 'halloran', name: 'Noor Halloran', role: 'Example Coastal Trust', photo: 'img/avatar-18.svg', talks: [['Open Q&A and topic wishlist', 'SUMMIT 2026 · RECORDING IN EDITING']] },
+{ id: 'varga', name: 'Chidinma Varga', role: 'Data Scientist, Example Data Commons', initials: 'CV', li: 'https://vert-robo-con.example/social/linkedin/chidinma-varga', talks: [['Session 2: Measuring Soil Carbon Without Digging Every Field', 'SUMMIT 2026 · RECORDING IN EDITING']] },
+{ id: 'albescu', name: 'Kenji Albescu', role: 'Wind Turbine Technician, Example Wind Cooperative', photo: 'img/avatar-08.svg', talks: [['A Technician’s Wishlist for Robot Makers', 'SUMMIT 2025 · VIDEO · 29:10']] },
+{ id: 'osterhout', name: 'Marguerite Osterhout', role: 'Example Open Hardware Collective', initials: 'MO', talks: [['Spare Parts, Open Designs and Long Lives', 'SUMMIT 2025 · VIDEO · 26:45']] }
+];
+const authors = AUTH.map((a) => ({ ...a, initials: a.initials || '', aria: a.name + ', ' + a.role + '. Open profile', hasPhoto: !!a.photo, noPhoto: !a.photo, photo: a.photo || '', open: () => openSheet('person', Y.authors, {}, { id: a.id }) }));
+
+const tabsOf = (list, cur, key) => list.map(([k, l]) => ({ label: l, tabId: key + '-tab-' + k, selected: cur === k ? 'true' : 'false', style: seg(cur === k), pick: () => set({ [key]: k, copied: false }) }));
+const vtabs = tabsOf([['summary', 'Summary'], ['transcript', 'Transcript'], ['chapters', 'Chapters']], s.vtab, 'vtab');
+const citeTabs = tabsOf([['apa', 'APA'], ['bib', 'BibTeX']], s.citeTab, 'citeTab');
+const citeSrc = s.view === 'reader' ? D.cite : DOCS.wp.cite;
+
+/* ---------- reader: blocks, search, toc ---------- */
+const secIdx = (id) => D.sections.findIndex((x) => x.id === id);
+const ai = Math.max(0, secIdx(s.active));
+const q = s.search ? s.q.trim().toLowerCase() : '';
+const hits = [];
+const blocks = [];
+D.sections.forEach((sec, si) => {
+blocks.push({ isH: true, anchor: 'sec-' + sec.id, num: sec.num, title: sec.title });
+const sheetTop = Math.min(140 + si * 330, 1900);
+sec.paras.forEach((p, pi) => {
+const raw = [];
+if (q.length >= 2) {
+const low = p.t.toLowerCase(); let i = 0; let j = low.indexOf(q, 0);
+while (j >= 0) { if (j > i) raw.push({ t: p.t.slice(i, j), h: -1 }); raw.push({ t: p.t.slice(j, j + q.length), h: hits.length }); hits.push(sec.id); i = j + q.length; j = low.indexOf(q, i); }
+if (i < p.t.length) raw.push({ t: p.t.slice(i), h: -1 });
+} else raw.push({ t: p.t, h: -1 });
+const key = sec.id + '-' + pi;
+const fnOpen = s.fn === key;
+const snippet = p.t.length > 160 ? p.t.slice(0, 157) + '…' : p.t;
+blocks.push({ isP: true, raw, hasFn: !!p.fn, fn: p.fn ? String(p.fn) : '', fnLabel: 'Footnote ' + (p.fn || ''), fnExpanded: fnOpen ? 'true' : 'false', fnOpen,
+toggleFn: () => set({ fn: fnOpen ? null : key, active: sec.id }), closeFn: () => set({ fn: null }),
+sugLabel: D.sug + ': ' + sec.title + ', paragraph ' + (pi + 1),
+suggest: () => openSheet('suggest', sheetTop, {}, { snippet, section: (sec.num + ' · ' + sec.title).toUpperCase() }) });
+});
+if (sec.fig) blocks.push({ isFig: true });
+if (sec.callout) blocks.push({ isCallout: true });
+if (sec.report) blocks.push({ isReport: true, report: () => openSheet('report', sheetTop) });
+if (D.perSection) { const t0 = sec.paras[0].t; blocks.push({ isSugBtn: true, suggest: () => openSheet('suggest', sheetTop, {}, { snippet: t0, section: (sec.num + ' · ' + sec.title).toUpperCase() }) }); }
+});
+const endTop = Math.min(140 + D.sections.length * 330, 1900);
+const nHits = hits.length;
+const cur = nHits ? Math.min(s.hit, nHits - 1) : -1;
+const segStyle = (h) => h < 0 ? '' : (h === cur ? 'background: #0138AC; color: #ffffff; border-radius: 3px; padding: 0 1px' : 'background: #FFF4E5; color: #0A1222; box-shadow: inset 0 -2px 0 #D9822B; border-radius: 3px');
+const FLAGS = ['isH', 'isP', 'isFig', 'isCallout', 'isSugBtn', 'isReport'];
+const noop = () => {};
+const B0 = { anchor: '', num: '', title: '', sugLabel: '', suggest: noop, report: noop, hasFn: false, fn: '', fnLabel: '', fnExpanded: 'false', fnOpen: false, toggleFn: noop, closeFn: noop };
+const blocksOut = blocks.map((b) => { const o = { ...B0, ...b, segs: (b.raw || []).map((g) => ({ t: g.t, style: segStyle(g.h) })) }; FLAGS.forEach((f) => { o[f] = !!b[f]; }); return o; });
+const jump = (d) => { if (!nHits) return; const n = (cur + d + nHits) % nHits; set({ hit: n, active: hits[n] }); };
+const toc = D.sections.map((sec, i) => { const on = i === ai; return { num: sec.num, title: sec.title, href: '#sec-' + sec.id, current: on ? 'true' : 'false', pick: () => set({ active: sec.id }),
+style: 'display: flex; gap: 10px; align-items: baseline; padding: 8px 12px; border-radius: 10px; font-size: 15px; line-height: 1.35; ' + (on ? 'background: #EEF2FB; color: #0138AC; font-weight: 600' : '') }; });
+const pct = Math.round((ai + 1) / D.sections.length * 100);
+const SIZES = [16, 18, 20];
+const fbtn = (dis) => 'min-width: 44px; min-height: 38px; padding: 0 8px; border: 0; border-radius: 9px; font: inherit; font-size: 15px; font-weight: 600; ' + (dis ? 'background: transparent; color: #A7ADB8; cursor: default' : 'background: #ffffff; color: #0A1222; cursor: pointer; box-shadow: 0 1px 3px rgba(10,18,34,0.14)');
+
+/* ---------- forms ---------- */
+const F = s.form;
+const fset = (id, v) => this.setState({ form: { ...this.state.form, [id]: v } });
+const NAME = { id: 'name', label: 'Name', type: 'text', req: true, err: 'Enter your name' };
+const EMAIL = { id: 'email', label: 'Email', type: 'email', req: true, err: 'Enter your email address' };
+const em = F.email || '[EMAIL]';
+const backToWp = { label: 'Read the 2025 edition', act: () => openDoc('wp'), primary: true };
+const MAILTO = { label: 'Email hello@vert-robo-con.example', href: 'mailto:hello@vert-robo-con.example' };
+const viaSlack = F.path !== 'Email updates only';
+const first = (F.name || '').trim().split(/\s+/)[0] || '[first name]';
+const toResearch = F.topic === 'White paper & research';
+const NEXT = s.doc === 'wp' ? 'next edition' : 'next version';
+const TOPIC_HELP = { 'White paper & research': 'Goes straight to the research team. We respond within 24–48 hours.', 'Map': 'Adding or fixing an organization? Use Suggest an edit on the map. An admin reviews every suggestion.', 'Summit': 'Registration questions? Your confirmation email has a link to manage it.', 'Consulting': 'Consulting requests have their own short form under About.' };
+const SHEETS = {
+topic: { eyebrow: 'NEXT EDITION', title: 'Propose a topic', intro: 'Tell us what the next edition is missing. Proposals are discussed at the next research call.', submit: 'Send proposal', consent: 'We use your answers only to review your proposal and reply to you.',
+fields: [{ id: 'title', label: 'Topic title', type: 'text', req: true, max: 80, err: 'Enter a topic title' }, { id: 'why', label: 'Why it matters', type: 'area', req: true, max: 500, err: 'Tell us why it matters', help: 'What should readers understand that the 2025 edition leaves out?' }, { id: 'exp', label: 'Your expertise', type: 'text', req: true, err: 'Tell us about your expertise', help: 'Your field, your role or the work you do' }, { id: 'links', label: 'Links', type: 'text', help: 'Papers, projects or a website' }, NAME, EMAIL],
+done: { head: 'Thanks, we’ve got it', ref: 'RES-0031', lede: 'We’ll get back to you after the next research call.', steps: [['We read your proposal', 'WITHIN 24–48 HOURS'], ['The authors discuss it at the next research call', '[DATE]'], ['We email you the outcome', 'WITH NEXT STEPS IF IT’S A FIT']], actions: [backToWp, { label: 'Track status', href: 'MyVRCV3.dc.html' }] } },
+team: { eyebrow: 'RESEARCH TEAM · NEXT EDITION', title: 'Join the research team', intro: 'Researchers, practitioners and editors write each edition together. Tell us where you could help.', submit: 'Apply to join', consent: 'We use your answers only to plan the research team and contact you about it.',
+fields: [NAME, EMAIL, { id: 'aff', label: 'Affiliation', type: 'text', req: true, err: 'Enter your affiliation', help: 'University, company or organization. Independent is fine.' }, { id: 'areas', label: 'Areas you could help with', type: 'chips', multi: true, req: true, err: 'Choose at least one area', options: ['Field notes', 'Running costs', 'Failure modes', 'Buying guide', 'Editing'] }, { id: 'hours', label: 'Hours per month', type: 'chips', req: true, err: 'Choose how many hours a month', options: ['1–2', '3–5', '6–10', '10+'] }],
+done: { head: 'Thanks, we’ve got it', ref: 'RES-0032', lede: 'We’ll get back to you after the next research call.', steps: [['We read your application', 'WITHIN 24–48 HOURS'], ['A short intro call with an author', '[N] MINUTES'], ['You join the research channel', 'BEFORE THE NEXT RESEARCH CALL']], actions: [backToWp, { label: 'Track status', href: 'MyVRCV3.dc.html' }] } },
+join: { eyebrow: 'FREE · ABOUT A MINUTE', title: 'Join the network', intro: 'People in 18 countries working on robots for the climate. Join the Slack community, or get email updates only.', submit: 'Join', consent: 'We use your name and email to send your invite or digest, and nothing else.',
+/* same fields and order as the HomeV3 join sheet */
+fields: [{ id: 'name', label: 'Full name', type: 'text', req: true, err: 'Enter your full name.' }, { id: 'email', label: 'Email', type: 'email', req: true, err: 'Enter your email address.', help: 'We send your invite or the digest here. Nothing else without asking.' }, { id: 'role', label: 'Role', type: 'chips', options: ['Researcher', 'Founder or startup', 'Investor or funder', 'Policy or government', 'NGO', 'Student', 'Other'] }, { id: 'country', label: 'Country', type: 'text', help: 'Start typing, e.g. Kenya' }, { id: 'interests', label: 'Interests', type: 'chips', multi: true, options: ['Air', 'Land', 'Sea', 'Materials', 'Policy', 'Funding', 'Jobs'] }, { id: 'path', label: 'How would you like to take part?', type: 'chips', req: true, err: 'Choose how you want to take part', options: ['Slack community', 'Email updates only'], help: (f) => f.path === 'Email updates only' ? 'The monthly digest. No Slack account needed.' : 'Recommended. An admin approves each request by hand, then we email you an invite, typically within 24–48 hours.' }, { id: 'coc', label: 'I’ve read the', link: 'code of conduct', linkAct: () => openDoc('coc'), type: 'check', req: true, err: 'Confirm you’ve read the code of conduct.' }],
+done: viaSlack
+? { head: 'Request received, ' + first + '.', ref: 'MBR-2026-0312', pending: true, lede: 'We’ve received your request to join Slack. An admin reviews every request by hand, and your invite is emailed to ' + em + ' once approved, typically within 24–48 hours.', steps: [['An admin reviews your request', 'TYPICALLY WITHIN 24–48 HOURS'], ['Accept the invite', 'ONCE APPROVED · CHECK SPAM IF IT ISN’T THERE'], ['Say hello in #welcome', 'TELL US WHAT YOU WORK ON'], ['Try #jobs and #[CHANNEL]', 'OPEN ROLES, PLUS PEOPLE ON YOUR TOPIC']], actions: [{ label: 'Follow your request', href: 'MyVRCV3.dc.html', primary: true }, { label: 'Read the white paper', act: () => openDoc('wp') }] }
+: { head: 'Welcome, ' + first + '.', ref: 'MBR-2026-0312', lede: 'You’re subscribed to the monthly digest. Confirm your address from the email we sent to ' + em + '.', steps: [['Confirm your email', 'ONE CLICK ON THE LINK WE SENT'], ['Your first digest arrives', '[DATE]'], ['Switch to Slack any time', 'FROM THE MANAGE LINK IN EVERY EMAIL']], actions: [{ label: 'Read the white paper', act: () => openDoc('wp'), primary: true }] } },
+ask: { eyebrow: 'CONTACT · WHITE PAPER', title: 'Ask the authors', intro: '', submit: 'Send message', consent: 'We use your answers only to reply to your message.',
+fields: [{ id: 'topic', label: 'Topic', type: 'chips', req: true, err: 'Choose a topic', options: ['White paper & research', 'Summit', 'Map', 'Consulting', 'Press', 'Something else'], help: (f) => TOPIC_HELP[f.topic] || 'We route your message to the right team.' }, { id: 'msg', label: 'Message', type: 'area', req: true, max: 1000, err: 'Write your message' }, NAME, EMAIL],
+done: { head: 'Thanks, we’ve got it', ref: 'MSG-1093', lede: (toResearch ? 'Your message went to the research team.' : 'Your message went to the right team.') + ' We’ll respond within 24–48 hours.', steps: [[toResearch ? 'Routed to the research team' : 'Routed to the right team', 'TODAY'], [toResearch ? 'An author replies' : 'We reply', 'WITHIN 24–48 HOURS']], actions: [{ label: 'Back to the page', act: closeSheet, primary: true }, MAILTO] } },
+report: { eyebrow: 'PRIVATE · CODE OF CONDUCT', title: 'Report a concern', intro: 'Only the moderators [NAMES] see reports. You can stay anonymous.', submit: 'Send report', consent: 'Reports stay private to the moderators.',
+fields: [{ id: 'what', label: 'What happened', type: 'area', req: true, max: 2000, err: 'Tell us what happened' }, { id: 'when', label: 'When', type: 'text', req: true, err: 'Tell us roughly when it happened', help: 'A date or a rough time is fine' }, { id: 'where', label: 'Where', type: 'chips', req: true, err: 'Choose where it happened', options: ['Slack', 'Summit', 'Other'] }, { id: 'people', label: 'People involved', type: 'text', help: 'Names or Slack handles, if you know them' }, { id: 'anon', label: 'Submit anonymously', type: 'switch', help: 'We won’t ask for your email, so we can’t reply to you.' }, { id: 'email', label: 'Email', type: 'email', req: true, err: 'Enter your email address, or submit anonymously', help: 'Only the moderators see this, and only to follow up', hide: !!F.anon }],
+done: { head: 'Thanks for telling us.', ref: 'COC-0004', lede: 'Only the moderators [NAMES] will see this.', steps: [['A moderator reads your report', 'WITHIN 24–48 HOURS'], ['We act under the code of conduct', 'PRIVATELY'], F.anon ? ['Follow up anonymously any time', 'QUOTE COC-0004'] : ['We follow up by email', 'ONLY IF YOU WANT US TO']], actions: [{ label: 'Back to the code of conduct', act: closeSheet, primary: true }], foot: F.anon ? 'You chose to stay anonymous, so we won’t email you. Quote COC-0004 if you get in touch again.' : '' } },
+suggest: { eyebrow: s.doc === 'wp' ? 'WHITE PAPER · 2025 EDITION' : D.eyebrow, title: D.sug, snippet: (s.ctx.snippet || ''), snippetSection: (s.ctx.section || ''), submit: 'Send suggestion', consent: 'We use your answers only to review your suggestion and, if you ask, to credit you.',
+fields: [{ id: 'type', label: 'What kind of suggestion?', type: 'chips', req: true, err: 'Choose a kind of suggestion', options: ['Correction', 'Missing field note', 'I disagree', 'Other'] }, { id: 'comment', label: 'Comment', type: 'area', req: true, max: 600, err: 'Add a comment' }, { id: 'name', label: 'Name', type: 'text' }, { id: 'email', label: 'Email', type: 'email', help: 'Only to reply' }, { id: 'credit', label: 'Credit me in the ' + NEXT, type: 'check' }],
+done: { head: 'Thanks.', ref: 'SUG-0112', lede: s.doc === 'wp' ? 'The authors review suggestions for the next edition.' : 'We review suggested changes before the next version.', steps: [[s.doc === 'wp' ? 'The authors review it' : 'We review it', 'BEFORE THE ' + NEXT.toUpperCase()], ['Accepted changes go into the ' + NEXT, F.credit ? 'CREDITED BY NAME' : 'UNCREDITED'], ['We reply if you left an email', 'WITHIN 24–48 HOURS']], actions: [{ label: 'Keep reading', act: closeSheet, primary: true }], foot: F.email ? '' : 'You didn’t leave an email, so we won’t reply. That’s fine.' } }
+};
+const kind = s.sheet;
+const SH = SHEETS[kind] || null;
+const vis = SH ? SH.fields.filter((f) => !f.hide) : [];
+const errOf = (f) => {
+const v = F[f.id];
+if (f.type === 'chips') { const empty = f.multi ? !(v && v.length) : !v; return f.req && empty ? f.err : ''; }
+if (f.type === 'check' || f.type === 'switch') return f.req && !v ? f.err : '';
+const t = (v || '').trim();
+if (f.req && !t) return f.err;
+if (f.type === 'email' && t && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return 'Enter an email address like name@example.org';
+if (f.max && t.length > f.max) return 'Keep it under ' + f.max + ' characters';
+return '';
+};
+const allErr = vis.map((f) => ({ f, e: errOf(f) })).filter((x) => x.e);
+const fields = vis.map((f) => {
+const e = s.tried ? errOf(f) : '';
+const v = F[f.id];
+const on = !!v;
+const help = typeof f.help === 'function' ? f.help(F) : (f.help || '');
+const base = 'width: 100%; box-sizing: border-box; border-radius: 12px; font: inherit; font-size: 16px; color: #0A1222; background: #ffffff; border: 1px solid ' + (e ? '#B42318' : '#D5D8DE') + '; ';
+return { domId: 'fld-' + f.id, label: f.label, optLabel: (!f.req && ['text', 'email', 'area', 'chips'].includes(f.type)) ? '(optional)' : '',
+isText: f.type === 'text' || f.type === 'email', inputType: f.type === 'email' ? 'email' : 'text', isArea: f.type === 'area', isChips: f.type === 'chips', isSwitch: f.type === 'switch', isCheck: f.type === 'check',
+value: typeof v === 'string' ? v : '', onChange: (ev) => fset(f.id, ev.target.value), checked: on, onCheck: (ev) => fset(f.id, ev.target.checked),
+checkedStr: on ? 'true' : 'false', toggle: () => fset(f.id, !on),
+aria: f.link ? f.label + ' ' + f.link : f.label, hasLink: !!f.link, linkText: f.link || '', linkAct: f.linkAct || (() => {}),
+checkStyle: 'width: 20px; height: 20px; margin: 0; accent-color: #0138AC' + (e ? '; outline: 2px solid #B42318; outline-offset: 2px' : ''),
+track: 'position: relative; flex: 0 0 auto; width: 40px; height: 24px; border-radius: 999px; background: ' + (on ? '#0138AC' : '#C9CDD5'),
+knob: 'position: absolute; top: 3px; left: ' + (on ? '19px' : '3px') + '; width: 18px; height: 18px; border-radius: 50%; background: #ffffff',
+inputStyle: base + 'min-height: 48px; padding: 0 14px', areaStyle: base + 'min-height: 120px; padding: 12px 14px; resize: vertical; line-height: 1.5',
+options: (f.options || []).map((o) => { const sel = f.multi ? (v || []).includes(o) : v === o; return { label: o, pressed: sel ? 'true' : 'false', style: chipBtn(sel) + (e && !sel ? '; border-color: #B42318' : ''), pick: () => fset(f.id, f.multi ? (sel ? v.filter((x) => x !== o) : (v || []).concat(o)) : o) }; }),
+help, counter: f.max ? (typeof v === 'string' ? v.length : 0) + ' / ' + f.max : '', hasMeta: !!(help || f.max), hasError: !!e, error: e, invalid: e ? 'true' : 'false' };
+});
+const nErrs = allErr.length;
+const dn0 = SH ? SH.done : null;
+const dn = dn0 ? { head: dn0.head, ref: dn0.ref, lede: dn0.lede, pending: !!dn0.pending, isDoneIcon: !dn0.pending,
+steps: dn0.steps.map((x, i) => ({ n: String(i + 1), t: x[0], d: x[1] })),
+actions: dn0.actions.map((a) => ({ label: a.label, isLink: !!a.href, isBtn: !a.href, href: a.href || '#', act: a.act || (() => {}), style: a.primary ? PRIMARY : SECONDARY })),
+foot: dn0.foot || ('We’ve emailed a receipt and a link to manage this to ' + em + '.'), showManage: !dn0.foot } : { head: '', ref: '', lede: '', pending: false, isDoneIcon: false, foot: '', showManage: false, steps: [], actions: [] };
+const per = kind === 'person' ? AUTH.find((a) => a.id === s.ctx.id) : null;
+const person = per ? { name: per.name, role: per.role, hasPhoto: !!per.photo, noPhoto: !per.photo, photo: per.photo || '', initials: per.initials || '', bio: per.bio || '[BIO]',
+appears: [{ play: false, doc: true, t: 'Working Notes on Climate Robots', m: '2025 EDITION · [CHAPTER]', href: 'ResearchV3.dc.html', act: () => openDoc('wp') }].concat((per.talks || []).map((t) => ({ play: true, doc: false, t: t[0], m: t[1], href: 'WatchV3.dc.html', act: () => {} }))),
+links: [['LinkedIn', per.li], ['Website', per.web], ['TED', per.ted]].filter((x) => x[1]).map((x) => ({ label: x[0], href: x[1] })) } : { name: '', role: '', hasPhoto: false, noPhoto: false, photo: '', initials: '', bio: '', appears: [], links: [] };
+const SH0 = { eyebrow: '', title: '', intro: '', hasIntro: false, banner: '', hasBanner: false, snippet: '', snippetSection: '', hasSnippet: false, consent: '', submit: '' };
+const sh = SH ? { eyebrow: SH.eyebrow, title: SH.title, intro: SH.intro || '', hasIntro: !!SH.intro, banner: SH.banner || '', hasBanner: !!SH.banner, snippet: SH.snippet || '', snippetSection: SH.snippetSection || '', hasSnippet: !!SH.snippet, consent: SH.consent, submit: SH.submit }
+: (per ? { ...SH0, eyebrow: 'AUTHOR · WHITE PAPER 2025', title: per.name } : SH0);
+
+/* ---------- notify ---------- */
+const NT = [['digest', 'Monthly digest'], ['videos', 'New videos'], ['summit', 'Summit announcements'], ['jobs', 'Job alerts']];
+const nValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.nEmail.trim());
+const nErr = s.nTried && !nValid;
+
+/* ---------- footer ---------- */
+/* href '' + act renders a button (opens a sheet on this board); RSS stays '#' */
+const footTop = s.view === 'landing' ? Y.cta : Math.min(140 + D.sections.length * 330, 1900);
+const openJoinFoot = () => openJoin(footTop);
+const L = (label, href, act) => ({ label, href: href || '', isLink: !!href, isBtn: !href, act: act || (() => {}) });
+const footGroups = [
+{ title: 'SUMMIT', label: 'Summit', links: [L('Register / Notify me', 'RegisterV3.dc.html'), L('Program', 'ProgramV3.dc.html'), L('Sponsor the summit', 'GetInvolvedV3.dc.html'), L('Past editions', 'SummitV3.dc.html')] },
+{ title: 'LEARN', label: 'Learn', links: [L('White paper', 'ResearchV3.dc.html'), L('Watch', 'WatchV3.dc.html'), L('News', 'NewsV3.dc.html'), L('RSS', '#'), L('Map data (CSV · JSON)', 'MapV3.dc.html')] },
+{ title: 'COMMUNITY', label: 'Community', links: [L('Join', '', openJoinFoot), L('Jobs', 'JobsV3.dc.html'), L('Internships', 'JobsV3.dc.html'), L('Get involved', 'GetInvolvedV3.dc.html'), L('Code of conduct', 'ResearchV3.dc.html', () => openDoc('coc'))] },
+{ title: 'ABOUT', label: 'About', links: [L('Team', 'PeopleV3.dc.html'), L('Consulting', 'ContactV3.dc.html'), L('Contact', 'ContactV3.dc.html'), L('Privacy', 'PrivacyV3.dc.html'), L('My VRC', 'MyVRCV3.dc.html')] }
+];
+
+const closePops = () => set({ fn: null, cite: false });
+const escKey = (fn) => (e) => { if (e && e.key === 'Escape') fn(); };
+const isWp = s.doc === 'wp';
+
+return {
+views, docSeg, isLanding: s.view === 'landing', isReader: s.view === 'reader', menus,
+menuOpen: !!s.menu, closeMenu,
+openJoinTop: () => openJoin(0),
+readOnline: () => openDoc('wp', 'intro'),
+lenses, authors,
+openTopic: () => openSheet('topic', Y.write),
+openTeam: () => openSheet('team', Y.write),
+openAsk: () => openSheet('ask', Y.ask, { topic: 'White paper & research' }),
+openJoinBottom: () => openJoin(Y.cta),
+videoIdle: !s.video, videoPlaying: s.video, playVideo: () => set({ video: true }), stopVideo: () => set({ video: false }),
+vtabs, vtabCurrentId: 'vtab-tab-' + s.vtab, vSummary: s.vtab === 'summary', vTranscript: s.vtab === 'transcript', vChapters: s.vtab === 'chapters',
+readTranscript: () => set({ vtab: 'transcript' }),
+transcript: [{ t: '00:00', x: '[TRANSCRIPT]' }, { t: '[TIME]', x: '[TRANSCRIPT]' }, { t: '[TIME]', x: '[TRANSCRIPT]' }],
+vchapters: [{ t: '00:00', x: '[VIDEO CHAPTER]' }, { t: '[TIME]', x: '[VIDEO CHAPTER]' }, { t: '[TIME]', x: '[VIDEO CHAPTER]' }],
+citeTabs, citeText: citeSrc[s.citeTab], copyLabel: s.copied ? 'Copied' : 'Copy citation', copyStatus: s.copied ? 'Citation copied to your clipboard' : '',
+copyCite: () => set({ copied: true }),
+copyStyle: 'display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 10px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (s.copied ? 'border: 1px solid #E8F6EE; background: #E8F6EE; color: #0B7A47' : 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222'),
+footGroups, openJoinFoot,
+nCollapsed: s.nState === 'collapsed', nExpanded: s.nState === 'open', nPending: s.nState === 'pending', nSubscribed: s.nState === 'subscribed',
+nOpen: () => set({ nState: 'open' }), nEmail: s.nEmail, nOnEmail: (e) => set({ nEmail: e.target.value }),
+nErr, nInvalid: nErr ? 'true' : 'false',
+nInputStyle: 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; border: 1px solid ' + (nErr ? '#B42318' : '#D5D8DE'),
+nTopics: NT.map(([k, l]) => { const on = s.nTopics.includes(k); return { label: l, pressed: on ? 'true' : 'false', style: chipBtn(on) + '; min-height: 36px; font-size: 13px; padding: 0 12px', pick: () => set({ nTopics: on ? s.nTopics.filter((x) => x !== k) : s.nTopics.concat(k) }) }; }),
+nSubmit: () => (nValid ? set({ nState: 'pending', nTried: false }) : set({ nTried: true })),
+nConfirm: () => set({ nState: 'subscribed' }),
+doc: { title: D.title, back: D.back, eyebrow: D.eyebrow, version: D.version, tocNote: D.tocNote, hasTocNote: !!D.tocNote, isWp, isCoc: !!D.isCoc },
+backToLanding: () => set({ view: 'landing', cite: false, fn: null, search: false }),
+edition: s.edition, setEdition: (e) => set({ edition: e.target.value }),
+searchOpen: s.search, searchExpanded: s.search ? 'true' : 'false',
+toggleSearch: () => set({ search: !s.search, q: '', hit: 0 }),
+searchBtnStyle: 'width: 44px; height: 44px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; ' + (s.search ? 'border: 1px solid #0138AC; background: #EEF2FB; color: #0138AC' : 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222'),
+q: s.q, onQ: (e) => set({ q: e.target.value, hit: 0 }), searchPlaceholder: 'Search ' + D.short,
+searchLabel: q.length < 2 ? 'TYPE 2+ LETTERS' : (nHits ? nHits + (nHits === 1 ? ' RESULT' : ' RESULTS') + ' · ' + (cur + 1) + ' OF ' + nHits : 'NO MATCHES'),
+prevHit: () => jump(-1), nextHit: () => jump(1),
+fontDown: () => set({ font: Math.max(0, s.font - 1) }), fontUp: () => set({ font: Math.min(2, s.font + 1) }),
+fontDownDisabled: s.font === 0 ? 'true' : 'false', fontUpDisabled: s.font === 2 ? 'true' : 'false',
+fontDownStyle: fbtn(s.font === 0) + '; font-size: 13px', fontUpStyle: fbtn(s.font === 2) + '; font-size: 17px',
+citeOpen: s.cite, citeExpanded: s.cite ? 'true' : 'false', toggleCite: () => set({ cite: !s.cite, copied: false }), closeCite: () => set({ cite: false }),
+popKey: escKey(closePops),
+openReport: () => openSheet('report', 0),
+progressNow: String(pct), progressStyle: 'height: 3px; width: ' + pct + '%; background: #0138AC',
+progressLabel: (isWp ? 'CHAPTER ' : 'SECTION ') + (ai + 1) + ' OF ' + D.sections.length + ' · ' + pct + '%',
+toc, blocks: blocksOut,
+articleStyle: 'flex: 1 1 560px; min-width: 0; max-width: 68ch; font-size: ' + SIZES[s.font] + 'px; line-height: 1.7',
+changelogOpen: s.changelog, changelogExpanded: s.changelog ? 'true' : 'false', toggleChangelog: () => set({ changelog: !s.changelog }),
+changelogChevron: s.changelog ? 'transform: rotate(180deg)' : '',
+changelog: [{ v: 'V1.0', date: '[DATE]', t: 'First version published on the site.' }],
+endNote: isWp ? 'You’ve reached the end. Something missing from this edition? Propose a topic for the next one.' : (s.doc === 'coc' ? 'Something happened that this code should cover? Tell the moderators privately.' : 'Every section can be improved. Use Suggest a change under any principle.'),
+endLabel: isWp ? 'Propose a topic' : (s.doc === 'coc' ? 'Report a concern' : 'Ask a question'),
+endAction: isWp ? () => openSheet('topic', endTop) : (s.doc === 'coc' ? () => openSheet('report', endTop) : () => openSheet('ask', endTop, { topic: 'Something else' })),
+sheetOpen: !!kind, closeSheet, sheetKey: escKey(closeSheet),
+sheetInner: 'padding: ' + (s.top + 28) + 'px 32px 40px; display: flex; flex-direction: column; gap: 20px',
+sh, isForm: !!SH && !s.done, isDone: !!SH && s.done, isPerson: kind === 'person', notPerson: kind !== 'person',
+fields, errors: allErr.map((x) => ({ href: '#fld-' + x.f.id, text: x.e })), hasErrors: s.tried && nErrs > 0,
+errTitle: nErrs === 1 ? 'There is 1 problem with your answers' : 'There are ' + nErrs + ' problems with your answers',
+submit: () => (nErrs ? set({ tried: true }) : set({ done: true, tried: false })),
+dn, person
+};
+}
+}
+</script>
+</body>
+</html>

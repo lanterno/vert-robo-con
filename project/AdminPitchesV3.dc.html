@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Pitch review (Startup and Research)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.row{background:transparent}
+.row:hover{background:#F7F8F9}
+.ghost{background:#ffffff}
+.ghost:hover{background:#F3F4F2}
+input[type=range]{accent-color:#0138AC}
+</style>
+</helmet>
+<div style="width: 1440px; min-height: 2560px; display: flex; flex-direction: column; position: relative; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 14px; line-height: 1.5">
+
+<!-- CANVAS NOTE + CONTROLS (not part of the product) -->
+<div style="background: #E9EAEC; border-bottom: 1px dashed #A7ADB8; padding: 10px 24px; display: flex; flex-direction: column; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.5; color: #3D4556">
+<p style="margin: 0"><span style="letter-spacing: 0.06em">CANVAS NOTE · POWERED BY:</span> Custom review view in the app over the pitches and reviews tables. One admin role: any admin can score, decide and release, and each score is saved with the admin's name. Decision emails are sent by the app through the jobs queue.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px">
+<span style="letter-spacing: 0.06em">CALL STATE</span>
+<div role="group" aria-label="Call state" style="display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: #F3F4F2">
+<sc-for list="{{calls}}" as="o" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+<span style="margin-left: auto">Focus the list, then J = next pitch, K = previous</span>
+</div>
+</div>
+
+<!-- APP FRAME -->
+<div style="flex: 1; display: flex; align-items: stretch">
+
+<!-- SIDEBAR -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; font-weight: 500; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- MAIN COLUMN -->
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative">
+
+<!-- TOP BAR -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{search}}" onChange="{{setSearch}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<!-- TOAST -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 80px; right: 28px; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 12px 12px 12px 16px; border-radius: 12px; background: #0A1222; color: #ffffff; box-shadow: 0 18px 40px -18px rgba(10,18,34,0.5); font-size: 14px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>
+<span>{{toast}}</span>
+<button type="button" aria-label="Dismiss" onClick="{{dismissToast}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<main style="padding: 24px 28px 40px; display: flex; flex-direction: column; gap: 16px">
+
+<!-- PAGE HEADER -->
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="{{ui.eyebrow}}">SUMMIT / CALLS &amp; PITCHES</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em">{{h1}}</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<label style="display: flex; align-items: center; gap: 8px"><span style="{{ui.dt}}">EDITION</span>
+<select value="{{edition}}" onChange="{{setEdition}}" style="{{ui.selectStrong}}">
+<option value="2027">Summit 2027</option>
+<option value="2026">Summit 2026</option>
+<option value="2025">Summit 2025</option>
+<option value="2024">Summit 2024</option>
+</select>
+</label>
+<a href="GetInvolvedV3.dc.html" style="{{ui.btnS}}">View public call page</a>
+<button type="button" style="{{ui.btnS}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Export CSV</button>
+</div>
+</div>
+<sc-if value="{{isCur}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px">
+<div role="tablist" aria-label="Call" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2">
+<button type="button" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}<span style="{{t.countStyle}}">{{t.count}}</span></button>
+</sc-for>
+</div>
+<span style="{{callChip.s}}"><span aria-hidden="true" style="{{callChip.dot}}"></span>{{callChip.t}}</span>
+<div style="display: flex; align-items: center; gap: 12px; margin-left: auto">
+<span aria-hidden="true" style="width: 160px; height: 6px; border-radius: 999px; background: #E5E7EB; overflow: hidden; display: block"><span style="{{prog.fill}}"></span></span>
+<span style="font-size: 14px; color: #3D4556">{{prog.text}}</span>
+</div>
+</div>
+</sc-if>
+</div>
+
+<!-- PAST EDITION: CALLS CLOSED -->
+<sc-if value="{{isPast}}" hint-placeholder-val="{{ false }}">
+<section aria-labelledby="past-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 88px 40px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; background: #ffffff">
+<span style="{{ui.chipNeutral}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #A7ADB8"></span>{{past.chip}}</span>
+<h2 id="past-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.2; letter-spacing: -0.02em">{{past.title}}</h2>
+<p style="margin: 0; max-width: 52ch; font-size: 15px; color: #3D4556">{{past.body}}</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 6px">
+<a href="AdminProgramV3.dc.html" style="{{ui.btnP}}">Open Program builder</a>
+<button type="button" onClick="{{backToCur}}" style="{{ui.btnS}}">Back to Summit 2027</button>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isCur}}" hint-placeholder-val="{{ true }}">
+<!-- FILTER ROW -->
+<div role="group" aria-label="Filters" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; border: 1px solid #E5E7EB; border-radius: 14px; background: #ffffff">
+<label style="display: flex"><span style="{{ui.sr}}">Status</span>
+<select value="{{f.status}}" onChange="{{setStatus}}" style="{{ui.select}}">
+<option value="all">Status: All</option>
+<option value="submitted">Submitted</option>
+<option value="review">In review</option>
+<option value="short">Shortlisted</option>
+<option value="accepted">Accepted</option>
+<option value="not">Not selected</option>
+<option value="withdrawn">Withdrawn</option>
+<option value="draft">Draft</option>
+</select>
+</label>
+<label style="display: flex"><span style="{{ui.sr}}">Robot type</span>
+<select value="{{f.robot}}" onChange="{{setRobot}}" style="{{ui.select}}">
+<option value="all">Robot type: All</option>
+<option value="Ground">Ground</option>
+<option value="Ocean">Ocean</option>
+<option value="Aerial">Aerial</option>
+<option value="Robotic arm">Robotic arm</option>
+<option value="Multiple">Multiple</option>
+</select>
+</label>
+<sc-if value="{{isStartup}}" hint-placeholder-val="{{ true }}">
+<label style="display: flex"><span style="{{ui.sr}}">Stage</span>
+<select value="{{f.stage}}" onChange="{{setStage}}" style="{{ui.select}}">
+<option value="all">Stage: All</option>
+<option value="Idea">Idea</option>
+<option value="Prototype">Prototype</option>
+<option value="Pilot">Pilot</option>
+<option value="Deployed">Deployed</option>
+</select>
+</label>
+</sc-if>
+<sc-if value="{{isResearch}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex"><span style="{{ui.sr}}">Stage</span>
+<select value="{{f.stage}}" onChange="{{setStage}}" style="{{ui.select}}">
+<option value="all">Stage: All</option>
+<option value="Concept">Concept</option>
+<option value="Lab prototype">Lab prototype</option>
+<option value="Field trial">Field trial</option>
+</select>
+</label>
+</sc-if>
+<label style="display: flex"><span style="{{ui.sr}}">Country</span>
+<select value="{{f.country}}" onChange="{{setCountry}}" style="{{ui.select}}">
+<option value="all">Country: All</option>
+<option value="Australia">Australia</option>
+<option value="Bangladesh">Bangladesh</option>
+<option value="Brazil">Brazil</option>
+<option value="Canada">Canada</option>
+<option value="Chile">Chile</option>
+<option value="Finland">Finland</option>
+<option value="Germany">Germany</option>
+<option value="India">India</option>
+<option value="Indonesia">Indonesia</option>
+<option value="Italy">Italy</option>
+<option value="Japan">Japan</option>
+<option value="Kenya">Kenya</option>
+<option value="Netherlands">Netherlands</option>
+<option value="Norway">Norway</option>
+<option value="Portugal">Portugal</option>
+<option value="Spain">Spain</option>
+<option value="United Kingdom">United Kingdom</option>
+<option value="United States">United States</option>
+</select>
+</label>
+<button type="button" role="switch" aria-checked="{{mineChecked}}" onClick="{{toggleMine}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; font: inherit; font-size: 14px; color: #0A1222; cursor: pointer">
+<span aria-hidden="true" style="{{sw.track}}"><span style="{{sw.knob}}"></span></span>Needs my score</button>
+<sc-if value="{{anyFilter}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{clearFilters}}" style="{{ui.btnT}}">Clear filters</button>
+</sc-if>
+<span style="flex: 1"></span>
+<label style="display: flex; align-items: center; gap: 8px"><span style="font-size: 14px; color: #646B7A">Sort</span>
+<select value="{{sort}}" onChange="{{setSort}}" style="{{ui.select}}">
+<option value="mean">Mean score</option>
+<option value="submitted">Submitted</option>
+<option value="spread">Disagreement</option>
+</select>
+</label>
+</div>
+
+<!-- WORKSPACE -->
+<div style="display: flex; gap: 16px; align-items: flex-start">
+
+<!-- LEFT COLUMN: LIST + RELEASE + PROGRESS -->
+<div style="flex: 0 0 520px; width: 520px; display: flex; flex-direction: column; gap: 16px">
+
+<section aria-label="Pitch list" style="border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; background: #ffffff">
+<div tabindex="0" role="group" onKeyDown="{{onListKey}}" aria-label="Pitches. Press J for the next pitch and K for the previous one." style="height: 1440px; overflow-y: auto; position: relative">
+<div style="position: sticky; top: 0; z-index: 1; background: #ffffff; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 16px 0 6px">
+<button type="button" role="checkbox" aria-checked="{{allCk}}" aria-label="Select all shown pitches" onClick="{{toggleAll}}" style="{{ui.cbHead}}"><span aria-hidden="true" style="{{allBox}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="{{allMark}}"><path d="M5 12l5 5L20 7"></path></svg></span></button>
+<sc-if value="{{bulkOff}}" hint-placeholder-val="{{ true }}">
+<span style="{{ui.thMain}}">PITCH</span>
+<span style="{{ui.thRight}}">MEAN · SCORES · SPREAD</span>
+</sc-if>
+<sc-if value="{{bulkOn}}" hint-placeholder-val="{{ false }}">
+<span style="flex: 1; font-size: 14px; font-weight: 600">{{nCheckedL}}</span>
+<button type="button" style="{{ui.btnXs}}">Export CSV</button>
+<button type="button" onClick="{{clearChecked}}" style="{{ui.btnT}}">Clear</button>
+</sc-if>
+</div>
+
+<sc-if value="{{listEmptySoon}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 56px 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<strong style="font-size: 16px; color: #0A1222">No pitches yet</strong>
+<span style="color: #3D4556">{{trk.soonText}} Pitches appear here as they are submitted.</span>
+<a href="AdminUsersV3.dc.html" style="font-weight: 500">Add admins to help score, in Admins</a>
+</div>
+</sc-if>
+<sc-if value="{{listEmptyFilter}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 56px 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<strong style="font-size: 16px; color: #0A1222">No pitches match these filters</strong>
+<span style="color: #3D4556">Try another status or robot type, or clear the filters.</span>
+<button type="button" onClick="{{clearFilters}}" style="{{ui.btnSs}}">Clear filters</button>
+</div>
+</sc-if>
+
+<ul style="margin: 0; padding: 0; list-style: none">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<li style="{{r.liStyle}}">
+<button type="button" role="checkbox" aria-checked="{{r.ck}}" aria-label="{{r.ckLabel}}" onClick="{{r.toggleCk}}" style="{{ui.cbBtn}}"><span aria-hidden="true" style="{{r.ckBox}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="{{r.ckMark}}"><path d="M5 12l5 5L20 7"></path></svg></span></button>
+<button type="button" class="row" aria-current="{{r.current}}" onClick="{{r.pick}}" style="{{r.rowStyle}}">
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<span style="{{ui.rowMeta}}">{{r.ref}} · {{r.orgLine}}</span>
+<span style="font-size: 15px; font-weight: 600; line-height: 1.35; color: #0A1222">{{r.title}}</span>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 13px; color: #3D4556">
+<span style="{{ui.robotChip}}"><span aria-hidden="true" style="{{r.rDot}}"></span>{{r.robot}}</span>
+<span>{{r.meta}}</span>
+<span style="{{r.chip.s}}"><span aria-hidden="true" style="{{r.chip.dot}}"></span><sc-if value="{{r.chip.lock}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if>{{r.chip.t}}</span>
+</span>
+</span>
+<span style="flex: 0 0 88px; display: flex; flex-direction: column; align-items: flex-end; gap: 5px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1; color: #0A1222">{{r.meanL}}</span>
+<span style="{{r.cntStyle}}">{{r.cnt}}</span>
+<span aria-hidden="true" style="position: relative; display: block; width: 72px; height: 6px; border-radius: 999px; background: #E5E7EB"><span style="{{r.segStyle}}"></span></span>
+<span style="{{r.spreadStyle}}">{{r.spreadL}}</span>
+</span>
+</button>
+</li>
+</sc-for>
+</ul>
+<sc-if value="{{hasRows}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; padding: 14px 16px 18px; text-align: center; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{listFoot}}</p>
+</sc-if>
+</div>
+</section>
+
+<!-- RELEASE BAR -->
+<sc-if value="{{showRelease}}" hint-placeholder-val="{{ true }}">
+<section aria-labelledby="rel-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; background: #F3F4F2; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<h2 id="rel-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.02em">{{rel.title}}</h2>
+</div>
+<p style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.02em; color: #0A1222">{{rel.counter}}</p>
+<sc-if value="{{rel.hasUndecided}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: #8A4B00"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 3px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>{{rel.undecidedL}}</p>
+</sc-if>
+<sc-if value="{{rel.idle}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px">
+<button type="button" onClick="{{rel.ask}}" style="{{ui.btnP}}">Release all decisions</button>
+<span style="font-size: 13px; color: #3D4556">{{rel.note}}</span>
+</div>
+</sc-if>
+<sc-if value="{{rel.confirm}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-labelledby="rel-c" style="background: #ffffff; border: 1px solid #D5D8DE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<strong id="rel-c" style="font-size: 15px">{{rel.confirmQ}}</strong>
+<span style="font-size: 14px; color: #3D4556">Applicants see their result on My VRC straight away, and accepted pitches get a draft session in the Program builder. This cannot be undone.</span>
+<div style="display: flex; gap: 8px">
+<button type="button" onClick="{{rel.go}}" style="{{ui.btnP}}">Release and send</button>
+<button type="button" onClick="{{rel.cancel}}" style="{{ui.btnSs}}">Cancel</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{rel.nothing}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 14px; color: #3D4556">Nothing to release. Set a decision on a pitch to hold it here.</span>
+</sc-if>
+</section>
+</sc-if>
+
+<!-- SCORING PROGRESS -->
+<section aria-labelledby="rp-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 id="rp-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.02em">Scores by admin</h2>
+<span style="{{ui.eyebrow}}">{{trk.nameUp}} · 2 SCORES PER PITCH</span>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{rv}}" as="v" hint-placeholder-count="3">
+<li style="display: grid; grid-template-columns: 170px 1fr 64px; align-items: center; gap: 12px; font-size: 14px">
+<span style="font-weight: 500">{{v.name}}</span>
+<span aria-hidden="true" style="height: 6px; border-radius: 999px; background: #E5E7EB; overflow: hidden; display: block"><span style="{{v.fill}}"></span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556; text-align: right">{{v.label}}</span>
+</li>
+</sc-for>
+</ul>
+</section>
+</div>
+
+<!-- RIGHT: PITCH DETAIL -->
+<section aria-label="Pitch detail" style="flex: 1; min-width: 0; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<sc-if value="{{noSel}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 96px 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<strong style="font-size: 16px">Pitch details appear here</strong>
+<span style="color: #3D4556">Choose a pitch from the list to read it, score it and set a decision.</span>
+</div>
+</sc-if>
+<sc-if value="{{hasSel}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="{{ui.rowMeta}}">{{d.ref}} · {{d.dateL}} · {{trk.nameUp}}</span>
+<div style="display: flex; gap: 6px">
+<button type="button" aria-label="Previous pitch (K)" onClick="{{prev}}" style="{{ui.navBtn}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"></path></svg><span style="{{ui.kbd}}">K</span></button>
+<button type="button" aria-label="Next pitch (J)" onClick="{{next}}" style="{{ui.navBtn}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg><span style="{{ui.kbd}}">J</span></button>
+</div>
+</div>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.2; letter-spacing: -0.02em">{{d.title}}</h2>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: #3D4556">
+<span style="{{d.chip.s}}"><span aria-hidden="true" style="{{d.chip.dot}}"></span><sc-if value="{{d.chip.lock}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if>{{d.chip.t}}</span>
+<span style="{{ui.robotChip}}"><span aria-hidden="true" style="{{d.rDot}}"></span>{{d.robot}}</span>
+<span>{{d.stage}} · {{d.country}} · Team of {{d.team}}</span>
+</div>
+</div>
+
+<div style="padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: grid; grid-template-columns: 1fr 1.3fr 1.4fr; gap: 12px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="{{ui.dt}}">APPLICANT</span><span style="font-weight: 500">{{d.who}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="{{ui.dt}}">EMAIL</span><span style="font-weight: 500; overflow-wrap: anywhere">{{d.email}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="{{ui.dt}}">{{trk.orgL}}</span><span style="font-weight: 500">{{d.org}}</span></div>
+</div>
+
+<dl style="margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px">
+<sc-for list="{{d.fields}}" as="x" hint-placeholder-count="4">
+<div style="{{x.style}}">
+<dt style="{{ui.dt}}">{{x.l}}</dt>
+<dd style="margin: 4px 0 0; font-size: 14px; color: #3D4556; line-height: 1.55">{{x.v}}</dd>
+</div>
+</sc-for>
+</dl>
+
+<dl style="margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; padding-top: 16px; border-top: 1px solid #E5E7EB">
+<div>
+<dt style="{{ui.dt}}">{{trk.deckL}}</dt>
+<dd style="margin: 4px 0 0; font-size: 14px">
+<sc-if value="{{d.hasDeck}}" hint-placeholder-val="{{ true }}"><a href="#" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 500"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7zM14 3v4h4"></path></svg>{{trk.deckLink}}</a></sc-if>
+<sc-if value="{{d.noDeck}}" hint-placeholder-val="{{ false }}"><span style="color: #646B7A">Not provided</span></sc-if>
+</dd>
+</div>
+<div>
+<dt style="{{ui.dt}}">VIDEO</dt>
+<dd style="margin: 4px 0 0; font-size: 14px">
+<sc-if value="{{d.hasVideo}}" hint-placeholder-val="{{ true }}"><a href="#" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 500"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z"></path></svg>Pitch video · {{d.video}}</a></sc-if>
+<sc-if value="{{d.noVideo}}" hint-placeholder-val="{{ false }}"><span style="color: #646B7A">Not provided</span></sc-if>
+</dd>
+</div>
+<div style="grid-column: span 2">
+<dt style="{{ui.dt}}">ALSO ADD US TO THE MAP</dt>
+<dd style="margin: 4px 0 0; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<sc-if value="{{d.mapReq}}" hint-placeholder-val="{{ true }}">
+<span>Yes, suggestion</span>
+<a href="AdminQueueV3.dc.html" style="font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500">{{d.map}}</a>
+<span style="{{d.mapChip.s}}"><span aria-hidden="true" style="{{d.mapChip.dot}}"></span>{{d.mapChip.t}}</span>
+<span style="color: #646B7A">Moderated in the Queue, separate from this review.</span>
+</sc-if>
+<sc-if value="{{d.mapListed}}" hint-placeholder-val="{{ false }}"><span>Already on the map</span></sc-if>
+<sc-if value="{{d.mapNo}}" hint-placeholder-val="{{ false }}"><span style="color: #646B7A">Not requested</span></sc-if>
+</dd>
+</div>
+</dl>
+
+<sc-if value="{{noScore}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 16px; border-radius: 12px; background: #F3F4F2; color: #3D4556; font-size: 14px">{{noScoreL}}</div>
+</sc-if>
+
+<!-- SCORE PANEL -->
+<sc-if value="{{showScore}}" hint-placeholder-val="{{ true }}">
+<section aria-labelledby="score-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h3 id="score-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.02em">Your score</h3>
+<span style="font-size: 13px; color: #646B7A">Weighted rubric, each criterion 0–5. {{sc.state}}</span>
+</div>
+<div style="display: flex; align-items: baseline; gap: 4px" aria-live="polite">
+<span style="{{ui.srInline}}">Weighted score</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 44px; line-height: 1; letter-spacing: -0.03em; color: #0138AC">{{sc.live}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #646B7A">/ 5</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px">
+<sc-for list="{{sc.crit}}" as="c" hint-placeholder-count="4">
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+<span style="font-size: 14px; font-weight: 500; color: #0A1222">{{c.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{c.w}}</span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 14px; font-weight: 500; color: #0A1222">{{c.val}}</span>
+</span>
+<input type="range" min="0" max="5" step="1" value="{{c.val}}" onChange="{{c.set}}" style="width: 100%; margin: 4px 0">
+<span style="font-size: 12px; color: #646B7A">{{c.hint}}</span>
+</label>
+</sc-for>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Internal note <span style="font-weight: 400; color: #646B7A">· seen by admins only, never the applicant</span></span>
+<textarea rows="2" value="{{sc.note}}" onChange="{{sc.setNote}}" placeholder="What would change your score?" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; color: #0A1222; resize: vertical"></textarea>
+</label>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<button type="button" onClick="{{sc.save}}" style="{{ui.btnP}}">{{sc.saveLabel}}</button>
+<span style="font-size: 13px; color: #3D4556">{{sc.saveHint}}</span>
+</div>
+
+<div style="padding-top: 16px; border-top: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 10px">
+<span style="{{ui.dt}}">SCORES FROM OTHER ADMINS</span>
+<sc-if value="{{sc.hidden}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 12px; background: #F3F4F2; font-size: 14px; color: #3D4556">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A1222" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<span>{{sc.hiddenL}}</span>
+</div>
+</sc-if>
+<sc-if value="{{sc.shown}}" hint-placeholder-val="{{ false }}">
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{sc.others}}" as="o" hint-placeholder-count="1">
+<li style="display: flex; align-items: center; gap: 12px; min-height: 44px; border-bottom: 1px solid #EEF0F3">
+<span style="flex: 1; font-weight: 500">{{o.who}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{o.detail}}</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; min-width: 36px; text-align: right">{{o.score}}</span>
+</li>
+</sc-for>
+</ul>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{sc.summary}}</span>
+</sc-if>
+<sc-if value="{{sc.none}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 14px; color: #646B7A">No other scores yet. Any admin can add the second score.</span>
+</sc-if>
+</div>
+</section>
+</sc-if>
+
+<!-- DECISION PANEL -->
+<sc-if value="{{showDecision}}" hint-placeholder-val="{{ true }}">
+<section aria-labelledby="dec-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<h3 id="dec-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.02em">Decision (held until release)</h3>
+</div>
+<span style="font-size: 13px; color: #646B7A">Applicants keep seeing “In review” on My VRC until you release all decisions together.</span>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<div role="group" aria-label="Decision" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{dec.opts}}" as="o" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{dec.canClear}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{dec.clear}}" style="{{ui.btnT}}">Clear decision</button>
+</sc-if>
+</div>
+<sc-if value="{{dec.released}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #0B7A47"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>Released. Decision email queued and My VRC updated.</span>
+</sc-if>
+<sc-if value="{{dec.showSession}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px; border-radius: 12px; background: #F3F4F2">
+<sc-if value="{{dec.sessionTodo}}" hint-placeholder-val="{{ true }}">
+<span style="flex: 1; font-size: 14px; color: #3D4556">Add this pitch to the program now, or let the release create it.</span>
+<button type="button" onClick="{{dec.createSession}}" style="{{ui.btnSs}}">Create session</button>
+</sc-if>
+<sc-if value="{{dec.sessionDone}}" hint-placeholder-val="{{ false }}">
+<span style="flex: 1; font-size: 14px; color: #3D4556">Draft session created in Program, Unscheduled tray.</span>
+<a href="AdminProgramV3.dc.html" style="font-size: 14px; font-weight: 500">Open Program builder</a>
+</sc-if>
+</div>
+</sc-if>
+
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 4px">
+<span style="{{ui.dt}}">EMAIL PREVIEW</span>
+<div role="tablist" aria-label="Email template" style="display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: #F3F4F2">
+<sc-for list="{{dec.tplTabs}}" as="t" hint-placeholder-count="2">
+<button type="button" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+</div>
+<div role="tabpanel" aria-label="Email preview" style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden">
+<div style="padding: 10px 16px; background: #F3F4F2; border-bottom: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: #0A1222">
+<span><span style="{{ui.dtInline}}">SUBJECT</span> {{dec.subject}}</span>
+<span style="color: #3D4556"><span style="{{ui.dtInline}}">REPLY-TO</span> hello@vert-robo-con.example · <span style="{{ui.dtInline}}">TEMPLATE</span> emailTemplates › {{dec.key}}</span>
+</div>
+<p style="margin: 0; padding: 14px 16px; font-size: 14px; line-height: 1.7; color: #0A1222; white-space: pre-line"><sc-for list="{{dec.segs}}" as="g" hint-placeholder-count="5"><span style="{{g.s}}">{{g.t}}</span></sc-for></p>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1.25fr 1.45fr; gap: 10px 12px">
+<sc-for list="{{dec.merge}}" as="m" hint-placeholder-count="3">
+<label style="{{m.wrap}}">
+<span style="font-size: 13px; font-weight: 500; color: #0A1222">{{m.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 400; color: #0138AC">{{m.tag}}</span></span>
+<input type="text" value="{{m.val}}" onChange="{{m.set}}" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 10px; font: inherit; font-size: 14px; color: #0A1222; background: #ffffff">
+</label>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #646B7A; margin-top: -6px">{{dec.mergeHelp}}</span>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding-top: 12px; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0A1222">{{rel.counter}}</span>
+<a href="AdminSystemV3.dc.html" style="font-size: 13px; font-weight: 500">Edit templates in Jobs, email &amp; backups</a>
+</div>
+</section>
+</sc-if>
+
+</div>
+</sc-if>
+</section>
+</div>
+</sc-if>
+
+</main>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2560}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const mk = (track, a) => ({ id: a[0], track: track, ref: 'PIT-2027-' + a[0].slice(1).padStart(3, '0'), date: a[1], title: a[2], org: a[3], robot: a[4], stage: a[5], country: a[6], status: a[7], decision: a[8], others: a[9], mine: a[10], team: a[11], deck: a[12], video: a[13], map: a[14], sum: a[15], problem: a[16], solution: a[17], evidence: a[18], note: '', released: false });
+const S = [
+['s18', 'Dec 11', 'Autonomous kelp-restoration vessel for nearshore reefs', 'Kelp Example Robotics (sample)', 'Ocean', 'Pilot', 'Norway', 'review', null, [['Sample Admin 02', [4, 3, 4, 4]]], null, 6, 14, '3 min', 'MAP-0459',
+'A small electric surface vessel that replants kelp on degraded nearshore reefs, guided by its own seabed maps.',
+'Kelp forests store carbon and shelter fisheries, but warming water and urchin grazing have stripped long stretches of coast. Replanting by divers is slow and costly.',
+'The vessel maps the seabed, then lowers seeded lines at the right depth. One operator supervises three vessels from shore.',
+'Two pilot seasons with a regional fishing cooperative (sample). 4 ha replanted, with survival checked monthly.'],
+['s03', 'Dec 8', 'Solar weeding robot for smallholder farms', '[STARTUP NAME]', 'Ground', 'Deployed', 'Kenya', 'review', 'accept', [['Sample Admin 03', [4, 5, 4, 4]]], [5, 4, 4, 4], 9, 18, '2 min', 'listed',
+'A light, solar-charged robot that removes weeds between rows, so smallholders can cut herbicide and labour.',
+'Weeding takes a large share of farm labour on small plots, and herbicide runoff harms soil and water.',
+'Camera-guided tines remove weeds mechanically. The robot charges in the field and a farmer group shares it through a rental model.',
+'Rented by farmer groups for two seasons (sample figures). Usage logs and a farmer survey are in the deck.'],
+['s07', 'Dec 9', 'Drone seeding for steep post-fire slopes', 'Sample Aerial Co. (sample)', 'Aerial', 'Pilot', 'Chile', 'review', 'accept', [['Sample Admin 03', [2, 2, 3, 3]]], [5, 4, 4, 5], 5, 12, null, 'listed',
+'Drones drop native seed pods on burned slopes that crews cannot reach safely, within weeks of a fire.',
+'After wildfires, bare slopes erode before replanting crews can reach them, and native seed is scarce.',
+'Mapping flights pick planting spots; seeding flights drop pods at those points, then revisit to measure germination.',
+'One pilot with a regional forestry agency (sample). Germination data is early and not yet peer-reviewed.'],
+['s11', 'Dec 10', 'Robotic disassembly cell for e-waste batteries', 'Sample Circular Robotics (sample)', 'Robotic arm', 'Prototype', 'Germany', 'review', 'not', [['Sample Admin 02', [2, 2, 3, 3]]], [3, 2, 3, 2], 4, 10, null, null,
+'A robot cell that opens battery packs from consumer electronics so the cells can be recycled safely.',
+'Battery packs are glued and come in many designs, so manual disassembly is slow and a fire risk.',
+'Vision identifies the pack model; the arm cuts and lifts cells with force feedback inside a fire-safe enclosure.',
+'Lab prototype handles three pack designs. No customer pilot yet.'],
+['s12', 'Dec 10', 'Hull-cleaning crawler that cuts ship fuel use', '[STARTUP NAME]', 'Ocean', 'Deployed', 'Netherlands', 'short', null, [['Sample Admin 03', [4, 5, 4, 3]]], [4, 4, 4, 4], 12, 16, '4 min', 'listed',
+'A magnetic crawler that cleans ship hulls in port, cutting drag and fuel use between dry-docks.',
+'Growth on hulls raises drag and fuel burn, and in-water cleaning often releases paint and organisms into the harbour.',
+'The crawler brushes the hull and captures the debris through a filter, so nothing is released.',
+'Operating in two ports under service contracts (sample). Before-and-after fuel data is in the deck.'],
+['s15', 'Dec 12', 'Wind-blade inspection and repair crawler', 'Sample Blade Robotics (sample)', 'Ground', 'Pilot', 'Portugal', 'review', null, [['Sample Admin 02', [3, 4, 4, 3]]], null, 7, 11, '3 min', null,
+'A climbing robot that inspects and patches leading-edge erosion on wind-turbine blades.',
+'Leading-edge erosion cuts turbine output, and rope-access repair crews are scarce and weather-bound.',
+'The crawler climbs the tower, scans the blade and applies a repair coating, with a technician supervising from the ground.',
+'Pilot on two onshore turbines (sample). Repair durability is still being measured.'],
+['s21', 'Dec 15', 'Peatland water-level monitoring rover', '[STARTUP NAME]', 'Ground', 'Idea', 'Indonesia', 'submitted', null, [], null, 3, 8, null, null,
+'A low-ground-pressure rover that logs water levels across drained peatland to guide rewetting.',
+'Drained peat releases carbon and burns easily, but water levels are measured at too few points to guide rewetting.',
+'The rover tows a sensor along canals and fixed transects, then publishes water-table maps for land managers.',
+'Concept and simulations only. Partner conversations are listed in the deck.'],
+['s24', 'Dec 16', 'Waterless cleaning robot for desert solar plants', 'Sample Solar Care (sample)', 'Ground', 'Deployed', 'India', 'review', 'not', [['Sample Admin 03', [3, 3, 2, 3]]], [2, 3, 2, 3], 15, 20, '2 min', 'listed',
+'Rail-mounted robots that dry-clean solar panels each night, without water.',
+'Dust cuts solar output in dry regions, and washing panels uses scarce water.',
+'Microfibre brushes on rail-mounted robots clean each row nightly, powered by their own small panel.',
+'Installed on commercial plants (sample). The pitch does not say how it differs from similar products.'],
+['s26', 'Dec 17', 'Ground and aerial robots for mangrove planting', 'Sample Mangrove Systems (sample)', 'Multiple', 'Prototype', 'Brazil', 'review', null, [['Sample Admin 02', [4, 3, 5, 4]]], null, 5, 13, '3 min', null,
+'Drones map tidal flats and an amphibious robot plants mangrove seedlings at low tide.',
+'Planting mangroves by hand is slow on soft mud, and many plantings fail because they sit at the wrong elevation.',
+'Drone elevation maps choose the sites; an amphibious robot plants at those points and logs each one for follow-up.',
+'Prototype tested on one site over a single season (sample).'],
+['s29', 'Dec 18', 'Sorting cell for construction and demolition waste', '[STARTUP NAME]', 'Robotic arm', 'Pilot', 'Canada', 'review', 'accept', [['Sample Admin 03', [4, 4, 4, 5]]], [4, 5, 4, 4], 10, 15, '3 min', 'listed',
+'A robotic picking cell that recovers wood, metal and concrete from mixed demolition waste.',
+'Most demolition waste goes to landfill because manual sorting is dangerous and expensive.',
+'Hyperspectral cameras classify the stream; heavy-duty arms pick recoverable material into separate bays.',
+'Running a pilot line at a recycling yard (sample). Recovery rates are reported monthly.'],
+['s31', 'Dec 19', 'Drone network for snowpack monitoring', 'Sample Snowline Drones (sample)', 'Aerial', 'Idea', 'Canada', 'review', 'not', [['Sample Admin 02', [2, 1, 3, 2]]], [2, 1, 2, 3], 2, 6, null, null,
+'A network of docked drones that measure snow depth across a watershed every week.',
+'Snowpack surveys happen a few times a winter, so water managers plan the melt season with old numbers.',
+'Drones in weatherproof docks fly scheduled survey missions and send change maps to local authorities.',
+'Idea stage. No flights or partners yet.'],
+['s33', 'Dec 21', 'Underwater vehicle that seeds coral larvae', 'Sample Reef Robotics (sample)', 'Ocean', 'Prototype', 'Australia', 'submitted', null, [], null, 6, 12, '2 min', null,
+'A small underwater vehicle that releases coral larvae onto damaged reef patches during spawning season.',
+'Reef restoration by divers covers small areas, and spawning windows are short.',
+'The vehicle maps reef patches and releases larvae in contained pockets so more of them settle.',
+'Tank tests and one field dive (sample).'],
+['s36', 'Dec 22', 'Quadruped for methane-leak inspection', '[STARTUP NAME]', 'Ground', 'Pilot', 'United States', 'withdrawn', null, [['Sample Admin 03', [3, 4, 3, 3]]], null, 8, 14, null, null,
+'A legged robot that patrols gas facilities and finds methane leaks with an onboard sensor.',
+'Methane leaks at gas sites go unnoticed between manual surveys.',
+'Scheduled patrols with a laser methane sensor; leaks are reported with a location and photo.',
+'Withdrawn by the applicant (sample).'],
+['s40', 'Dec 23', 'Precision irrigation robot for orchards', 'Sample Orchard Robotics (sample)', 'Ground', 'Idea', 'Spain', 'draft', null, [], null, 2, 0, null, null,
+'A robot that waters each tree based on soil readings taken along the row.',
+'Orchards in dry regions over-water whole blocks because soil moisture varies from tree to tree.',
+'A row-following robot reads soil moisture and adjusts drip valves tree by tree.',
+'Draft. Not submitted yet.']
+];
+const R = [
+['r19', 'Dec 11', 'Soft gripper for transplanting seagrass shoots', 'Sample Research Lab', 'Ocean', 'Lab prototype', 'Italy', 'review', null, [['Sample Admin 03', [4, 3, 4, 4]]], null, 4, 9, '3 min', null,
+'A soft robotic gripper that lifts and replants seagrass shoots without tearing the roots.',
+'Seagrass meadows store carbon, but transplanting by hand damages shoots and is slow.',
+'Fluid-driven soft fingers grip the shoot base; a small underwater vehicle carries the gripper along a planting grid.',
+'Tank trials with three species (sample). A field trial is planned.'],
+['r22', 'Dec 13', 'Drone swarm for tree-canopy carbon mapping', 'Sample Forest Robotics Lab', 'Aerial', 'Field trial', 'Finland', 'review', 'accept', [['Sample Admin 03', [5, 4, 4, 4]]], [4, 4, 5, 4], 7, 16, '4 min', 'listed',
+'Coordinated drones that map canopy structure to estimate forest carbon more often and more cheaply.',
+'Forest carbon estimates rely on sparse ground plots and occasional airborne surveys.',
+'Several small drones split the area, fly below-canopy and above-canopy passes, and merge their scans.',
+'Field trials in two forest plots, compared against ground plots (sample).'],
+['r27', 'Dec 16', 'Legged robot for permafrost soil sensing', '[LAB NAME]', 'Ground', 'Concept', 'Canada', 'submitted', null, [], null, 3, 8, null, null,
+'A legged robot that walks thawing permafrost and measures soil temperature and gas flux.',
+'Permafrost thaw releases greenhouse gases, but the sites are remote and the ground is unstable.',
+'A quadruped with a soil probe and gas chamber samples along transects through the summer.',
+'Concept and simulation. Sensor tests in the lab.'],
+['r30', 'Dec 17', 'Learning-based sorting of mixed plastic film', 'Sample Recycling Lab', 'Robotic arm', 'Lab prototype', 'Japan', 'review', 'not', [['Sample Admin 02', [3, 2, 3, 3]]], [2, 2, 3, 3], 5, 11, null, null,
+'Training a suction gripper to separate mixed plastic film, which current sorters reject.',
+'Plastic film jams sorting lines and is mostly burned or sent to landfill.',
+'A learned grasping policy picks film by type using near-infrared and colour images.',
+'Lab results on a benchmark set (sample). No sorting-line trial yet.'],
+['r34', 'Dec 19', 'Underwater glider for ocean-alkalinity monitoring', 'Sample Ocean Lab', 'Ocean', 'Field trial', 'United Kingdom', 'short', null, [['Sample Admin 02', [4, 4, 5, 4]]], [5, 4, 4, 4], 6, 14, '3 min', null,
+'A glider fitted with alkalinity sensors to verify ocean-based carbon removal trials.',
+'Ocean carbon-removal trials need long, independent measurements that ships cannot provide cheaply.',
+'Gliders run month-long transects around trial sites and send data by satellite.',
+'Two deployments near a trial site (sample).'],
+['r38', 'Dec 21', 'Mixed robot teams for flood response mapping', '[LAB NAME]', 'Multiple', 'Concept', 'Bangladesh', 'review', null, [['Sample Admin 03', [4, 2, 4, 3]]], null, 4, 10, null, null,
+'Boats and drones that share one map to guide flood response in river deltas.',
+'During floods, responders lack current maps of water depth and blocked routes.',
+'Drones map the surface while small boats measure depth; a shared planner sends both to the gaps.',
+'Concept, backed by interviews with local responders (sample).'],
+['r41', 'Dec 23', 'Tree-climbing robot for forest-health sensing', 'Sample Canopy Lab', 'Ground', 'Lab prototype', 'Kenya', 'review', null, [['Sample Admin 02', [3, 3, 4, 4]]], null, 3, 9, '2 min', null,
+'A small robot that climbs trunks to place and read canopy sensors.',
+'Canopy sensors are hard to install and service without climbing crews.',
+'A clamp-and-extend climber carries sensors up the trunk and returns for data and battery swaps.',
+'Lab prototype climbs three trunk diameters (sample).']
+];
+const pitches = S.map((a) => mk('startup', a)).concat(R.map((a) => mk('research', a)));
+this.state = {
+call: 'closing', track: 'startup', selId: 's18', edition: '2027', search: '',
+f: { status: 'all', robot: 'all', stage: 'all', country: 'all', mine: false }, sort: 'mean',
+pitches: pitches, draft: { v: [3, 3, 3, 3], note: '' }, checked: {}, tplTab: null, merge: {},
+// the 4 accepted sample pitches already sit in AdminProgramV3's Unscheduled tray
+sessions: { s03: true, s07: true, s29: true, r22: true },
+// hidden rows: every fully reviewed pitch has a held decision (a + n = full), so undecided = need scores + shortlisted
+base: { startup: { full: 23, a: 5, n: 18, rel: 0, you: 7 }, research: { full: 11, a: 3, n: 8, rel: 0, you: 2 } },
+confirm: false, toast: ''
+};
+}
+draftFor(p) {
+if (p && p.mine) return { v: p.mine.slice(), note: p.note || '' };
+return { v: [3, 3, 3, 3], note: p ? (p.note || '') : '' };
+}
+pick(id) {
+const p = this.state.pitches.find((q) => q.id === id);
+this.setState({ selId: id, draft: this.draftFor(p), tplTab: null });
+}
+updP(id, patch) {
+this.setState({ pitches: this.state.pitches.map((p) => (p.id === id ? Object.assign({}, p, patch) : p)) });
+}
+switchTrack(k) {
+const first = { startup: 's18', research: 'r19' }[k];
+const p = this.state.pitches.find((q) => q.id === first);
+this.setState({ track: k, selId: first, draft: this.draftFor(p), tplTab: null, checked: {}, confirm: false, f: Object.assign({}, this.state.f, { stage: 'all' }) });
+}
+release() {
+const st = this.state, T = st.track;
+let cnt = 0;
+const sessions = Object.assign({}, st.sessions);
+const pitches = st.pitches.map((p) => {
+if (p.track !== T || !p.decision || p.released) return p;
+cnt++;
+if (p.decision === 'accept') sessions[p.id] = true;
+return Object.assign({}, p, { released: true });
+});
+const b = st.base[T];
+const total = cnt + b.a + b.n;
+const base = Object.assign({}, st.base);
+base[T] = Object.assign({}, b, { a: 0, n: 0, rel: b.rel + total });
+this.setState({ pitches: pitches, sessions: sessions, base: base, confirm: false, toast: 'Decision emails queued · ' + total });
+}
+renderVals() {
+const st = this.state;
+const set = (o) => this.setState(o);
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const isCur = st.edition === '2027';
+const open = st.call !== 'soon';
+const T = st.track;
+const ws = (s) => (s[0] * 2 + s[1] * 1.5 + s[2] + s[3]) / 5.5;
+const f1 = (x) => (Math.round(x * 10) / 10).toFixed(1);
+const TONE = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#A7ADB8'] };
+const chipS = (tone) => 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; background: ' + TONE[tone][0] + '; color: ' + TONE[tone][1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; line-height: 1.5; white-space: nowrap';
+const chip = (tone, t, lock) => ({ s: chipS(tone), t: t, lock: !!lock, dot: lock ? 'display: none' : 'width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; background: ' + TONE[tone][2] });
+const RC = { Ground: '#1F9D5C', Ocean: '#0B6FB8', Aerial: '#6D5BD0', 'Robotic arm': '#D9822B', Multiple: '#A7ADB8' };
+const rDot = (r) => 'width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: ' + RC[r];
+const btnBase = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; white-space: nowrap; ';
+const selBase = 'min-height: 40px; padding: 0 10px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; font: inherit; font-size: 14px; color: #0A1222; cursor: pointer';
+const segItem = (on, small) => 'display: inline-flex; align-items: center; gap: 8px; min-height: ' + (small ? 30 : 36) + 'px; padding: 0 ' + (small ? 10 : 14) + 'px; border: 0; border-radius: ' + (small ? 7 : 9) + 'px; font: inherit; font-size: ' + (small ? 13 : 14) + 'px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const dtS = MONO + 'font-size: 11px; letter-spacing: 0.06em; color: #646B7A';
+const ui = {
+sr: 'position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap',
+srInline: 'position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap',
+eyebrow: MONO + 'font-size: 12px; letter-spacing: 0.06em; color: #646B7A',
+dt: dtS, dtInline: dtS + '; margin-right: 4px',
+btnP: btnBase + 'border: 0; background: #0138AC; color: #ffffff',
+btnS: btnBase + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnSs: btnBase + 'min-height: 40px; padding: 0 14px; font-size: 14px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnXs: btnBase + 'min-height: 34px; padding: 0 12px; font-size: 13px; border-radius: 9px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnT: 'min-height: 40px; padding: 0 6px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer',
+select: selBase, selectStrong: selBase + '; font-weight: 600',
+chipNeutral: chipS('neutral'),
+robotChip: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: #F3F4F2; font-size: 12px; color: #0A1222; white-space: nowrap',
+rowMeta: MONO + 'font-size: 12px; color: #646B7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
+thMain: 'flex: 1; ' + dtS, thRight: dtS + '; text-align: right',
+cbBtn: 'flex: 0 0 auto; width: 40px; height: 44px; margin-top: 8px; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; padding: 0',
+cbHead: 'flex: 0 0 auto; width: 40px; height: 44px; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; padding: 0',
+navBtn: 'display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; color: #0A1222; font: inherit; cursor: pointer',
+kbd: MONO + 'font-size: 11px; padding: 0 5px; border-radius: 4px; background: #F3F4F2; color: #3D4556'
+};
+const box = (on) => 'width: 18px; height: 18px; box-sizing: border-box; border-radius: 5px; display: flex; align-items: center; justify-content: center; border: 1.5px solid ' + (on ? '#0138AC' : '#A7ADB8') + '; background: ' + (on ? '#0138AC' : '#ffffff');
+const mark = (on) => (on ? 'display: block' : 'display: none');
+
+const TRK = {
+startup: { name: 'Startup pitch', sub: 42, orgL: 'ORGANIZATION', deckL: 'DECK', deckLink: 'Open deck link', soonChip: 'OPENS DEC 8, 2026', closeChip: 'CLOSES IN 3 DAYS', soonText: 'The startup call opens Dec 8, 2026.', session: 'startup pitch session', slot: 'Day 1 · Apr 20, 2027 · [TIME] UTC', prec: '2025 precedent: Session 4, Pitch Round: Water and Wetland Teams (Day 1).', abbr: ['Impact', 'Readiness', 'Fit', 'Clarity'],
+crit: [['Climate impact', 'Emissions cut or adaptation gained'], ['Deployment readiness', 'How close it is to the field'], ['Fit with summit tracks', 'Link to the 2027 themes'], ['Clarity of pitch', 'Easy to follow, evidence shown']],
+labels: ['ONE-LINE SUMMARY', 'PROBLEM', 'SOLUTION AND CLIMATE IMPACT', 'DEPLOYMENT EVIDENCE'],
+rv: [['Sample Admin 02', 24], ['Sample Admin 03', 31]] },
+research: { name: 'Research pitch', sub: 18, orgL: 'LAB', deckL: 'PROJECT', deckLink: 'Open project link', soonChip: 'OPENS [DATE]', closeChip: 'CLOSES IN 3 DAYS', soonText: 'The research call opens on [DATE].', session: 'research pitch session', slot: 'Day 3 · Apr 22, 2027 · [TIME] UTC', prec: '2026 precedent: Session 6, Student Lightning Round (Day 3).', abbr: ['Impact', 'Path', 'Fit', 'Clarity'],
+crit: [['Climate impact', 'Emissions cut or adaptation possible'], ['Path to deployment', 'What it takes to reach the field'], ['Fit with summit tracks', 'Link to the 2027 themes'], ['Clarity of pitch', 'Easy to follow, evidence shown']],
+labels: ['ONE-LINE SUMMARY', 'PROBLEM', 'APPROACH', 'EVIDENCE SO FAR'],
+rv: [['Sample Admin 02', 13], ['Sample Admin 03', 13]] }
+};
+const TR = TRK[T];
+const B = st.base[T];
+
+// ---------- derived pitch data ----------
+const all = st.pitches.filter((p) => p.track === T).map((p) => {
+const sc = p.others.map((o) => ws(o[1])).concat(p.mine ? [ws(p.mine)] : []);
+const mean = sc.length ? sc.reduce((a, b) => a + b, 0) / sc.length : null;
+const spread = sc.length >= 2 ? Math.max.apply(null, sc) - Math.min.apply(null, sc) : null;
+const showDec = !!p.decision;
+const key = showDec && p.decision === 'accept' ? 'accepted' : (showDec && p.decision === 'not' ? 'not' : p.status);
+return { p: p, sc: sc, mean: mean, spread: spread, key: key, cnt: sc.length };
+});
+const statusChip = (x) => {
+const p = x.p;
+if (p.decision && p.released) return p.decision === 'accept' ? chip('green', 'ACCEPTED') : chip('neutral', 'NOT SELECTED');
+if (p.decision === 'accept') return chip('blue', 'ACCEPTED (HELD)', true);
+if (p.decision === 'not') return chip('neutral', 'NOT SELECTED (HELD)', true);
+return { submitted: chip('blue', 'SUBMITTED'), review: chip('neutral', 'IN REVIEW'), short: chip('blue', 'SHORTLISTED'), withdrawn: chip('neutral', 'WITHDRAWN'), draft: chip('neutral', 'DRAFT') }[p.status];
+};
+const F = st.f;
+const scorable = (p) => p.status !== 'draft' && p.status !== 'withdrawn';
+let list = open ? all.filter((x) => (F.status === 'all' || x.key === F.status)
+&& (F.robot === 'all' || x.p.robot === F.robot)
+&& (F.stage === 'all' || x.p.stage === F.stage)
+&& (F.country === 'all' || x.p.country === F.country)
+&& (!F.mine || (!x.p.mine && scorable(x.p)))) : [];
+const nz = (v) => (v === null ? -1 : v);
+if (st.sort === 'mean') list.sort((a, b) => nz(b.mean) - nz(a.mean));
+else if (st.sort === 'spread') list.sort((a, b) => nz(b.spread) - nz(a.spread));
+else list.sort((a, b) => (a.p.ref < b.p.ref ? 1 : -1));
+const ids = list.map((x) => x.p.id);
+const move = (dl) => {
+if (!ids.length) return;
+const i = ids.indexOf(st.selId);
+const j = i < 0 ? 0 : Math.min(ids.length - 1, Math.max(0, i + dl));
+this.pick(ids[j]);
+};
+
+const rows = list.map((x) => {
+const p = x.p, on = p.id === st.selId, ck = !!st.checked[p.id];
+const lo = x.cnt >= 2 ? Math.min.apply(null, x.sc) : 0, hi = x.cnt >= 2 ? Math.max.apply(null, x.sc) : 0;
+const split = x.spread !== null && x.spread >= 1.5;
+return {
+ref: p.ref, title: p.title, orgLine: p.org, robot: p.robot, rDot: rDot(p.robot), meta: p.stage + ' · ' + p.country,
+chip: statusChip(x),
+meanL: x.mean === null ? '—' : f1(x.mean),
+cnt: x.cnt + '/2 SCORES', cntStyle: MONO + 'font-size: 11px; letter-spacing: 0.04em; color: ' + (x.cnt >= 2 ? '#0B7A47' : '#8A4B00'),
+segStyle: x.cnt >= 2 ? 'position: absolute; top: 0; height: 6px; border-radius: 999px; left: ' + (lo / 5 * 100).toFixed(1) + '%; width: max(6px, ' + ((hi - lo) / 5 * 100).toFixed(1) + '%); background: ' + (split ? '#D9822B' : '#0138AC') : 'display: none',
+spreadL: x.spread === null ? 'SPREAD —' : (split ? 'SPLIT ' : 'SPREAD ') + f1(x.spread),
+spreadStyle: MONO + 'font-size: 11px; letter-spacing: 0.04em; color: ' + (split ? '#8A4B00' : '#646B7A'),
+current: on ? 'true' : 'false',
+liStyle: 'display: flex; align-items: flex-start; border-bottom: 1px solid #EEF0F3; padding-left: 6px' + (on ? '; background: #EEF2FB' : ''),
+rowStyle: 'flex: 1; min-width: 0; display: flex; gap: 12px; padding: 14px 16px 14px 4px; border: 0; font: inherit; text-align: left; cursor: pointer; color: #0A1222' + (on ? '; background: #EEF2FB' : ''),
+ck: ck ? 'true' : 'false', ckLabel: 'Select ' + p.ref, ckBox: box(ck), ckMark: mark(ck),
+toggleCk: () => { const c = Object.assign({}, st.checked); c[p.id] = !ck; set({ checked: c }); },
+pick: () => this.pick(p.id)
+};
+});
+const nChecked = list.filter((x) => st.checked[x.p.id]).length;
+const allOn = list.length > 0 && nChecked === list.length;
+
+// ---------- aggregates ----------
+const fullVis = all.filter((x) => x.cnt >= 2).length;
+const sub = open ? TR.sub : 0;
+const full = open ? B.full + fullVis : 0;
+const heldA = B.a + all.filter((x) => x.p.decision === 'accept' && !x.p.released).length;
+const heldN = B.n + all.filter((x) => x.p.decision === 'not' && !x.p.released).length;
+const emails = heldA + heldN;
+const undecided = Math.max(0, TR.sub - heldA - heldN - B.rel);
+const counter = 'Decisions held: ' + heldA + ' accepted · ' + heldN + ' not selected · ' + B.rel + ' released';
+const youScored = B.you + all.filter((x) => x.p.mine).length;
+
+// ---------- selection ----------
+const sx = open ? all.find((x) => x.p.id === st.selId) : null;
+const sp = sx ? sx.p : null;
+const canScore = !!(sp && scorable(sp));
+let d = {}, sc = {}, dec = {};
+if (sp) {
+const num = sp.ref.slice(-3);
+const mapReq = !!sp.map && sp.map !== 'listed';
+d = {
+ref: sp.ref, dateL: 'SUBMITTED ' + sp.date.toUpperCase() + ', 2026', title: sp.title, chip: statusChip(sx), robot: sp.robot, rDot: rDot(sp.robot), stage: sp.stage, country: sp.country, team: sp.team,
+who: 'Sample Applicant ' + num, email: 'applicant' + num + '@example.org', org: sp.org,
+fields: TR.labels.map((l, i) => ({ l: l, v: [sp.sum, sp.problem, sp.solution, sp.evidence][i], style: (i === 1 || i === 2) ? 'grid-column: span 1' : 'grid-column: span 2' })),
+hasDeck: sp.deck > 0, noDeck: !(sp.deck > 0),
+hasVideo: !!sp.video, noVideo: !sp.video, video: sp.video || '',
+mapReq: mapReq, mapListed: sp.map === 'listed', mapNo: !sp.map, map: sp.map || '',
+mapChip: chip('amber', 'PENDING APPROVAL') // same status AdminQueueV3 shows for this suggestion
+};
+// score panel
+const dv = st.draft.v;
+const saved = !!sp.mine;
+const dirty = saved && (sp.mine.join(',') !== dv.join(',') || (sp.note || '') !== st.draft.note);
+sc = {
+live: f1(ws(dv)),
+state: saved ? (dirty ? 'Changed. Save to update the mean.' : 'Saved. It counts toward the mean.') : 'Not saved yet.',
+crit: TR.crit.map((c, i) => ({ label: c[0], hint: c[1], w: '×' + [2, 1.5, 1, 1][i], val: dv[i],
+set: (e) => { const v = st.draft.v.slice(); v[i] = Number(e.target.value); set({ draft: { v: v, note: st.draft.note } }); } })),
+note: st.draft.note,
+setNote: (e) => set({ draft: { v: st.draft.v, note: e.target.value } }),
+saveLabel: saved ? 'Update score' : 'Save score',
+saveHint: saved ? (dirty ? 'Unsaved changes.' : 'Saved. Counts as 1 of 2 scores for this pitch.') : 'Saving counts as 1 of 2 scores and recomputes the mean.',
+save: () => this.updP(sp.id, { mine: st.draft.v.slice(), note: st.draft.note, status: sp.status === 'submitted' ? 'review' : sp.status }),
+hidden: !saved, shown: saved && sp.others.length > 0, none: saved && sp.others.length === 0,
+hiddenL: sp.others.length ? sp.others.length + ' other score is hidden until you save your own. This keeps each first read independent.' : 'Other admins’ scores stay hidden until you save your own.',
+others: sp.others.map((o, i) => ({ who: o[0], score: f1(ws(o[1])), detail: o[1].map((v, k) => TR.abbr[k] + ' ' + v).join(' · ') })),
+summary: sx.mean === null ? '' : 'MEAN ' + f1(sx.mean) + ' FROM ' + sx.cnt + ' SCORES' + (sx.spread === null ? '' : ' · SPREAD ' + f1(sx.spread))
+};
+// decision panel
+const tab = st.tplTab || (sp.decision === 'not' ? 'not' : 'acc');
+const mv = Object.assign({ name: d.who, title: sp.title, slot: TR.slot }, st.merge[sp.id] || {});
+const Fm = (k) => ({ t: mv[k], s: 'background: #EEF2FB; color: #0138AC; border-radius: 4px; padding: 1px 4px' });
+const Tx = (t) => ({ t: t, s: 'background: transparent' });
+const segs = tab === 'acc'
+? [Tx('Hi '), Fm('name'), Tx(',\nGood news: “'), Fm('title'), Tx('” is selected for the ' + TR.session + ' at the Vert Robo Con Summit 2027.\nYour slot: '), Fm('slot'), Tx('. Your speaker brief and tech-check link follow soon. Your status is on My VRC.\nThe VRC summit team')]
+: [Tx('Hi '), Fm('name'), Tx(',\nThank you for applying with “'), Fm('title'), Tx('”. We received many strong pitches and could not include yours in the ' + TR.session + '.\nYou are welcome to join the summit for free on April 20–22, 2027, and to apply again next year. Your status is on My VRC.\nThe VRC summit team')];
+const setDec = (k) => {
+if (sp.released) return;
+if (k === 'short') this.updP(sp.id, { decision: null, status: 'short' });
+else this.updP(sp.id, { decision: k, status: sp.status === 'submitted' ? 'review' : sp.status });
+set({ tplTab: null });
+};
+dec = {
+opts: [['accept', 'Accept'], ['short', 'Shortlist'], ['not', 'Not selected']].map((o) => {
+const on = o[0] === 'short' ? (!sp.decision && sp.status === 'short') : sp.decision === o[0];
+return { label: o[1], pressed: on ? 'true' : 'false', style: segItem(on) + (sp.released && !on ? '; opacity: 0.5; cursor: not-allowed' : ''), pick: () => setDec(o[0]) };
+}),
+canClear: !!sp.decision && !sp.released,
+clear: () => { this.updP(sp.id, { decision: null }); set({ tplTab: null }); },
+released: sp.released,
+showSession: sp.decision === 'accept',
+sessionTodo: sp.decision === 'accept' && !st.sessions[sp.id],
+sessionDone: sp.decision === 'accept' && !!st.sessions[sp.id],
+createSession: () => { const s = Object.assign({}, st.sessions); s[sp.id] = true; set({ sessions: s }); },
+tplTabs: [['acc', 'Accepted'], ['not', 'Not selected']].map((o) => ({ label: o[1], sel: tab === o[0] ? 'true' : 'false', style: segItem(tab === o[0], true), pick: () => set({ tplTab: o[0] }) })),
+// one 'pitch-decision' template (AdminSystemV3), subject 'Your pitch for {edition}: {decision}', one version per decision
+subject: 'Your pitch for Summit 2027: ' + (tab === 'acc' ? 'accepted' : 'not selected'),
+key: 'pitch-decision · ' + (tab === 'acc' ? 'accepted' : 'not selected'),
+segs: segs,
+mergeHelp: 'Edits apply to this email only. ' + (tab === 'not' ? 'Slot is not used in this template.' : TR.prec + ' Times are set in the Program builder.'),
+merge: [['name', 'Greeting name', 'first_name'], ['title', 'Pitch title', 'pitch_title'], ['slot', 'Slot', 'session_slot']].map((o) => ({
+tag: '{' + o[2] + '}', label: o[1], val: mv[o[0]],
+wrap: 'display: flex; flex-direction: column; gap: 4px; min-width: 0',
+set: (e) => { const m = Object.assign({}, st.merge); m[sp.id] = Object.assign({}, m[sp.id] || {}); m[sp.id][o[0]] = e.target.value; set({ merge: m }); }
+}))
+};
+}
+
+// ---------- shared shell (sidebar + top bar copied from AdminQueueV3) ----------
+const QUEUE_OPEN = 16; // AdminQueueV3 open items: join 3 · map 3 · jobs 2 · messages 4 · nominations 1 · internships 1 · documents 2
+
+// ---------- scores by admin (any admin can score; bar = share of submitted pitches scored) ----------
+const rvRows = [['Sample Admin 01 (you)', open ? youScored : 0]].concat(TR.rv.map((r) => [r[0], open ? r[1] : 0]));
+const rv = rvRows.map((r) => ({ name: r[0], label: r[1] + ' scored', fill: 'display: block; height: 100%; border-radius: 999px; background: #0138AC; width: ' + (TR.sub ? Math.min(100, Math.round(r[1] / TR.sub * 100)) : 0) + '%' }));
+
+const swOn = F.mine;
+const anyFilter = F.status !== 'all' || F.robot !== 'all' || F.stage !== 'all' || F.country !== 'all' || F.mine;
+const setF = (k) => (e) => { const f = Object.assign({}, st.f); f[k] = e.target.value; set({ f: f }); };
+
+return {
+ui: ui, isStartup: T === 'startup', isResearch: T === 'research',
+calls: [['soon', 'Before opening'], ['closing', 'Open · closing soon']].map((o) => ({ label: o[1], pressed: st.call === o[0] ? 'true' : 'false', style: segItem(st.call === o[0], true), pick: () => set({ call: o[0] }) })),
+totalOpen: String(QUEUE_OPEN), queueAria: QUEUE_OPEN + ' items need action',
+edition: st.edition, setEdition: (e) => set({ edition: e.target.value, confirm: false, checked: {} }),
+h1: 'Calls & pitches · Summit ' + st.edition,
+isCur: isCur, isPast: !isCur,
+past: { chip: 'CLOSED', title: 'Summit ' + st.edition + ' calls are closed', body: 'Decisions were released. Accepted pitches are in the Summit ' + st.edition + ' program.' },
+backToCur: () => set({ edition: '2027' }),
+search: st.search, setSearch: (e) => set({ search: e.target.value }),
+hasToast: !!st.toast, toast: st.toast, dismissToast: () => set({ toast: '' }),
+trk: { soonText: TR.soonText, nameUp: TR.name.toUpperCase(), orgL: TR.orgL, deckL: TR.deckL, deckLink: TR.deckLink },
+tabs: [['startup', 'Startup pitch'], ['research', 'Research pitch']].map((o) => {
+const on = T === o[0];
+return { label: o[1], count: open ? String(TRK[o[0]].sub) : '0', sel: on ? 'true' : 'false',
+style: segItem(on),
+countStyle: MONO + 'font-size: 12px; color: #646B7A',
+pick: () => { if (!on) this.switchTrack(o[0]); } };
+}),
+callChip: open ? chip('amber', TR.closeChip) : chip('blue', TR.soonChip),
+prog: {
+text: open ? sub + ' submitted · ' + full + ' fully reviewed · ' + (sub - full) + ' need scores' : 'No pitches yet · reviews start when the call opens',
+fill: 'display: block; height: 100%; background: #0138AC; width: ' + (sub ? Math.round(full / sub * 100) : 0) + '%'
+},
+f: F, sort: st.sort,
+setStatus: setF('status'), setRobot: setF('robot'), setStage: setF('stage'), setCountry: setF('country'),
+setSort: (e) => set({ sort: e.target.value }),
+mineChecked: swOn ? 'true' : 'false', toggleMine: () => set({ f: Object.assign({}, st.f, { mine: !st.f.mine }) }),
+sw: {
+track: 'position: relative; width: 34px; height: 20px; border-radius: 999px; display: inline-block; background: ' + (swOn ? '#0138AC' : '#C9CDD5'),
+knob: 'position: absolute; top: 2px; left: ' + (swOn ? '16px' : '2px') + '; width: 16px; height: 16px; border-radius: 50%; background: #ffffff'
+},
+anyFilter: anyFilter,
+clearFilters: () => set({ f: { status: 'all', robot: 'all', stage: 'all', country: 'all', mine: false } }),
+onListKey: (e) => { const k = (e.key || '').toLowerCase(); if (k === 'j') { if (e.preventDefault) e.preventDefault(); move(1); } else if (k === 'k') { if (e.preventDefault) e.preventDefault(); move(-1); } },
+prev: () => move(-1), next: () => move(1),
+rows: rows, hasRows: rows.length > 0,
+listEmptySoon: !open, listEmptyFilter: open && rows.length === 0,
+listFoot: 'SHOWING ' + rows.length + ' SAMPLE ROWS · ' + sub + ' SUBMITTED · MORE LOAD AS YOU SCROLL',
+allCk: allOn ? 'true' : 'false', allBox: box(allOn), allMark: mark(allOn),
+toggleAll: () => { const c = {}; if (!allOn) list.forEach((x) => { c[x.p.id] = true; }); set({ checked: c }); },
+bulkOn: nChecked > 0, bulkOff: nChecked === 0, nCheckedL: nChecked + ' selected', clearChecked: () => set({ checked: {} }),
+showRelease: open,
+rel: {
+title: 'Release decisions · ' + TR.name,
+counter: counter,
+hasUndecided: undecided > 0,
+undecidedL: undecided + ' pitches have no final decision yet. They stay “In review” and get no email.',
+note: 'Sends ' + emails + ' emails · updates /me status · creates draft sessions for accepted pitches',
+idle: emails > 0 && !st.confirm, confirm: emails > 0 && st.confirm, nothing: emails === 0,
+confirmQ: 'Send ' + emails + ' decision emails now?',
+ask: () => set({ confirm: true }), cancel: () => set({ confirm: false }), go: () => this.release()
+},
+rv: rv,
+noSel: !sp, hasSel: !!sp, d: d, sc: sc, dec: dec,
+showScore: canScore, noScore: !!sp && !canScore,
+noScoreL: sp && sp.status === 'draft' ? 'This pitch is still a draft. It can be scored once the applicant submits it.' : 'The applicant withdrew this pitch. It is not scored and gets no decision email.',
+showDecision: canScore
+};
+}
+}
+</script>
+</body>
+</html>

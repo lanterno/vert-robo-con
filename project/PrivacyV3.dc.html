@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Privacy (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+.tocl{color:#3D4556;text-decoration:none}
+.tocl:hover{background:#F3F4F2;color:#0A1222}
+.ftl{color:#0A1222;text-decoration:none}
+.ftl:hover{color:#0138AC}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.drow:hover{background:#F7F8F9}
+</style>
+</helmet>
+<div style="font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL + NOTE (not part of the page) -->
+<div style="background: #E9EAED; border-bottom: 1px dashed #A7ADB8; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">PREVIEW</span>
+<span role="group" aria-label="Preview state" style="display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 11px; background: #DADDE2">
+<sc-for list="{{presets}}" as="v" hint-placeholder-count="4"><button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button></sc-for>
+</span>
+</span>
+<span style="margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>CANVAS NOTE · DRAFT FOR LEGAL REVIEW</span>
+<span style="font-size: 13px; color: #3D4556">Not legal advice. Every [PLACEHOLDER] needs a confirmed answer before this goes live.</span>
+</span>
+</div>
+
+<!-- PAGE -->
+<div style="position: relative">
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" aria-current="{{i.current}}" onClick="{{i.go}}" style="{{i.style}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</header>
+
+<!-- READER BAR -->
+<div style="position: relative; z-index: 6; background: #ffffff; border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 10px 32px; min-height: 64px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">ABOUT</span>
+<span aria-hidden="true" style="width: 1px; height: 24px; background: #E5E7EB"></span>
+<strong style="flex: 1 1 200px; min-width: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Privacy policy</strong>
+<span role="group" aria-label="Text size" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<button type="button" aria-label="Smaller text" aria-disabled="{{fontDownDisabled}}" onClick="{{fontDown}}" style="{{fontDownStyle}}">A−</button>
+<button type="button" aria-label="Larger text" aria-disabled="{{fontUpDisabled}}" onClick="{{fontUp}}" style="{{fontUpStyle}}">A+</button>
+</span>
+<a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none">My data</a>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg>Download PDF · [SIZE]</a>
+</div>
+<div role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progressNow}}" style="height: 3px; background: #EEF2FB"><div style="{{progressStyle}}"></div></div>
+</div>
+
+<!-- READER -->
+<div style="max-width: 1280px; margin: 0 auto; padding: 48px 32px 112px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 40px 72px; align-items: flex-start">
+<nav aria-label="Table of contents" style="flex: 0 0 240px; position: sticky; top: 96px; display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 12px 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">CONTENTS</span>
+<sc-for list="{{toc}}" as="t" hint-placeholder-count="7">
+<a class="tocl" href="{{t.href}}" onClick="{{t.pick}}" aria-current="{{t.current}}" style="{{t.style}}"><span style="flex: 0 0 18px; font-family: 'Geist Mono', monospace; font-size: 12px">{{t.num}}</span><span>{{t.title}}</span></a>
+</sc-for>
+<span style="padding: 12px 12px 0; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{progressLabel}}</span>
+<a href="MyVRCV3.dc.html" style="margin: 16px 12px 0; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500; text-decoration: none">Manage my data
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</nav>
+
+<article onKeyDown="{{popKey}}" style="{{articleStyle}}">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">ABOUT · PRIVACY</span>
+<h1 style="margin: 8px 0 12px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 1; letter-spacing: -0.035em">Privacy policy</h1>
+<p style="margin: 0 0 10px; max-width: 68ch; font-size: 1.12em; color: #3D4556">What we collect, why, who handles it for us, and how to see, fix or delete it. In plain language.</p>
+<p style="margin: 0 0 28px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">VERSION 1.0 · LAST UPDATED [DATE]</p>
+
+<!-- THE SHORT VERSION -->
+<aside aria-labelledby="short-h" style="max-width: 68ch; box-sizing: border-box; padding: 24px; border-radius: 20px; background: #F3F4F2; display: flex; flex-direction: column; gap: 14px">
+<span id="short-h" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">THE SHORT VERSION</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{short}}" as="x" hint-placeholder-count="4">
+<li style="display: flex; gap: 12px; align-items: flex-start">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 28px; height: 28px; margin-top: 1px; border-radius: 50%; background: #ffffff; color: #0138AC; display: flex; align-items: center; justify-content: center">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<span style="color: #0A1222">{{x.t}}</span>
+</li>
+</sc-for>
+</ul>
+</aside>
+
+<!-- 1 WHO WE ARE -->
+<h2 id="sec-who" style="margin: 56px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">1</span>Who we are</h2>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">Vert Robo Con (“VRC”, “we”) runs vert-robo-con.example, the summit, the map, the job board and the monthly digest.</p>
+<div style="position: relative; max-width: 68ch; margin: 0 0 20px">
+<p style="margin: 0; color: #3D4556">The data controller is <strong style="font-weight: 600; color: #0A1222">[LEGAL ENTITY]</strong>, [REGISTERED ADDRESS].
+<button type="button" aria-expanded="{{ctrlExpanded}}" aria-controls="pop-ctrl" onClick="{{toggleCtrl}}" style="margin-left: 4px; min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: #EEF2FB; color: #0138AC; font: inherit; font-size: 0.82em; font-weight: 500; cursor: pointer">What’s a data controller?</button></p>
+<sc-if value="{{ctrlOpen}}" hint-placeholder-val="{{ false }}">
+<div id="pop-ctrl" role="dialog" aria-label="What’s a data controller?" style="position: absolute; z-index: 8; right: 0; top: calc(100% + 8px); width: 360px; max-width: 100%; box-sizing: border-box; padding: 16px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 14px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 8px; font-size: 15px">
+<span style="display: flex; justify-content: space-between; align-items: center"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">DATA CONTROLLER</span>
+<button type="button" aria-label="Close" onClick="{{closePop}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+<span style="color: #3D4556">The organization that decides why and how your data is used, and that answers to you and the law for it.</span>
+<span style="font-size: 12px; color: #646B7A">Esc closes</span>
+</div>
+</sc-if>
+</div>
+<dl style="margin: 0 0 20px; max-width: 68ch; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: #E5E7EB; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden">
+<div style="background: #ffffff; padding: 14px 18px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">PRIVACY CONTACT</dt><dd style="margin: 4px 0 0; font-size: 0.9em; font-weight: 500"><a href="mailto:hello@vert-robo-con.example">hello@vert-robo-con.example</a></dd></div>
+<div style="background: #ffffff; padding: 14px 18px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WE REPLY</dt><dd style="margin: 4px 0 0; font-size: 0.9em; font-weight: 500">Within 24–48 hours</dd></div>
+</dl>
+
+<!-- 2 WHAT WE COLLECT -->
+<h2 id="sec-collect" style="margin: 56px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">2</span>What we collect, and why</h2>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">We only collect what a form asks you for. There are no accounts and no passwords: every receipt email has a private link to My VRC, where you can see and change what you sent. Admins see submissions in the backoffice, and every admin signs in with two-factor authentication.</p>
+<div style="position: relative; margin: 0 0 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px">
+<span style="display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 0.88em; color: #3D4556">The legal basis is the reason the law lets us use your data.
+<button type="button" aria-expanded="{{basisExpanded}}" aria-controls="pop-basis" onClick="{{toggleBasis}}" style="min-height: 36px; padding: 0 10px; border: 0; border-radius: 8px; background: #EEF2FB; color: #0138AC; font: inherit; font-weight: 500; cursor: pointer">What do these mean?</button></span>
+<button type="button" aria-pressed="{{allPressed}}" onClick="{{toggleAll}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">{{allLabel}}</button>
+<sc-if value="{{basisOpen}}" hint-placeholder-val="{{ false }}">
+<div id="pop-basis" role="dialog" aria-label="Legal bases, in plain language" style="position: absolute; z-index: 8; left: 0; top: calc(100% + 8px); width: 420px; max-width: 100%; box-sizing: border-box; padding: 16px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 14px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="display: flex; justify-content: space-between; align-items: center"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">LEGAL BASES, IN PLAIN LANGUAGE</span>
+<button type="button" aria-label="Close" onClick="{{closePop}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+<dl style="margin: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{bases}}" as="b" hint-placeholder-count="3"><div><dt style="font-weight: 600; color: #0A1222">{{b.k}}</dt><dd style="margin: 0; color: #3D4556">{{b.v}}</dd></div></sc-for>
+</dl>
+<span style="font-size: 12px; color: #646B7A">Esc closes</span>
+</div>
+</sc-if>
+</div>
+
+<div style="overflow-x: auto; margin: 0 0 16px; border: 1px solid #E5E7EB; border-radius: 20px">
+<div role="table" aria-label="What we collect, per feature" style="min-width: 720px; font-size: 0.88em; line-height: 1.5">
+<div role="rowgroup">
+<div role="row" style="display: grid; grid-template-columns: 1.5fr 1.4fr 1fr 1fr; gap: 16px; padding: 12px 20px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">
+<span role="columnheader">FEATURE · WHAT WE COLLECT</span><span role="columnheader">WHY</span><span role="columnheader">LEGAL BASIS</span><span role="columnheader">HOW LONG WE KEEP IT</span>
+</div>
+</div>
+<div role="rowgroup">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<div role="row" id="{{r.rowId}}" class="drow" style="{{r.rowStyle}}">
+<div role="cell" style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<strong style="font-weight: 600; font-size: 1.06em; color: #0A1222">{{r.name}}</strong>
+<span style="color: #3D4556">{{r.summary}}</span>
+<button type="button" aria-expanded="{{r.expanded}}" aria-controls="{{r.panelId}}" onClick="{{r.toggle}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin-top: 2px; padding: 0; border: 0; background: transparent; font: inherit; font-weight: 500; color: #0138AC; cursor: pointer">{{r.toggleLabel}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{r.chevron}}"><path d="M6 9l6 6 6-6"></path></svg></button>
+</div>
+<span role="cell" style="color: #3D4556">{{r.why}}</span>
+<span role="cell" style="{{r.basisStyle}}">{{r.basis}}</span>
+<span role="cell" style="color: #0A1222">{{r.keep}}</span>
+</div>
+<sc-if value="{{r.open}}" hint-placeholder-val="{{ false }}">
+<div role="row" id="{{r.panelId}}" style="padding: 0 20px 20px; background: #F7F8F9">
+<div role="cell" style="display: flex; flex-wrap: wrap; gap: 16px 32px; padding-top: 4px">
+<div style="flex: 2 1 360px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EVERY FIELD</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{r.fields}}" as="f" hint-placeholder-count="5"><li style="{{f.style}}">{{f.label}}</li></sc-for>
+</ul>
+</div>
+<div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">PUBLIC ON THE SITE?</span>
+<span style="color: #0A1222">{{r.pub}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">IN MY VRC</span>
+<span style="color: #3D4556">{{r.me}}</span>
+</div>
+</div>
+</div>
+</sc-if>
+</sc-for>
+</div>
+</div>
+</div>
+<p style="margin: 0 0 12px; max-width: 68ch; font-size: 0.88em; color: #3D4556">Two forms ask about other people: a speaker you recommend, and the people involved in a code of conduct report. We use those details only for that recommendation or report [CONFIRM].</p>
+<p style="margin: 0 0 20px; max-width: 68ch; font-size: 0.88em; color: #646B7A">Fields marked “optional” on a form stay optional here too. To keep the site secure our server keeps basic logs (IP address, time, page requested) for [N] days. Deleted data clears from backups within [N] days.</p>
+
+<!-- 3 WHO PROCESSES IT -->
+<h2 id="sec-processors" style="margin: 56px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">3</span>Who processes it</h2>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">Most of it never leaves our own server. These are the only companies that handle your data for us, and when they see it. We don’t sell your data or share it with advertisers.</p>
+<ul style="margin: 0 0 20px; padding: 0; list-style: none; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden">
+<sc-for list="{{processors}}" as="p" hint-placeholder-count="5">
+<li style="{{p.style}}">
+<div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px"><strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 1.2em; letter-spacing: -0.01em">{{p.name}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{p.where}}</span></span>
+<span style="font-size: 0.92em; color: #3D4556">{{p.does}}</span>
+</div>
+<span style="flex: 0 0 auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>{{p.when}}</span>
+</li>
+</sc-for>
+</ul>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">Everything else runs on our own server: the forms and backoffice, the topic emails and digest (the app sends them itself) and the spam check on every form. Protected by ALTCHA, a privacy-friendly spam check (no tracking). International transfers outside the EU are covered by [TRANSFER SAFEGUARD].</p>
+
+<!-- 4 COOKIES -->
+<h2 id="sec-cookies" style="margin: 56px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">4</span>No cookies for tracking</h2>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">We count visits with Cloudflare Web Analytics. It sets no cookies and doesn’t follow you from site to site: we see totals such as page views, referring sites, countries and device types. That’s why there’s no cookie banner. There’s nothing to agree to.</p>
+<dl style="margin: 0 0 20px; max-width: 68ch; display: flex; flex-direction: column; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden">
+<sc-for list="{{cookies}}" as="c" hint-placeholder-count="3">
+<div style="{{c.style}}"><dt style="flex: 0 0 160px; font-weight: 600; font-size: 0.92em">{{c.k}}</dt><dd style="margin: 0; flex: 1 1 240px; font-size: 0.92em; color: #3D4556">{{c.v}}</dd></div>
+</sc-for>
+</dl>
+
+<!-- 5 YOUR RIGHTS -->
+<h2 id="sec-rights" style="margin: 56px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">5</span>Your rights</h2>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">It’s your data. You can do all of this yourself, any time, without asking us.</p>
+<div style="margin: 0 0 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<sc-for list="{{rights}}" as="g" hint-placeholder-count="4">
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{g.k}}</span>
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 1.2em; line-height: 1.15; letter-spacing: -0.01em">{{g.t}}</strong>
+<span style="font-size: 0.88em; color: #3D4556">{{g.d}}</span>
+</div>
+</sc-for>
+</div>
+
+<section id="manage" aria-labelledby="manage-h" style="margin: 0 0 20px; padding: 28px; border-radius: 24px; background: #EEF2FB; display: flex; flex-direction: column; gap: 16px">
+<h3 id="manage-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">See, fix, download or delete it in My VRC</h3>
+<p style="margin: 0; max-width: 60ch; font-size: 0.94em; color: #3D4556">Open the private link from any receipt email. My VRC lists everything we hold for your email address, with Download my data (JSON) and Delete everything.</p>
+<a href="MyVRCV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 22px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Manage or delete your data in My VRC
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+<div style="padding-top: 16px; border-top: 1px solid #D5DEF3; display: flex; flex-direction: column; gap: 10px">
+<sc-if value="{{lIdle}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500">No link to hand? Get a new one by email
+<input id="link-email" type="email" autocomplete="email" value="{{lEmail}}" onChange="{{lOnEmail}}" aria-invalid="{{lInvalid}}" aria-describedby="link-err link-help" placeholder="you@example.org" style="{{lInputStyle}}"></label>
+<button type="button" onClick="{{lSubmit}}" style="min-height: 48px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Email me my link</button>
+</div>
+<sc-if value="{{lErr}}" hint-placeholder-val="{{ false }}"><span id="link-err" role="alert" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #B42318">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16v.01"></path></svg>Enter an email address like name@example.org</span></sc-if>
+<span id="link-help" style="font-size: 13px; color: #646B7A">Use the address you registered or applied with. If we hold nothing for it, we won’t send anything.</span>
+</div>
+</sc-if>
+<sc-if value="{{lSent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="padding: 16px; border-radius: 16px; background: #ffffff; display: flex; flex-direction: column; gap: 8px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>CHECK YOUR INBOX</span>
+<span style="font-size: 15px; color: #3D4556">If {{lEmail}} has anything with us, a new My VRC link is on its way. It works for 7 days.</span>
+<button type="button" onClick="{{lReset}}" style="align-self: flex-start; min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: #0138AC; cursor: pointer">Use a different email</button>
+</div>
+</sc-if>
+<p style="margin: 0; font-size: 0.88em; color: #3D4556">Prefer email? Write to <a href="mailto:hello@vert-robo-con.example" style="font-weight: 500">hello@vert-robo-con.example</a> from the address you used. We reply within 24–48 hours and complete requests within [N] days.</p>
+</div>
+</section>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">You can withdraw consent at any time, for example by unsubscribing in one click. That doesn’t affect what we did before. You can also object to how we use your data, and complain to [SUPERVISORY AUTHORITY].</p>
+
+<!-- 6 MAP DATASET -->
+<h2 id="sec-map" style="margin: 56px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">6</span>The map dataset</h2>
+<div style="margin: 0 0 20px; max-width: 68ch; box-sizing: border-box; padding: 20px 24px; border: 1px solid #E5E7EB; border-radius: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em">LICENCE · CC BY 4.0</span>
+<span style="flex: 1 1 240px; font-size: 0.92em; color: #3D4556">120 organizations · 18 countries · 70 deployed · CSV · JSON</span>
+<a href="MapV3.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500; text-decoration: none">Map data
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">The organizations on the map (names, websites, locations, robot types, descriptions) are published under Creative Commons Attribution 4.0. Anyone may reuse the CSV or JSON download if they credit Vert Robo Con. The dataset describes organizations, not people.</p>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">When you suggest an organization or an edit, your email stays private: it is never on the map or in the download. If your organization is listed and you want it changed or removed, use Suggest an edit on its card, or email us.</p>
+
+<!-- 7 CHANGES -->
+<h2 id="sec-changes" style="margin: 56px 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em"><span style="color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 16px; font-weight: 500; letter-spacing: 0; margin-right: 12px">7</span>Changes to this policy</h2>
+<p style="margin: 0 0 20px; max-width: 68ch; color: #3D4556">When we change this policy we update the version line at the top and log the change below. If a change affects data you’ve already given us, we email you before it takes effect [CONFIRM].</p>
+<div style="margin: 0 0 20px; max-width: 68ch; border: 1px solid #E5E7EB; border-radius: 14px">
+<button type="button" aria-expanded="{{changelogExpanded}}" aria-controls="changelog" onClick="{{toggleChangelog}}" style="width: 100%; display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 16px; border: 0; border-radius: 14px; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">Changelog
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{changelogChevron}}"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{changelogOpen}}" hint-placeholder-val="{{ false }}">
+<ul id="changelog" style="margin: 0; padding: 0 16px 14px; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 15px">
+<sc-for list="{{changelog}}" as="c" hint-placeholder-count="1"><li style="display: flex; gap: 14px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; padding-top: 3px">{{c.v}} · {{c.date}}</span><span style="color: #3D4556">{{c.t}}</span></li></sc-for>
+</ul>
+</sc-if>
+</div>
+
+<div style="margin-top: 56px; padding: 24px; border-radius: 20px; border: 1px solid #E5E7EB; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; font-size: 16px">
+<span style="flex: 1 1 320px; color: #3D4556">Something here unclear? Ask us. We reply within 24–48 hours.</span>
+<a href="ContactV3.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font-size: 15px; font-weight: 500; color: #0A1222; text-decoration: none">Ask a question</a>
+</div>
+</article>
+</div>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 18px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">An open community for the people who build, fund and run robots for a cooler planet.</p>
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 420px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">THE DIGEST</span>
+<sc-if value="{{nCollapsed}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nOpen}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; color: #0A1222; cursor: pointer">Get the monthly digest</button>
+</sc-if>
+<sc-if value="{{nExpanded}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email
+<input type="email" autocomplete="email" value="{{nEmail}}" onChange="{{nOnEmail}}" aria-invalid="{{nInvalid}}" aria-describedby="digest-err" placeholder="you@example.org" style="{{nInputStyle}}"></label>
+<button type="button" onClick="{{nSubmit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{nErr}}" hint-placeholder-val="{{ false }}"><span id="digest-err" role="alert" style="font-size: 13px; color: #B42318">Enter an email address like name@example.org</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{nTopics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">No spam. Unsubscribe in one click. <a href="#sec-collect" onClick="{{goCollect}}">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{nPending}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 16px; border-radius: 16px; background: #F3F4F2; display: flex; flex-direction: column; gap: 8px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>CHECK YOUR INBOX TO CONFIRM</span>
+<span style="font-size: 15px; color: #3D4556">We sent a confirmation link to {{nEmail}}.</span>
+<button type="button" onClick="{{nConfirm}}" style="align-self: flex-start; min-height: 32px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 8px; background: transparent; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A; cursor: pointer">CANVAS ONLY · SIMULATE: CONFIRM EMAIL</button>
+</div>
+</sc-if>
+<sc-if value="{{nSubscribed}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 15px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a href="MyVRCV3.dc.html">Manage</a></span>
+</sc-if>
+</div>
+<div style="display: flex; gap: 4px; margin-left: -12px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="HomeV3.dc.html#join" aria-label="Join us on Slack" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L8 21M16 3l-2 18M4 8h17M3 16h17"></path></svg></a>
+</div>
+</div>
+<sc-for list="{{footGroups}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 140px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="4"><a class="ftl" href="{{l.href}}" aria-current="{{l.current}}" style="{{l.style}}">{{l.label}}</a></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">
+<span>© 2026 VERT ROBO CON</span>
+<span>ROBOTS FOR A COOLER PLANET.</span>
+</div>
+</div>
+</footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":7280}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = {
+preset: 'default', menu: null, active: 'who', font: 1, open: [], pop: null, changelog: false,
+lEmail: '', lTried: false, lSent: false,
+nState: 'collapsed', nEmail: '', nTopics: ['digest'], nTried: false
+};
+}
+renderVals() {
+const s = this.state;
+const set = (o) => this.setState(o);
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const seg = (on) => 'min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const chipBtn = (on) => 'min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const okEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim());
+
+/* ---------- canvas presets ---------- */
+const PRESETS = [
+['default', 'Default', { open: [], pop: null, lSent: false, lTried: false, lEmail: '', active: 'who', changelog: false }],
+['row', 'Table row open', { open: ['reg'], pop: null, lSent: false, lTried: false, active: 'collect' }],
+['basis', 'Legal basis popover', { open: [], pop: 'basis', lSent: false, lTried: false, active: 'collect' }],
+['sent', 'Link sent', { open: [], pop: null, lSent: true, lTried: false, lEmail: 'you@example.org', active: 'rights' }]
+];
+const presets = PRESETS.map(([k, l, o]) => ({ label: l, pressed: s.preset === k ? 'true' : 'false', style: seg(s.preset === k), pick: () => set(Object.assign({ preset: k, menu: null }, o)) }));
+
+/* ---------- header menus (same items as HomeV3 / ResearchV3) ---------- */
+const closeMenu = () => set({ menu: null });
+const MENUS = [
+{ key: 'community', label: 'Community', items: [['Join the network', 'Slack community or email updates', 'HomeV3.dc.html#join'], ['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'], ['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'], ['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'], ['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'], ['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+{ key: 'about', label: 'About', items: [['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'], ['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'], ['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'], ['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'], ['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'], ['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html', true]] }
+];
+const menus = MENUS.map((m) => { const open = s.menu === m.key; const here = m.key === 'about'; return { label: m.label, id: 'menu-' + m.key, open, expanded: open ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (open ? 'background: #F3F4F2; color: #0A1222' : (here ? 'background: transparent; color: #0A1222' : 'background: transparent')),
+toggle: () => set({ menu: open ? null : m.key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) set({ menu: null }); },
+items: m.items.map((i) => ({ label: i[0], desc: i[1], href: i[2], current: i[3] ? 'page' : 'false', style: i[3] ? 'background: #EEF2FB' : '', go: closeMenu })) }; });
+
+/* ---------- toc + progress ---------- */
+const SECS = [['who', '1', 'Who we are'], ['collect', '2', 'What we collect, and why'], ['processors', '3', 'Who processes it'], ['cookies', '4', 'No cookies for tracking'], ['rights', '5', 'Your rights'], ['map', '6', 'The map dataset'], ['changes', '7', 'Changes to this policy']];
+const ai = Math.max(0, SECS.findIndex((x) => x[0] === s.active));
+const toc = SECS.map(([id, num, title], i) => { const on = i === ai; return { num, title, href: '#sec-' + id, current: on ? 'location' : 'false', pick: () => set({ active: id, pop: null }),
+style: 'display: flex; gap: 10px; align-items: baseline; padding: 8px 12px; border-radius: 10px; font-size: 15px; line-height: 1.35; ' + (on ? 'background: #EEF2FB; color: #0138AC; font-weight: 600' : '') }; });
+const pct = Math.round((ai + 1) / SECS.length * 100);
+const SIZES = [16, 18, 20];
+const fbtn = (dis) => 'min-width: 44px; min-height: 38px; padding: 0 8px; border: 0; border-radius: 9px; font: inherit; font-size: 15px; font-weight: 600; ' + (dis ? 'background: transparent; color: #A7ADB8; cursor: default' : 'background: #ffffff; color: #0A1222; cursor: pointer; box-shadow: 0 1px 3px rgba(10,18,34,0.14)');
+
+/* ---------- content ---------- */
+const short = [
+{ t: 'We only collect what a form asks for, and we say why below.' },
+{ t: 'No tracking cookies, no ads, and we never sell your data.' },
+{ t: 'It lives on our own server in the EU (Hetzner, Germany or Finland).' },
+{ t: 'See, fix, download or delete it any time in My VRC.' }
+];
+const bases = [
+{ k: 'Consent', v: 'You said yes, for example by confirming your email. You can take it back at any time.' },
+{ k: 'Contract', v: 'We need it to give you something you asked for, such as your summit place.' },
+{ k: 'Legitimate interest', v: 'A reasonable use you would expect, weighed against your rights, such as keeping the site secure.' }
+];
+const TBD = '[LEGAL BASIS]';
+const ROWS = [
+{ id: 'reg', name: 'Summit registration', summary: 'Name, email, country, and what you plan to attend', why: 'To register you, email your confirmation and My VRC link, and plan sessions and captions.', basis: TBD, keep: '[N] months after the edition',
+fields: ['Full name', 'Email', 'Organization (optional)', 'Role', 'Country', 'Time zone (optional)', 'Days you plan to attend', 'Topics you care about (optional)', 'Accessibility or captioning needs (optional)', 'How you heard about us (optional)', 'Summit email consent', 'Monthly digest (optional)'], pub: 'Never. There is no public attendee list.', me: 'Edit or cancel your registration and starred sessions.' },
+{ id: 'join', name: 'Join requests', summary: 'Name, email, and Slack community or email updates only', why: 'An admin reviews each Slack request by hand and emails your invite. Email updates only starts your digest.', basis: TBD, keep: '[N] months after an admin decides',
+fields: ['Full name', 'Email', 'Role (optional)', 'Country (optional)', 'Interests (optional)', 'Slack community or Email updates only', 'Code of conduct confirmation'], pub: 'Never.', me: 'See your request status: Pending approval, then Approved, invite sent.' },
+{ id: 'pitch', name: 'Pitches', summary: 'Your details, your organization or lab, and your pitch', why: 'Admins review and score each pitch, then email you the outcome.', basis: TBD, keep: '[N] months after the edition',
+fields: ['Full name', 'Email', 'Your role', 'Country', 'Organization, or lab and PI', 'Website', 'Stage and robot type', 'Your pitch answers', 'Deck or video link', 'Pitch deck or project link (optional)'], pub: 'Only if your pitch is selected: your name, organization and pitch title appear in the program [CONFIRM].', me: 'Follow your pitch and withdraw it.' },
+{ id: 'intern', name: 'Internship applications', summary: 'Your details, a track, and a CV or portfolio', why: 'Admins review your application and contact you about an interview.', basis: TBD, keep: '[N] months after the decision',
+fields: ['Track', 'Full name', 'Email', 'School, university or program', 'Country', 'Time zone', 'Hours per week', 'Start window', 'Why this track', 'Portfolio or CV (link)'], pub: 'Never.', me: 'Follow your application and withdraw it.' },
+{ id: 'map', name: 'Map suggestions', summary: 'Details about an organization, plus your email', why: 'An admin checks every suggestion before it goes on the map, and may email you a question.', basis: TBD, keep: 'Your email: [N] months after review. Organization data: while it’s on the map.',
+fields: ['Organization name', 'Website', 'HQ country', 'City (optional)', 'Robot type', 'Application', 'Climate role', 'One-line description', 'Founded (optional)', 'LinkedIn (optional)', 'What changed and how you know (optional)', 'Your email'], pub: 'The organization details, under CC BY 4.0. Your email never.', me: 'See your suggestions and whether they were published.' },
+{ id: 'jobs', name: 'Job posts', summary: 'The job, and your email', why: 'An admin reviews each post before it’s published, and we email you when it goes live or ends.', basis: TBD, keep: '[N] months after the listing closes',
+fields: ['Organization, from the map or new', 'Job title', 'Role type', 'Location', 'Description', 'Apply link or email', 'Salary range (optional)', 'Listing length', 'Your email'], pub: 'The listing, once approved, until it closes. Your email never.', me: 'Edit, renew or close your listing.' },
+{ id: 'involve', name: 'Sponsor, volunteer, project and speaker forms', summary: 'Your contact details and your answers', why: 'To reply about sponsorship, volunteering, a project idea or a speaker you recommend.', basis: TBD, keep: '[N] months after we reply',
+fields: ['Name or contact name', 'Email', 'Organization, tier and edition (sponsors)', 'Role, hours and skills (volunteers)', 'Project name and idea (projects)', 'Speaker’s name, affiliation and topic (recommendations)', 'Message (optional)'], pub: 'Never.', me: 'Follow what you sent from the link in your receipt.' },
+{ id: 'research', name: 'White paper contributions', summary: 'Suggestions, topic proposals and research team applications', why: 'To review your contribution, reply, and credit you if you ask.', basis: TBD, keep: '[N] months after the next edition',
+fields: ['Kind of suggestion and comment', 'Topic, why it matters, your expertise and links', 'Affiliation, areas and hours (research team)', 'Name (optional on suggestions)', 'Email (optional on suggestions)', 'Credit me (optional)'], pub: 'Only your name in the edition’s credits, if you tick Credit me.', me: 'Follow proposals and applications.' },
+{ id: 'coc', name: 'Code of conduct reports', summary: 'What happened, when, where and who was involved', why: 'So the moderators can look into it and act under the code of conduct.', basis: TBD, keep: '[N] months after the report is closed',
+fields: ['What happened', 'When', 'Where', 'People involved (optional)', 'Email, unless you stay anonymous'], pub: 'Never. Only the moderators [NAMES] read reports.', me: 'Not listed, to keep reports private. Quote your reference to follow up.' },
+{ id: 'contact', name: 'Contact and consulting messages', summary: 'Your message, name and email', why: 'To reply to you, within 24–48 hours.', basis: TBD, keep: '[N] months after we reply',
+fields: ['Topic', 'Name', 'Email', 'Organization', 'Publication and deadline (press)', 'Message', 'Engagement type, project and budget (consulting)', 'Website (optional)'], pub: 'Never.', me: 'Not listed. Ask us by email to see or delete a message.' },
+{ id: 'news', name: 'Newsletter', summary: 'Your email and the topics you pick', why: 'To send the emails you chose, and nothing else.', basis: 'Consent, confirmed by email', keep: 'Until you unsubscribe, then [N] days',
+fields: ['Email', 'Topics you choose', 'When you confirmed'], pub: 'Never.', me: 'Change topics or unsubscribe in one click.' }
+];
+const allOpen = s.open.length === ROWS.length;
+const rows = ROWS.map((r, i) => { const on = s.open.includes(r.id); return { ...r, open: on, expanded: on ? 'true' : 'false', rowId: 'row-' + r.id, panelId: 'fields-' + r.id,
+toggleLabel: on ? 'Hide fields' : 'Show all ' + r.fields.length + ' fields', chevron: on ? 'transform: rotate(180deg)' : '',
+toggle: () => set({ open: on ? s.open.filter((x) => x !== r.id) : s.open.concat(r.id), active: 'collect', pop: null }),
+basisStyle: r.basis === TBD ? MONO + 'font-size: 12px; color: #8A4B00' : 'color: #0A1222',
+rowStyle: 'display: grid; grid-template-columns: 1.5fr 1.4fr 1fr 1fr; gap: 16px; padding: 16px 20px; align-items: start; ' + (i ? 'border-top: 1px solid #E5E7EB; ' : '') + (on ? 'background: #F7F8F9' : ''),
+fields: r.fields.map((f) => ({ label: f, style: 'padding: 4px 10px; border-radius: 999px; background: #ffffff; border: 1px solid #E5E7EB; color: #0A1222; font-size: 13px' })) }; });
+const P_STYLE = (i) => 'display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding: 16px 20px; ' + (i ? 'border-top: 1px solid #E5E7EB' : '');
+const processors = [
+{ name: 'Hetzner', where: 'GERMANY OR FINLAND', does: 'Hosts the site, its database and the encrypted backups.', when: 'ALWAYS' },
+{ name: 'Amazon SES', where: 'EU-CENTRAL-1 · FRANKFURT', does: 'Delivers receipts, My VRC links and the newsletter. Sees your email address and the message.', when: 'ONLY WHEN WE EMAIL YOU' },
+{ name: 'Cloudflare (analytics)', where: '[LOCATION]', does: 'Counts visits with Cloudflare Web Analytics: page views, referring sites, countries and device types. No cookies, no banner.', when: 'ON PUBLIC PAGES' },
+{ name: 'YouTube', where: '[LOCATION]', does: 'Plays our videos through privacy-enhanced embeds (youtube-nocookie.com). Nothing loads from YouTube until you press play.', when: 'ONLY WHEN YOU PRESS PLAY' },
+{ name: 'Slack', where: '[LOCATION]', does: 'Hosts the community. Once an admin approves your request, we email you an invite link. Slack only sees what you give it when you join, and Slack’s own policy applies there. [CONFIRM: whether our private new-request alert in Slack shows your name]', when: 'ONLY IF YOU JOIN SLACK' },
+{ name: '[SECOND BACKUP PROVIDER]', where: '[LOCATION]', does: 'Keeps a second encrypted copy of the backups [CONFIRM].', when: 'ALWAYS' }
+].map((p, i) => ({ ...p, style: P_STYLE(i) }));
+const cookies = [
+{ k: 'Public pages', v: 'No cookies at all.' },
+{ k: 'My VRC', v: '[CONFIRM: one strictly necessary cookie that keeps your private link session open for [N] days, or none]' },
+{ k: 'Admin site', v: 'Strictly necessary sign-in cookies, for admins only.' }
+].map((c, i) => ({ ...c, style: 'display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 14px 18px; ' + (i ? 'border-top: 1px solid #E5E7EB' : '') }));
+const rights = [
+{ k: 'ACCESS', t: 'See it', d: 'Everything we hold for your email address, in one place.' },
+{ k: 'CORRECTION', t: 'Fix it', d: 'Edit your registration, applications and listings.' },
+{ k: 'DELETION', t: 'Delete it', d: 'One item, or everything. Backups clear within [N] days.' },
+{ k: 'EXPORT', t: 'Take it with you', d: 'Download everything as one JSON file.' }
+];
+
+/* ---------- magic link form ---------- */
+const lValid = okEmail(s.lEmail);
+const lErr = s.lTried && !lValid;
+
+/* ---------- notify ---------- */
+const NT = [['digest', 'Monthly digest'], ['videos', 'New videos'], ['summit', 'Summit announcements'], ['jobs', 'Job alerts']];
+const nValid = okEmail(s.nEmail);
+const nErr = s.nTried && !nValid;
+
+/* ---------- footer ---------- */
+const L = (label, href) => { const here = href === 'PrivacyV3.dc.html'; return { label, href, current: here ? 'page' : 'false', style: here ? 'color: #0138AC; font-weight: 500' : '' }; };
+const footGroups = [
+{ title: 'SUMMIT', label: 'Summit', links: [L('Register / Notify me', 'RegisterV3.dc.html'), L('Program', 'ProgramV3.dc.html'), L('Sponsor the summit', 'GetInvolvedV3.dc.html'), L('Past editions', 'SummitV3.dc.html')] },
+{ title: 'LEARN', label: 'Learn', links: [L('White paper', 'ResearchV3.dc.html'), L('Watch', 'WatchV3.dc.html'), L('News', 'NewsV3.dc.html'), L('RSS', '#'), L('Map data (CSV · JSON)', 'MapV3.dc.html')] },
+{ title: 'COMMUNITY', label: 'Community', links: [L('Join', 'HomeV3.dc.html#join'), L('Jobs', 'JobsV3.dc.html'), L('Internships', 'JobsV3.dc.html'), L('Get involved', 'GetInvolvedV3.dc.html'), L('Code of conduct', 'ResearchV3.dc.html')] },
+{ title: 'ABOUT', label: 'About', links: [L('Team', 'PeopleV3.dc.html'), L('Consulting', 'ContactV3.dc.html'), L('Contact', 'ContactV3.dc.html'), L('Privacy', 'PrivacyV3.dc.html'), L('My VRC', 'MyVRCV3.dc.html')] }
+];
+
+const closePop = () => set({ pop: null });
+const togglePop = (k, sec) => () => set({ pop: s.pop === k ? null : k, active: sec, menu: null });
+
+return {
+presets, menus, menuOpen: !!s.menu, closeMenu,
+fontDown: () => set({ font: Math.max(0, s.font - 1) }), fontUp: () => set({ font: Math.min(2, s.font + 1) }),
+fontDownDisabled: s.font === 0 ? 'true' : 'false', fontUpDisabled: s.font === 2 ? 'true' : 'false',
+fontDownStyle: fbtn(s.font === 0) + '; font-size: 13px', fontUpStyle: fbtn(s.font === 2) + '; font-size: 17px',
+progressNow: String(pct), progressStyle: 'height: 3px; width: ' + pct + '%; background: #0138AC',
+progressLabel: 'SECTION ' + (ai + 1) + ' OF ' + SECS.length + ' · ' + pct + '%',
+toc, short, bases, rows, processors, cookies, rights,
+articleStyle: 'flex: 1 1 560px; min-width: 0; max-width: 880px; font-size: ' + SIZES[s.font] + 'px; line-height: 1.7',
+popKey: (e) => { if (e && e.key === 'Escape') closePop(); },
+closePop,
+ctrlOpen: s.pop === 'ctrl', ctrlExpanded: s.pop === 'ctrl' ? 'true' : 'false', toggleCtrl: togglePop('ctrl', 'who'),
+basisOpen: s.pop === 'basis', basisExpanded: s.pop === 'basis' ? 'true' : 'false', toggleBasis: togglePop('basis', 'collect'),
+allPressed: allOpen ? 'true' : 'false', allLabel: allOpen ? 'Hide every field' : 'Show every field',
+toggleAll: () => set({ open: allOpen ? [] : ROWS.map((r) => r.id), active: 'collect', pop: null }),
+lIdle: !s.lSent, lSent: s.lSent, lEmail: s.lEmail, lErr, lInvalid: lErr ? 'true' : 'false',
+lOnEmail: (e) => set({ lEmail: e.target.value }),
+lInputStyle: 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 400; background: #ffffff; border: 1px solid ' + (lErr ? '#B42318' : '#D5D8DE'),
+lSubmit: () => (lValid ? set({ lSent: true, lTried: false, active: 'rights' }) : set({ lTried: true, active: 'rights' })),
+lReset: () => set({ lSent: false, lEmail: '', lTried: false }),
+changelogOpen: s.changelog, changelogExpanded: s.changelog ? 'true' : 'false', toggleChangelog: () => set({ changelog: !s.changelog, active: 'changes' }),
+changelogChevron: s.changelog ? 'transform: rotate(180deg)' : '',
+changelog: [{ v: 'V1.0', date: '[DATE]', t: 'First version, written for the new site.' }],
+goCollect: () => set({ active: 'collect' }),
+footGroups,
+nCollapsed: s.nState === 'collapsed', nExpanded: s.nState === 'open', nPending: s.nState === 'pending', nSubscribed: s.nState === 'subscribed',
+nOpen: () => set({ nState: 'open' }), nEmail: s.nEmail, nOnEmail: (e) => set({ nEmail: e.target.value }),
+nErr, nInvalid: nErr ? 'true' : 'false',
+nInputStyle: 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; border: 1px solid ' + (nErr ? '#B42318' : '#D5D8DE'),
+nTopics: NT.map(([k, l]) => { const on = s.nTopics.includes(k); return { label: l, pressed: on ? 'true' : 'false', style: chipBtn(on) + '; min-height: 36px; font-size: 13px; padding: 0 12px', pick: () => set({ nTopics: on ? s.nTopics.filter((x) => x !== k) : s.nTopics.concat(k) }) }; }),
+nSubmit: () => (nValid ? set({ nState: 'pending', nTried: false }) : set({ nTried: true })),
+nConfirm: () => set({ nState: 'subscribed' })
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Content</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.arow:hover{background:#F7F8F9}
+.ghost:hover{background:#F3F4F2}
+.sec:hover{background:#F7F8F9}
+.blk:hover{background:#F7F8F9}
+.tb:hover{background:#E9EBE8}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 1580px; box-sizing: border-box; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 14px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the app) -->
+<div style="height: 52px; box-sizing: border-box; overflow: hidden; background: #E9EAEC; border-bottom: 1px dashed #A7ADB8; padding: 8px 24px; font-family: 'Geist Mono', monospace; font-size: 11.5px; line-height: 1.5; color: #3D4556">Canvas note · Content lives in Postgres and is edited here. News has rich text, drafts + autosave + versions, and scheduled publish runs on the pg-boss worker. PDFs are generated on publish. Every admin save clears the page cache, so changes go live at once. Sample data.</div>
+
+<!-- TOAST -->
+<sc-if value="{{toast.on}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 128px; right: 32px; z-index: 70; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); font-size: 14px; max-width: 620px">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%; background: #1DB46C; display: flex; align-items: center; justify-content: center; color: #ffffff"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<span style="font-weight: 500">{{toast.text}}</span>
+<button type="button" onClick="{{toast.close}}" aria-label="Dismiss notification" style="flex: 0 0 auto; width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- RIGHT DETAIL DRAWER -->
+<sc-if value="{{dr.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Close panel" onClick="{{dr.close}}" style="position: absolute; top: 52px; left: 0; right: 0; bottom: 0; z-index: 50; border: 0; padding: 0; background: rgba(10,18,34,0.28); cursor: default"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="dr-h" style="position: absolute; top: 52px; right: 0; bottom: 0; z-index: 51; width: 540px; box-sizing: border-box; background: #ffffff; border-left: 1px solid #E5E7EB; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E5E7EB">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{dr.eyebrow}}</span>
+<h2 id="dr-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{dr.title}}</h2>
+</div>
+<button type="button" aria-label="Close" onClick="{{dr.close}}" style="flex: 0 0 auto; width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: 1 1 auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto">
+
+<!-- drawer · video -->
+<sc-if value="{{dv.on}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: 176px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px; border-radius: 14px; background: #F3F4F2">
+<span style="{{dv.thumb}}"><sc-if value="{{dv.hasImg}}" hint-placeholder-val="{{ true }}"><img src="{{dv.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><span style="position: absolute; right: 6px; bottom: 6px; padding: 1px 6px; border-radius: 6px; background: rgba(10,18,34,0.82); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 10.5px">{{dv.dur}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556; overflow-wrap: anywhere">{{dv.meta}}</span>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 14px; font-weight: 500">Title</span><input type="text" value="{{dv.title}}" onChange="{{dv.setTitle}}" style="{{dv.fieldStyle}}"></label>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 14px; font-weight: 500">Duration</span><input type="text" value="{{dv.dur}}" onChange="{{dv.setDur}}" style="{{dv.fieldStyle}}"></label>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 14px; font-weight: 500">Description</span><textarea rows="3" value="{{dv.desc}}" onChange="{{dv.setDesc}}" style="{{dv.descStyle}}"></textarea></label>
+<button type="button" onClick="{{dv.replaceThumb}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; color: #0A1222">Replace thumbnail</button>
+</span>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">VRC FIELDS</span>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 140px; gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Series</span>
+<span style="position: relative; display: block"><select value="{{dv.series}}" onChange="{{dv.setSeries}}" style="{{selStyle}}"><option value="">No series</option><option value="ritf">Robots in the Field</option><option value="s2025">Summit 2025</option><option value="s2024">Summit 2024</option><option value="explainers">Explainers</option></select><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+</label>
+<sc-if value="{{dv.isRitf}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Episode</span>
+<input type="number" min="1" value="{{dv.ep}}" onChange="{{dv.setEp}}" style="{{dv.epStyle}}">
+</label>
+</sc-if>
+</div>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 500">Topic <span style="font-weight: 400; color: #646B7A">(optional)</span></legend>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{dv.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}"><span aria-hidden="true" style="{{t.dot}}"></span>{{t.label}}</button></sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">Same topics as the map and the Watch filters: Air · Land · Sea · Materials.</span>
+</fieldset>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Transcript</span>
+<span style="position: relative; display: block"><select value="{{dv.tr}}" onChange="{{dv.setTr}}" style="{{selStyle}}"><option value="pub">Published</option><option value="review">Auto captions · needs review</option><option value="missing">Missing</option></select><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+<span style="font-size: 13px; color: #646B7A">{{dv.trHelp}}</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Session link <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<span style="position: relative; display: block"><select value="{{dv.sess}}" onChange="{{dv.setSess}}" style="{{selStyle}}"><option value="">Not linked to a session</option><option value="2025-1">Summit 2025 · Day 1</option><option value="2025-2">Summit 2025 · Day 2</option><option value="2025-3">Summit 2025 · Day 3</option><option value="2024">Summit 2024</option></select><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+<span style="font-size: 13px; color: #646B7A">The session page plays this recording, and the video page links back to the <a href="ProgramV3.dc.html">program</a>.</span>
+</label>
+<button type="button" role="switch" aria-checked="{{dv.show.checked}}" onClick="{{dv.toggleShow}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{dv.show.track}}"><span style="{{dv.show.knob}}"></span></span>Show on Watch</button>
+</sc-if>
+
+<!-- drawer · document -->
+<sc-if value="{{dd.on}}" hint-placeholder-val="{{ false }}">
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; padding: 14px 16px; border-radius: 14px; background: #F3F4F2">
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: #646B7A">PUBLIC PAGE</dt><dd style="margin: 2px 0 0; font-family: 'Geist Mono', monospace; font-size: 13px">{{dd.path}}</dd></div>
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: #646B7A">LAST UPDATED</dt><dd style="margin: 2px 0 0; font-family: 'Geist Mono', monospace; font-size: 13px">{{dd.upd}}</dd></div>
+</dl>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Version</span>
+<input type="text" value="{{dd.ver}}" onChange="{{dd.setVer}}" aria-invalid="{{dd.verInv}}" style="{{dd.verStyle}}">
+<sc-if value="{{dd.verErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">Add a version, like v1.1 or 2026 edition.</span></sc-if>
+<span style="font-size: 13px; color: #646B7A">Shown in the reader’s version line and in the Cite popover.</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">What changed <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<textarea rows="3" onChange="{{dd.setNote}}" placeholder="One line for the change history" style="{{taStyle}}" value="{{dd.note}}"></textarea>
+</label>
+<button type="button" role="switch" aria-checked="{{dd.pdf.checked}}" onClick="{{dd.togglePdf}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{dd.pdf.track}}"><span style="{{dd.pdf.knob}}"></span></span>Generate PDF on publish</button>
+<span style="margin-top: -8px; font-size: 13px; color: #646B7A">{{dd.pdfHelp}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; font-weight: 500">
+<a href="ResearchV3.dc.html" style="text-decoration: none">Open in the reader →</a>
+</div>
+</sc-if>
+
+<!-- drawer · partner -->
+<sc-if value="{{dp.on}}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{dp.hasErr}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="padding: 12px 14px; border-radius: 12px; background: #FEF3F2; color: #B42318; font-size: 14px; font-weight: 500">{{dp.errMsg}}</div>
+</sc-if>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Name</span>
+<input type="text" value="{{dp.name}}" onChange="{{dp.setName}}" aria-invalid="{{dp.nameInv}}" style="{{dp.nameStyle}}">
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Website <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<input type="url" value="{{dp.url}}" onChange="{{dp.setUrl}}" placeholder="https://" style="{{dp.urlStyle}}">
+</label>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px dashed #D5D8DE; border-radius: 14px">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 56px; height: 40px; border-radius: 10px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">{{dp.ini}}</span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 14px; font-weight: 500">Logo</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{dp.logo}}</span></span>
+<button type="button" class="sec" onClick="{{dp.upload}}" style="min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">{{dp.uploadLabel}}</button>
+</div>
+<fieldset style="margin: 0; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 14px; display: flex; flex-direction: column; gap: 10px">
+<legend style="padding: 0 6px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EDITIONS AND TIER</legend>
+<sc-for list="{{dp.eds}}" as="x" hint-placeholder-count="2">
+<div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 40px; gap: 8px; align-items: center">
+<span style="position: relative; display: block"><select value="{{x.e}}" onChange="{{x.setE}}" aria-label="{{x.eLabel}}" style="{{selStyle}}"><option value="2027">Summit 2027</option><option value="2026">Summit 2026</option><option value="2025">Summit 2025</option><option value="2024">Summit 2024</option></select><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+<span style="position: relative; display: block"><select value="{{x.t}}" onChange="{{x.setT}}" aria-label="{{x.tLabel}}" style="{{selStyle}}"><option value="Organizing">Organizing partner</option><option value="Platinum">Platinum</option><option value="Gold">Gold</option><option value="Silver">Silver</option><option value="Partner">Partner</option></select><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+<button type="button" class="ghost" aria-label="{{x.rmLabel}}" onClick="{{x.rm}}" style="width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+<button type="button" onClick="{{dp.addEd}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 8px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add edition</button>
+</fieldset>
+<button type="button" role="switch" aria-checked="{{dp.show.checked}}" onClick="{{dp.toggleShow}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{dp.show.track}}"><span style="{{dp.show.knob}}"></span></span>Show on the summit pages</button>
+</sc-if>
+
+<!-- drawer · post preview -->
+<sc-if value="{{pv.on}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden">
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #3D4556"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>{{pv.url}}</div>
+<div style="padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<sc-if value="{{pv.hasCover}}" hint-placeholder-val="{{ true }}"><img src="{{pv.cover}}" alt="{{pv.alt}}" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; display: block"></sc-if>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{pv.meta}}</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">{{pv.title}}</h3>
+<span style="font-size: 14px; color: #3D4556">{{pv.byline}}</span>
+<sc-if value="{{pv.hasLi}}" hint-placeholder-val="{{ true }}"><span style="font-size: 14px; color: #3D4556">Originally published <a href="#">elsewhere ↗</a></span></sc-if>
+<sc-for list="{{pv.blocks}}" as="b" hint-placeholder-count="3"><p style="{{b.style}}">{{b.x}}</p></sc-for>
+</div>
+</div>
+<span style="font-size: 13px; color: #646B7A">Preview of the current autosaved version. Visitors see it only after you publish.</span>
+</sc-if>
+</div>
+
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 16px 24px; border-top: 1px solid #E5E7EB">
+<sc-if value="{{dr.isPv}}" hint-placeholder-val="{{ false }}">
+<a href="NewsV3.dc.html" style="margin-right: auto; font-size: 14px; font-weight: 500; text-decoration: none">Open the News page →</a>
+</sc-if>
+<button type="button" class="sec" onClick="{{dr.close}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{dr.closeLabel}}</button>
+<sc-if value="{{dr.canSave}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{dr.save}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{dr.saveLabel}}</button>
+</sc-if>
+</div>
+</aside>
+</sc-if>
+
+<div style="display: flex; align-items: stretch; min-height: 1528px">
+
+<!-- SIDEBAR (same markup as every Admin*V3 board; only the active item differs) -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- APP -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR (same markup as every Admin*V3 board) -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<main style="padding: 24px 24px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<!-- PAGE HEADER -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 520px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">CONTENT · COLLECTIONS · NEWS · VIDEOS · DOCUMENTS · PARTNERS</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.1; letter-spacing: -0.02em">Content</h1>
+<span style="font-size: 15px; color: #3D4556">The posts, videos, documents and partners the public site is built from. Drafts stay here; publishing makes a post live at once.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<label style="position: relative; display: block">
+<span class="sr">Summit edition</span>
+<select value="{{edition}}" onChange="{{onEdition}}" style="appearance: none; -webkit-appearance: none; min-height: 44px; padding: 0 34px 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222; cursor: pointer">
+<option value="2027">Summit 2027</option><option value="2026">Summit 2026</option><option value="2025">Summit 2025</option><option value="2024">Summit 2024</option>
+</select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</label>
+<sc-if value="{{hdr.on}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{hdr.act}}" style="{{hdr.style}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{hdr.icon}}"></path></svg>{{hdr.label}}</button>
+</sc-if>
+</div>
+</div>
+
+
+<!-- TABS -->
+<div role="tablist" aria-label="Collections" style="align-self: flex-start; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" role="tab" id="{{t.id}}" aria-selected="{{t.sel}}" aria-controls="{{t.panel}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}<span style="{{t.countStyle}}">{{t.count}}</span></button>
+</sc-for>
+</div>
+
+<!-- ============ NEWS · LIST ============ -->
+<sc-if value="{{isNewsList}}" hint-placeholder-val="{{ true }}">
+<section id="panel-news" role="tabpanel" aria-labelledby="tab-news" style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<div role="group" aria-label="Status" style="display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{nf}}" as="f" hint-placeholder-count="4">
+<button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}<span style="{{f.cStyle}}">{{f.count}}</span></button>
+</sc-for>
+</div>
+<label style="position: relative; display: block; width: 280px">
+<span class="sr">Search post titles</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{nq}}" onChange="{{setNq}}" placeholder="Search titles" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 12px 0 38px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px">
+</label>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{newsCount}}</span>
+</div>
+
+<div role="table" aria-label="News posts" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1fr) 128px 196px 210px 150px 52px; align-items: center; min-height: 40px; padding: 0 4px 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">TITLE</span><span role="columnheader">TYPE</span><span role="columnheader">STATUS</span><span role="columnheader">AUTHOR</span><span role="columnheader">UPDATED</span><span role="columnheader"><span class="sr">Edit</span></span>
+</div>
+<sc-for list="{{news}}" as="r" hint-placeholder-count="14">
+<div role="row" class="arow" style="{{r.row}}">
+<span role="cell" style="display: flex; flex-direction: column; gap: 1px; min-width: 0; padding: 8px 16px 8px 0">
+<button type="button" onClick="{{r.open}}" style="padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 600; color: #0A1222; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.title}}</button>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #646B7A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.path}}</span>
+</span>
+<span role="cell" style="font-size: 14px; color: #3D4556">{{r.type}}</span>
+<span role="cell" style="display: flex; flex-direction: column; align-items: flex-start; gap: 3px"><span style="{{r.chip.style}}"><span aria-hidden="true" style="{{r.chip.dot}}"></span>{{r.chip.label}}</span><sc-if value="{{r.hasSub}}" hint-placeholder-val="{{ false }}"><span style="{{r.subStyle}}">{{r.sub}}</span></sc-if></span>
+<span role="cell" style="display: flex; align-items: center; gap: 8px; min-width: 0; padding-right: 10px"><span aria-hidden="true" style="{{r.av}}">{{r.ini}}</span><span style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.author}}</span></span>
+<span role="cell" style="display: flex; flex-direction: column; line-height: 1.35"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{r.updated}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{r.by}}</span></span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" class="ghost" aria-label="{{r.editLabel}}" onClick="{{r.open}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></span>
+</div>
+</sc-for>
+<sc-if value="{{newsEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; color: #646B7A">
+<strong style="color: #0A1222">No posts match</strong>
+<span>Try another status, or clear the search.</span>
+<button type="button" onClick="{{clearNews}}" style="margin-top: 6px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear filters</button>
+</div>
+</sc-if>
+</div>
+<span style="font-size: 13px; color: #646B7A">Imported from the previous site with the author “Vert Robo Con”, the original publish dates and titles set in sentence case. Every old /blog/… address redirects to its /news/… page (to /news while a post is unpublished). Posts first published somewhere else can be brought back with “Originally published elsewhere”.</span>
+</section>
+</sc-if>
+
+<!-- ============ NEWS · EDITOR ============ -->
+<sc-if value="{{isEditor}}" hint-placeholder-val="{{ false }}">
+<section id="panel-news-edit" role="tabpanel" aria-labelledby="tab-news" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding-bottom: 14px; border-bottom: 1px solid #E5E7EB">
+<button type="button" class="ghost" onClick="{{ed.back}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 10px 0 6px; border: 0; border-radius: 10px; background: transparent; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>All news</button>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; letter-spacing: 0.04em; color: #646B7A; max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ed.crumb}}</span>
+<span role="status" style="{{ed.saveStyle}}"><span aria-hidden="true" style="{{ed.saveDot}}"></span>{{ed.saveMsg}}</span>
+<span style="margin-left: auto; display: flex; gap: 8px">
+<button type="button" class="sec" onClick="{{ed.saveDraft}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Save draft</button>
+<button type="button" class="sec" aria-haspopup="dialog" onClick="{{ed.preview}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>Preview</button>
+<button type="button" onClick="{{ed.publish}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{ed.pubLabel}}</button>
+</span>
+</div>
+
+<sc-if value="{{ed.showErr}}" hint-placeholder-val="{{ false }}">
+<div role="alert" aria-labelledby="ed-err-h" style="padding: 14px 16px; border-radius: 14px; background: #FEF3F2; color: #B42318; display: flex; flex-direction: column; gap: 6px">
+<strong id="ed-err-h" style="font-size: 15px; font-weight: 600">{{ed.errHead}}</strong>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 2px; font-size: 14px">
+<sc-for list="{{ed.errList}}" as="x" hint-placeholder-count="2"><li><a href="{{x.href}}" style="color: #B42318; font-weight: 500">{{x.msg}}</a></li></sc-for>
+</ul>
+</div>
+</sc-if>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 344px; gap: 24px; align-items: start">
+
+<!-- editor · main column -->
+<div style="display: flex; flex-direction: column; gap: 18px; min-width: 0">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Title</span>
+<input id="ed-title" type="text" value="{{ed.title}}" onChange="{{ed.setTitle}}" placeholder="Write a clear, plain-language title" aria-invalid="{{ed.eTitle.inv}}" style="{{ed.eTitle.st}}">
+<sc-if value="{{ed.eTitle.on}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{ed.eTitle.msg}}</span></sc-if>
+</label>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; align-items: start">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<label for="ed-slug" style="font-size: 14px; font-weight: 500">Slug</label>
+<span style="display: flex; align-items: stretch; gap: 8px">
+<span style="{{ed.eSlug.wrap}}"><span aria-hidden="true" style="flex: 0 0 auto; padding-left: 14px; color: #646B7A">/news/</span><input id="ed-slug" type="text" value="{{ed.slug}}" onChange="{{ed.setSlug}}" aria-invalid="{{ed.eSlug.inv}}" aria-describedby="ed-slug-help" style="flex: 1 1 auto; min-width: 0; border: 0; padding: 0 14px 0 0; background: transparent; font: inherit; color: #0A1222; outline-offset: 0"></span>
+<button type="button" class="sec" onClick="{{ed.slugFromTitle}}" style="flex: 0 0 auto; min-height: 48px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">From title</button>
+</span>
+<sc-if value="{{ed.eSlug.on}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{ed.eSlug.msg}}</span></sc-if>
+<span id="ed-slug-help" style="font-size: 13px; color: #646B7A">{{ed.slugHelp}}</span>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Type</span>
+<span style="position: relative; display: block"><select value="{{ed.type}}" onChange="{{ed.setType}}" style="{{selStyle}}"><option value="Essay">Essay</option><option value="Announcement">Announcement</option><option value="Video">Video</option><option value="Summit">Summit</option></select><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+</label>
+</div>
+
+<!-- cover -->
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 500">Cover image <span style="font-weight: 400; color: #646B7A">(optional)</span></legend>
+<sc-if value="{{ed.hasCover}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 16px; align-items: start">
+<img src="{{ed.cover}}" alt="{{ed.alt}}" style="width: 240px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; display: block; background: #F3F4F2">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Alt text</span>
+<input id="ed-alt" type="text" value="{{ed.alt}}" onChange="{{ed.setAlt}}" placeholder="Describe the image in a short sentence" aria-invalid="{{ed.eAlt.inv}}" style="{{ed.eAlt.st}}">
+<sc-if value="{{ed.eAlt.on}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{ed.eAlt.msg}}</span></sc-if>
+</label>
+<span style="display: flex; gap: 8px">
+<button type="button" class="sec" onClick="{{ed.nextCover}}" style="min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Replace</button>
+<button type="button" class="ghost" onClick="{{ed.rmCover}}" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Remove</button>
+</span>
+<span style="font-size: 13px; color: #646B7A">Also used as the social image. The image sizes are made at upload.</span>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ed.noCover}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{ed.nextCover}}" style="display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 96px; border: 1px dashed #D5D8DE; border-radius: 14px; background: #F7F8F9; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="M21 16l-5-5-8 8"></path></svg>Choose from the media library</button>
+</sc-if>
+</fieldset>
+
+<!-- body -->
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span id="ed-body-l" style="font-size: 14px; font-weight: 500">Body</span>
+<div style="border: 1px solid #D5D8DE; border-radius: 14px; background: #ffffff">
+<div role="toolbar" aria-label="Formatting" style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px 8px; border-bottom: 1px solid #E5E7EB; background: #F7F8F9; border-radius: 14px 14px 0 0">
+<span style="position: relative; display: block; width: 150px"><select value="{{ed.bt}}" onChange="{{ed.setBt}}" aria-label="Block type" style="width: 100%; appearance: none; -webkit-appearance: none; min-height: 36px; padding: 0 30px 0 10px; border: 1px solid #D5D8DE; border-radius: 9px; background: #ffffff; font: inherit; font-size: 13px; color: #0A1222; cursor: pointer"><option value="p">Paragraph</option><option value="h">Heading</option><option value="q">Quote</option><option value="ul">Bulleted list</option><option value="ol">Numbered list</option></select><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 10px; top: 12px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+<span aria-hidden="true" style="width: 1px; height: 22px; background: #D5D8DE; margin: 0 4px"></span>
+<sc-for list="{{ed.tools}}" as="b" hint-placeholder-count="7">
+<button type="button" class="tb" aria-label="{{b.label}}" aria-pressed="{{b.pressed}}" onClick="{{b.act}}" style="{{b.style}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{b.icon}}"></path></svg></button>
+</sc-for>
+<span aria-hidden="true" style="width: 1px; height: 22px; background: #D5D8DE; margin: 0 4px"></span>
+<button type="button" class="tb" aria-label="Delete selected block" onClick="{{ed.delBlock}}" style="width: 36px; height: 36px; border: 0; border-radius: 9px; background: transparent; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></button>
+<span style="margin-left: auto; padding-right: 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{ed.words}}</span>
+</div>
+<div aria-labelledby="ed-body-l" role="group" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{ed.blocks}}" as="b" hint-placeholder-count="3">
+<button type="button" class="blk" aria-pressed="{{b.sel}}" aria-label="{{b.aria}}" onClick="{{b.pick}}" style="{{b.style}}">{{b.text}}</button>
+</sc-for>
+<sc-if value="{{ed.noBlocks}}" hint-placeholder-val="{{ false }}"><span style="padding: 8px 10px; font-size: 15px; color: #646B7A">Start writing below, or paste in an existing post.</span></sc-if>
+<div style="display: flex; gap: 8px; align-items: flex-end; margin-top: 6px">
+<label style="flex: 1 1 auto; display: block"><span class="sr">New paragraph</span><textarea rows="2" onChange="{{ed.setPara}}" placeholder="Type a paragraph, then Add" style="{{taStyle}}" value="{{ed.para}}"></textarea></label>
+<button type="button" class="sec" onClick="{{ed.addPara}}" style="flex: 0 0 auto; min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Add</button>
+</div>
+</div>
+</div>
+<span style="font-size: 13px; color: #646B7A">Select a block to change its type or style. Embeds (YouTube, map pins) are added as their own blocks.</span>
+</div>
+</div>
+
+<!-- editor · side column -->
+<div style="display: flex; flex-direction: column; gap: 14px; min-width: 0">
+<section aria-labelledby="ed-st-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<h2 id="ed-st-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">STATUS</h2>
+<span style="{{ed.chip.style}}"><span aria-hidden="true" style="{{ed.chip.dot}}"></span>{{ed.chip.label}}</span>
+</div>
+<span style="font-size: 14px; color: #3D4556">{{ed.stLine}}</span>
+<sc-if value="{{ed.canUnpub}}" hint-placeholder-val="{{ false }}">
+<button type="button" class="ghost" onClick="{{ed.unpublish}}" style="align-self: flex-start; min-height: 36px; padding: 0 8px; margin-left: -8px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">{{ed.unpubLabel}}</button>
+</sc-if>
+</section>
+
+<section aria-labelledby="ed-pub-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="ed-pub-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">PUBLISH DATE</h2>
+<sc-if value="{{ed.canLater}}" hint-placeholder-val="{{ false }}">
+<button type="button" role="switch" aria-checked="{{ed.later.checked}}" onClick="{{ed.toggleLater}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{ed.later.track}}"><span style="{{ed.later.knob}}"></span></span>Schedule for later</button>
+</sc-if>
+<sc-if value="{{ed.isLive}}" hint-placeholder-val="{{ true }}">
+<span style="font-size: 13px; color: #3D4556">{{ed.liveNote}}</span>
+</sc-if>
+<sc-if value="{{ed.isLater}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px">
+<label style="display: flex; flex-direction: column; gap: 4px; min-width: 0"><span style="font-size: 13px; font-weight: 500">Date</span><input id="ed-date" type="date" value="{{ed.date}}" onChange="{{ed.setDate}}" aria-invalid="{{ed.eDate.inv}}" style="{{ed.eDate.st}}"></label>
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 500">Time · UTC</span><input type="time" value="{{ed.time}}" onChange="{{ed.setTime}}" style="{{ed.timeStyle}}"></label>
+</div>
+<sc-if value="{{ed.eDate.on}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{ed.eDate.msg}}</span></sc-if>
+<span style="font-size: 13px; color: #3D4556">{{ed.zone}}</span>
+</sc-if>
+<sc-if value="{{ed.isNow}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 13px; color: #3D4556">Goes live when you press {{ed.pubLabel}}. Times are stored in UTC.</span>
+</sc-if>
+</section>
+
+<section aria-labelledby="ed-by-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="ed-by-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">BYLINE AND SOURCE</h2>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Author</span>
+<span style="position: relative; display: block"><select value="{{ed.author}}" onChange="{{ed.setAuthor}}" style="{{selStyle}}"><option value="Vert Robo Con">Vert Robo Con</option><option value="Sample Admin 01">Sample Admin 01</option><option value="Sample Admin 02">Sample Admin 02</option><option value="Sample Admin 03">Sample Admin 03</option><option value="Sample Admin 04">Sample Admin 04</option></select><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg></span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Originally published elsewhere <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<input id="ed-li" type="url" value="{{ed.li}}" onChange="{{ed.setLi}}" placeholder="External post link" aria-invalid="{{ed.eLi.inv}}" aria-describedby="ed-li-help" style="{{ed.eLi.st}}">
+<sc-if value="{{ed.eLi.on}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{ed.eLi.msg}}</span></sc-if>
+<span id="ed-li-help" style="font-size: 13px; color: #646B7A">Shows “Originally published elsewhere” under the title, linked to the post, and sets it as the canonical source.</span>
+</label>
+</section>
+
+<section aria-labelledby="ed-seo-h" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="ed-seo-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">SEO</h2>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 500">SEO title <span style="font-weight: 400; color: #646B7A">(optional)</span></span><span style="{{ed.seoTCount.style}}">{{ed.seoTCount.label}}</span></span>
+<input type="text" value="{{ed.seoT}}" onChange="{{ed.setSeoT}}" placeholder="Uses the title when empty" style="{{ed.seoTStyle}}">
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 500">Meta description</span><span style="{{ed.seoDCount.style}}">{{ed.seoDCount.label}}</span></span>
+<textarea id="ed-seo" rows="3" onChange="{{ed.setSeoD}}" aria-invalid="{{ed.eSeo.inv}}" style="{{ed.eSeo.st}}" value="{{ed.seoD}}"></textarea>
+<sc-if value="{{ed.eSeo.on}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{ed.eSeo.msg}}</span></sc-if>
+</label>
+<div aria-label="Search result preview" role="group" style="padding: 12px 14px; border-radius: 12px; background: #F7F8F9; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: #646B7A">SEARCH PREVIEW</span>
+<span style="font-size: 12px; color: #3D4556; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ed.serpUrl}}</span>
+<span style="font-size: 16px; color: #0138AC; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ed.serpTitle}}</span>
+<span style="font-size: 13px; color: #3D4556; line-height: 1.45">{{ed.serpDesc}}</span>
+</div>
+</section>
+</div>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ VIDEOS ============ -->
+<sc-if value="{{isVideos}}" hint-placeholder-val="{{ false }}">
+<section id="panel-videos" role="tabpanel" aria-labelledby="tab-videos" style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<div role="group" aria-label="Series" style="display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{vf}}" as="f" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}<span style="{{f.cStyle}}">{{f.count}}</span></button>
+</sc-for>
+</div>
+<button type="button" role="switch" aria-checked="{{vNeeds.checked}}" onClick="{{vNeeds.toggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{vNeeds.track}}"><span style="{{vNeeds.knob}}"></span></span>{{vNeeds.label}}</button>
+<span style="margin-left: auto; display: flex; align-items: center; gap: 10px"><span style="{{sampleChip.style}}"><span aria-hidden="true" style="{{sampleChip.dot}}"></span>{{sampleChip.label}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{vCount}}</span></span>
+</div>
+<div role="table" aria-label="Videos" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: 112px minmax(0, 1fr) 176px 136px 178px 156px 52px; align-items: center; min-height: 40px; padding: 0 4px 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader"><span class="sr">Thumbnail</span></span><span role="columnheader">VIDEO</span><span role="columnheader">SERIES</span><span role="columnheader">TOPIC</span><span role="columnheader">TRANSCRIPT</span><span role="columnheader">SESSION</span><span role="columnheader"><span class="sr">Edit</span></span>
+</div>
+<sc-for list="{{vids}}" as="v" hint-placeholder-count="10">
+<div role="row" class="arow" style="{{v.row}}">
+<span role="cell" style="padding: 8px 0"><span style="{{v.thumb}}"><sc-if value="{{v.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{v.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{v.noImg}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" style="position: absolute; left: 50%; top: 50%; margin: -9px 0 0 -9px"><path d="M8 5v14l11-7z"></path></svg></sc-if><span style="position: absolute; right: 4px; bottom: 4px; padding: 0 4px; border-radius: 4px; background: rgba(10,18,34,0.82); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 10px">{{v.dur}}</span></span></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 1px; min-width: 0; padding: 0 14px"><button type="button" onClick="{{v.open}}" style="padding: 0; border: 0; background: transparent; font: inherit; font-size: 14.5px; font-weight: 600; color: #0A1222; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{v.title}}</button><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{v.meta}}</span></span>
+<span role="cell" style="{{v.seriesStyle}}">{{v.series}}</span>
+<span role="cell" style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{v.topics}}" as="t" hint-placeholder-count="1"><span style="{{t.style}}"><span aria-hidden="true" style="{{t.dot}}"></span>{{t.label}}</span></sc-for></span>
+<span role="cell"><span style="{{v.tr.style}}"><span aria-hidden="true" style="{{v.tr.dot}}"></span>{{v.tr.label}}</span></span>
+<span role="cell" style="font-size: 13px; min-width: 0"><sc-if value="{{v.hasSess}}" hint-placeholder-val="{{ true }}"><a href="ProgramV3.dc.html" style="text-decoration: none; font-weight: 500">{{v.sess}}</a></sc-if><sc-if value="{{v.noSess}}" hint-placeholder-val="{{ false }}"><span style="color: #646B7A">Not linked</span></sc-if></span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" class="ghost" aria-label="{{v.editLabel}}" onClick="{{v.open}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></span>
+</div>
+</sc-for>
+<sc-if value="{{vEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; color: #646B7A">
+<strong style="color: #0A1222">No videos match</strong>
+<span>Every video in this series has its VRC fields filled in.</span>
+<button type="button" onClick="{{clearVids}}" style="margin-top: 6px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear filters</button>
+</div>
+</sc-if>
+<sc-if value="{{vMore.on}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 8px 16px 12px; border-top: 1px solid #EEF0F3"><button type="button" onClick="{{vMore.act}}" style="min-height: 40px; padding: 0 8px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">{{vMore.label}}</button></div>
+</sc-if>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ DOCUMENTS ============ -->
+<sc-if value="{{isDocs}}" hint-placeholder-val="{{ false }}">
+<section id="panel-docs" role="tabpanel" aria-labelledby="tab-docs" style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 14px; color: #3D4556">Written and read on-site with the document reader. The PDF is generated from the same source when you publish, never uploaded.</span>
+<div role="table" aria-label="Documents" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1fr) 150px 150px 130px 250px 52px; align-items: center; min-height: 40px; padding: 0 4px 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">DOCUMENT</span><span role="columnheader">VERSION</span><span role="columnheader">LAST UPDATED</span><span role="columnheader">STATUS</span><span role="columnheader">PDF</span><span role="columnheader"><span class="sr">Edit</span></span>
+</div>
+<sc-for list="{{docs}}" as="d" hint-placeholder-count="4">
+<div role="row" class="arow" style="{{d.row}}">
+<span role="cell" style="display: flex; align-items: center; gap: 12px; min-width: 0; padding-right: 12px">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 36px; height: 36px; border-radius: 10px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7zM14 3v4h4M9 13h6M9 17h6"></path></svg></span>
+<span style="display: flex; flex-direction: column; min-width: 0"><button type="button" onClick="{{d.open}}" style="padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 600; color: #0A1222; text-align: left; cursor: pointer">{{d.title}}</button><span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #646B7A">{{d.path}}</span></span>
+</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222">{{d.ver}}</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{d.upd}}</span>
+<span role="cell"><span style="{{d.chip.style}}"><span aria-hidden="true" style="{{d.chip.dot}}"></span>{{d.chip.label}}</span></span>
+<span role="cell" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px">
+<button type="button" role="switch" aria-checked="{{d.pdf.checked}}" onClick="{{d.togglePdf}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 4px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 13.5px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{d.pdf.track}}"><span style="{{d.pdf.knob}}"></span></span>Generate PDF on publish</button>
+<span style="padding-left: 4px; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{d.pdfLine}}</span>
+</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" class="ghost" aria-label="{{d.editLabel}}" onClick="{{d.open}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></span>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">Readers can suggest edits from any section of the <a href="ResearchV3.dc.html">reader</a> (reference SUG-…); suggestions are reviewed before the next version. A new version changes the reader’s version line and the Cite text.</span>
+</section>
+</sc-if>
+
+<!-- ============ PARTNERS ============ -->
+<sc-if value="{{isPartners}}" hint-placeholder-val="{{ false }}">
+<section id="panel-partners" role="tabpanel" aria-labelledby="tab-partners" style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<div role="group" aria-label="Edition" style="display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{pf}}" as="f" hint-placeholder-count="4">
+<button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}<span style="{{f.cStyle}}">{{f.count}}</span></button>
+</sc-for>
+</div>
+<span style="font-size: 14px; color: #3D4556">One record per organization. Tiers are set per edition.</span>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{pCount}}</span>
+</div>
+<div role="table" aria-label="Partners" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1fr) 230px 330px 110px 52px; align-items: center; min-height: 40px; padding: 0 4px 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">PARTNER</span><span role="columnheader">WEBSITE</span><span role="columnheader">EDITION · TIER</span><span role="columnheader">ON SITE</span><span role="columnheader"><span class="sr">Edit</span></span>
+</div>
+<sc-for list="{{partners}}" as="p" hint-placeholder-count="6">
+<div role="row" class="arow" style="{{p.row}}">
+<span role="cell" style="display: flex; align-items: center; gap: 12px; min-width: 0; padding-right: 12px">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 48px; height: 34px; border-radius: 9px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500">{{p.ini}}</span>
+<span style="display: flex; flex-direction: column; min-width: 0"><button type="button" onClick="{{p.open}}" style="padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 600; color: #0A1222; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{p.name}}</button><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{p.logo}}</span></span>
+</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #3D4556; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 12px">{{p.host}}</span>
+<span role="cell" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 12px 8px 0"><sc-for list="{{p.eds}}" as="e" hint-placeholder-count="2"><span style="{{e.style}}"><span aria-hidden="true" style="{{e.dot}}"></span>{{e.label}}</span></sc-for></span>
+<span role="cell"><span style="{{p.vis.style}}"><span aria-hidden="true" style="{{p.vis.dot}}"></span>{{p.vis.label}}</span></span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" class="ghost" aria-label="{{p.editLabel}}" onClick="{{p.open}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></span>
+</div>
+</sc-for>
+<sc-if value="{{pEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; color: #646B7A">
+<strong style="color: #0A1222">No partners for this edition yet</strong>
+<span>Add one, or add this edition to an existing partner.</span>
+<button type="button" onClick="{{addPartner}}" style="margin-top: 6px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Add partner</button>
+</div>
+</sc-if>
+</div>
+<span style="font-size: 13px; color: #646B7A">The summit pages group partners by tier for the edition shown. Logos are uploaded here by admins; sponsor interest from Get involved arrives in the <a href="AdminQueueV3.dc.html">moderation queue</a>.</span>
+</section>
+</sc-if>
+
+</main>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1580}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const IMG = { hand: 'img/hero.svg', forest: 'img/forest.svg', balloon: 'img/balloon.svg', paper: 'img/white-paper.svg', crowd: 'img/summit-grid.svg', leaf: 'img/leaf.svg', map: 'img/world-map.svg' };
+// News: invented sample posts; titles, first lines and dates are sample data
+const P = (id, title, type, pub, ex, o) => Object.assign({ id: id, title: title, slug: id, old: id, type: type, status: 'published', pub: pub, author: 'Vert Robo Con', updated: '2 days ago', by: '02', imported: true, ver: 2, live: 2, dirty: false, later: false, date: '', time: '09:00', cover: '', alt: '', li: '', seoT: '', seoD: ex,
+blocks: [{ t: 'p', x: ex }, { t: 'p', x: '[REST OF THE IMPORTED BODY]' }] }, o || {});
+const N = (o) => Object.assign({ old: '', imported: false, updated: '[DATE]', by: '01', author: 'Vert Robo Con', ver: 3, live: 3, pub: '' }, o);
+const callEx = 'Startups building robots for climate work can apply to pitch at Summit 2027 · April 20–22, 2027 · online, free and open to everyone.';
+const humEx = '“The battery is the easy part. The van that brings the robot to the field is not.”';
+const s27Ex = 'The next Vert Robo Con Summit runs April 20–22, 2027. Online, free and open to everyone.';
+const wpEx = 'The 2025 edition of our white paper looks at where robots already help, where they fall short, and what builders and funders could do next.';
+this.state = {
+tab: 'news', view: 'list', sel: null, nf: 'all', nq: '', showErr: false, saved: '', bsel: 0, para: '', nextId: 1,
+dr: null, drErr: '', vf: 'all', vNeeds: false, vAll: false, synced: '14 min ago', pf: '2026',
+build: 'live', changes: 0, builtNow: false, toast: '', toastLink: false, edition: '2027', q: '',
+posts: [
+P('what-does-it-cost-the-climate-to-build-a-field-robot', 'What does it cost the climate to build a field robot?', 'Essay', '2026-02-12', humEx, { updated: 'Today 10:31', by: '01', ver: 6, live: 5, dirty: true, cover: IMG.hand, alt: 'Illustration of a field robot in a green landscape', seoT: 'The climate cost of a field robot',
+blocks: [{ t: 'q', x: humEx }, { t: 'h', x: 'Counting the whole working day' }, { t: 'p', x: 'We followed one weeding robot through a week of field work and logged every kilowatt-hour, litre of fuel and kilometre driven.' }, { t: 'p', x: '[REST OF THE IMPORTED BODY]' }] }),
+N({ id: 'summit-2027-startup-pitch-call', slug: 'summit-2027-startup-pitch-call', title: 'The Summit 2027 startup pitch call is open', type: 'Announcement', status: 'scheduled', author: 'Sample Admin 01', updated: 'Yesterday 16:05', ver: 4, live: 0, dirty: false, later: true, date: '2026-12-08', time: '09:00', cover: IMG.balloon, alt: 'Vert Robo Con Summit balloon artwork', li: '', seoT: '', seoD: callEx, blocks: [{ t: 'p', x: callEx }, { t: 'p', x: '[HOW TO APPLY · DEADLINE [DATE]]' }] }),
+N({ id: 'vert-robo-con-summit-2027', slug: 'vert-robo-con-summit-2027', title: 'Save the date: Vert Robo Con Summit 2027', type: 'Summit', status: 'published', dirty: false, later: false, date: '', time: '09:00', cover: IMG.crowd, alt: 'Summit participants in a video-call grid', li: '', seoT: '', seoD: s27Ex, blocks: [{ t: 'p', x: s27Ex }, { t: 'h', x: 'What to expect' }, { t: 'p', x: '[BODY]' }] }),
+N({ id: 'the-2025-white-paper-is-out', slug: 'the-2025-white-paper-is-out', title: 'The 2025 white paper is out', type: 'Announcement', status: 'published', dirty: false, later: false, date: '', time: '09:00', cover: IMG.paper, alt: 'White paper cover mosaic', li: '', seoT: '', seoD: wpEx, blocks: [{ t: 'p', x: wpEx }, { t: 'p', x: 'Read it online, chapter by chapter.' }] }),
+N({ id: 'external-post', slug: '[POST SLUG]', title: '[POST TITLE]', type: 'Essay', status: 'published', dirty: false, later: false, date: '', time: '09:00', cover: '', alt: '', li: '', seoT: '', seoD: '[SUMMARY]', blocks: [{ t: 'p', x: '[BODY · brought back from the original post]' }] }),
+P('what-we-learned-mapping-120-organizations', 'What we learned mapping 120 organizations', 'Essay', '2026-08-03', 'Most entries came from members, not from searches. The hard part was keeping deployment status up to date.', { cover: IMG.map, alt: 'Illustrated world map' }),
+P('who-checks-the-wind-turbines', 'Who checks the wind turbines?', 'Video', '2026-06-30', 'Turbine blades crack, erode and get struck by lightning. Episode 4 of Robots in the Field meets the people and robots that keep them turning.'),
+P('who-repairs-the-robot-after-the-pilot-ends', 'Who repairs the robot after the pilot ends?', 'Essay', '2026-03-12', 'Field robots are judged on their first season. We asked technicians what happens in year three.', { cover: IMG.leaf, alt: 'Illustration of a leaf with a water droplet' }),
+P('notes-on-cold-weather-batteries', 'What cold weather does to robot batteries', 'Essay', '2025-11-20', 'A draft from the previous site about range, charging and storage below freezing.', { status: 'draft', live: 0, unpubNote: true }),
+P('can-drones-reseed-a-burned-hillside', 'Can drones reseed a burned hillside?', 'Video', '2025-09-16', 'After a wildfire, bare slopes wash away in the first heavy rain. Episode 3 of Robots in the Field.', { cover: IMG.forest, alt: 'Illustration of a forest from above' }),
+P('summit-2025-dates', 'Vert Robo Con Summit 2025: June 10–12, online', 'Summit', '2025-03-18', 'Three days, twelve sessions, all online and free.', { cover: IMG.crowd, alt: 'Summit participants in a video-call grid' }),
+P('the-organization-map-is-open', 'The organization map is open', 'Announcement', '2025-01-14', 'Our map of organizations building robots for climate work is open. Anyone can suggest more, and an admin reviews each one.', { cover: IMG.map, alt: 'Illustrated world map' }),
+P('notes-from-the-2024-pilot', 'Notes from the 2024 pilot summit', 'Summit', '2024-10-08', 'Thank you for joining our first online pilot. Here is what worked and what we will change.')
+],
+// Videos: placeholder ids; 2025 titles and durations follow the fictional SUMMIT_2025_VIDEOS in summits-data; VRC fields (topic, transcript) are sample data
+videos: [
+['ritf-1', 'sample-ritf-01', 'Why robots belong in climate work', '[DURATION]', 'ritf', 1, [], 'pub', '', IMG.hand],
+['ritf-2', 'sample-ritf-02', 'Replanting reefs with diving robots', '[DURATION]', 'ritf', 2, ['sea'], 'pub', '', IMG.forest],
+['ritf-3', 'sample-ritf-03', 'Can drones reseed a burned hillside?', '[DURATION]', 'ritf', 3, ['air'], 'pub', '', IMG.leaf],
+['ritf-4', 'sample-ritf-04', 'Who checks the wind turbines?', '[DURATION]', 'ritf', 4, ['air'], 'review', '', ''],
+['wp-intro', 'sample-wp-01', 'Introducing the white paper', '[DURATION]', 'explainers', 0, [], 'pub', '', IMG.paper],
+['s25-01', 'sample-s25-01', 'Welcome and How the Three Days Work', '6:20', 's2025', 0, [], 'pub', '2025-1', ''],
+['s25-02', 'sample-s25-02', 'Robots on Soft Ground: Peat and Marsh', '41:05', 's2025', 0, ['land'], 'pub', '2025-1', ''],
+['s25-03', 'sample-s25-03', 'Writing a Robot Into a Public Tender', '27:30', 's2025', 0, [], 'pub', '2025-1', ''],
+['s25-04', 'sample-s25-04', 'Pitch Round: Water and Wetland Teams', '44:10', 's2025', 0, ['sea'], 'pub', '2025-1', ''],
+['s25-05', 'sample-s25-05', 'Sidewalk Robots and the Urban Heat Map', '24:55', 's2025', 0, ['land'], 'pub', '2025-2', ''],
+['s25-06', 'sample-s25-06', 'Keynote: Measuring a Glacier That Will Not Hold Still', '33:40', 's2025', 0, [], 'pub', '2025-2', ''],
+['s25-07', 'sample-s25-07', 'Batteries, Sensors and Minus Twenty', '38:15', 's2025', 0, ['materials'], 'review', '2025-2', ''],
+['s25-08', 'sample-s25-08', 'Pitch Round: City and Cold-Climate Teams', '42:00', 's2025', 0, [], 'review', '2025-2', ''],
+['s25-09', 'sample-s25-09', 'A Technician’s Wishlist for Robot Makers', '29:10', 's2025', 0, [], 'review', '2025-3', ''],
+['s25-10', 'sample-s25-10', 'Spare Parts, Open Designs and Long Lives', '26:45', 's2025', 0, ['materials'], 'missing', '2025-3', ''],
+['s25-11', 'sample-s25-11', 'Who Pays When a Field Robot Breaks?', '31:20', 's2025', 0, [], 'missing', '2025-3', ''],
+['s25-12', 'sample-s25-12', 'Audience Vote and Wrap-up', '12:05', 's2025', 0, [], 'missing', '2025-3', ''],
+['s24-recap', 'sample-s24-00', 'Summit 2024 recap', '[DURATION]', 's2024', 0, [], 'pub', '2024', IMG.crowd],
+['s24-a', '[VIDEO ID]', '[2024 SESSION TITLE]', '[DURATION]', 's2024', 0, [], 'missing', '2024', ''],
+['s24-b', '[VIDEO ID]', '[2024 SESSION TITLE]', '[DURATION]', 's2024', 0, [], 'missing', '2024', ''],
+['s24-c', '[VIDEO ID]', '[2024 SESSION TITLE]', '[DURATION]', 's2024', 0, [], 'missing', '2024', '']
+].map((v) => ({ id: v[0], yt: v[1], title: v[2], dur: v[3], series: v[4], ep: v[5], topics: v[6], tr: v[7], sess: v[8], img: v[9], show: true })),
+docs: [
+{ id: 'wp', title: 'White paper', ver: '2025 edition', path: '/research/white-paper/2025', upd: '[DATE]', pdf: true, note: '' },
+{ id: 'coc', title: 'Code of conduct', ver: 'v1.0', path: '/code-of-conduct', upd: '[DATE]', pdf: true, note: '' },
+{ id: 'dp', title: 'Design principles', ver: 'v1.0', path: '/principles', upd: '[DATE]', pdf: true, note: '' },
+{ id: 'dc', title: 'Deployment code', ver: 'v1.0', path: '/deployment-code', upd: '[DATE]', pdf: true, note: '' }
+],
+// Partners: names and tiers per edition from src/lib/summits-data.ts (fictional SPONSORS_2025, SPONSORS_2026)
+partners: [
+['vrc', 'Vert Robo Con', 'https://vert-robo-con.example/', 'vert-robo-con.svg', [['2026', 'Organizing'], ['2025', 'Organizing']]],
+['exu', 'Example University', 'https://vert-robo-con.example/partners/example-university', 'example-university.svg', [['2026', 'Organizing']]],
+['expoly', 'Example Polytechnic', 'https://vert-robo-con.example/partners/example-polytechnic', 'example-polytechnic.svg', [['2025', 'Organizing']]],
+['fund', 'Example Climate Fund', 'https://vert-robo-con.example/partners/example-climate-fund', 'example-climate-fund.svg', [['2025', 'Gold']]],
+['tools', 'Example Field Tools Co.', 'https://vert-robo-con.example/partners/example-field-tools', 'example-field-tools.svg', [['2026', 'Silver'], ['2025', 'Silver']]],
+['data', 'Example Data Commons', 'https://vert-robo-con.example/partners/example-data-commons', 'example-data-commons.svg', [['2026', 'Silver'], ['2025', 'Silver']]],
+['wet', 'Example Wetlands Trust', 'https://vert-robo-con.example/partners/example-wetlands-trust', 'example-wetlands-trust.svg', [['2025', 'Partner']]],
+['coast', 'Example Coastal Trust', 'https://vert-robo-con.example/partners/example-coastal-trust', 'example-coastal-trust.svg', [['2026', 'Partner'], ['2025', 'Partner']]],
+['maker', 'Example Makerspace', 'https://vert-robo-con.example/partners/example-makerspace', 'example-makerspace.svg', [['2026', 'Partner'], ['2025', 'Partner']]]
+].map((p) => ({ id: p[0], name: p[1], url: p[2], logo: p[3], eds: p[4].map((e) => ({ e: e[0], t: e[1] })), show: true }))
+};
+this.IMG = IMG;
+}
+renderVals() {
+const S = this.state;
+const IMG = this.IMG;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const DISPLAY = "font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; ";
+const TONES = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#8A91A0'] };
+const chip = (tone, label) => { const t = TONES[tone]; return { label: label,
+style: 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: ' + t[0] + '; color: ' + t[1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap; line-height: 1.5',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + t[2] + '; flex: 0 0 auto' }; };
+const seg = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const cnt = (on) => MONO + 'font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 999px; background: ' + (on ? '#F3F4F2' : '#E5E7EB') + '; color: #3D4556';
+const inp = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; color: #0A1222';
+const ta = (bad) => inp(bad) + '; padding: 10px 14px; line-height: 1.5; resize: vertical; display: block';
+const sw = (on) => ({ checked: on ? 'true' : 'false',
+track: 'position: relative; width: 34px; height: 20px; border-radius: 999px; display: inline-block; flex: 0 0 auto; background: ' + (on ? '#0138AC' : '#C9CDD5'),
+knob: 'position: absolute; top: 2px; left: ' + (on ? '16px' : '2px') + '; width: 16px; height: 16px; border-radius: 50%; background: #ffffff' });
+const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fmtDate = (d) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ''); return m ? MON[parseInt(m[2], 10) - 1] + ' ' + parseInt(m[3], 10) + ', ' + m[1] : '[DATE]'; };
+const TODAY = '2026-10-16';
+const slugify = (s) => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+const noop = () => {};
+
+// ---------- build + toast ----------
+const queue = (patch, msg) => this.setState(Object.assign({ toast: msg, toastLink: false }, patch));
+const note = (patch, msg) => this.setState(Object.assign({ toast: msg, toastLink: false }, patch));
+
+// ---------- shared shell (sidebar + top bar markup copied from AdminQueueV3; only the active item differs) ----------
+// Queue badge = AdminQueueV3's open items (pending, in review, needs info, new): 3 join · 3 map · 2 jobs · 4 messages · 1 nomination · 1 internship · 2 document suggestions = 16
+const QUEUE_OPEN = { join: 3, map: 3, job: 2, msg: 4, nom: 1, int: 1, doc: 2 };
+const totalOpen = Object.keys(QUEUE_OPEN).reduce((n, k) => n + QUEUE_OPEN[k], 0);
+
+// ---------- news list ----------
+const ST = { draft: ['neutral', 'DRAFT'], scheduled: ['blue', 'SCHEDULED'], published: ['green', 'PUBLISHED'] };
+const ini = (a) => { const m = /^Sample Admin (\d+)$/.exec(a); return m ? 'S' + parseInt(m[1], 10) : 'VRC'; };
+const avStyle = (a) => 'flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 10px; font-weight: 500; ' + (/^Sample/.test(a) ? 'background: #EEF2FB; color: #0138AC' : 'background: #0A1222; color: #ffffff');
+const openPost = (id) => { this.setState({ view: 'edit', sel: id, showErr: false, saved: '', bsel: 0, para: '', dr: null, tab: 'news' }); };
+const nCount = (k) => S.posts.filter((p) => k === 'all' || p.status === k).length;
+const NF = [['all', 'All'], ['draft', 'Draft'], ['scheduled', 'Scheduled'], ['published', 'Published']];
+const nf = NF.map((f) => { const on = S.nf === f[0]; return { label: f[1], count: String(nCount(f[0])), pressed: on ? 'true' : 'false', style: seg(on), cStyle: cnt(on), pick: () => this.setState({ nf: f[0] }) }; });
+const nq = S.nq.trim().toLowerCase();
+const newsList = S.posts.filter((p) => (S.nf === 'all' || p.status === S.nf) && (!nq || (p.title + ' ' + p.slug).toLowerCase().indexOf(nq) >= 0));
+const news = newsList.map((p) => {
+const c = p.status === 'published' && p.dirty ? chip('amber', 'CHANGES NOT LIVE') : chip(ST[p.status][0], ST[p.status][1]);
+const sub = p.status === 'scheduled' ? fmtDate(p.date).toUpperCase() + ' · ' + p.time + ' UTC' : p.status === 'published' && p.dirty ? 'LIVE: VERSION ' + p.live : p.status === 'published' ? 'SINCE ' + fmtDate(p.pub).toUpperCase() : p.unpubNote ? 'UNPUBLISHED AT IMPORT' : '';
+return { title: p.title || 'Untitled post', path: '/news/' + (p.slug || '…') + (p.imported && p.old ? ' · was /blog/' + p.old : ''), type: p.type, chip: c,
+hasSub: !!sub, sub: sub, subStyle: MONO + 'font-size: 11px; letter-spacing: 0.04em; color: ' + (p.status === 'scheduled' ? '#0138AC' : '#646B7A'),
+author: p.author, ini: ini(p.author), av: avStyle(p.author),
+updated: p.updated, by: (p.imported && p.by === '02' ? 'IMPORTED · ' : 'BY ') + 'S' + parseInt(p.by, 10),
+row: 'display: grid; grid-template-columns: minmax(0, 1fr) 128px 196px 210px 150px 52px; align-items: center; min-height: 60px; padding: 0 4px 0 16px; border-top: 1px solid #EEF0F3' + (S.sel === p.id ? '; background: #F7F9FD' : ''),
+editLabel: 'Edit ' + (p.title || 'untitled post'), open: () => openPost(p.id) };
+});
+
+// ---------- news editor ----------
+const post = S.posts.find((p) => p.id === S.sel) || S.posts[0];
+const isEditor = S.tab === 'news' && S.view === 'edit';
+const upd = (patch, extra) => this.setState(Object.assign({ saved: 'just now', posts: S.posts.map((p) => p.id === post.id ? Object.assign({}, p, patch, { ver: p.status === 'published' && !p.dirty ? p.ver + 1 : (p.ver || 1), updated: 'Just now', by: '01', dirty: p.status === 'published' ? true : p.dirty }) : p) }, extra || {}));
+const set = (k) => (e) => upd({ [k]: e.target.value });
+// validation, shown after a publish attempt
+const E = {};
+if (!post.title.trim()) E.title = 'Add a title.';
+if (!post.slug) E.slug = 'Add a slug, or use From title.';
+else if (!/^\[[^\]]+\]$/.test(post.slug) && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(post.slug)) E.slug = 'Use lowercase letters, numbers and hyphens only.';
+else if (S.posts.some((p) => p.id !== post.id && p.slug === post.slug)) E.slug = 'Another post already uses /news/' + post.slug + '.';
+if (post.cover && !post.alt.trim()) E.alt = 'Describe the cover image for screen readers.';
+if (post.li && !/^https:\/\/\S+$/.test(post.li)) E.li = 'Paste the full external post link, or leave it empty.';
+if (post.seoD.length > 160) E.seo = 'Keep the meta description to 160 characters or fewer.';
+// a live post publishes its changes straight away; only drafts and scheduled posts can be scheduled
+const canLater = post.status !== 'published';
+const isLater = canLater && post.later;
+if (isLater && (!post.date || post.date < TODAY)) E.date = 'Pick a date from today (Oct 16, 2026) on.';
+const showE = S.showErr;
+const fe = (k, base) => { const on = showE && !!E[k]; return { on: on, msg: E[k] || '', inv: on ? 'true' : 'false', st: base(on) }; };
+const ORDER = [['title', 'ed-title'], ['slug', 'ed-slug'], ['alt', 'ed-alt'], ['date', 'ed-date'], ['li', 'ed-li'], ['seo', 'ed-seo']];
+const errList = ORDER.filter((o) => E[o[0]]).map((o) => ({ msg: E[o[0]], href: '#' + o[1] }));
+const pubLabel = isLater ? (post.status === 'scheduled' ? 'Update schedule' : 'Schedule') : post.status === 'published' ? 'Publish changes' : 'Publish';
+const tryPublish = () => {
+if (errList.length) { this.setState({ showErr: true, toast: '' }); return; }
+if (isLater) {
+const when = fmtDate(post.date) + ' · ' + post.time + ' UTC';
+this.setState({ showErr: false, saved: 'just now', posts: S.posts.map((p) => p.id === post.id ? Object.assign({}, p, { status: 'scheduled', dirty: false, updated: 'Just now', by: '01' }) : p), toast: 'Scheduled for ' + when + ' · it goes live then', toastLink: false });
+return;
+}
+const wasLive = post.status === 'published';
+queue({ showErr: false, saved: 'just now', posts: S.posts.map((p) => p.id === post.id ? Object.assign({}, p, { status: 'published', dirty: false, later: false, live: p.ver || 1, ver: p.ver || 1, pub: wasLive ? p.pub : TODAY, unpubNote: false, updated: 'Just now', by: '01' }) : p) },
+wasLive ? 'Changes published · live now' : 'Published · live now');
+};
+const blocks = post.blocks;
+const bi = Math.min(S.bsel, Math.max(blocks.length - 1, 0));
+const cur = blocks[bi];
+const setBlock = (patch) => upd({ blocks: blocks.map((b, i) => i === bi ? Object.assign({}, b, patch) : b) });
+const blockStyle = (b, on) => {
+const base = 'display: block; width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid ' + (on ? '#BFD0F5' : 'transparent') + '; border-radius: 10px; background: ' + (on ? '#F7F9FD' : 'transparent') + '; font: inherit; text-align: left; color: #0A1222; cursor: text; white-space: pre-wrap; ';
+const w = (b.bo ? 'font-weight: 600; ' : '') + (b.it ? 'font-style: italic; ' : '');
+if (b.t === 'h') return base + DISPLAY + 'font-size: 22px; line-height: 1.25; letter-spacing: -0.02em; ' + (b.it ? 'font-style: italic' : '');
+if (b.t === 'q') return base + 'font-size: 17px; line-height: 1.55; font-style: italic; color: #3D4556; padding-left: 22px; background: ' + (on ? '#F7F9FD' : '#F7F8F9') + '; ' + (b.bo ? 'font-weight: 600' : '');
+return base + 'font-size: 16px; line-height: 1.6; ' + w;
+};
+const prefix = (b, i) => { if (b.t === 'ul') return '•  '; if (b.t !== 'ol') return ''; let n = 0; for (let j = i; j >= 0 && blocks[j].t === 'ol'; j--) n++; return n + '.  '; };
+const BT = { p: 'Paragraph', h: 'Heading', q: 'Quote', ul: 'Bulleted list', ol: 'Numbered list' };
+const tb = (label, pressed, icon, act) => ({ label: label, pressed: pressed ? 'true' : 'false', icon: icon, act: act,
+style: 'width: 36px; height: 36px; border: 0; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; ' + (pressed ? 'background: #ffffff; color: #0138AC; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556') });
+const hasCur = !!cur;
+const typeT = (t) => () => { if (hasCur) setBlock({ t: cur.t === t ? 'p' : t }); };
+const tools = [
+tb('Bold', hasCur && cur.bo, 'M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z', () => { if (hasCur) setBlock({ bo: !cur.bo }); }),
+tb('Italic', hasCur && cur.it, 'M14 5h-4M14 19h-4M14 5l-4 14', () => { if (hasCur) setBlock({ it: !cur.it }); }),
+tb('Link', hasCur && cur.ln, 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1', () => { if (hasCur) setBlock({ ln: !cur.ln }); }),
+tb('Heading', hasCur && cur.t === 'h', 'M6 5v14M18 5v14M6 12h12', typeT('h')),
+tb('Quote', hasCur && cur.t === 'q', 'M7 7h4v4c0 3-2 5-4 6M15 7h4v4c0 3-2 5-4 6', typeT('q')),
+tb('Bulleted list', hasCur && cur.t === 'ul', 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01', typeT('ul')),
+tb('Numbered list', hasCur && cur.t === 'ol', 'M10 6h10M10 12h10M10 18h10M4 5l1-1v4M4 14h2l-2 3h2', typeT('ol'))
+];
+const words = blocks.reduce((n, b) => n + (b.x.trim() ? b.x.trim().split(/\s+/).length : 0), 0);
+const seoDLen = post.seoD.length; const seoTLen = (post.seoT || post.title).length;
+const counter = (n, max) => ({ label: n + ' / ' + max, style: MONO + 'font-size: 11px; color: ' + (n > max ? '#B42318' : '#646B7A') });
+// Europe/Amsterdam: UTC+2 from the last Sunday of March to the last Sunday of October, else UTC+1
+const lastSun = (y, mIdx) => { const d = new Date(Date.UTC(y, mIdx + 1, 0)); return d.getUTCDate() - d.getUTCDay(); };
+const zh = (d) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ''); if (!m) return 1; const y = parseInt(m[1], 10), mo = parseInt(m[2], 10), dy = parseInt(m[3], 10);
+return (mo > 3 && mo < 10) || (mo === 3 && dy >= lastSun(y, 2)) || (mo === 10 && dy < lastSun(y, 9)) ? 2 : 1; };
+const tm = /^(\d{2}):(\d{2})$/.exec(post.time || '');
+const lh = tm ? parseInt(tm[1], 10) + zh(post.date) : 0;
+const local = tm ? ('0' + (lh % 24)).slice(-2) + ':' + tm[2] + (lh >= 24 ? ' the next day' : '') : '';
+const covers = [IMG.hand, IMG.forest, IMG.leaf, IMG.balloon, IMG.paper];
+const coverAlts = { [IMG.hand]: 'A robot hand holding a young tree', [IMG.forest]: 'Forest landscape', [IMG.leaf]: 'Leaf with a water droplet', [IMG.balloon]: 'Vert Robo Con Summit balloon artwork', [IMG.paper]: 'White paper cover mosaic' };
+const stLine = post.status === 'published' ? (post.dirty ? 'Version ' + post.live + ' is live. Your edits are in version ' + post.ver + ' and go live when you press Publish changes.' : 'Live at /news/' + post.slug + ' since ' + fmtDate(post.pub) + ' · version ' + post.ver + '.')
+: post.status === 'scheduled' ? 'Goes live ' + fmtDate(post.date) + ' at ' + post.time + ' UTC · version ' + post.ver + '.'
+: post.unpubNote ? 'Unpublished at import: it was a draft on the previous site. Only admins can see it · version ' + post.ver + '.' : 'Only admins can see drafts · version ' + post.ver + '.';
+const ed = {
+crumb: 'NEWS · ' + (post.slug || 'NEW POST').toUpperCase(),
+saveMsg: S.saved ? 'Autosaved ' + S.saved + ' · version ' + post.ver : post.ver ? 'Autosaved 2 min ago · version ' + post.ver : 'Not saved yet · autosaves as you type',
+saveStyle: 'display: inline-flex; align-items: center; gap: 6px; ' + MONO + 'font-size: 11.5px; letter-spacing: 0.04em; color: ' + (S.saved ? '#0B7A47' : '#646B7A'),
+saveDot: 'width: 7px; height: 7px; border-radius: 50%; background: ' + (post.ver ? '#1DB46C' : '#A7ADB8'),
+back: () => this.setState({ view: 'list', showErr: false, dr: null }),
+saveDraft: () => note({ saved: 'just now', posts: S.posts.map((p) => p.id === post.id ? Object.assign({}, p, { ver: p.ver + 1, dirty: p.status === 'published' ? true : p.dirty, updated: 'Just now', by: '01' }) : p) },
+post.status === 'published' ? 'Changes saved as version ' + (post.ver + 1) + ' · the live page is unchanged' : 'Draft saved · version ' + (post.ver + 1) + ' · drafts are never public'),
+preview: () => this.setState({ dr: { k: 'pv', id: post.id }, drErr: '' }),
+publish: tryPublish, pubLabel: pubLabel,
+showErr: showE && errList.length > 0, errList: errList, errHead: plural(errList.length, 'thing needs', 'things need') + ' fixing before you ' + pubLabel.toLowerCase(),
+title: post.title, setTitle: set('title'), eTitle: fe('title', (b) => inp(b) + '; min-height: 56px; ' + DISPLAY + 'font-size: 24px; letter-spacing: -0.02em'),
+slug: post.slug, setSlug: (e) => upd({ slug: e.target.value.trim() }), slugFromTitle: () => upd({ slug: slugify(post.title) }),
+eSlug: (() => { const on = showE && !!E.slug; return { on: on, msg: E.slug || '', inv: on ? 'true' : 'false', wrap: 'flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 0; min-height: 48px; box-sizing: border-box; border: 1px solid ' + (on ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; ' + MONO + 'font-size: 14px' }; })(),
+slugHelp: post.imported && post.old ? 'vert-robo-con.example/news/' + (post.slug || '…') + (post.status === 'published' ? ' · the old /blog/' + post.old + ' redirects here.' : ' · the old /blog/' + post.old + ' redirects to /news until this is published.') : 'vert-robo-con.example/news/' + (post.slug || '…'),
+type: post.type, setType: set('type'),
+hasCover: !!post.cover, noCover: !post.cover, cover: post.cover || IMG.hand, alt: post.alt, setAlt: set('alt'), eAlt: fe('alt', inp),
+nextCover: () => { const n = covers[(covers.indexOf(post.cover) + 1) % covers.length]; upd({ cover: n, alt: coverAlts[n] }); },
+rmCover: () => upd({ cover: '', alt: '' }),
+bt: hasCur ? cur.t : 'p', setBt: (e) => { if (hasCur) setBlock({ t: e.target.value }); },
+tools: tools,
+delBlock: () => { if (hasCur) upd({ blocks: blocks.filter((b, i) => i !== bi) }, { bsel: Math.max(bi - 1, 0) }); },
+words: plural(words, 'WORD', 'WORDS') + ' · ' + Math.max(1, Math.round(words / 200)) + ' MIN READ',
+blocks: blocks.map((b, i) => ({ text: prefix(b, i) + (b.x || ' '), sel: i === bi ? 'true' : 'false', aria: BT[b.t] + ' ' + (i + 1) + ' of ' + blocks.length + (i === bi ? ', selected' : ''),
+style: blockStyle(b, i === bi) + (b.ln ? '; color: #0138AC; text-decoration: underline' : ''), pick: () => this.setState({ bsel: i }) })),
+noBlocks: blocks.length === 0,
+para: S.para, setPara: (e) => this.setState({ para: e.target.value }),
+addPara: () => { const x = S.para.trim(); if (!x) return; upd({ blocks: blocks.concat([{ t: 'p', x: x }]) }, { para: '', bsel: blocks.length }); },
+chip: post.status === 'published' && post.dirty ? chip('amber', 'CHANGES NOT LIVE') : chip(ST[post.status][0], ST[post.status][1]),
+stLine: stLine,
+canUnpub: post.status !== 'draft', unpubLabel: post.status === 'scheduled' ? 'Cancel schedule' : 'Unpublish',
+unpublish: () => { const wasPub = post.status === 'published'; const patch = { posts: S.posts.map((p) => p.id === post.id ? Object.assign({}, p, { status: 'draft', dirty: false, later: false }) : p) };
+if (wasPub) queue(patch, 'Unpublished · /news/' + post.slug + ' is no longer public'); else note(patch, 'Schedule cancelled · the post is a draft again'); },
+later: sw(isLater), isLater: isLater, isNow: canLater && !isLater, canLater: canLater, isLive: !canLater,
+liveNote: 'Live since ' + fmtDate(post.pub) + '. Edits go live when you press Publish changes; to schedule instead, unpublish first.',
+toggleLater: () => upd({ later: !post.later, date: post.date || '2026-10-23' }),
+date: post.date, setDate: set('date'), eDate: fe('date', (b) => inp(b) + '; min-height: 44px; ' + MONO + 'font-size: 13px; padding: 0 10px'),
+time: post.time, setTime: set('time'), timeStyle: inp(false) + '; min-height: 44px; ' + MONO + 'font-size: 13px; padding: 0 10px',
+zone: post.date ? 'Goes live ' + fmtDate(post.date) + ' at ' + post.time + ' UTC · ' + local + ' your time (Europe/Amsterdam, UTC+' + zh(post.date) + '). It goes live at that moment.' : 'Pick a date.',
+author: post.author, setAuthor: set('author'),
+li: post.li, setLi: (e) => upd({ li: e.target.value.trim() }), eLi: fe('li', inp),
+seoT: post.seoT, setSeoT: set('seoT'), seoTStyle: inp(seoTLen > 60), seoTCount: counter(seoTLen, 60),
+seoD: post.seoD, setSeoD: set('seoD'), eSeo: fe('seo', ta), seoDCount: counter(seoDLen, 160),
+serpUrl: 'vert-robo-con.example › news › ' + (post.slug || '…'),
+serpTitle: (post.seoT || post.title || 'Untitled post') + ' · Vert Robo Con',
+serpDesc: post.seoD ? (post.seoD.length > 160 ? post.seoD.slice(0, 157) + '…' : post.seoD) : 'Add a meta description so search results show a useful summary.'
+};
+
+// ---------- videos ----------
+const SER = { ritf: 'Robots in the Field', s2025: 'Summit 2025', s2024: 'Summit 2024', explainers: 'Explainers' };
+const TOP = { air: ['Air', '#6D5BD0'], land: ['Land', '#1F9D5C'], sea: ['Sea', '#0B6FB8'], materials: ['Materials', '#D9822B'] };
+const TR = { pub: ['green', 'PUBLISHED'], review: ['amber', 'AUTO · REVIEW'], missing: ['neutral', 'MISSING'] };
+const SESS = { '2025-1': 'Summit 2025 · Day 1', '2025-2': 'Summit 2025 · Day 2', '2025-3': 'Summit 2025 · Day 3', '2024': 'Summit 2024' };
+const needs = (v) => !v.series || v.tr === 'missing';
+const topicChip = (k) => ({ label: TOP[k][0], style: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; border: 1px solid #E5E7EB; font-size: 12.5px; color: #0A1222; white-space: nowrap', dot: 'width: 7px; height: 7px; border-radius: 50%; background: ' + TOP[k][1] });
+const openV = (v) => this.setState({ dr: { k: 'v', id: v.id, d: JSON.parse(JSON.stringify(v)) }, drErr: '' });
+const VF = [['all', 'All'], ['ritf', 'In the Field'], ['s2025', 'Summit 2025'], ['s2024', 'Summit 2024'], ['explainers', 'Explainers']];
+const vf = VF.map((f) => { const on = S.vf === f[0]; return { label: f[1], count: String(S.videos.filter((v) => f[0] === 'all' || v.series === f[0]).length), pressed: on ? 'true' : 'false', style: seg(on), cStyle: cnt(on), pick: () => this.setState({ vf: f[0], vAll: false }) }; });
+const vMatch = S.videos.filter((v) => (S.vf === 'all' || v.series === S.vf) && (!S.vNeeds || needs(v)));
+const vShown = S.vAll ? vMatch : vMatch.slice(0, 10);
+const vids = vShown.map((v) => ({
+title: v.title, meta: 'YT · ' + v.yt + (v.series === 'ritf' && v.ep ? ' · EPISODE ' + v.ep : '') + (v.show ? '' : ' · HIDDEN ON WATCH'), dur: v.dur,
+hasImg: !!v.img, noImg: !v.img, img: v.img || IMG.hand,
+thumb: 'position: relative; display: block; width: 96px; height: 54px; border-radius: 8px; overflow: hidden; background: #0A1222',
+series: v.series ? SER[v.series] : 'No series', seriesStyle: 'font-size: 13.5px; padding-right: 10px; color: ' + (v.series ? '#0A1222' : '#8A4B00'),
+topics: v.topics.length ? v.topics.map(topicChip) : [{ label: 'Not set', style: 'font-size: 13px; color: #646B7A', dot: 'display: none' }],
+tr: chip(TR[v.tr][0], TR[v.tr][1]),
+hasSess: !!v.sess, noSess: !v.sess, sess: SESS[v.sess] || '',
+row: 'display: grid; grid-template-columns: 112px minmax(0, 1fr) 176px 136px 178px 156px 52px; align-items: center; min-height: 70px; padding: 0 4px 0 16px; border-top: 1px solid #EEF0F3',
+editLabel: 'Edit VRC fields for ' + v.title, open: () => openV(v)
+}));
+const nNeeds = S.videos.filter(needs).length;
+
+// ---------- documents ----------
+const togglePdf = (d) => queue({ docs: S.docs.map((x) => x.id === d.id ? Object.assign({}, x, { pdf: !x.pdf }) : x) }, d.title + (d.pdf ? ': PDF no longer generated' : ': PDF generated on publish'));
+const docs = S.docs.map((d) => ({
+title: d.title, path: d.path, ver: d.ver, upd: d.upd, chip: chip('green', 'PUBLISHED'),
+pdf: sw(d.pdf), togglePdf: () => togglePdf(d), pdfLine: d.pdf ? 'PDF · [SIZE] · FROM THIS PAGE' : 'NO PDF · READER ONLY',
+row: 'display: grid; grid-template-columns: minmax(0, 1fr) 150px 150px 130px 250px 52px; align-items: center; min-height: 72px; padding: 0 4px 0 16px; border-top: 1px solid #EEF0F3',
+editLabel: 'Edit ' + d.title, open: () => this.setState({ dr: { k: 'd', id: d.id, d: Object.assign({}, d) }, drErr: '' })
+}));
+
+// ---------- partners ----------
+// tiers are labels, not statuses: neutral pills; editions outside the current filter are outlined
+const tierChip = (x, inFilter) => ({ label: x.e + ' · ' + x.t.toUpperCase(),
+style: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 999px; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap; line-height: 1.5; ' + (inFilter ? 'border: 1px solid #F3F4F2; background: #F3F4F2; color: #0A1222' : 'border: 1px solid #E5E7EB; background: #ffffff; color: #646B7A'),
+dot: 'display: none' });
+const pIni = (n) => n.split(/[\s-]+/).filter((w) => /^[A-Za-z]/.test(w)).map((w) => w[0]).join('').slice(0, 3).toUpperCase();
+const PF = [['all', 'All'], ['2027', '2027'], ['2026', '2026'], ['2025', '2025']];
+const inEd = (p, e) => e === 'all' || p.eds.some((x) => x.e === e);
+const pf = PF.map((f) => { const on = S.pf === f[0]; return { label: f[1], count: String(S.partners.filter((p) => inEd(p, f[0])).length), pressed: on ? 'true' : 'false', style: seg(on), cStyle: cnt(on), pick: () => this.setState({ pf: f[0] }) }; });
+const pList = S.partners.filter((p) => inEd(p, S.pf));
+const openP = (p) => this.setState({ dr: { k: 'p', id: p.id, d: JSON.parse(JSON.stringify(p)) }, drErr: '' });
+const partners = pList.map((p) => ({
+name: p.name, logo: p.logo ? 'media · ' + p.logo : 'NO LOGO YET', ini: pIni(p.name), host: p.url ? p.url.replace(/^https?:\/\//, '').replace(/\/$/, '') : 'No website',
+eds: p.eds.slice().sort((a, b) => (a.e < b.e ? 1 : -1)).map((x) => tierChip(x, S.pf === 'all' || x.e === S.pf)),
+vis: p.show ? chip('green', 'SHOWN') : chip('neutral', 'HIDDEN'),
+row: 'display: grid; grid-template-columns: minmax(0, 1fr) 230px 330px 110px 52px; align-items: center; min-height: 60px; padding: 0 4px 0 16px; border-top: 1px solid #EEF0F3',
+editLabel: 'Edit ' + p.name, open: () => openP(p)
+}));
+const addPartner = () => this.setState({ dr: { k: 'p', id: null, d: { id: 'new' + S.nextId, name: '', url: '', logo: '', eds: [{ e: S.pf === 'all' ? '2027' : S.pf, t: 'Partner' }], show: true } }, drErr: '' });
+
+// ---------- drawer ----------
+const R = S.dr; const D = R && R.d;
+const setD = (patch) => this.setState({ dr: Object.assign({}, R, { d: Object.assign({}, D, patch) }), drErr: '' });
+const close = () => this.setState({ dr: null, drErr: '' });
+let dr = { on: false, eyebrow: '', title: '', close: close, closeLabel: 'Cancel', canSave: false, saveLabel: 'Save', save: noop, isPv: false };
+const sw0 = sw(false);
+let dv = { on: false, title: '', setTitle: noop, meta: '', dur: '', setDur: noop, desc: '', setDesc: noop, fieldStyle: '', descStyle: '', replaceThumb: noop, hasImg: false, img: IMG.hand, thumb: '', series: '', setSeries: noop, isRitf: false, ep: '', setEp: noop, epStyle: '', topics: [], tr: 'pub', setTr: noop, trHelp: '', sess: '', setSess: noop, show: sw0, toggleShow: noop };
+let dd = { on: false, path: '', upd: '', ver: '', setVer: noop, verErr: false, verInv: 'false', verStyle: '', note: '', setNote: noop, pdf: sw0, togglePdf: noop, pdfHelp: '' };
+let dp = { on: false, hasErr: false, errMsg: '', name: '', setName: noop, nameInv: 'false', nameStyle: '', url: '', setUrl: noop, urlStyle: '', ini: '', logo: '', uploadLabel: '', upload: noop, eds: [], addEd: noop, show: sw0, toggleShow: noop };
+let pv = { on: false, url: '', hasCover: false, cover: IMG.hand, alt: '', meta: '', title: '', byline: '', hasLi: false, blocks: [] };
+if (R && R.k === 'v') {
+const v = D;
+dr = Object.assign(dr, { on: true, eyebrow: 'VIDEOS · YT · ' + v.yt, title: 'Video details', canSave: true, saveLabel: 'Save',
+save: () => queue({ dr: null, videos: S.videos.map((x) => x.id === v.id ? v : x) }, 'Saved “' + v.title + '” · live on Watch') });
+dv = { on: true, title: v.title, setTitle: (e) => setD({ title: e.target.value }), meta: 'YT · ' + v.yt, dur: v.dur, setDur: (e) => setD({ dur: e.target.value }), desc: v.desc || '', setDesc: (e) => setD({ desc: e.target.value }), fieldStyle: inp(false) + '; min-height: 44px', descStyle: ta(false), replaceThumb: () => note({}, 'Thumbnail replaced · save to keep it'), hasImg: !!v.img, img: v.img || IMG.hand,
+thumb: 'position: relative; display: block; width: 176px; height: 99px; border-radius: 10px; overflow: hidden; background: #0A1222',
+series: v.series, setSeries: (e) => setD({ series: e.target.value, ep: e.target.value === 'ritf' ? (v.ep || 5) : 0 }), isRitf: v.series === 'ritf',
+ep: String(v.ep || ''), setEp: (e) => setD({ ep: parseInt(e.target.value, 10) || 0 }), epStyle: inp(false),
+topics: Object.keys(TOP).map((k) => { const on = v.topics.indexOf(k) >= 0; return { label: TOP[k][0], pressed: on ? 'true' : 'false',
+style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'border: 1px solid #0138AC; background: #EEF2FB; color: #0138AC' : 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222'),
+dot: 'width: 8px; height: 8px; border-radius: 50%; background: ' + TOP[k][1], toggle: () => setD({ topics: on ? v.topics.filter((t) => t !== k) : v.topics.concat([k]) }) }; }),
+tr: v.tr, setTr: (e) => setD({ tr: e.target.value }),
+trHelp: v.tr === 'pub' ? 'Shown in the Transcript tab and offered as a .txt download.' : v.tr === 'review' ? 'Drafted from YouTube captions. Correct names and terms, then set it to Published.' : 'No transcript yet.',
+sess: v.sess, setSess: (e) => setD({ sess: e.target.value }),
+show: sw(v.show), toggleShow: () => setD({ show: !v.show }) };
+} else if (R && R.k === 'd') {
+const d = D; const bad = !d.ver.trim() && S.drErr === 'ver';
+dr = Object.assign(dr, { on: true, eyebrow: 'DOCUMENTS · ' + d.path, title: d.title, canSave: true, saveLabel: 'Save',
+save: () => { if (!d.ver.trim()) { this.setState({ drErr: 'ver' }); return; } const old = S.docs.find((x) => x.id === d.id); const changed = old.ver !== d.ver || old.pdf !== d.pdf || !!d.note;
+const nd = Object.assign({}, d, { upd: changed ? 'Today' : d.upd, note: '' });
+if (changed) queue({ dr: null, docs: S.docs.map((x) => x.id === d.id ? nd : x) }, d.title + ' saved · ' + d.ver + ' · live now'); else note({ dr: null }, 'No changes to save'); } });
+dd = { on: true, path: d.path, upd: d.upd, ver: d.ver, setVer: (e) => setD({ ver: e.target.value }), verErr: bad, verInv: bad ? 'true' : 'false', verStyle: inp(bad),
+note: d.note, setNote: (e) => setD({ note: e.target.value }), pdf: sw(d.pdf), togglePdf: () => setD({ pdf: !d.pdf }),
+pdfHelp: d.pdf ? 'Built from the same source as the page, with the version line and date on the cover. Offered as “Download PDF · [SIZE]”.' : 'The reader shows no Download PDF link. Readers can still print the page.' };
+} else if (R && R.k === 'p') {
+const p = D; const isNew = !R.id;
+const err = S.drErr;
+dr = Object.assign(dr, { on: true, eyebrow: isNew ? 'PARTNERS · NEW' : 'PARTNERS · ' + p.id.toUpperCase(), title: isNew ? 'Add partner' : p.name || 'Partner', canSave: true, saveLabel: isNew ? 'Add partner' : 'Save',
+save: () => {
+if (!p.name.trim()) { this.setState({ drErr: 'Add the organization’s name.' }); return; }
+if (!p.eds.length) { this.setState({ drErr: 'Add at least one edition and tier.' }); return; }
+const keys = p.eds.map((x) => x.e); if (keys.some((k, i) => keys.indexOf(k) !== i)) { this.setState({ drErr: 'Each edition can appear once. Change or remove the duplicate.' }); return; }
+const np = Object.assign({}, p, { name: p.name.trim() });
+queue(isNew ? { dr: null, partners: S.partners.concat([np]), nextId: S.nextId + 1 } : { dr: null, partners: S.partners.map((x) => x.id === p.id ? np : x) }, (isNew ? 'Added ' : 'Saved ') + np.name + ' · live on the summit pages');
+} });
+dp = { on: true, hasErr: !!err, errMsg: err, name: p.name, setName: (e) => setD({ name: e.target.value }), nameInv: err && !p.name.trim() ? 'true' : 'false', nameStyle: inp(!!err && !p.name.trim()),
+url: p.url, setUrl: (e) => setD({ url: e.target.value.trim() }), urlStyle: inp(false) + '; ' + MONO + 'font-size: 14px',
+ini: p.name ? pIni(p.name) : '?', logo: p.logo ? p.logo + ' · media' : 'No logo yet · SVG or PNG, transparent background',
+uploadLabel: p.logo ? 'Replace' : 'Upload', upload: () => setD({ logo: p.logo || (slugify(p.name) || 'logo') + '.png' }),
+eds: p.eds.map((x, i) => ({ e: x.e, t: x.t, eLabel: 'Edition ' + (i + 1), tLabel: 'Tier for ' + x.e,
+setE: (e) => setD({ eds: p.eds.map((y, j) => j === i ? { e: e.target.value, t: y.t } : y) }),
+setT: (e) => setD({ eds: p.eds.map((y, j) => j === i ? { e: y.e, t: e.target.value } : y) }),
+rmLabel: 'Remove ' + x.e, rm: () => setD({ eds: p.eds.filter((y, j) => j !== i) }) })),
+addEd: () => { const free = ['2027', '2026', '2025', '2024'].find((y) => !p.eds.some((x) => x.e === y)) || '2027'; setD({ eds: p.eds.concat([{ e: free, t: 'Partner' }]) }); },
+show: sw(p.show), toggleShow: () => setD({ show: !p.show }) };
+} else if (R && R.k === 'pv') {
+const p = post;
+dr = Object.assign(dr, { on: true, eyebrow: 'PREVIEW · VERSION ' + p.ver + ' · NOT PUBLIC', title: 'Preview', closeLabel: 'Close preview', isPv: true });
+pv = { on: true, url: 'vert-robo-con.example/news/' + (p.slug || '…') + '?preview', hasCover: !!p.cover, cover: p.cover || IMG.hand, alt: p.alt,
+meta: p.type.toUpperCase() + ' · ' + (p.status === 'scheduled' ? fmtDate(p.date).toUpperCase() : p.status === 'published' ? fmtDate(p.pub).toUpperCase() : 'DRAFT'),
+title: p.title || 'Untitled post', byline: 'By ' + p.author + ' · ' + Math.max(1, Math.round(words / 200)) + ' min read', hasLi: !!p.li,
+blocks: p.blocks.map((b, i) => ({ x: prefix(b, i) + b.x, style: 'margin: 0; ' + blockStyle(b, false).replace(/cursor: text; /, '').replace(/padding: 8px 10px/, b.t === 'q' ? 'padding: 10px 14px' : 'padding: 0') })) };
+}
+
+// ---------- header button per tab ----------
+const PLUS = 'M12 5v14M5 12h14';
+const prim = 'display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer';
+const second = 'display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer';
+const newPost = () => { const id = 'new-post-' + S.nextId;
+this.setState({ nextId: S.nextId + 1, posts: [{ id: id, title: '', slug: '', old: '', type: 'Essay', status: 'draft', pub: '', author: 'Sample Admin 01', updated: 'Just now', by: '01', imported: false, ver: 0, live: 0, dirty: false, later: false, date: '', time: '09:00', cover: '', alt: '', li: '', seoT: '', seoD: '', blocks: [] }].concat(S.posts),
+view: 'edit', sel: id, showErr: false, saved: '', bsel: 0, para: '', nf: 'all', tab: 'news' }); };
+const hdr = S.tab === 'news' ? { on: S.view === 'list', label: 'New post', icon: PLUS, act: newPost, style: prim }
+: S.tab === 'partners' ? { on: true, label: 'Add partner', icon: PLUS, act: addPartner, style: prim }
+: { on: false, label: '', icon: PLUS, act: noop, style: prim };
+
+// ---------- tabs ----------
+const TABS = [['news', 'News', S.posts.length], ['videos', 'Videos', S.videos.length], ['docs', 'Documents', S.docs.length], ['partners', 'Partners', S.partners.length]];
+const tabs = TABS.map((t) => { const on = S.tab === t[0];
+return { id: 'tab-' + t[0], panel: t[0] === 'news' && isEditor ? 'panel-news-edit' : 'panel-' + t[0], label: t[1], count: String(t[2]), sel: on ? 'true' : 'false', style: seg(on), countStyle: cnt(on),
+pick: () => this.setState({ tab: t[0], view: t[0] === 'news' ? 'list' : S.view, dr: null, showErr: false }) }; });
+
+const sample = chip('neutral', 'SAMPLE DATA');
+return {
+tabs: tabs, hdr: hdr,
+totalOpen: String(totalOpen), queueAria: totalOpen + ' items need action',
+edition: S.edition, onEdition: (e) => this.setState({ edition: e.target.value }),
+q: S.q, setQ: (e) => this.setState({ q: e.target.value }),
+toast: { on: !!S.toast, text: S.toast, link: S.toastLink, close: () => this.setState({ toast: '', toastLink: false }) },
+isNewsList: S.tab === 'news' && S.view === 'list', isEditor: isEditor, isVideos: S.tab === 'videos', isDocs: S.tab === 'docs', isPartners: S.tab === 'partners',
+nf: nf, nq: S.nq, setNq: (e) => this.setState({ nq: e.target.value }), news: news, newsEmpty: news.length === 0,
+newsCount: news.length + ' OF ' + plural(S.posts.length, 'POST', 'POSTS'), clearNews: () => this.setState({ nf: 'all', nq: '' }),
+ed: ed,
+selStyle: inp(false) + '; min-height: 44px; appearance: none; -webkit-appearance: none; padding-right: 34px; font-size: 14px; cursor: pointer',
+taStyle: ta(false),
+vf: vf, vids: vids, vEmpty: vids.length === 0, vCount: vShown.length + ' OF ' + vMatch.length + ' SHOWN',
+vNeeds: Object.assign(sw(S.vNeeds), { label: 'Needs fields · ' + nNeeds, toggle: () => this.setState({ vNeeds: !S.vNeeds, vAll: false }) }),
+vMore: { on: vMatch.length > vShown.length || (S.vAll && vMatch.length > 10), label: S.vAll ? 'Show fewer' : 'Show all ' + vMatch.length, act: () => this.setState({ vAll: !S.vAll }) },
+clearVids: () => this.setState({ vf: 'all', vNeeds: false }),
+sampleChip: sample,
+docs: docs,
+pf: pf, partners: partners, pEmpty: partners.length === 0, pCount: plural(partners.length, 'PARTNER', 'PARTNERS'), addPartner: addPartner,
+dr: dr, dv: dv, dd: dd, dp: dp, pv: pv
+};
+}
+}
+</script>
+</body>
+</html>

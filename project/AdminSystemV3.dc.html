@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Jobs, email and backups</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.arow:hover{background:#F7F8F9}
+.ghost:hover{background:#F3F4F2}
+.sec:hover{background:#F7F8F9}
+.tpl:hover{background:#F7F8F9}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 1600px; box-sizing: border-box; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 14px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the app) -->
+<div style="display: flex; align-items: center; gap: 16px; min-height: 34px; box-sizing: border-box; background: #E9EAEC; border-bottom: 1px dashed #A7ADB8; padding: 6px 24px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.03em; line-height: 1.5; color: #3D4556">
+<span style="flex: 1 1 auto; min-width: 0">Canvas note · One VRC app: job counts from pg-boss, templates rendered by the app’s mailer, backup heartbeat from the backup jobs, version from the running image. Sample data.</span>
+<span role="group" aria-label="Canvas control, not part of the page" style="flex: 0 0 auto; display: flex; align-items: center; gap: 6px">
+<span style="font-size: 10.5px; letter-spacing: 0.06em; color: #646B7A; white-space: nowrap">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<sc-for list="{{cv}}" as="c" hint-placeholder-count="4"><button type="button" aria-disabled="{{c.dis}}" onClick="{{c.act}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</span>
+</div>
+
+<div style="position: relative; display: flex; align-items: stretch; min-height: 1530px">
+
+<!-- TOAST -->
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 78px; right: 32px; z-index: 70; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); font-size: 14px">
+<span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #1DB46C; display: flex; align-items: center; justify-content: center; color: #ffffff"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<span style="font-weight: 500">{{toast}}</span>
+<sc-if value="{{toastLink}}" hint-placeholder-val="{{ false }}">
+<a href="AdminUsersV3.dc.html" style="display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border-radius: 8px; background: #141D30; color: #BFD0F5; font-size: 13px; font-weight: 500; text-decoration: none">View in Audit log</a>
+</sc-if>
+<button type="button" onClick="{{closeToast}}" aria-label="Dismiss notification" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- DISCARD CONFIRMATION -->
+<sc-if value="{{dc.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Keep the job" onClick="{{dc.cancel}}" style="position: absolute; inset: 0; z-index: 60; border: 0; padding: 0; background: rgba(10,18,34,0.32); cursor: default"></button>
+<div role="alertdialog" aria-modal="true" aria-labelledby="dc-h" aria-describedby="dc-d" style="position: absolute; z-index: 61; top: 220px; left: 50%; margin-left: -260px; width: 520px; box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">JOBS · DISCARD · {{dc.ref}}</span>
+<h2 id="dc-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">Discard this {{dc.name}} job?</h2>
+<span id="dc-d" style="font-size: 15px; color: #3D4556">{{dc.body}}</span>
+<span style="font-size: 13px; color: #646B7A">An audit event is written with your name.</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{dc.cancel}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Keep the job</button>
+<button type="button" onClick="{{dc.confirm}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #B42318; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Discard job</button>
+</div>
+</div>
+</sc-if>
+
+<!-- RIGHT DETAIL DRAWER · failed job -->
+<sc-if value="{{jd.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Close details" onClick="{{jd.close}}" style="position: absolute; inset: 0; z-index: 50; border: 0; padding: 0; background: rgba(10,18,34,0.28); cursor: default"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="dw-h" style="position: absolute; top: 0; right: 0; bottom: 0; z-index: 51; width: 520px; box-sizing: border-box; background: #ffffff; border-left: 1px solid #E5E7EB; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E5E7EB">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{jd.eyebrow}}</span>
+<span style="display: flex; align-items: center; gap: 10px">
+<h2 id="dw-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em">{{jd.title}}</h2>
+<span style="{{jd.chip.style}}"><span aria-hidden="true" style="{{jd.chip.dot}}"></span>{{jd.chip.label}}</span>
+</span>
+</div>
+<button type="button" aria-label="Close" onClick="{{jd.close}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: 1 1 auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 18px">
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 14px">
+<sc-for list="{{jd.facts}}" as="f" hint-placeholder-count="6">
+<div style="min-width: 0"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="{{f.style}}">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #B42318">ERROR · EACH ATTEMPT</span>
+<div role="group" aria-label="Error from each attempt" style="border-radius: 12px; background: #0A1222; padding: 12px 14px; display: flex; flex-direction: column; font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.7; color: #C8CEDA">
+<sc-for list="{{jd.log}}" as="l" hint-placeholder-count="4"><span style="white-space: pre-wrap">{{l.t}}</span></sc-for>
+</div>
+</div>
+<div role="note" style="padding: 12px 14px; border-radius: 12px; background: #F3F4F2; font-size: 13px; color: #3D4556">{{jd.hint}}</div>
+</div>
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 16px 24px; border-top: 1px solid #E5E7EB">
+<span style="margin-right: auto; font-size: 13px; color: #646B7A">Retry puts it back in its queue with fresh attempts.</span>
+<button type="button" class="sec" onClick="{{jd.discard}}" aria-haspopup="dialog" style="min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Discard</button>
+<button type="button" onClick="{{jd.retry}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Retry job</button>
+</div>
+</aside>
+</sc-if>
+
+<!-- SIDEBAR -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; font-weight: 500; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- MAIN -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>{{runLabel}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<!-- PAGE HEADER -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 520px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS · JOBS · EMAIL · BACKUPS · VERSION</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.1; letter-spacing: -0.02em">Jobs, email &amp; backups</h1>
+<span style="font-size: 15px; color: #3D4556">See what the background worker is doing and retry what failed, check what each email says and whether it arrives, and confirm the last backup and the version that is live.</span>
+</div>
+</div>
+
+<!-- KPI BENTO -->
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px 18px; display: flex; flex-direction: column; gap: 2px; background: #ffffff">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{k.label}}</span>
+<span style="{{k.numStyle}}">{{k.num}}</span>
+<span style="font-size: 13px; color: #646B7A">{{k.sub}}</span>
+</div>
+</sc-for>
+</div>
+
+<!-- TABS -->
+<div role="tablist" aria-label="Jobs, email and backups sections" style="align-self: flex-start; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" role="tab" id="{{t.id}}" aria-selected="{{t.sel}}" aria-controls="{{t.panel}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}} <span style="{{t.countStyle}}">{{t.count}}</span></button>
+</sc-for>
+</div>
+
+<!-- ============ JOBS ============ -->
+<sc-if value="{{isJobs}}" hint-placeholder-val="{{ true }}">
+<section id="panel-jobs" role="tabpanel" aria-labelledby="tab-jobs" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: flex-end; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">Queues</h2>
+<span style="font-size: 14px; color: #3D4556">The worker takes every job from the app’s own database: emails, geocoding, expiry and clean-up.</span>
+</div>
+<span style="margin-left: auto"><span style="{{sampleChip.style}}"><span aria-hidden="true" style="{{sampleChip.dot}}"></span>{{sampleChip.label}}</span></span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{jc}}" as="k" hint-placeholder-count="4">
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px 18px; display: flex; flex-direction: column; gap: 4px; background: #ffffff">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{k.l}}</span><sc-if value="{{k.hasChip}}" hint-placeholder-val="{{ false }}"><span style="{{k.chip.style}}"><span aria-hidden="true" style="{{k.chip.dot}}"></span>{{k.chip.label}}</span></sc-if></span>
+<span style="{{k.numStyle}}">{{k.v}}</span>
+<span style="font-size: 13px; color: #646B7A">{{k.sub}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; align-items: flex-end; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">Failed jobs</h2>
+<span style="font-size: 14px; color: #3D4556">Jobs that used up their retries. Retry puts one back in its queue; Discard drops it for good.</span>
+</div>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{failCount}}</span>
+</div>
+<div role="table" aria-label="Failed jobs, newest first" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: 220px 150px minmax(0, 1fr) 96px 150px 184px; align-items: center; min-height: 40px; padding: 0 12px 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">JOB</span><span role="columnheader">REFERENCE</span><span role="columnheader">ERROR</span><span role="columnheader">ATTEMPTS</span><span role="columnheader">FAILED AT (UTC)</span><span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Actions</span></span>
+</div>
+<sc-for list="{{fj}}" as="j" hint-placeholder-count="2">
+<div role="row" class="arow" style="display: grid; grid-template-columns: 220px 150px minmax(0, 1fr) 96px 150px 184px; align-items: center; min-height: 58px; padding: 0 12px 0 16px; border-top: 1px solid #EEF0F3">
+<span role="cell" style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.3; min-width: 0; padding: 6px 12px 6px 0"><button type="button" onClick="{{j.open}}" aria-haspopup="dialog" aria-label="{{j.aria}}" style="min-height: 32px; padding: 0 8px; margin-left: -8px; border: 0; border-radius: 8px; background: transparent; font-family: 'Geist Mono', monospace; font-size: 14px; font-weight: 500; color: #0138AC; cursor: pointer; text-decoration: underline; text-underline-offset: 3px">{{j.name}}</button><span style="font-size: 12px; color: #646B7A">{{j.what}}</span></span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222">{{j.ref}}</span>
+<span role="cell" title="{{j.err}}" style="min-width: 0; padding-right: 12px; font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #B42318; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{j.err}}</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{j.attempts}}</span>
+<span role="cell" style="display: flex; flex-direction: column; line-height: 1.3"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222">{{j.when}}</span><span style="font-size: 12px; color: #646B7A">{{j.ago}}</span></span>
+<span role="cell" style="display: flex; justify-content: flex-end; gap: 6px">
+<button type="button" class="sec" onClick="{{j.retry}}" aria-label="{{j.retryAria}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; color: #0A1222; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap">Retry</button>
+<button type="button" class="ghost" onClick="{{j.discard}}" aria-haspopup="dialog" aria-label="{{j.discardAria}}" style="min-height: 36px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap">Discard</button>
+</span>
+</div>
+</sc-for>
+<sc-if value="{{noFailed}}" hint-placeholder-val="{{ false }}">
+<div role="row" style="display: flex; align-items: center; min-height: 58px; padding: 0 16px; border-top: 1px solid #EEF0F3">
+<span role="cell" style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #3D4556"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 50%; background: #1DB46C; box-shadow: 0 0 0 3px rgba(29,180,108,0.22); flex: 0 0 auto"></span>No failed jobs. Everything the worker picked up has finished or is still retrying.</span>
+</div>
+</sc-if>
+</div>
+<span style="font-size: 13px; color: #646B7A">pg-boss retries a job up to 3 times before it lands here. Retry and Discard each write an audit event with your name.</span>
+</section>
+</sc-if>
+
+<!-- ============ EMAIL ============ -->
+<sc-if value="{{isEmail}}" hint-placeholder-val="{{ false }}">
+<section id="panel-email" role="tabpanel" aria-labelledby="tab-email" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px">
+<section aria-labelledby="ses-h" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; background: #ffffff">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<h2 id="ses-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.2; letter-spacing: -0.02em">Delivery · Amazon SES · last 30 days</h2>
+<span style="{{sampleChip.style}}"><span aria-hidden="true" style="{{sampleChip.dot}}"></span>{{sampleChip.label}}</span>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{ses}}" as="k" hint-placeholder-count="3">
+<div style="border-radius: 12px; background: #F3F4F2; padding: 10px 14px"><dt style="font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: #646B7A">{{k.l}}</dt><dd style="margin: 0; display: flex; flex-direction: column"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.2; letter-spacing: -0.02em">{{k.v}}</span><span style="font-size: 12px; color: #646B7A">{{k.sub}}</span></dd></div>
+</sc-for>
+</dl>
+<span style="font-size: 13px; color: #646B7A">SES reviews a sending account above about 5% bounces or 0.1% complaints. Hard bounces and complaints go on a suppression list, so we never email those addresses again.</span>
+</section>
+<section aria-labelledby="snd-h" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; background: #ffffff">
+<h2 id="snd-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.2; letter-spacing: -0.02em">Sender</h2>
+<dl style="margin: 0; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 6px 10px; font-size: 13px">
+<dt style="color: #646B7A">From</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12.5px; overflow-wrap: anywhere">Vert Robo Con &lt;[SENDER]@vert-robo-con.example&gt;</dd>
+<dt style="color: #646B7A">Reply-To</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12.5px"><a href="mailto:hello@vert-robo-con.example">hello@vert-robo-con.example</a></dd>
+<dt style="color: #646B7A">Domain</dt><dd style="margin: 0; display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{dns}}" as="d" hint-placeholder-count="3"><span style="{{d.style}}"><span aria-hidden="true" style="{{d.dot}}"></span>{{d.label}}</span></sc-for></dd>
+</dl>
+<span style="font-size: 13px; color: #646B7A">The worker sends every email as a <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">send-email</span> job, so a failed send shows on the <button type="button" onClick="{{goJobs}}" style="padding: 0; border: 0; background: transparent; font: inherit; color: #0138AC; text-decoration: underline; text-underline-offset: 2px; cursor: pointer">Jobs tab</button>.</span>
+</section>
+</div>
+
+<!-- summit emails: delivery report -->
+<section aria-labelledby="sum-h" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; background: #ffffff">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<h2 id="sum-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.2; letter-spacing: -0.02em">Summit emails · Summit 2027</h2>
+<span style="font-size: 13px; color: #646B7A">Sent to every confirmed registrant. A re-send goes only to people with no delivered copy, and skips suppressed addresses.</span>
+</div>
+<span style="{{sampleChip.style}}"><span aria-hidden="true" style="{{sampleChip.dot}}"></span>{{sampleChip.label}}</span>
+</div>
+<div role="table" aria-label="Summit email delivery" style="display: flex; flex-direction: column">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1fr) 120px 120px 120px 200px; align-items: center; min-height: 32px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">EMAIL</span><span role="columnheader">SENT</span><span role="columnheader">BOUNCED</span><span role="columnheader">SUPPRESSED</span><span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Actions</span></span>
+</div>
+<sc-for list="{{sm}}" as="m" hint-placeholder-count="2">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1fr) 120px 120px 120px 200px; align-items: center; min-height: 52px; border-top: 1px solid #EEF0F3">
+<span role="cell" style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0"><span style="font-size: 14px; font-weight: 500">{{m.name}}</span><span style="font-size: 12px; color: #646B7A">{{m.when}}</span></span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 14px; color: #0A1222">{{m.sent}}</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 14px; color: #0A1222">{{m.bounced}}</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 14px; color: #0A1222">{{m.suppressed}}</span>
+<span role="cell" style="display: flex; justify-content: flex-end">
+<sc-if value="{{m.notDone}}" hint-placeholder-val="{{ true }}"><button type="button" class="sec" onClick="{{m.resend}}" aria-label="{{m.aria}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; color: #0A1222; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap">Re-send to missed</button></sc-if>
+<sc-if value="{{m.done}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 500; color: #0B7A47">Re-sent just now</span></sc-if>
+</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 16px; align-items: start">
+<!-- template list -->
+<nav aria-label="Email templates" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff; overflow: hidden">
+<div style="display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A"><span>TEMPLATE</span><span>SENT · 30 D</span></div>
+<ul style="margin: 0; padding: 0; list-style: none">
+<sc-for list="{{tpls}}" as="t" hint-placeholder-count="9">
+<li style="border-top: 1px solid #EEF0F3">
+<button type="button" class="tpl" aria-pressed="{{t.sel}}" onClick="{{t.pick}}" style="{{t.style}}">
+<span style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+<span style="font-size: 15px; font-weight: 600; color: #0A1222">{{t.name}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.02em; color: #646B7A">{{t.key}}</span>
+</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{t.sent}}</span>
+</button>
+</li>
+</sc-for>
+</ul>
+</nav>
+
+<!-- preview -->
+<section aria-labelledby="pv-h" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: #ffffff">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">PREVIEW · {{pv.key}}</span>
+<h2 id="pv-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{pv.name}}</h2>
+<span style="font-size: 14px; color: #3D4556">{{pv.when}}</span>
+</div>
+<div role="group" aria-label="Show variables as" style="flex: 0 0 auto; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{vms}}" as="v" hint-placeholder-count="2"><button type="button" aria-pressed="{{v.sel}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button></sc-for>
+</div>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden">
+<div style="padding: 10px 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 2px 8px; font-size: 13px">
+<span style="color: #646B7A">To</span><span style="{{pv.toStyle}}">{{pv.to}}</span>
+<span style="color: #646B7A">Subject</span><span style="font-weight: 500"><sc-for list="{{pv.subject}}" as="s" hint-placeholder-count="2"><span style="{{s.style}}">{{s.t}}</span></sc-for></span>
+</div>
+<div style="padding: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: #3D4556">
+<sc-for list="{{pv.body}}" as="p" hint-placeholder-count="4">
+<span style="{{p.style}}"><sc-for list="{{p.segs}}" as="s" hint-placeholder-count="2"><span style="{{s.style}}">{{s.t}}</span></sc-for></span>
+</sc-for>
+<sc-if value="{{pv.hasCta}}" hint-placeholder-val="{{ false }}">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 10px; background: #0138AC; color: #ffffff; font-size: 14px; font-weight: 500">{{pv.cta}}</span>
+</sc-if>
+<span style="padding-top: 10px; border-top: 1px solid #EEF0F3; font-size: 12px; color: #646B7A">Vert Robo Con · vert-robo-con.example · You get this email because of something you did on the site. It is a service email, so it has no unsubscribe link.</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">VARIABLES IN THIS TEMPLATE · SAMPLE VALUES</span>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px">
+<sc-for list="{{pv.vars}}" as="v" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 8px; align-items: baseline; min-height: 26px; border-bottom: 1px solid #EEF0F3"><dt style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC">{{v.n}}</dt><dd style="margin: 0; font-size: 13px; color: #0A1222; overflow-wrap: anywhere">{{v.v}}</dd></div>
+</sc-for>
+</dl>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid #E5E7EB">
+<button type="button" onClick="{{pv.sendTest}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg>Send test to me</button>
+<a href="#" class="sec" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none">Edit template</a>
+<span role="status" style="{{pv.statusStyle}}">{{pv.status}}</span>
+</div>
+</section>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ BACKUPS ============ -->
+<sc-if value="{{isBackups}}" hint-placeholder-val="{{ false }}">
+<section id="panel-backups" role="tabpanel" aria-labelledby="tab-backups" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{bk}}" as="k" hint-placeholder-count="4">
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px 18px; display: flex; flex-direction: column; gap: 4px; background: #ffffff">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{k.l}}</span><sc-if value="{{k.hasChip}}" hint-placeholder-val="{{ true }}"><span style="{{k.chip.style}}"><span aria-hidden="true" style="{{k.chip.dot}}"></span>{{k.chip.label}}</span></sc-if></span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.2; letter-spacing: -0.02em">{{k.v}}</span>
+<sc-if value="{{k.hasMeter}}" hint-placeholder-val="{{ false }}"><span role="img" aria-label="{{k.meterAria}}" style="position: relative; display: block; height: 8px; margin: 4px 0; border-radius: 999px; background: #EEF0F3"><span style="{{k.fill}}"></span></span></sc-if>
+<span style="font-size: 13px; color: #646B7A">{{k.sub}}</span>
+</div>
+</sc-for>
+</div>
+
+<section aria-labelledby="wb-h" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #ffffff">
+<h2 id="wb-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">What is backed up, and where</h2>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{what}}" as="w" hint-placeholder-count="3">
+<li style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 48px; border-top: 1px solid #EEF0F3">
+<span style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0"><span style="font-size: 14px; font-weight: 500">{{w.t}}</span><span style="font-size: 12px; color: #646B7A">{{w.s}}</span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556; text-align: right">{{w.r}}</span>
+</li>
+</sc-for>
+</ul>
+<span style="font-size: 13px; color: #646B7A">restic encrypts and deduplicates every snapshot. Keeps [N] daily, [N] weekly and [N] monthly snapshots. Each job sends a push heartbeat to Uptime Kuma, which alerts if one is late.</span>
+<span style="font-size: 13px; color: #646B7A">Restore drills follow the runbook.</span>
+</section>
+
+<div style="display: flex; align-items: flex-end; gap: 12px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">Recent backup jobs</h2>
+<span style="margin-left: auto"><span style="{{sampleChip.style}}"><span aria-hidden="true" style="{{sampleChip.dot}}"></span>{{sampleChip.label}}</span></span>
+</div>
+<div role="table" aria-label="Recent backup jobs, newest first" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: 150px 170px minmax(0, 1fr) 120px 100px 110px 130px; align-items: center; min-height: 40px; padding: 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">STARTED (UTC)</span><span role="columnheader">JOB</span><span role="columnheader">DESTINATION</span><span role="columnheader">SIZE</span><span role="columnheader">DURATION</span><span role="columnheader">STATUS</span><span role="columnheader">HEARTBEAT</span>
+</div>
+<sc-for list="{{runs}}" as="r" hint-placeholder-count="6">
+<div role="row" class="arow" style="display: grid; grid-template-columns: 150px 170px minmax(0, 1fr) 120px 100px 110px 130px; align-items: center; min-height: 48px; padding: 0 16px; border-top: 1px solid #EEF0F3">
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 13px">{{r.when}}</span>
+<span role="cell" style="font-size: 14px; font-weight: 500">{{r.job}}</span>
+<span role="cell" style="font-size: 14px; color: #3D4556">{{r.dest}}</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{r.size}}</span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{r.dur}}</span>
+<span role="cell"><span style="{{r.chip.style}}"><span aria-hidden="true" style="{{r.chip.dot}}"></span>{{r.chip.label}}</span></span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{r.hb}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ VERSION ============ -->
+<sc-if value="{{isVersion}}" hint-placeholder-val="{{ false }}">
+<section id="panel-version" role="tabpanel" aria-labelledby="tab-version" style="display: flex; flex-direction: column; gap: 16px">
+<section aria-labelledby="ver-h" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: #ffffff">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span id="ver-h" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">RUNNING VERSION · VERT-ROBO-CON.EXAMPLE</span>
+<span style="display: flex; align-items: center; gap: 12px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.1; letter-spacing: -0.02em">{{ver.tag}}</span>
+<span style="{{verChip.style}}"><span aria-hidden="true" style="{{verChip.dot}}"></span>{{verChip.label}}</span>
+</span>
+<span style="font-size: 14px; color: #3D4556">Saves in the admin go live at once: pages read the database through a cache that every save clears, so nothing is rebuilt.</span>
+</div>
+<a href="HomeV3.dc.html" class="sec" style="flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">View site<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 16px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 14px">
+<sc-for list="{{verFacts}}" as="f" hint-placeholder-count="4">
+<div style="min-width: 0"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="{{f.style}}">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+<div role="note" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; background: #F3F4F2; color: #3D4556; font-size: 14px">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M9 14L4 9l5-5"></path><path d="M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>
+<span>Roll back by restarting the previous image (see the runbook).</span>
+</div>
+</section>
+
+<div style="display: flex; align-items: flex-end; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">Last deploys</h2>
+<span style="font-size: 14px; color: #3D4556">Newest first. Each deploy starts a new image tag.</span>
+</div>
+<span style="margin-left: auto"><span style="{{sampleChip.style}}"><span aria-hidden="true" style="{{sampleChip.dot}}"></span>{{sampleChip.label}}</span></span>
+</div>
+<div role="table" aria-label="Last deploys, newest first" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: 220px 220px minmax(0, 1fr) 160px; align-items: center; min-height: 40px; padding: 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">VERSION</span><span role="columnheader">DEPLOYED AT (UTC)</span><span role="columnheader">BY</span><span role="columnheader">RESULT</span>
+</div>
+<sc-for list="{{deploys}}" as="d" hint-placeholder-count="5">
+<div role="row" class="arow" style="display: grid; grid-template-columns: 220px 220px minmax(0, 1fr) 160px; align-items: center; min-height: 52px; padding: 0 16px; border-top: 1px solid #EEF0F3">
+<span role="cell" style="display: flex; flex-direction: column; line-height: 1.3"><span style="font-family: 'Geist Mono', monospace; font-size: 14px; font-weight: 500; color: #0A1222">{{d.tag}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{d.commit}}</span></span>
+<span role="cell" style="display: flex; flex-direction: column; line-height: 1.3"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222">{{d.when}}</span><span style="font-size: 12px; color: #646B7A">{{d.ago}}</span></span>
+<span role="cell" style="font-size: 14px; color: #3D4556">{{d.by}}</span>
+<span role="cell"><span style="{{d.chip.style}}"><span aria-hidden="true" style="{{d.chip.dot}}"></span>{{d.chip.label}}</span></span>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+</main>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = this.init(); }
+init() {
+return {
+tab: 'jobs', q: '', toast: '', toastLink: false,
+waiting: 2, active: 1, doneToday: 148,
+drawer: null, discard: null,
+tpl: 'reg', vm: 'sample', tested: {}, resent: {},
+failed: [
+{ id: 'a71c', name: 'send-email', what: 'Registration receipt', ref: 'VRC-2027-0142', err: 'SMTP 421 4.7.0 Too many connections, try again later', attempts: '3 of 3', when: 'Today 10:31', ago: '12 min ago', created: 'Today 10:02',
+log: ['attempt 1 · 10:02 · SMTP 421 4.7.0 Too many connections, try again later', 'attempt 2 · 10:12 · SMTP 421 4.7.0 Too many connections, try again later', 'attempt 3 · 10:31 · SMTP 421 4.7.0 Too many connections, try again later', 'out of retries · kept as failed'],
+hint: 'The mail server turned the connection away. A retry usually works once it is less busy.',
+loss: 'Nobody gets the registration receipt for VRC-2027-0142.' },
+{ id: 'c3e9', name: 'geocode', what: 'Place an approved map suggestion', ref: 'MAP-0452', err: 'No match for “Sorrelmere Robotics, [CITY]”', attempts: '3 of 3', when: 'Today 09:58', ago: '45 min ago', created: 'Today 09:41',
+log: ['attempt 1 · 09:41 · geocoder: 0 results for “Sorrelmere Robotics, [CITY]”', 'attempt 2 · 09:46 · geocoder: 0 results', 'attempt 3 · 09:58 · geocoder: 0 results', 'out of retries · kept as failed'],
+hint: 'A retry asks the same question again. Fix the address in Map · Organizations, or place the pin by hand, then retry.',
+loss: 'MAP-0452 stays off the map until someone places its pin by hand.' }
+],
+pool: [
+{ id: 'e5b2', name: 'send-email', what: 'Contact auto-reply', ref: 'MSG-1093', err: 'connect ETIMEDOUT [SMTP_HOST]:587', attempts: '3 of 3', when: 'Today 10:44', ago: 'Just now', created: 'Today 10:40',
+log: ['attempt 1 · 10:40 · connect ETIMEDOUT [SMTP_HOST]:587', 'attempt 2 · 10:41 · connect ETIMEDOUT [SMTP_HOST]:587', 'attempt 3 · 10:44 · connect ETIMEDOUT [SMTP_HOST]:587', 'out of retries · kept as failed'],
+hint: 'The worker could not reach the mail server. Check the SMTP settings in the server configuration, then retry.',
+loss: 'The person who wrote in with MSG-1093 gets no auto-reply.' }
+]
+};
+}
+renderVals() {
+const S = this.state;
+const set = (p) => this.setState(p);
+const noop = () => {};
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const DISPLAY = "font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; ";
+const TONES = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#8A91A0'], red: ['#FEF3F2', '#B42318', '#B42318'] };
+const RING = { blue: 'rgba(1,56,172,0.18)', green: 'rgba(29,180,108,0.22)', amber: 'rgba(217,130,43,0.22)', neutral: 'rgba(138,145,160,0.22)', red: 'rgba(180,35,24,0.18)' };
+const chip = (tone, label) => { const t = TONES[tone]; return { label: label,
+style: 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: ' + t[0] + '; color: ' + t[1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap; line-height: 1.5',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + t[2] + '; flex: 0 0 auto' }; };
+const live = (tone, label) => { const c = chip(tone, label); c.dot = 'width: 7px; height: 7px; border-radius: 50%; background: ' + TONES[tone][2] + '; box-shadow: 0 0 0 3px ' + RING[tone] + '; flex: 0 0 auto'; return c; };
+const seg = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const toast = (t, link) => ({ toast: t, toastLink: !!link });
+const fv = MONO + 'margin: 2px 0 0; font-size: 13px; color: #0A1222; overflow-wrap: anywhere';
+const fs = 'margin: 2px 0 0; font-size: 14px; font-weight: 500; color: #0A1222';
+
+// ---------- shared shell (sidebar + top bar copied from AdminQueueV3; only the active item differs) ----------
+const QUEUE_OPEN = 16; // AdminQueueV3 open items: join 3 · map 3 · jobs 2 · messages 4 · nominations 1 · internships 1 · document suggestions 2
+
+// ---------- version: read from the running image (tag and commit) ----------
+const VER = { tag: 'v1.14.2', image: 'vrc:v1.14.2', commit: '3f9c2ab', when: 'Today 09:12', ago: '1 h ago', by: 'Sample Admin 01' };
+const verFacts = [['IMAGE', VER.image, fv], ['COMMIT', VER.commit, fv], ['DEPLOYED (UTC)', VER.when + ' · ' + VER.ago, fv], ['BY', VER.by, fs]].map((f) => ({ k: f[0], v: f[1], style: f[2] }));
+const deploys = [
+['v1.14.2', '3f9c2ab', 'Today 09:12', '1 h ago', 'Sample Admin 01', 'live'],
+['v1.14.1', '9b07e14', '[DATE] 16:40', '3 days ago', 'Sample Admin 02', 'ok'],
+['v1.14.0', 'c2d58a0', '[DATE] 16:02', '3 days ago', 'Sample Admin 02', 'failed'],
+['v1.13.3', '71e9f3b', '[DATE] 10:15', '9 days ago', 'Sample Admin 01', 'ok'],
+['v1.13.2', 'e40a6d2', '[DATE] 14:48', '16 days ago', 'Sample Admin 03', 'ok']
+].map((d) => ({ tag: d[0], commit: 'commit ' + d[1], when: d[2], ago: d[3], by: d[4],
+chip: d[5] === 'live' ? live('green', 'LIVE NOW') : d[5] === 'failed' ? chip('red', 'FAILED') : chip('neutral', 'DEPLOYED') }));
+
+// ---------- jobs: pg-boss queue counts, failed jobs with retry and discard ----------
+const F = S.failed;
+const nF = F.length;
+const openJob = (id) => set({ drawer: id });
+const askDiscard = (j) => set({ discard: j.id, drawer: null });
+const retry = (j) => set(Object.assign({ failed: F.filter((x) => x.id !== j.id), waiting: S.waiting + 1, drawer: null, discard: null },
+toast('Retried ' + j.name + ' · ' + j.ref + ' · back in the queue', true)));
+const fj = F.map((j) => ({ name: j.name, what: j.what, ref: j.ref, err: j.err, attempts: j.attempts, when: j.when, ago: j.ago,
+aria: j.name + ' job for ' + j.ref + ': open details', open: () => openJob(j.id),
+retry: () => retry(j), retryAria: 'Retry ' + j.name + ' for ' + j.ref,
+discard: () => askDiscard(j), discardAria: 'Discard ' + j.name + ' for ' + j.ref }));
+const jnum = (red) => DISPLAY + 'font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; color: ' + (red ? '#B42318' : '#0A1222');
+const jc = [
+{ l: 'WAITING', v: String(S.waiting), sub: 'Queued, not started yet' },
+{ l: 'ACTIVE', v: String(S.active), sub: 'Running on the worker now' },
+{ l: 'COMPLETED TODAY', v: String(S.doneToday), sub: 'Since 00:00 UTC' },
+{ l: 'FAILED', v: String(nF), sub: nF ? 'Out of retries · listed below' : 'Nothing to fix', chip: nF ? chip('red', 'NEEDS YOU') : chip('green', 'OK'), red: nF > 0 }
+].map((k) => ({ l: k.l, v: k.v, sub: k.sub, hasChip: !!k.chip, chip: k.chip || chip('neutral', ''), numStyle: jnum(!!k.red) }));
+
+// job drawer
+const J = S.drawer ? (F.find((x) => x.id === S.drawer) || null) : null;
+let jd = { on: false, eyebrow: '', title: '', chip: chip('red', 'FAILED'), facts: [], log: [], hint: '', close: noop, retry: noop, discard: noop };
+if (J) jd = { on: true, eyebrow: 'JOBS · FAILED · ' + J.name.toUpperCase(), title: J.what, chip: chip('red', 'FAILED'),
+facts: [['QUEUE', J.name], ['REFERENCE', J.ref], ['ATTEMPTS', J.attempts], ['FAILED AT (UTC)', J.when + ' · ' + J.ago], ['CREATED (UTC)', J.created], ['JOB ID', '[UUID]']].map((f) => ({ k: f[0], v: f[1], style: fv })),
+log: J.log.map((t) => ({ t: t })), hint: J.hint,
+close: () => set({ drawer: null }), retry: () => retry(J), discard: () => askDiscard(J) };
+
+// discard confirmation
+const X = S.discard ? (F.find((x) => x.id === S.discard) || null) : null;
+let dc = { on: false, name: '', ref: '', body: '', cancel: noop, confirm: noop };
+if (X) dc = { on: true, name: X.name, ref: X.ref, body: X.loss + ' The job is deleted and never runs again.',
+cancel: () => set({ discard: null }),
+confirm: () => set(Object.assign({ failed: F.filter((x) => x.id !== X.id), discard: null, drawer: null }, toast('Discarded ' + X.name + ' · ' + X.ref, true))) };
+
+// ---------- email ----------
+const SV = { first_name: 'Sam', edition: 'Summit 2027', dates: 'April 20–22, 2027', ref: 'VRC-2027-0142', me_link: 'vert-robo-con.example/me?token=••••••',
+expires_in: '7 days', slack_link: 'https://vert-robo-con.example/join/slack-invite/••••', pitch_ref: 'PIT-2027-018', pitch_title: 'Sample pitch title', track: 'startup pitch session',
+decision: 'accepted', decision_date: '[DATE]', session_slot: 'Day 1 · Apr 20, 2027 · [TIME] UTC', job_title: 'Sample job title', job_link: 'vert-robo-con.example/jobs/sample-job-title', expires_on: '[DATE]',
+org_name: 'Sample Robotics Org', map_ref: 'MAP-[N]', map_link: 'vert-robo-con.example/map?org=sample-robotics-org', msg_ref: 'MSG-1093', topic: 'Partnerships', reply_time: 'within 24–48 hours' };
+const TP = [
+{ k: 'reg', name: 'Registration receipt', key: 'registration-confirmation', when: 'Sent right after someone registers for a summit, with a calendar file attached.', cta: 'Manage my registration',
+subject: 'You’re registered: {edition} · {dates}',
+body: ['Hi {first_name},', 'You’re registered for {edition}, online, {dates}. It’s free and open to everyone. Your reference is {ref}.', 'Use your personal link to add sessions to your calendar, change your details or cancel:', '>{me_link}', 'We’ll email you when the program is published.'] },
+{ k: 'magic', name: 'Magic link', key: 'magic-link', when: 'Sent when someone asks for a new link to My VRC, for example after the old one expired.', cta: 'Open My VRC',
+subject: 'Your link to My VRC',
+body: ['Hi {first_name},', 'Here is your link to My VRC. It expires in {expires_in}, and we replace it with a fresh one each time you use it.', '>{me_link}', 'If you didn’t ask for this, ignore this email. Nobody can get in without the link.'] },
+{ k: 'joinrx', name: 'Join request received', key: 'join-request-received', when: 'Sent when someone asks to join the Slack. An admin approves each request by hand.',
+subject: 'We’ve got your request to join the VRC Slack',
+body: ['Hi {first_name},', 'Thanks for asking to join the Vert Robo Con Slack. An admin reviews every request by hand, typically within 24–48 hours.', 'Once you’re approved, we email you the invite link. You can follow the status in My VRC:', '>{me_link}'] },
+{ k: 'joinok', name: 'Join approved + Slack invite', key: 'join-approved', when: 'Sent when an admin approves a join request in the Moderation queue.',
+subject: 'You’re approved: join the Vert Robo Con Slack',
+body: ['Hi {first_name},', 'An admin approved your request to join the Vert Robo Con Slack. Use this link to join:', '>{slack_link}', 'The link is shared and expires. If it no longer works, reply to this email and we’ll send a fresh one. You can see your request status in My VRC.'] },
+{ k: 'pitchrx', name: 'Pitch received', key: 'pitch-received', when: 'Sent when a startup or research pitch is submitted.',
+subject: 'We’ve got your pitch: {pitch_ref}',
+body: ['Hi {first_name},', 'Thanks for pitching “{pitch_title}” for the {track} at {edition}. Your reference is {pitch_ref}.', 'Admins review every pitch, and we email you a decision by {decision_date}. You can check the status or withdraw in My VRC:', '>{me_link}'] },
+{ k: 'pitchdec', name: 'Pitch decision', key: 'pitch-decision', when: 'Sent when admins release the decisions for a call. One version per decision, accepted or not selected; shown here: accepted. Admins can adjust each email in Calls & pitches before it goes.',
+subject: 'Your pitch for {edition}: {decision}',
+body: ['Hi {first_name},', 'Good news: “{pitch_title}” ({pitch_ref}) is selected for the {track} at {edition}.', 'Your slot: {session_slot}. Your speaker brief and tech-check link follow soon. Your status is in My VRC:', '>{me_link}'] },
+{ k: 'jobok', name: 'Job post approved', key: 'job-approved', when: 'Sent when an admin approves a job or internship post.', cta: 'Manage my listing',
+subject: 'Your job post is live: {job_title}',
+body: ['Hi {first_name},', 'An admin approved “{job_title}”, and it’s now live on the VRC jobs board:', '>{job_link}', 'It stays up until {expires_on}. We’ll email you a link to renew it a few days before. Edit or close it any time in My VRC.'] },
+{ k: 'mapok', name: 'Map suggestion approved', key: 'map-suggestion-approved', when: 'Sent when an admin approves a map suggestion.',
+subject: 'You added {org_name} to the Vert Robo Con map',
+body: ['Hi {first_name},', 'Thanks for your suggestion {map_ref}. An admin checked it, and {org_name} is now on the map:', '>{map_link}', 'The map data is open under CC BY 4.0, so your addition helps everyone who uses it.'] },
+{ k: 'contact', name: 'Contact auto-reply', key: 'contact-auto-reply', when: 'Sent right after someone uses the contact form.',
+subject: 'We’ve got your message: {msg_ref}',
+body: ['Hi {first_name},', 'Thanks for writing to Vert Robo Con about “{topic}”. Your reference is {msg_ref}.', 'We’ll respond {reply_time}. If it’s urgent, write to hello@vert-robo-con.example and quote your reference.'] }
+];
+const names = S.vm === 'names';
+const used = [];
+const parse = (s, base) => s.split(/(\{[a-z_]+\})/).filter((x) => x !== '').map((x) => {
+const m = /^\{([a-z_]+)\}$/.exec(x);
+if (!m) return { t: x, style: base };
+if (used.indexOf(m[1]) < 0) used.push(m[1]);
+return { t: names ? x : SV[m[1]], style: base + '; padding: 0 3px; border-radius: 4px; background: #EEF2FB; color: #0138AC' + (names ? '; ' + MONO + 'font-size: 0.92em' : '') };
+});
+const T = TP.find((t) => t.k === S.tpl) || TP[0];
+const tested = !!S.tested[T.k];
+const pv = { key: T.key.toUpperCase(), name: T.name, when: T.when,
+to: names ? '{email}' : 'sam@example.org', toStyle: MONO + 'font-size: 12.5px' + (names ? '; color: #0138AC' : ''),
+subject: parse(T.subject, 'font-weight: 500'),
+body: T.body.map((p) => { const blk = p.charAt(0) === '>';
+return { style: blk ? 'align-self: flex-start; max-width: 100%; padding: 6px 10px; border-radius: 8px; background: #EEF2FB; overflow-wrap: anywhere' : 'display: block',
+segs: parse(blk ? p.slice(1) : p, blk ? MONO + 'font-size: 13px; color: #0138AC' : 'color: #3D4556') }; }),
+hasCta: !!T.cta, cta: T.cta || '',
+vars: [],
+sendTest: () => set(Object.assign({ tested: Object.assign({}, S.tested, { [T.k]: true }) }, toast('Test of “' + T.name + '” sent to admin01@example.org'))),
+status: tested ? 'Test sent just now to admin01@example.org' : 'Last edited [DATE] by Sample Admin 02',
+statusStyle: 'margin-left: auto; font-size: 13px; color: ' + (tested ? '#0B7A47' : '#646B7A') };
+pv.vars = [{ n: '{email}', v: 'sam@example.org' }].concat(used.map((k) => ({ n: '{' + k + '}', v: SV[k] })));
+const tpls = TP.map((t) => { const on = t.k === T.k;
+return { name: t.name, key: t.key, sent: '[N]', sel: on ? 'true' : 'false', pick: () => set({ tpl: t.k }),
+style: 'width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 58px; padding: 8px 16px; border: 0; font: inherit; text-align: left; cursor: pointer; ' + (on ? 'background: #EEF2FB' : 'background: transparent') }; });
+const vms = [['sample', 'Sample values'], ['names', 'Variable names']].map((v) => ({ label: v[1], sel: S.vm === v[0] ? 'true' : 'false', style: seg(S.vm === v[0]), pick: () => set({ vm: v[0] }) }));
+const ses = [{ l: 'SENT', v: '[N]', sub: 'all 9 templates' }, { l: 'BOUNCED', v: '[N]', sub: 'rate [N]%' }, { l: 'COMPLAINTS', v: '[N]', sub: 'rate [N]%' }];
+const dns = [chip('green', 'DKIM'), chip('green', 'SPF'), chip('green', 'DMARC')];
+
+// summit emails: delivery report
+const sm = [['remind', 'Reminder', 'Sent [DATE] · 7 days before'], ['join', 'Join link', 'Sent [DATE] · 2 days before']].map((m) => { const done = !!S.resent[m[0]];
+return { name: m[1], when: m[2], sent: '[N]', bounced: '[N]', suppressed: '[N]', done: done, notDone: !done, aria: 'Re-send to missed: ' + m[1].toLowerCase(),
+resend: () => set(Object.assign({ resent: Object.assign({}, S.resent, { [m[0]]: true }) }, toast('Re-sending the ' + m[1].toLowerCase() + ' to [N] people who missed it · queued as send-email jobs'))) }; });
+
+// ---------- backups ----------
+const bk = [
+{ l: 'LAST BACKUP · HEARTBEAT', v: 'Today 08:00 UTC', sub: '2 h ago · [N] MB · pg_dump, every 4 h', chip: chip('green', 'OK') },
+{ l: 'OFF-SITE COPY · RESTIC', v: 'Today 03:00 UTC', sub: 'Storage Box BX11 · other region · nightly', chip: chip('green', 'OK') },
+{ l: 'NEXT SCHEDULED', v: 'Today 12:00 UTC', sub: 'pg_dump · next restic copy tomorrow 03:00 UTC' },
+{ l: 'STORAGE USED', v: '[N] GB of 1 TB', sub: 'Storage Box BX11 · bar is illustrative', meter: 12, meterAria: 'Storage used: [N] GB of 1 TB, illustrative' }
+].map((k) => ({ l: k.l, v: k.v, sub: k.sub, hasChip: !!k.chip, chip: k.chip || chip('neutral', ''), hasMeter: !!k.meter, meterAria: k.meterAria || '',
+fill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + (k.meter || 0) + '%; border-radius: 999px; background: #0138AC' }));
+const what = [
+{ t: 'PostgreSQL 17 · all databases', s: 'pg_dump every 4 h, kept on the server', r: 'LOCAL · 4 H' },
+{ t: 'Database dumps, media, .env, Caddyfile', s: 'restic, encrypted and deduplicated', r: 'STORAGE BOX · NIGHTLY' },
+{ t: 'Second copy at another provider', s: 'restic copy, so one account problem cannot lose every backup', r: '[PROVIDER] · [SCHEDULE]' }
+];
+const runs = [
+['Today 08:00', 'pg_dump', 'Local · /srv/backups', '[N] MB', '14 s', 'Push sent'], ['Today 04:00', 'pg_dump', 'Local · /srv/backups', '[N] MB', '13 s', 'Push sent'],
+['Today 03:00', 'restic backup', 'Storage Box BX11 · other region', '+[N] MB', '3 min', 'Push sent'], ['Today 00:00', 'pg_dump', 'Local · /srv/backups', '[N] MB', '14 s', 'Push sent'],
+['Yesterday 20:00', 'pg_dump', 'Local · /srv/backups', '[N] MB', '13 s', 'Push sent'], ['[DATE] 04:30', 'restic copy', '[PROVIDER] · second copy', '+[N] MB', '[N] min', 'Push sent']
+].map((r) => ({ when: r[0], job: r[1], dest: r[2], size: r[3], dur: r[4], hb: r[5], chip: chip('green', 'OK') }));
+
+// ---------- KPIs, tabs, top bar ----------
+const num = (c) => DISPLAY + 'font-size: 30px; line-height: 1.2; letter-spacing: -0.02em; color: ' + c;
+const kpis = [
+{ label: 'RUNNING VERSION', num: VER.tag, numStyle: num('#0138AC'), sub: 'Commit ' + VER.commit + ' · deployed ' + VER.ago },
+{ label: 'JOBS WAITING', num: String(S.waiting), numStyle: num('#0A1222'), sub: S.active + ' active · ' + S.doneToday + ' done today' },
+{ label: 'FAILED JOBS', num: String(nF), numStyle: num(nF ? '#B42318' : '#0A1222'), sub: nF ? 'Retry or discard them under Jobs' : 'Nothing to fix' },
+{ label: 'EMAILS · 30 DAYS', num: '[N]', numStyle: num('#0A1222'), sub: 'Bounced [N] · complaints [N]' },
+{ label: 'LAST BACKUP', num: '08:00 UTC', numStyle: num('#0A1222'), sub: '[N] MB · off-site copy 03:00' }
+];
+const TABS = [['jobs', 'Jobs', nF ? nF + ' FAILED' : 'OK'], ['email', 'Email', String(TP.length)], ['backups', 'Backups', 'OK'], ['version', 'Version', VER.tag]];
+const tabs = TABS.map((t) => { const on = S.tab === t[0];
+return { id: 'tab-' + t[0], panel: 'panel-' + t[0], label: t[1], count: t[2], sel: on ? 'true' : 'false', style: seg(on),
+countStyle: MONO + 'font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 999px; background: ' + (on ? '#F3F4F2' : '#E5E7EB') + '; color: #3D4556',
+pick: () => set({ tab: t[0] }) }; });
+
+// canvas-only controls
+const failOne = () => { if (!S.pool.length) return; set({ failed: [S.pool[0]].concat(F), pool: S.pool.slice(1) }); };
+const cvBtn = (label, ok, act) => ({ label: label, dis: ok ? 'false' : 'true', act: ok ? act : noop,
+style: 'min-height: 26px; padding: 0 9px; border: 1px solid #A7ADB8; border-radius: 8px; background: ' + (ok ? '#ffffff' : 'transparent') + '; font: inherit; font-size: 11px; white-space: nowrap; color: ' + (ok ? '#0A1222' : '#646B7A') + '; cursor: ' + (ok ? 'pointer' : 'not-allowed') });
+const cv = [cvBtn('Fail a job', S.pool.length > 0, failOne), cvBtn('Reset', true, () => set(this.init()))];
+
+return {
+totalOpen: String(QUEUE_OPEN), queueAria: QUEUE_OPEN + ' items need action',
+runLabel: 'RUNNING ' + VER.tag,
+kpis: kpis, tabs: tabs, cv: cv,
+q: S.q, setQ: (e) => set({ q: e.target.value }),
+isJobs: S.tab === 'jobs', isEmail: S.tab === 'email', isBackups: S.tab === 'backups', isVersion: S.tab === 'version',
+jc: jc, fj: fj, noFailed: nF === 0, failCount: nF === 1 ? '1 FAILED JOB' : nF + ' FAILED JOBS', jd: jd, dc: dc,
+ver: VER, verChip: live('green', 'LIVE'), verFacts: verFacts, deploys: deploys,
+tpls: tpls, vms: vms, pv: pv, ses: ses, dns: dns, sm: sm, sampleChip: chip('neutral', 'SAMPLE DATA'), goJobs: () => set({ tab: 'jobs' }),
+bk: bk, what: what, runs: runs,
+toastOn: !!S.toast, toast: S.toast, toastLink: S.toastLink, closeToast: () => set({ toast: '', toastLink: false })
+};
+}
+}
+</script>
+</body>
+</html>

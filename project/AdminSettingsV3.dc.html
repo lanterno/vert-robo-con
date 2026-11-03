@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Site settings and feature toggles</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.arow:hover{background:#F7F8F9}
+.ghost:hover{background:#F3F4F2}
+.sec:hover{background:#F7F8F9}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 2080px; box-sizing: border-box; display: flex; flex-direction: column; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 14px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the app) -->
+<div style="height: 34px; box-sizing: border-box; display: flex; align-items: center; background: #E9EAEC; padding: 0 24px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.03em; color: #3D4556; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Canvas note · Settings live in Postgres in the one VRC app, and every save goes live at once. Notify-me lists live in the app. Sample data.</div>
+
+<!-- TOAST -->
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 112px; right: 32px; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); font-size: 14px">
+<span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #1DB46C; display: flex; align-items: center; justify-content: center; color: #ffffff"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<span style="font-weight: 500">{{toast}}</span>
+<button type="button" onClick="{{closeToast}}" aria-label="Dismiss notification" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- SHORTEN RETENTION CONFIRMATION -->
+<sc-if value="{{rc.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Keep current retention" onClick="{{rc.cancel}}" style="position: absolute; top: 34px; left: 0; right: 0; bottom: 0; z-index: 60; border: 0; padding: 0; background: rgba(10,18,34,0.32); cursor: default"></button>
+<div role="alertdialog" aria-modal="true" aria-labelledby="rc-h" aria-describedby="rc-d" style="position: absolute; z-index: 61; top: 250px; left: 50%; margin-left: -250px; width: 500px; box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS · RETENTION</span>
+<h2 id="rc-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">Shorten retention?</h2>
+<div id="rc-d" style="display: flex; flex-direction: column; gap: 8px">
+<ul style="margin: 0; padding: 12px 14px 12px 32px; border-radius: 12px; background: #F3F4F2; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #0A1222">
+<sc-for list="{{rc.lines}}" as="l" hint-placeholder-count="1"><li><strong style="font-weight: 600">{{l.name}}:</strong> <span style="font-family: 'Geist Mono', monospace; font-size: 13px">{{l.from}} → {{l.to}}</span> months</li></sc-for>
+</ul>
+<span style="font-size: 15px; color: #3D4556">{{rc.body}}</span>
+</div>
+<span style="font-size: 13px; color: #646B7A">Last purge run: [DATE] · [TIME] UTC. An audit event is written with your name.</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{rc.cancel}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Keep current</button>
+<button type="button" onClick="{{rc.confirm}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Shorten and save</button>
+</div>
+</div>
+</sc-if>
+
+<div style="display: flex; align-items: stretch; flex: 1 0 auto">
+
+<!-- SIDEBAR -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; font-weight: 500; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- MAIN -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<!-- PAGE HEADER -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; padding-bottom: 20px; border-bottom: 1px solid #E5E7EB">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 520px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS · SITE SETTINGS</span>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.1; letter-spacing: -0.02em">Site settings</h1>
+<span role="status" style="{{dirtyChip.style}}"><span aria-hidden="true" style="{{dirtyChip.dot}}"></span>{{dirtyChip.label}}</span>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Changes go live as soon as you save.</span>
+<sc-if value="{{dirty}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 13px; color: #3D4556; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 640px"><strong style="font-weight: 600">Unsaved:</strong> {{changesLine}}</span>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<sc-if value="{{dirty}}" hint-placeholder-val="{{ false }}">
+<button type="button" class="ghost" onClick="{{discard}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Discard</button>
+</sc-if>
+<a href="HomeV3.dc.html" class="sec" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none; box-sizing: border-box">Preview on site
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+<button type="button" onClick="{{save}}" aria-disabled="{{saveDisabled}}" style="{{saveStyle}}">Save</button>
+</div>
+</div>
+
+<!-- ROW 1 -->
+<div style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; align-items: start">
+
+<div style="display: flex; flex-direction: column; gap: 20px; min-width: 0">
+
+<!-- PROGRAMS -->
+<section aria-labelledby="h-programs" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; background: #ffffff">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="h-programs" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em">Programs</h2>
+<span style="font-size: 13px; color: #646B7A">Status chips on Get involved and in the footer.</span>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">siteSettings.programs</span>
+</div>
+<sc-for list="{{programs}}" as="p" hint-placeholder-count="2">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 252px; gap: 16px; padding-top: 16px; border-top: 1px solid #E5E7EB; align-items: start">
+<div style="display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<span style="display: flex; flex-direction: column; line-height: 1.3">
+<strong style="font-size: 15px; font-weight: 600">{{p.name}}</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{p.path}}</span>
+</span>
+<label style="display: flex; flex-direction: column; gap: 4px; max-width: 220px">
+<span style="font-size: 13px; font-weight: 500">Status</span>
+<span style="position: relative; display: block">
+<select value="{{p.status}}" onChange="{{p.set}}" style="{{selStyle}}"><option value="open">Open</option><option value="soon">Coming soon</option><option value="later">Coming later</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 13px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>Notify-me list · {{p.topic}}
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+</div>
+<div style="border-radius: 14px; background: #F3F4F2; padding: 10px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: #646B7A">LIVE PREVIEW · /GET-INVOLVED</span>
+<div role="group" aria-label="{{p.previewAria}}" style="background: #ffffff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EDUCATION</span>
+<span style="{{p.chip.style}}"><span aria-hidden="true" style="{{p.chip.dot}}"></span>{{p.chip.label}}</span>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.15; letter-spacing: -0.02em">{{p.pubName}}</span>
+<span style="{{p.actionStyle}}">{{p.action}}</span>
+</div>
+</div>
+</div>
+</sc-for>
+</section>
+
+<!-- INTERNSHIP TRACKS -->
+<section aria-labelledby="h-tracks" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #ffffff">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="h-tracks" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em">Internship tracks</h2>
+<span style="font-size: 13px; color: #646B7A">The order here is the order on /internships.</span>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">internshipTracks · 4</span>
+</div>
+<div role="table" aria-label="Internship tracks" style="display: flex; flex-direction: column">
+<div role="row" style="display: grid; grid-template-columns: 56px minmax(0, 1fr) 150px 164px 88px; align-items: center; min-height: 36px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Order</span></span>
+<span role="columnheader">TRACK</span>
+<span role="columnheader">STATUS</span>
+<span role="columnheader">PUBLIC PREVIEW</span>
+<span role="columnheader" style="text-align: right; white-space: nowrap">OPEN APPS</span>
+</div>
+<sc-for list="{{tracks}}" as="t" hint-placeholder-count="4">
+<div role="row" class="arow" style="display: grid; grid-template-columns: 56px minmax(0, 1fr) 150px 164px 88px; align-items: center; min-height: 52px; border-top: 1px solid #E5E7EB">
+<span role="cell" style="display: flex; align-items: center; gap: 2px">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="#A7ADB8" style="cursor: grab"><circle cx="9" cy="6" r="1.6"></circle><circle cx="15" cy="6" r="1.6"></circle><circle cx="9" cy="12" r="1.6"></circle><circle cx="15" cy="12" r="1.6"></circle><circle cx="9" cy="18" r="1.6"></circle><circle cx="15" cy="18" r="1.6"></circle></svg>
+<span style="display: flex; flex-direction: column">
+<button type="button" aria-label="{{t.upLabel}}" aria-disabled="{{t.upDis}}" onClick="{{t.up}}" style="{{t.upStyle}}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"></path></svg></button>
+<button type="button" aria-label="{{t.downLabel}}" aria-disabled="{{t.downDis}}" onClick="{{t.down}}" style="{{t.downStyle}}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</span>
+</span>
+<span role="cell" style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0; padding-right: 8px">
+<strong style="font-size: 15px; font-weight: 600">{{t.name}}</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{t.n}} · TRACK</span>
+</span>
+<span role="cell" style="padding-right: 12px">
+<label style="position: relative; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">{{t.selLabel}}</span>
+<select value="{{t.status}}" onChange="{{t.set}}" style="{{selSmStyle}}"><option value="open">Open</option><option value="soon">Coming soon</option><option value="later">Coming later</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 10px; top: 11px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</label>
+</span>
+<span role="cell" style="display: flex; align-items: center; gap: 8px">
+<span style="{{t.chip.style}}"><span aria-hidden="true" style="{{t.chip.dot}}"></span>{{t.chip.label}}</span>
+<sc-if value="{{t.canApply}}" hint-placeholder-val="{{ true }}">
+<span style="display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 8px; background: #0138AC; color: #ffffff; font-size: 13px; font-weight: 500">Apply</span>
+</sc-if>
+</span>
+<span role="cell" style="text-align: right">
+<a href="AdminQueueV3.dc.html" aria-label="{{t.appsAria}}" style="{{t.appsStyle}}">{{t.apps}}</a>
+</span>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">Open shows Apply. Coming soon and Coming later show the chip and a “Notify me when it opens” button instead.</span>
+</section>
+
+</div>
+
+<!-- REGISTRATION BANNER -->
+<section aria-labelledby="h-banner" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; background: #ffffff; min-width: 0">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="h-banner" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em">Registration banner</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">siteSettings.banner</span>
+</div>
+<button type="button" role="switch" aria-checked="{{bn.sw.checked}}" aria-label="Show registration banner" onClick="{{bn.toggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">
+<span aria-hidden="true" style="{{bn.sw.track}}"><span style="{{bn.sw.knob}}"></span></span>{{bn.showLabel}}</button>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 500">Message</span><span style="{{bn.countStyle}}">{{bn.count}}</span></span>
+<input type="text" value="{{bn.msg}}" onChange="{{bn.setMsg}}" aria-invalid="{{bn.invalid}}" aria-describedby="bn-msg-err" style="{{bn.msgInput}}">
+<sc-if value="{{bn.over}}" hint-placeholder-val="{{ false }}"><span id="bn-msg-err" role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">Keep the message to 90 characters so it fits on one line.</span></sc-if>
+</label>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span id="tone-lbl" style="font-size: 14px; font-weight: 500">Tone</span>
+<div role="group" aria-labelledby="tone-lbl" style="align-self: flex-start; display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{bn.tones}}" as="o" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}"><span aria-hidden="true" style="{{o.dot}}"></span>{{o.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 500">Link target</span>
+<input type="text" value="{{bn.link}}" onChange="{{bn.setLink}}" style="{{inpMono}}">
+</label>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 500">Start <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<input type="date" value="{{bn.start}}" onChange="{{bn.setStart}}" style="{{inp}}">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 500">End <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<input type="date" value="{{bn.end}}" onChange="{{bn.setEnd}}" style="{{inp}}">
+</label>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="font-size: 14px; font-weight: 500">Show on</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: #0A1222">ALL PAGES</span>
+</span>
+<span style="font-size: 13px; color: #646B7A">Summit pages also have their own banner in <a href="AdminEditionV3.dc.html" style="font-weight: 500">Editions</a>.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; justify-content: space-between; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: #646B7A"><span>LIVE PREVIEW · HEADER</span><span>{{bn.where}}</span></span>
+<div role="group" aria-label="Preview of the site header" style="border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; background: #ffffff">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #E5E7EB">
+<span style="display: flex; align-items: center; gap: 6px">
+<img src="img/logo.svg" alt="" style="width: 26px; height: 16px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 12px">Vert Robo Con</span>
+</span>
+<span aria-hidden="true" style="display: flex; gap: 6px"><span style="width: 34px; height: 8px; border-radius: 4px; background: #E5E7EB"></span><span style="width: 26px; height: 8px; border-radius: 4px; background: #E5E7EB"></span><span style="width: 30px; height: 8px; border-radius: 4px; background: #E5E7EB"></span><span style="width: 44px; height: 14px; border-radius: 5px; background: #0138AC"></span></span>
+</div>
+<sc-if value="{{bn.show}}" hint-placeholder-val="{{ true }}">
+<div style="{{bn.bar}}">
+<span style="{{bn.barChip}}"><span aria-hidden="true" style="{{bn.barDot}}"></span>SUMMIT 2027</span>
+<span style="flex: 1 1 auto; min-width: 0; font-size: 13px; color: #0A1222">{{bn.msg}}</span>
+<span style="{{bn.barLink}}">{{bn.link}} →</span>
+</div>
+</sc-if>
+<sc-if value="{{bn.hidden}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 12px 14px; font-size: 13px; color: #646B7A; background: #F7F8F9">Banner hidden. No bar shows under the header.</div>
+</sc-if>
+<div aria-hidden="true" style="padding: 14px; display: flex; flex-direction: column; gap: 6px"><span style="width: 60%; height: 10px; border-radius: 4px; background: #F3F4F2"></span><span style="width: 40%; height: 10px; border-radius: 4px; background: #F3F4F2"></span></div>
+</div>
+</div>
+</section>
+
+</div>
+
+<!-- ROW 2 -->
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start">
+
+<!-- SLACK -->
+<section aria-labelledby="h-slack" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: #ffffff; min-width: 0">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="h-slack" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em">Slack invite</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">Slack settings</span>
+</div>
+<span style="{{sl.chip.style}}"><span aria-hidden="true" style="{{sl.chip.dot}}"></span>{{sl.chip.label}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span id="slack-url-lbl" style="font-size: 14px; font-weight: 500">Invite URL</span>
+<div style="display: flex; gap: 6px">
+<input type="text" readonly aria-labelledby="slack-url-lbl" value="{{sl.url}}" style="{{inpMonoRo}}">
+<button type="button" aria-label="{{sl.revealAria}}" onClick="{{sl.toggleReveal}}" class="sec" style="flex: 0 0 auto; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">{{sl.revealLabel}}</button>
+</div>
+<span style="font-size: 13px; color: #646B7A">Sent only inside approval emails, never shown on the site.</span>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">CREATED</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 13px">{{sl.created}}</dd></div>
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EXPIRES</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 13px">{{sl.expires}}</dd></div>
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">DAYS LEFT</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 13px">{{sl.left}}</dd></div>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A"><span>USES</span><span style="font-size: 13px; color: #0A1222">{{sl.uses}} / 400</span></span>
+<span role="img" aria-label="{{sl.usesAria}}" style="position: relative; display: block; height: 8px; border-radius: 999px; background: #EEF0F3">
+<span style="{{sl.fill}}"></span>
+<span style="{{sl.mark}}"></span>
+</span>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 500">Warn at uses</span><input type="number" min="1" max="400" value="{{sl.warnUses}}" onChange="{{sl.setWarnUses}}" style="{{inpMono}}"></label>
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 500">Days before expiry</span><input type="number" min="1" max="30" value="{{sl.warnDays}}" onChange="{{sl.setWarnDays}}" style="{{inpMono}}"></label>
+</div>
+<sc-if value="{{sl.idle}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px solid #E5E7EB">
+<button type="button" onClick="{{sl.startRotate}}" class="sec" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.9-3.9M4 4v4h4M4 13a8 8 0 0 0 14.9 3.9M20 20v-4h-4"></path></svg>Rotate link</button>
+<span style="font-size: 13px; color: #646B7A">Links last 30 days and allow 400 uses.</span>
+</div>
+</sc-if>
+<sc-if value="{{sl.rotating}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid #E5E7EB">
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; font-weight: 500">New invite link</span>
+<input type="url" value="{{sl.newUrl}}" onChange="{{sl.setNewUrl}}" placeholder="Paste the invite link copied from Slack" aria-invalid="{{sl.newInvalid}}" aria-describedby="sl-new-err" style="{{sl.newInput}}">
+<span style="font-size: 13px; color: #646B7A">In Slack: Invite people, then Copy invite link. Paste it here.</span>
+</label>
+<sc-if value="{{sl.newErr}}" hint-placeholder-val="{{ false }}"><span id="sl-new-err" role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">Paste the full invite link copied from Slack.</span></sc-if>
+<div style="display: flex; gap: 8px">
+<button type="button" onClick="{{sl.confirmRotate}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Save new link</button>
+<button type="button" onClick="{{sl.cancelRotate}}" class="ghost" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Cancel</button>
+</div>
+</div>
+</sc-if>
+</section>
+
+<!-- MAP -->
+<section aria-labelledby="h-map" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: #ffffff; min-width: 0">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="h-map" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em">Map</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">Map and geocoding settings</span>
+</div>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 500">Dataset licence</span>
+<input type="text" value="{{mp.licence}}" onChange="{{mp.setLicence}}" style="{{inpMono}}">
+<span style="font-size: 13px; color: #646B7A">Shown as “Licence: …” next to the CSV · JSON downloads.</span>
+</label>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="display: flex; flex-direction: column; line-height: 1.35">
+<span id="geo-lbl" style="font-size: 14px; font-weight: 500">Geocoding</span>
+<span style="font-size: 13px; color: #646B7A">Photon, then Nominatim. Runs only when an admin approves a suggestion.</span>
+</span>
+<button type="button" role="switch" aria-checked="{{mp.sw.checked}}" aria-labelledby="geo-lbl" onClick="{{mp.toggle}}" style="flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; cursor: pointer">
+<span aria-hidden="true" style="{{mp.sw.track}}"><span style="{{mp.sw.knob}}"></span></span>{{mp.label}}</button>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">LAST GEOCODE: [DATE] · KILL SWITCH</span>
+<sc-if value="{{mp.off}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 12px; background: #FFF4E5; color: #8A4B00; font-size: 13px; font-weight: 500">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9822B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 1px"><path d="M12 3l10 18H2z"></path><path d="M12 10v4M12 17.5v.5"></path></svg>
+<span>New map approvals will need a manual pin.</span>
+</div>
+</sc-if>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 500">OSM attribution</span>
+<input type="text" value="{{mp.osm}}" onChange="{{mp.setOsm}}" style="{{inp}}">
+<span style="font-size: 13px; color: #646B7A">Shown on the map and required by the basemap licence (ODbL).</span>
+</label>
+</section>
+
+<!-- RETENTION -->
+<section aria-labelledby="h-ret" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #ffffff; min-width: 0">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="h-ret" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em">Retention</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">Retention settings</span>
+</div>
+<span style="{{proposed.style}}"><span aria-hidden="true" style="{{proposed.dot}}"></span>{{proposed.label}}</span>
+</div>
+<span style="font-size: 13px; color: #646B7A">Personal data is deleted this many months after the edition ends.</span>
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{ret}}" as="r" hint-placeholder-count="4">
+<label style="display: grid; grid-template-columns: minmax(0, 1fr) 72px auto; align-items: center; gap: 10px; min-height: 52px; border-top: 1px solid #E5E7EB">
+<span style="font-size: 14px; font-weight: 500">{{r.name}}</span>
+<input type="number" min="1" max="120" value="{{r.months}}" onChange="{{r.set}}" style="{{inpMonoSm}}">
+<span style="font-size: 13px; color: #646B7A">months</span>
+</label>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span>LAST PURGE RUN</span><span style="color: #0A1222">[DATE] · [TIME] UTC</span>
+</div>
+</section>
+
+</div>
+
+<!-- RECENT CHANGES -->
+<section aria-labelledby="h-audit" style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 8px; background: #ffffff">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; align-items: baseline; gap: 12px">
+<h2 id="h-audit" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em">Recent changes</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">Audit log · site settings</span>
+</div>
+<div style="display: flex; align-items: center; gap: 12px">
+<a href="AdminUsersV3.dc.html" style="font-size: 14px; font-weight: 500; text-decoration: none">Open audit log →</a>
+</div>
+</div>
+<div role="table" aria-label="Recent changes to site settings" style="display: flex; flex-direction: column">
+<div role="row" style="display: grid; grid-template-columns: 170px 220px minmax(0, 1fr); align-items: center; min-height: 36px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">WHEN</span><span role="columnheader">WHO</span><span role="columnheader">CHANGE</span>
+</div>
+<sc-for list="{{audit}}" as="a" hint-placeholder-count="3">
+<div role="row" class="arow" style="{{a.row}}">
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{a.when}}</span>
+<span role="cell" style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 10.5px; font-weight: 500">{{a.ini}}</span>
+<span style="font-size: 14px">{{a.who}}</span>
+</span>
+<span role="cell" style="font-size: 14px; color: #0A1222; min-width: 0; padding-right: 12px">{{a.what}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+</main>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2080}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const cfg = {
+programs: { hub: 'later', schools: 'soon' },
+tracks: [{ id: 'map', status: 'open' }, { id: 'summit', status: 'open' }, { id: 'writing', status: 'soon' }, { id: 'own', status: 'open' }],
+banner: { show: true, msg: 'Summit 2027 · April 20–22 · Online · Free · open to everyone', tone: 'blue', link: '/summits/2027', start: '', end: '' },
+slackWarnUses: '360', slackWarnDays: '10',
+licence: 'CC BY 4.0', geo: true, osm: '© OpenStreetMap contributors',
+ret: { registrations: '24', pitches: '24', join: '12', messages: '12' }
+};
+this.state = {
+cfg: cfg, saved: JSON.parse(JSON.stringify(cfg)),
+toast: '', q: '', confirmRet: false,
+reveal: false, rotating: false, newUrl: '', newErr: false,
+slack: { created: '[DATE]', expires: '[DATE]', left: '9', uses: 41 },
+audit: [
+{ when: '[DATE] 16:40', who: 'Sample Admin 02', ini: 'S2', what: 'Banner message edited', st: 'live' },
+{ when: '[DATE] 11:05', who: 'Sample Admin 01', ini: 'S1', what: 'Slack invite link rotated', st: 'internal' },
+{ when: '[DATE] 09:30', who: 'Sample Admin 01', ini: 'S1', what: 'Map dataset licence: CC BY 4.0', st: 'live' }
+]
+};
+}
+renderVals() {
+const S = this.state;
+const C = S.cfg;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const TONES = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#8A91A0'] };
+const chip = (tone, label) => { const t = TONES[tone]; return { label: label,
+style: 'align-self: center; display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: ' + t[0] + '; color: ' + t[1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap; line-height: 1.5',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + t[2] + '; flex: 0 0 auto' }; };
+const L = { open: 'Open', soon: 'Coming soon', later: 'Coming later' };
+const pubChip = (s) => (s === 'open' ? chip('blue', 'OPEN') : s === 'soon' ? chip('neutral', 'COMING SOON') : chip('neutral', 'COMING LATER'));
+const sw = (on) => ({ checked: on ? 'true' : 'false',
+track: 'position: relative; flex: 0 0 auto; width: 34px; height: 20px; border-radius: 999px; background: ' + (on ? '#0138AC' : '#C9CDD5') + '; display: inline-block',
+knob: 'position: absolute; top: 2px; left: ' + (on ? '16px' : '2px') + '; width: 16px; height: 16px; border-radius: 50%; background: #ffffff; box-shadow: 0 1px 2px rgba(10,18,34,0.2)' });
+const seg = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const inpBase = (bad) => 'width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 12px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; color: #0A1222';
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const up = (patch) => this.setState({ cfg: Object.assign({}, C, patch), toast: '' });
+const TR = { map: { name: 'Map data', apps: 1 }, summit: { name: 'Summit production', apps: 0 }, writing: { name: 'Writing & editing', apps: 0 }, own: { name: 'Your own idea', apps: 0 } };
+const TONE_N = { blue: 'Blue', amber: 'Amber', green: 'Green' };
+const RET = [['registrations', 'Registrations'], ['pitches', 'Pitches'], ['join', 'Join requests'], ['messages', 'Messages']];
+
+// ---------- diff (unsaved changes) ----------
+const A = S.saved;
+const changes = [];
+[['hub', 'Learning hub'], ['schools', 'Schools kit']].forEach((p) => { if (A.programs[p[0]] !== C.programs[p[0]]) changes.push(p[1] + ': ' + L[A.programs[p[0]]] + ' → ' + L[C.programs[p[0]]]); });
+C.tracks.forEach((t) => { const o = A.tracks.find((x) => x.id === t.id); if (o && o.status !== t.status) changes.push('Internship · ' + TR[t.id].name + ': ' + L[o.status] + ' → ' + L[t.status]); });
+if (A.tracks.map((t) => t.id).join() !== C.tracks.map((t) => t.id).join()) changes.push('Internship track order changed');
+const BA = A.banner; const B = C.banner;
+if (BA.show !== B.show) changes.push('Registration banner: ' + (B.show ? 'shown' : 'hidden'));
+if (BA.msg !== B.msg) changes.push('Banner message edited');
+if (BA.tone !== B.tone) changes.push('Banner tone: ' + TONE_N[BA.tone] + ' → ' + TONE_N[B.tone]);
+if (BA.link !== B.link) changes.push('Banner link: ' + B.link);
+if (BA.start !== B.start || BA.end !== B.end) changes.push('Banner schedule changed');
+if (A.slackWarnUses !== C.slackWarnUses || A.slackWarnDays !== C.slackWarnDays) changes.push('Slack invite warning threshold changed');
+if (A.licence !== C.licence) changes.push('Map dataset licence: ' + C.licence);
+if (A.geo !== C.geo) changes.push('Geocoding: ' + (A.geo ? 'On' : 'Off') + ' → ' + (C.geo ? 'On' : 'Off'));
+if (A.osm !== C.osm) changes.push('OSM attribution edited');
+RET.forEach((r) => { if (A.ret[r[0]] !== C.ret[r[0]]) changes.push('Retention · ' + r[1] + ': ' + A.ret[r[0]] + ' → ' + C.ret[r[0]] + ' months'); });
+const dirty = changes.length > 0;
+const overMsg = B.msg.length > 90;
+
+const markOld = (list) => list.map((x) => Object.assign({}, x));
+const months = (v) => { const n = parseInt(v, 10); return isNaN(n) ? null : n; };
+const shorter = RET.filter((r) => { const a = months(A.ret[r[0]]); const c = months(C.ret[r[0]]); return a !== null && c !== null && c < a; })
+.map((r) => ({ key: r[0], name: r[1], from: String(A.ret[r[0]]), to: String(C.ret[r[0]]) }));
+const commit = () => {
+const what = changes[0] + (changes.length > 1 ? ' and ' + (changes.length - 1) + ' more' : '');
+const entry = { when: 'Just now', who: 'Sample Admin 01 (you)', ini: 'S1', what: what, st: 'queued', fresh: true };
+this.setState({ saved: clone(C), confirmRet: false, toast: 'Saved · live now', audit: [entry].concat(markOld(S.audit).map((x) => Object.assign(x, { fresh: false }))).slice(0, 5) });
+};
+const save = () => {
+if (!dirty || overMsg) return;
+if (shorter.length) { this.setState({ confirmRet: true, toast: '' }); return; }
+commit();
+};
+const rcOn = S.confirmRet && shorter.length > 0;
+const rc = {
+on: rcOn,
+lines: shorter.length ? shorter : [{ name: 'Registrations', from: String(A.ret.registrations), to: String(C.ret.registrations) }],
+body: 'Records older than that are deleted at the next purge run and cannot be recovered.',
+cancel: () => { const keep = Object.assign({}, C.ret); shorter.forEach((x) => { keep[x.key] = A.ret[x.key]; }); this.setState({ confirmRet: false, cfg: Object.assign({}, C, { ret: keep }) }); },
+confirm: () => { if (!dirty || overMsg) { this.setState({ confirmRet: false }); return; } commit(); }
+};
+
+// ---------- shared chrome (matches AdminQueueV3) ----------
+const QUEUE_OPEN = 16; // AdminQueueV3 open items: join 3 · map 3 · jobs 2 · messages 4 · nominations 1 · internships 1 · documents 2
+
+// ---------- programs ----------
+const PG = [
+{ id: 'hub', name: 'Learning hub', pubName: 'Learning hub', topic: 'learning-hub' },
+{ id: 'schools', name: 'Schools kit', pubName: 'Schools kit', topic: 'schools-kit' }
+];
+const programs = PG.map((p) => {
+const s = C.programs[p.id];
+const open = s === 'open';
+return { name: p.name, pubName: p.pubName, topic: p.topic, status: s, path: 'programs.' + p.id + '.status', chip: pubChip(s),
+previewAria: 'Preview of the ' + p.pubName + ' card on the site',
+action: open ? 'Learn more' : 'Register interest',
+actionStyle: 'align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; border-radius: 10px; font-size: 13px; font-weight: 500; ' + (open ? 'padding: 0 12px; background: #0138AC; color: #ffffff' : 'padding: 0; color: #0138AC; text-decoration: underline; text-underline-offset: 3px'),
+set: (e) => up({ programs: Object.assign({}, C.programs, { [p.id]: e.target.value }) }) };
+});
+
+// ---------- internship tracks ----------
+const arrow = (dis) => 'width: 24px; height: 24px; padding: 0; border: 0; border-radius: 5px; background: transparent; display: flex; align-items: center; justify-content: center; cursor: ' + (dis ? 'default' : 'pointer') + '; color: ' + (dis ? '#C9CDD5' : '#3D4556');
+const move = (i, d) => () => { const j = i + d; if (j < 0 || j >= C.tracks.length) return; const arr = C.tracks.slice(); const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp; up({ tracks: arr }); };
+const tracks = C.tracks.map((t, i) => {
+const nm = TR[t.id].name;
+const first = i === 0; const last = i === C.tracks.length - 1;
+return { name: nm, n: '0' + (i + 1), status: t.status, chip: pubChip(t.status), canApply: t.status === 'open',
+apps: String(TR[t.id].apps), appsAria: TR[t.id].apps + ' open ' + (TR[t.id].apps === 1 ? 'application' : 'applications') + ' for ' + nm + ', open in queue',
+appsStyle: "font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500; text-decoration: none; " + (TR[t.id].apps ? 'color: #0138AC' : 'color: #646B7A'),
+selLabel: 'Status of ' + nm,
+upLabel: 'Move ' + nm + ' up', downLabel: 'Move ' + nm + ' down',
+upDis: first ? 'true' : 'false', downDis: last ? 'true' : 'false',
+upStyle: arrow(first), downStyle: arrow(last), up: move(i, -1), down: move(i, 1),
+set: (e) => up({ tracks: C.tracks.map((x) => (x.id === t.id ? { id: x.id, status: e.target.value } : x)) }) };
+});
+
+// ---------- banner ----------
+const ub = (o) => up({ banner: Object.assign({}, B, o) });
+const tc = TONES[B.tone];
+const bn = {
+show: B.show, hidden: !B.show, sw: sw(B.show), showLabel: 'Show',
+toggle: () => ub({ show: !B.show }),
+msg: B.msg, setMsg: (e) => ub({ msg: e.target.value }),
+count: B.msg.length + ' / 90', over: overMsg, invalid: overMsg ? 'true' : 'false',
+countStyle: MONO + 'font-size: 12px; color: ' + (overMsg ? '#B42318' : '#646B7A'),
+msgInput: inpBase(overMsg),
+link: B.link, setLink: (e) => ub({ link: e.target.value }),
+start: B.start, end: B.end, setStart: (e) => ub({ start: e.target.value }), setEnd: (e) => ub({ end: e.target.value }),
+where: 'ALL PAGES' + (B.start || B.end ? ' · SCHEDULED' : ''),
+tones: [['blue', 'Blue · actionable'], ['amber', 'Amber · deadline'], ['green', 'Green · live']].map((o) => ({ label: o[1], pressed: B.tone === o[0] ? 'true' : 'false', style: seg(B.tone === o[0]),
+dot: 'width: 8px; height: 8px; border-radius: 50%; background: ' + TONES[o[0]][2], pick: () => ub({ tone: o[0] }) })),
+bar: 'display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 10px 14px; background: ' + tc[0] + '; border-bottom: 1px solid #E5E7EB',
+barChip: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: #ffffff; color: ' + tc[1] + '; ' + MONO + 'font-size: 10.5px; font-weight: 500; letter-spacing: 0.04em; white-space: nowrap',
+barDot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + tc[2],
+barLink: MONO + 'font-size: 11px; color: ' + tc[1] + '; white-space: nowrap'
+};
+
+// ---------- slack ----------
+const SL = S.slack;
+const wu = parseInt(C.slackWarnUses, 10) || 400;
+const warn = SL.uses >= wu;
+const warnDays = (parseInt(SL.left, 10) || 99) <= (parseInt(C.slackWarnDays, 10) || 0);
+const okUrl = (v) => /^https:\/\/join\.slack\.com\//.test((v || '').trim());
+const sl = {
+chip: warn ? chip('amber', 'NEAR USE LIMIT') : warnDays ? chip('amber', 'EXPIRING SOON') : chip('green', 'ACTIVE'),
+url: S.reveal ? '[SLACK INVITE URL]' : '••••••••••••••••••••••••',
+revealLabel: S.reveal ? 'Hide' : 'Show', revealAria: S.reveal ? 'Hide invite URL' : 'Show invite URL',
+toggleReveal: () => this.setState({ reveal: !S.reveal }),
+created: SL.created, expires: SL.expires, left: SL.left, uses: SL.uses,
+usesAria: SL.uses + ' of 400 uses; warning at ' + wu,
+fill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + Math.min(100, SL.uses / 4) + '%; border-radius: 999px; background: ' + (warn ? '#D9822B' : '#0138AC'),
+mark: 'position: absolute; top: -3px; bottom: -3px; width: 2px; border-radius: 1px; background: #8A4B00; left: ' + Math.min(100, wu / 4) + '%',
+warnUses: C.slackWarnUses, warnDays: C.slackWarnDays,
+setWarnUses: (e) => up({ slackWarnUses: e.target.value }), setWarnDays: (e) => up({ slackWarnDays: e.target.value }),
+idle: !S.rotating, rotating: S.rotating,
+startRotate: () => this.setState({ rotating: true, newUrl: '', newErr: false }),
+cancelRotate: () => this.setState({ rotating: false, newErr: false }),
+newUrl: S.newUrl, setNewUrl: (e) => this.setState({ newUrl: e.target.value, newErr: false }),
+newErr: S.newErr, newInvalid: S.newErr ? 'true' : 'false', newInput: inpBase(S.newErr) + '; ' + MONO + 'font-size: 13px',
+confirmRotate: () => {
+if (!okUrl(S.newUrl)) { this.setState({ newErr: true }); return; }
+const entry = { when: 'Just now', who: 'Sample Admin 01 (you)', ini: 'S1', what: 'Slack invite link rotated', st: 'internal', fresh: true };
+this.setState({ rotating: false, newErr: false, reveal: false, slack: { created: 'Today', expires: 'In 30 days', left: '30', uses: 0 }, toast: 'Invite link saved · approval emails use it now', audit: [entry].concat(markOld(S.audit).map((x) => Object.assign(x, { fresh: false }))).slice(0, 5) });
+}
+};
+
+// ---------- map ----------
+const mp = {
+licence: C.licence, setLicence: (e) => up({ licence: e.target.value }),
+sw: sw(C.geo), label: C.geo ? 'ON' : 'OFF', off: !C.geo, toggle: () => up({ geo: !C.geo }),
+osm: C.osm, setOsm: (e) => up({ osm: e.target.value })
+};
+
+// ---------- retention ----------
+const ret = RET.map((r) => ({ name: r[1], months: C.ret[r[0]],
+set: (e) => up({ ret: Object.assign({}, C.ret, { [r[0]]: e.target.value }) }) }));
+
+// ---------- audit ----------
+const audit = S.audit.map((a) => ({ when: a.when, who: a.who, ini: a.ini, what: a.what,
+row: 'display: grid; grid-template-columns: 170px 220px minmax(0, 1fr); align-items: center; min-height: 48px; border-top: 1px solid #E5E7EB; ' + (a.fresh ? 'background: #EEF2FB' : '') }));
+
+const saveOff = !dirty || overMsg;
+return {
+totalOpen: String(QUEUE_OPEN), queueAria: QUEUE_OPEN + ' items need action',
+q: S.q, setQ: (e) => this.setState({ q: e.target.value }),
+dirty: dirty,
+dirtyChip: dirty ? chip('amber', 'UNSAVED CHANGES · ' + changes.length) : chip('neutral', 'NO UNSAVED CHANGES'),
+changesLine: changes.join(' · '),
+discard: () => this.setState({ cfg: clone(S.saved), toast: '' }),
+save: save, saveDisabled: saveOff ? 'true' : 'false',
+saveStyle: 'display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; ' + (saveOff ? 'opacity: 0.45; cursor: not-allowed' : 'cursor: pointer'),
+toastOn: !!S.toast, toast: S.toast, closeToast: () => this.setState({ toast: '' }),
+selStyle: inpBase(false) + '; appearance: none; -webkit-appearance: none; padding-right: 34px; cursor: pointer',
+selSmStyle: inpBase(false) + '; min-height: 36px; appearance: none; -webkit-appearance: none; padding: 0 30px 0 10px; font-size: 13px; cursor: pointer',
+inp: inpBase(false),
+inpMono: inpBase(false) + '; ' + MONO + 'font-size: 13px',
+inpMonoSm: inpBase(false) + '; min-height: 36px; padding: 0 8px; ' + MONO + 'font-size: 13px; text-align: right',
+inpMonoRo: inpBase(false) + '; flex: 1 1 auto; min-width: 0; background: #F7F8F9; color: #3D4556; ' + MONO + 'font-size: 12px',
+programs: programs, tracks: tracks, bn: bn, sl: sl, mp: mp, ret: ret, audit: audit, rc: rc,
+proposed: chip('amber', 'PROPOSED DEFAULTS')
+};
+}
+}
+</script>
+</body>
+</html>

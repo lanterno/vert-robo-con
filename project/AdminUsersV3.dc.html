@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Admins and audit log</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.arow:hover{background:#F7F8F9}
+.ghost:hover{background:#F3F4F2}
+.sec:hover{background:#F7F8F9}
+.mi:hover{background:#F3F4F2}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 1440px; box-sizing: border-box; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 14px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the app) -->
+<div style="height: 34px; box-sizing: border-box; display: flex; align-items: center; background: #E9EAEC; padding: 0 24px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.03em; color: #3D4556; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Canvas note · better-auth: password plus required two-factor (authenticator app or passkey) and recovery codes for every admin. One admin role. The audit log is append-only.</div>
+
+<!-- TOAST -->
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 112px; right: 32px; z-index: 70; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); font-size: 14px">
+<span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #1DB46C; display: flex; align-items: center; justify-content: center; color: #ffffff"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<span style="font-weight: 500">{{toast}}</span>
+<sc-if value="{{toastLink}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{goAudit}}" style="min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: #141D30; color: #BFD0F5; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">View in Audit log</button>
+</sc-if>
+<button type="button" onClick="{{closeToast}}" aria-label="Dismiss notification" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- REMOVE ADMIN CONFIRMATION -->
+<sc-if value="{{rm.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Keep this admin" onClick="{{rm.cancel}}" style="position: absolute; top: 34px; left: 0; right: 0; bottom: 0; z-index: 60; border: 0; padding: 0; background: rgba(10,18,34,0.32); cursor: default"></button>
+<div role="alertdialog" aria-modal="true" aria-labelledby="rm-h" aria-describedby="rm-d" style="position: absolute; z-index: 61; top: 250px; left: 50%; margin-left: -250px; width: 500px; box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">ADMINS · {{rm.handle}}</span>
+<h2 id="rm-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">Remove {{rm.name}}?</h2>
+<span id="rm-d" style="font-size: 15px; color: #3D4556">{{rm.body}}</span>
+<ul style="margin: 0; padding: 12px 14px 12px 32px; border-radius: 12px; background: #F3F4F2; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #0A1222">
+<sc-for list="{{rm.points}}" as="p" hint-placeholder-count="3"><li>{{p.t}}</li></sc-for>
+</ul>
+<span style="font-size: 13px; color: #646B7A">An audit event is written with your name.</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{rm.cancel}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Keep admin</button>
+<button type="button" onClick="{{rm.confirm}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Remove admin</button>
+</div>
+</div>
+</sc-if>
+
+<!-- RESET 2FA CONFIRMATION -->
+<sc-if value="{{rs.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Keep their two-factor as is" onClick="{{rs.cancel}}" style="position: absolute; top: 34px; left: 0; right: 0; bottom: 0; z-index: 60; border: 0; padding: 0; background: rgba(10,18,34,0.32); cursor: default"></button>
+<div role="alertdialog" aria-modal="true" aria-labelledby="rs-h" aria-describedby="rs-d" style="position: absolute; z-index: 61; top: 250px; left: 50%; margin-left: -250px; width: 500px; box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">ADMINS · {{rs.handle}} · TWO-FACTOR</span>
+<h2 id="rs-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">Reset 2FA for {{rs.name}}?</h2>
+<span id="rs-d" style="font-size: 15px; color: #3D4556">{{rs.body}}</span>
+<ul style="margin: 0; padding: 12px 14px 12px 32px; border-radius: 12px; background: #F3F4F2; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #0A1222">
+<sc-for list="{{rs.points}}" as="p" hint-placeholder-count="3"><li>{{p.t}}</li></sc-for>
+</ul>
+<span style="font-size: 13px; color: #646B7A">An audit event is written with your name.</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{rs.cancel}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Keep 2FA as is</button>
+<button type="button" onClick="{{rs.confirm}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Reset 2FA</button>
+</div>
+</div>
+</sc-if>
+
+<!-- REGENERATE RECOVERY CODES -->
+<sc-if value="{{rg.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="{{rg.backLabel}}" onClick="{{rg.cancel}}" style="position: absolute; top: 34px; left: 0; right: 0; bottom: 0; z-index: 60; border: 0; padding: 0; background: rgba(10,18,34,0.32); cursor: default"></button>
+<div role="alertdialog" aria-modal="true" aria-labelledby="rg-h" aria-describedby="rg-d" style="position: absolute; z-index: 61; top: 250px; left: 50%; margin-left: -250px; width: 500px; box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">YOUR SECURITY · RECOVERY CODES</span>
+<h2 id="rg-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{rg.title}}</h2>
+<span id="rg-d" style="font-size: 15px; color: #3D4556">{{rg.body}}</span>
+<sc-if value="{{rg.show}}" hint-placeholder-val="{{ false }}">
+<ol aria-label="New recovery codes, sample" style="margin: 0; padding: 12px 14px; border-radius: 12px; background: #F3F4F2; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; font-family: 'Geist Mono', monospace; font-size: 14px; letter-spacing: 0.06em; color: #0A1222">
+<sc-for list="{{rg.codes}}" as="c" hint-placeholder-count="10"><li>{{c.t}}</li></sc-for>
+</ol>
+<span style="font-size: 13px; color: #646B7A">Sample codes. You see them only now: save them in a password manager or print them.</span>
+</sc-if>
+<sc-if value="{{rg.ask}}" hint-placeholder-val="{{ true }}">
+<span style="font-size: 13px; color: #646B7A">An audit event is written with your name.</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{rg.cancel}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Keep current codes</button>
+<button type="button" onClick="{{rg.confirm}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Regenerate codes</button>
+</div>
+</sc-if>
+<sc-if value="{{rg.show}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" onClick="{{rg.done}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">I saved them</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<!-- INVITE DRAWER -->
+<sc-if value="{{drawer}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Close add admin sheet" onClick="{{closeDrawer}}" style="position: absolute; top: 34px; left: 0; right: 0; bottom: 0; z-index: 50; border: 0; padding: 0; background: rgba(10,18,34,0.28); cursor: default"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="inv-h" style="position: absolute; top: 34px; right: 0; bottom: 0; z-index: 51; width: 520px; box-sizing: border-box; background: #ffffff; border-left: 1px solid #E5E7EB; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E5E7EB">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">ADMINS · NEW INVITE</span>
+<h2 id="inv-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em">Add admin</h2>
+</div>
+<button type="button" aria-label="Close" onClick="{{closeDrawer}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: 1 1 auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px">
+<div role="note" style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #EEF2FB; color: #0A1222">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<strong style="font-size: 15px; font-weight: 600">Every admin has full access</strong>
+<span style="font-size: 13px; color: #3D4556">They can do everything you can, including adding and removing admins. Only invite people you trust with registrants’ personal data.</span>
+</span>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Name</span>
+<input type="text" value="{{inv.name}}" onChange="{{inv.setName}}" placeholder="First and last name" autocomplete="off" aria-invalid="{{inv.nameInvalid}}" style="{{inv.nameStyle}}">
+<sc-if value="{{inv.nameErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">Enter their name, as it should appear in the Audit log.</span></sc-if>
+</label>
+
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Email</span>
+<input type="email" value="{{inv.email}}" onChange="{{inv.setEmail}}" placeholder="name@example.org" aria-invalid="{{inv.emailInvalid}}" aria-describedby="inv-email-help" style="{{inv.emailStyle}}">
+<sc-if value="{{inv.emailErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{inv.emailMsg}}</span></sc-if>
+<span id="inv-email-help" style="font-size: 13px; color: #646B7A">We email them an invite with a link to set a password.</span>
+</label>
+
+<label style="display: flex; flex-direction: column; gap: 6px; max-width: 240px">
+<span style="font-size: 14px; font-weight: 500">Invite expires after</span>
+<span style="position: relative; display: block">
+<select value="{{inv.expiry}}" onChange="{{inv.setExpiry}}" style="{{selStyle}}"><option value="1">24 hours</option><option value="3">3 days</option><option value="7">7 days</option><option value="14">14 days</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+
+<div role="note" style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 14px; border: 1px solid #E5E7EB; color: #0A1222">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background: #E8F6EE; color: #0B7A47; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<strong style="font-size: 15px; font-weight: 600">Two-factor is required</strong>
+<span style="font-size: 13px; color: #3D4556">They must set up two-factor (passkey or authenticator app) at first sign-in, before they can see anything, and save their recovery codes.</span>
+</span>
+</div>
+
+<div style="border-radius: 14px; background: #F3F4F2; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</span>
+<ol style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #3D4556">
+<li>They get an invite email with a set-password link. The link expires after {{inv.expiryLabel}}.</li>
+<li>They sign in at admin.vert-robo-con.example with their password, then set up two-factor. Then they have full access.</li>
+<li>They show as <strong style="font-weight: 600">Invited</strong> with 2FA <strong style="font-weight: 600">Setup pending</strong> until first sign-in, and the Audit log records the invite.</li>
+</ol>
+</div>
+</div>
+
+<div style="display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid #E5E7EB">
+<button type="button" class="sec" onClick="{{closeDrawer}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Cancel</button>
+<button type="button" onClick="{{inv.submit}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Send invite</button>
+</div>
+</aside>
+</sc-if>
+
+<div style="display: flex; align-items: stretch; min-height: 1406px">
+
+<!-- SIDEBAR -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; font-weight: 500; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- APP -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<!-- PAGE HEADER -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 520px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">ADMINS · AUDIT LOG</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.1; letter-spacing: -0.02em">Admins</h1>
+<span style="font-size: 15px; color: #3D4556">Every admin can do everything in the backoffice. Add or remove admins at any time, as many as you need. Public visitors never get an account here.</span>
+</div>
+<button type="button" onClick="{{openDrawer}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>Add admin</button>
+</div>
+
+<!-- KPI BENTO -->
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px 18px; display: flex; flex-direction: column; gap: 2px; background: #ffffff">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{k.label}}</span>
+<span style="{{k.numStyle}}">{{k.num}}</span>
+<span style="font-size: 13px; color: #646B7A">{{k.sub}}</span>
+</div>
+</sc-for>
+</div>
+
+<!-- TABS -->
+<div role="tablist" aria-label="Admins sections" style="align-self: flex-start; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" role="tab" id="{{t.id}}" aria-selected="{{t.sel}}" aria-controls="{{t.panel}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}<span style="{{t.countStyle}}">{{t.count}}</span></button>
+</sc-for>
+</div>
+
+<!-- ============ ADMINS ============ -->
+<sc-if value="{{isAdmins}}" hint-placeholder-val="{{ true }}">
+<section id="panel-admins" role="tabpanel" aria-labelledby="tab-admins" style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 36px">
+<span style="font-size: 14px; color: #3D4556">Use a row’s menu to resend an invite, reset 2FA or remove an admin.</span>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{usersCount}}</span>
+</div>
+
+<!-- 2FA POLICY -->
+<div role="note" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 14px; border: 1px solid #E5E7EB; background: #ffffff">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%; background: #E8F6EE; color: #0B7A47; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<strong style="font-size: 15px; font-weight: 600">Two-factor is required for every admin and cannot be turned off.</strong>
+<span style="font-size: 13px; color: #3D4556">Passkey or authenticator app, plus one-time recovery codes. A new admin sets it up at first sign-in, before they can see anything.</span>
+</span>
+<span style="{{policyChip.style}}"><span aria-hidden="true" style="{{policyChip.dot}}"></span>{{policyChip.label}}</span>
+</div>
+
+<div role="table" aria-label="Admins" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: minmax(0, 1fr) 220px 110px 130px 110px 230px 52px; align-items: center; min-height: 40px; padding: 0 4px 0 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader">NAME</span>
+<span role="columnheader">EMAIL</span>
+<span role="columnheader">ADDED</span>
+<span role="columnheader">LAST ACTIVE</span>
+<span role="columnheader">STATUS</span>
+<span role="columnheader">2FA</span>
+<span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Actions</span></span>
+</div>
+<sc-for list="{{users}}" as="u" hint-placeholder-count="4">
+<div role="row" class="arow" style="{{u.row}}">
+<span role="cell" style="{{u.cell}}">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500">{{u.ini}}</span>
+<span style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0">
+<strong style="font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{u.name}}</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{u.handle}}</span>
+</span>
+</span>
+<span role="cell" style="{{u.cell}}"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{u.email}}</span></span>
+<span role="cell" style="{{u.cell}}"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{u.added}}</span></span>
+<span role="cell" style="{{u.cell}}"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{u.last}}</span></span>
+<span role="cell" style="{{u.cell}}"><span style="{{u.st.style}}"><span aria-hidden="true" style="{{u.st.dot}}"></span>{{u.st.label}}</span></span>
+<span role="cell" style="{{u.tfaCell}}"><sc-for list="{{u.tfa}}" as="f" hint-placeholder-count="2"><span style="{{f.style}}"><span aria-hidden="true" style="{{f.dot}}"></span>{{f.label}}</span></sc-for></span>
+<span role="cell" style="position: relative; display: flex; justify-content: center">
+<button type="button" aria-label="{{u.menuLabel}}" aria-haspopup="menu" aria-expanded="{{u.menuExp}}" onClick="{{u.toggleMenu}}" class="ghost" style="{{u.menuBtn}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button>
+<sc-if value="{{u.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="{{u.menuLabel}}" aria-describedby="{{u.noteId}}" style="position: absolute; right: 6px; top: 44px; z-index: 25; width: 256px; box-sizing: border-box; padding: 6px; border-radius: 14px; background: #ffffff; border: 1px solid #E5E7EB; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{u.items}}" as="m" hint-placeholder-count="2">
+<button type="button" role="menuitem" class="mi" aria-disabled="{{m.dis}}" onClick="{{m.act}}" style="{{m.style}}">{{m.label}}</button>
+</sc-for>
+<sc-if value="{{u.hasNote}}" hint-placeholder-val="{{ false }}"><span id="{{u.noteId}}" role="none" style="padding: 4px 10px 6px; font-size: 12px; color: #646B7A">{{u.note}}</span></sc-if>
+</div>
+</sc-if>
+</span>
+</div>
+</sc-for>
+</div>
+
+<!-- YOUR SECURITY -->
+<section aria-labelledby="sec-h" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 16px; background: #ffffff">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{sec.who}}</span>
+<h2 id="sec-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">Your security</h2>
+<span style="font-size: 14px; color: #3D4556">Two-factor is on for your account. You can change how you sign in, but not turn it off.</span>
+</div>
+<span style="{{sec.chip.style}}"><span aria-hidden="true" style="{{sec.chip.dot}}"></span>{{sec.chip.label}}</span>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px">
+<div style="border-radius: 14px; background: #F3F4F2; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{sec.pkTitle}}</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{sec.pk}}" as="pk" hint-placeholder-count="2">
+<li style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: #ffffff">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><circle cx="8" cy="15" r="4"></circle><path d="M11 12l9-9M17 6l3 3M14 9l2 2"></path></svg>
+<span style="display: flex; flex-direction: column; line-height: 1.3; min-width: 0">
+<span style="font-size: 14px; font-weight: 500">{{pk.n}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{pk.m}}</span>
+</span>
+</li>
+</sc-for>
+</ul>
+</div>
+<div style="border-radius: 14px; background: #F3F4F2; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">AUTHENTICATOR APP</span>
+<span style="{{sec.app.style}}"><span aria-hidden="true" style="{{sec.app.dot}}"></span>{{sec.app.label}}</span>
+<span style="font-size: 13px; color: #3D4556">{{sec.appText}}</span>
+</div>
+<div style="border-radius: 14px; background: #F3F4F2; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">RECOVERY CODES</span>
+<span style="{{sec.codesStyle}}">{{sec.codes}}</span>
+<span id="sec-codes-help" style="font-size: 13px; color: #3D4556">Each code works once. Keep them offline, somewhere safe. Regenerating makes the old ones stop working.</span>
+<button type="button" class="sec" onClick="{{sec.regen}}" aria-haspopup="dialog" aria-describedby="sec-codes-help" style="margin-top: 4px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Regenerate</button>
+</div>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; font-size: 13px; color: #646B7A">
+<span>Every admin can see and change everything: registrations, exports and erasure, pitches and scores, moderation, settings, and the admin list itself.</span>
+<span>Removing an admin signs them out everywhere at once. You cannot remove yourself or the last admin. Their past actions stay in the Audit log under their name.</span>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ AUDIT LOG ============ -->
+<sc-if value="{{isAudit}}" hint-placeholder-val="{{ false }}">
+<section id="panel-audit" role="tabpanel" aria-labelledby="tab-audit" style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap">
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span id="fa-label" style="font-size: 13px; font-weight: 500">Actor</span>
+<span id="fa-help" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">{{actorHelp}}</span>
+<span style="position: relative; display: block; width: 200px">
+<select value="{{fA}}" onChange="{{setFA}}" aria-labelledby="fa-label" aria-describedby="fa-help" style="{{selStyle}}"><option value="all">All actors</option><option value="01">Sample Admin 01 · you</option><option value="02">Sample Admin 02</option><option value="03">Sample Admin 03</option><option value="04">Sample Admin 04</option><option value="sys">System</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span id="ft-label" style="font-size: 13px; font-weight: 500">Action</span>
+<span style="position: relative; display: block; width: 180px">
+<select value="{{fT}}" onChange="{{setFT}}" aria-labelledby="ft-label" style="{{selStyle}}"><option value="all">All actions</option><option value="export">Export</option><option value="approve">Approve</option><option value="score">Score</option><option value="publish">Publish</option><option value="erase">Erase</option><option value="settings">Settings</option><option value="invite">Invite</option><option value="remove">Remove admin</option><option value="tfa">Two-factor</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span id="fd-label" style="font-size: 13px; font-weight: 500">Date</span>
+<span style="position: relative; display: block; width: 170px">
+<select value="{{fD}}" onChange="{{setFD}}" aria-labelledby="fd-label" style="{{selStyle}}"><option value="0">Today</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="all">All time</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<sc-if value="{{filtered}}" hint-placeholder-val="{{ false }}">
+<button type="button" class="ghost" onClick="{{clearFilters}}" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear filters</button>
+</sc-if>
+<span style="margin-left: auto; align-self: center; display: flex; align-items: center; gap: 10px">
+<span style="{{sampleChip.style}}"><span aria-hidden="true" style="{{sampleChip.dot}}"></span>{{sampleChip.label}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{auditCount}}</span>
+</span>
+<button type="button" class="sec" onClick="{{exportLog}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Export log</button>
+</div>
+
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div style="position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: 136px minmax(0, 1fr) 118px 210px 32px; align-items: center; min-height: 40px; padding: 0 12px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span>TIME (UTC)</span><span>ACTOR · EVENT</span><span>ACTION</span><span>TARGET</span><span></span>
+</div>
+<ol aria-label="Audit events, newest first" style="margin: 0; padding: 0; list-style: none">
+<sc-for list="{{audit}}" as="a" hint-placeholder-count="8">
+<li style="{{a.wrap}}">
+<button type="button" class="arow" aria-expanded="{{a.exp}}" onClick="{{a.toggle}}" style="width: 100%; display: grid; grid-template-columns: 136px minmax(0, 1fr) 118px 210px 32px; align-items: center; min-height: 52px; padding: 0 12px; border: 0; background: transparent; font: inherit; text-align: left; color: #0A1222; cursor: pointer">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{a.when}}</span>
+<span style="display: flex; align-items: center; gap: 10px; min-width: 0; padding-right: 12px">
+<span aria-hidden="true" style="{{a.avatar}}">{{a.ini}}</span>
+<span style="font-size: 14px; min-width: 0"><strong style="font-weight: 600">{{a.actor}}</strong> {{a.text}}</span>
+<sc-if value="{{a.sample}}" hint-placeholder-val="{{ false }}"><span style="flex: 0 0 auto; padding: 1px 6px; border-radius: 999px; background: #F3F4F2; color: #646B7A; font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.06em">SAMPLE</span></sc-if>
+</span>
+<span><span style="{{a.chip.style}}"><span aria-hidden="true" style="{{a.chip.dot}}"></span>{{a.chip.label}}</span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 8px">{{a.target}}</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{a.chev}}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<sc-if value="{{a.isOpen}}" hint-placeholder-val="{{ false }}">
+<div style="margin: 0 12px 14px 148px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{a.meta}}</span>
+<div role="group" aria-label="JSON diff" style="border: 1px solid #E5E7EB; border-radius: 12px; background: #F7F8F9; padding: 8px 0; display: flex; flex-direction: column; font-family: 'Geist Mono', monospace; font-size: 12.5px; line-height: 1.7">
+<sc-for list="{{a.lines}}" as="l" hint-placeholder-count="4"><span style="{{l.style}}"><span aria-hidden="true" style="display: inline-block; width: 18px; opacity: 0.8">{{l.sign}}</span><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">{{l.sr}}</span>{{l.text}}</span></sc-for>
+</div>
+<sc-if value="{{a.hasNote}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #3D4556">{{a.note}}</span></sc-if>
+</div>
+</sc-if>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{auditEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; color: #646B7A">
+<strong style="color: #0A1222">No events match these filters</strong>
+<span>Try a wider date range, or another actor.</span>
+<button type="button" onClick="{{clearFilters}}" style="margin-top: 6px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear filters</button>
+</div>
+</sc-if>
+</div>
+<span style="font-size: 13px; color: #646B7A">Written by the app on every change. Append-only: no admin can edit or delete an event. Erasures record which fields were cleared, never their values.</span>
+</section>
+</sc-if>
+
+</main>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1440}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const D = (s, t) => [s, t];
+this.state = {
+tab: 'admins', menu: null, confirm: null, reset: null, regen: null, nextId: 5,
+drawer: false, inv: { name: '', email: '', expiry: '7' }, invErr: {},
+fA: 'all', fT: 'all', fD: '30', open: 'ae_0412', newAudit: 0, seq: 413,
+toast: '', toastLink: false, q: '',
+// Two-factor per admin: pk = passkeys, app = authenticator app (TOTP), codes = recovery codes left of 10, reset = 2FA reset, setup pending
+users: [
+{ id: '01', name: 'Sample Admin 01', email: 'admin01@example.org', added: '[DATE] 2025', last: 'Today 10:42', status: 'active', sessions: 2, you: true,
+pk: [{ n: 'MacBook Touch ID', m: 'ADDED [DATE] · LAST USED TODAY 10:42' }, { n: 'YubiKey', m: 'ADDED [DATE] · BACKUP KEY' }], app: true, codes: 8, reset: false },
+{ id: '02', name: 'Sample Admin 02', email: 'admin02@example.org', added: '[DATE] 2025', last: 'Today 08:05', status: 'active', sessions: 1,
+pk: [{ n: 'Phone passkey', m: 'ADDED [DATE]' }], app: false, codes: 9, reset: false },
+{ id: '03', name: 'Sample Admin 03', email: 'admin03@example.org', added: '[DATE] 2026', last: 'Yesterday 08:31', status: 'active', sessions: 1,
+pk: [], app: true, codes: 10, reset: false },
+{ id: '04', name: 'Sample Admin 04', email: 'admin04@example.org', added: '9 days ago', last: 'Never', status: 'invited', sessions: 0,
+pk: [], app: false, codes: 0, reset: false }
+],
+audit: [
+{ id: 'ae_0412', when: 'Today 10:42', age: 0, actor: '01', who: 'Sample Admin 01', type: 'export', text: 'exported [N] registrations · Summit 2026 (CSV)', target: 'registrations · 2026', sample: true, src: 'plugin-import-export · afterOperation hook',
+lines: [D(' ', '"collection": "registrations",'), D(' ', '"where": { "edition": 2026 },'), D('+', '"export": { "format": "csv", "rows": [N] },'), D(' ', '"fields": ["ref", "name", "email", "country", "days", "topics"]')] },
+{ id: 'ae_0411', when: 'Today 09:58', age: 0, actor: '01', who: 'Sample Admin 01', type: 'approve', text: 'approved JOIN-0301 · invite sent', target: 'joinRequests/JOIN-0301', sample: true, src: 'afterChange hook · Queue view',
+lines: [D('-', '"status": "Pending approval",'), D('+', '"status": "Approved, invite sent",'), D('+', '"email": { "template": "join-approved", "job": "queued" },'), D(' ', '"slack.uses": 41')] },
+{ id: 'ae_0410', when: 'Today 08:05', age: 0, actor: '02', who: 'Sample Admin 02', type: 'tfa_code', text: 'signed in with a recovery code · 9 of 10 left', target: 'users/02 · twoFactor', src: 'auth hook · sign-in',
+lines: [D('-', '"recoveryCodes.left": 10,'), D('+', '"recoveryCodes.left": 9,'), D(' ', '"method": "recovery code"')], note: 'Each recovery code works once. When an admin runs low, they regenerate them under Your security.' },
+{ id: 'ae_0409', when: 'Yesterday 17:20', age: 1, actor: '02', who: 'Sample Admin 02', type: 'score', text: 'scored PIT-2027-018 · Startup track', target: 'reviews · PIT-2027-018', sample: true, src: 'afterChange hook · Review view',
+lines: [D('+', '"scores": { "climateImpact": 4, "deploymentReadiness": 3, "fit": 4, "clarity": 4 },'), D('+', '"scoredBy": "Sample Admin 02"')] },
+{ id: 'ae_0407', when: 'Yesterday 08:31', age: 1, actor: '03', who: 'Sample Admin 03', type: 'tfa_setup', text: 'set up two-factor · authenticator app', target: 'users/03 · twoFactor', src: 'auth hook · first sign-in after reset',
+lines: [D('-', '"twoFactor": "setup pending",'), D('+', '"twoFactor": { "totp": true, "passkeys": 0 },'), D('+', '"recoveryCodes.left": 10')] },
+{ id: 'ae_0406', when: '2 days ago', age: 2, actor: '02', who: 'Sample Admin 02', type: 'tfa_reset', text: 'reset 2FA for Sample Admin 03 · lost phone', target: 'users/03 · twoFactor', src: 'afterChange hook · Users · Reset 2FA',
+lines: [D('-', '"twoFactor": { "totp": true, "passkeys": 0 },'), D('-', '"recoveryCodes": "revoked",'), D('+', '"twoFactor": "setup pending",'), D('+', '"sessionsRevoked": 1')], note: 'Sample Admin 03 had to set up two-factor again at their next sign-in, before they could see anything.' },
+{ id: 'ae_0405', when: '2 days ago', age: 2, actor: '01', who: 'Sample Admin 01', type: 'publish', text: 'published edition 2027 · v6 (banner text, price display)', target: 'editions/2027', src: 'afterChange hook · Editions · Publish',
+lines: [D('-', '"version": 5,'), D('+', '"version": 6, "status": "published",'), D('+', '"banner.text": "Summit 2027 · April 20–22 · Online · Free · open to everyone",'), D('+', '"priceDisplay": "Free · open to everyone"')] },
+{ id: 'ae_0404', when: '3 days ago', age: 3, actor: '01', who: 'Sample Admin 01', type: 'erase', text: 'erased VRC-2026-0099 on request', target: 'registrations/VRC-2026-0099', src: 'custom endpoint · erasure request',
+lines: [D('-', '"name", "email", "org", "country", "tz", "accessibility"'), D('+', 'all set to null'), D(' ', '"status": "cancelled", "erasedAt": "[DATE]"')], note: 'The log stores which fields were cleared, never their old values. They were also removed from topic emails.' },
+{ id: 'ae_0401', when: '5 days ago', age: 5, actor: '02', who: 'Sample Admin 02', type: 'settings', text: 'edited the registration banner message', target: 'siteSettings.banner', src: 'afterChange hook · Site settings',
+lines: [D('-', '"banner.message": "[PREVIOUS]",'), D('+', '"banner.message": "Summit 2027 · April 20–22 · Online · Free · open to everyone",')] },
+{ id: 'ae_0388', when: '9 days ago', age: 9, actor: '01', who: 'Sample Admin 01', type: 'invite', text: 'invited Sample Admin 04 as an admin', target: 'users/04', src: 'afterChange hook · Users',
+lines: [D('+', '"name": "Sample Admin 04",'), D('+', '"email": "admin04@example.org",'), D('+', '"inviteExpires": "14 days"')] },
+]
+};
+}
+renderVals() {
+const S = this.state;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const DISPLAY = "font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; ";
+const TONES = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#8A91A0'] };
+const chip = (tone, label) => { const t = TONES[tone]; return { label: label,
+style: 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: ' + t[0] + '; color: ' + t[1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap; line-height: 1.5',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + t[2] + '; flex: 0 0 auto' }; };
+const live = (tone, label) => { const c = chip(tone, label); c.dot = 'width: 7px; height: 7px; border-radius: 50%; background: ' + TONES[tone][2] + '; box-shadow: 0 0 0 3px ' + (tone === 'amber' ? 'rgba(217,130,43,0.22)' : 'rgba(29,180,108,0.22)') + '; flex: 0 0 auto'; return c; };
+const seg = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const inpBase = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; color: #0A1222';
+const uBy = (id) => S.users.find((u) => u.id === id);
+const EXP = { '1': '24 hours', '3': '3 days', '7': '7 days', '14': '14 days' };
+const initials = (name, id) => { const m = /^Sample Admin (\d+)$/.exec(name || ''); if (m) return 'S' + parseInt(m[1], 10);
+const w = String(name || '').trim().split(/\s+/).filter(Boolean); return w.length ? (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase() : 'A' + parseInt(id, 10); };
+
+// ---------- audit writer ----------
+const me = uBy('01');
+const entry = (type, text, target, lines, extra) => Object.assign({ id: 'ae_0' + S.seq, when: 'Just now', age: 0, actor: '01', who: me.name, type: type, text: text, target: target, src: 'afterChange hook · Users', lines: lines, fresh: true }, extra || {});
+const commit = (e, patch) => this.setState(Object.assign({
+audit: [e].concat(S.audit.map((a) => Object.assign({}, a, { fresh: false }))),
+seq: S.seq + 1, newAudit: S.tab === 'audit' ? 0 : S.newAudit + 1, menu: null
+}, patch));
+
+// ---------- sidebar + top bar: same markup as AdminQueueV3 (LINKS.md). Badge = AdminQueueV3 open items: join 3 · map 3 · jobs 2 · messages 4 · nominations 1 · internships 1 · document suggestions 2 ----------
+const QUEUE_OPEN = 16;
+
+// ---------- admin actions ----------
+const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+const nActive = S.users.filter((u) => u.status === 'active').length;
+// You can never remove yourself, and the backoffice never drops to zero active admins.
+const blockReason = (u) => (u.you ? 'You can’t remove yourself. Another admin can remove you.'
+: (S.users.length <= 1 || (u.status === 'active' && nActive <= 1)) ? 'This is the last admin, so it can’t be removed.' : '');
+const resend = (u) => {
+const e = entry('invite', 're-sent the invite to ' + u.name, 'users/' + u.id, [['+', '"inviteSent": "again",'], ['+', '"inviteExpires": "7 days"']]);
+commit(e, { toast: 'Invite re-sent to ' + u.email + ' · expires in 7 days', toastLink: true });
+};
+const itemStyle = (dis) => 'display: flex; align-items: center; min-height: 36px; padding: 0 10px; border: 0; border-radius: 9px; background: transparent; font: inherit; font-size: 14px; text-align: left; cursor: ' + (dis ? 'not-allowed' : 'pointer') + '; color: ' + (dis ? '#9AA3B5' : '#0A1222');
+
+// ---------- two-factor ----------
+const tfaOn = (u) => u.status === 'active' && !u.reset && (u.pk.length > 0 || u.app);
+// Reset is for another active admin whose 2FA is set up; never for yourself.
+const canReset = (u) => !u.you && tfaOn(u);
+const tfaChips = (u) => {
+if (u.status === 'invited') return [chip('amber', 'SETUP PENDING')];
+if (u.reset) return [chip('amber', 'RESET · SETUP PENDING')];
+const c = [];
+if (u.pk.length) c.push(chip('green', u.pk.length > 1 ? u.pk.length + ' PASSKEYS' : 'PASSKEY'));
+if (u.app) c.push(chip('blue', 'AUTHENTICATOR APP'));
+return c.length ? c : [chip('amber', 'SETUP PENDING')];
+};
+
+const users = S.users.map((u) => {
+const open = S.menu === u.id;
+const why = blockReason(u);
+const items = [];
+if (u.status === 'invited') items.push({ label: 'Resend invite', dis: 'false', style: itemStyle(false), act: () => resend(u) });
+if (u.status === 'active' && !u.reset) { const rsOk = canReset(u);
+items.push({ label: 'Reset 2FA', dis: rsOk ? 'false' : 'true', style: itemStyle(!rsOk),
+act: () => { if (!rsOk) return; this.setState({ menu: null, reset: u.id, confirm: null }); } }); }
+items.push({ label: u.status === 'invited' ? 'Cancel invite and remove' : 'Remove admin', dis: why ? 'true' : 'false', style: itemStyle(!!why),
+act: () => { if (why) return; this.setState({ menu: null, confirm: u.id }); } });
+const note = u.you ? 'This is you. Manage your own two-factor under Your security.' + (S.users.length > 1 ? ' Another admin can reset it or remove you.' : '')
+: why || (u.reset ? 'Two-factor was reset. They set it up again at next sign-in.' : '');
+return {
+ini: initials(u.name, u.id), name: u.name, handle: 'ADMIN ' + u.id + (u.you ? ' · YOU' : ''), email: u.email,
+added: u.added, last: u.last,
+st: u.status === 'active' ? chip('green', 'ACTIVE') : chip('amber', 'INVITED'),
+tfa: tfaChips(u),
+row: 'position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 220px 110px 130px 110px 230px 52px; align-items: center; min-height: 56px; padding: 0 4px 0 16px; border-top: 1px solid #EEF0F3',
+cell: 'display: flex; align-items: center; gap: 10px; min-width: 0; padding-right: 10px',
+tfaCell: 'display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; padding: 8px 10px 8px 0',
+menuLabel: 'Actions for ' + u.name, menuExp: open ? 'true' : 'false', menuOpen: open,
+menuBtn: 'width: 36px; height: 36px; border: 0; border-radius: 10px; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center; background: ' + (open ? '#F3F4F2' : 'transparent'),
+toggleMenu: () => this.setState({ menu: open ? null : u.id }),
+items: items, hasNote: !!note, note: note, noteId: 'menu-note-' + u.id
+};
+});
+
+// ---------- remove confirm ----------
+const noop = () => {};
+let rm = { on: false, handle: '', name: '', body: '', points: [], cancel: noop, confirm: noop };
+const target = S.confirm ? uBy(S.confirm) : null;
+if (target && !blockReason(target)) {
+const u = target; const isInv = u.status === 'invited';
+rm = { on: true, handle: 'ADMIN ' + u.id, name: u.name,
+body: isInv ? 'Their invite to ' + u.email + ' stops working straight away.' : 'They lose access to the backoffice straight away.',
+points: (isInv ? ['The invite link in their email no longer signs anyone in'] : ['Signed out everywhere at once (' + plural(u.sessions, 'session', 'sessions') + ')'])
+.concat(['Their past actions stay in the Audit log, under their name', 'You can add them again at any time with Add admin']).map((t) => ({ t: t })),
+cancel: () => this.setState({ confirm: null }),
+confirm: () => {
+const e = entry('remove', 'removed ' + u.name + (isInv ? ' · invite cancelled' : ' · ' + plural(u.sessions, 'session', 'sessions') + ' revoked'), 'users/' + u.id,
+[['-', '"name": "' + u.name + '",'], ['-', '"email": "' + u.email + '",'], ['+', isInv ? '"inviteRevoked": true' : '"sessionsRevoked": ' + u.sessions]], { src: 'afterDelete hook · Users' });
+commit(e, { confirm: null, users: S.users.filter((x) => x.id !== u.id), toast: u.name + ' removed · audit entry written', toastLink: true });
+} };
+}
+
+// ---------- reset 2FA confirm ----------
+let rs = { on: false, handle: '', name: '', body: '', points: [], cancel: noop, confirm: noop };
+const rsTarget = S.reset ? uBy(S.reset) : null;
+if (rsTarget && canReset(rsTarget)) {
+const u = rsTarget;
+const had = [];
+if (u.pk.length) had.push(u.pk.length === 1 ? 'passkey' : u.pk.length + ' passkeys');
+if (u.app) had.push('authenticator app');
+had.push('recovery codes');
+rs = { on: true, handle: 'ADMIN ' + u.id, name: u.name,
+body: 'Use this when they lost their device. Their ' + had.slice(0, -1).join(', ') + ' and ' + had[had.length - 1] + ' stop working straight away.',
+points: ['Signed out everywhere at once (' + plural(u.sessions, 'session', 'sessions') + ')',
+'At their next sign-in they must set up two-factor again, before they can see anything',
+'Check it’s really them first, by a call or in person'].map((t) => ({ t: t })),
+cancel: () => this.setState({ reset: null }),
+confirm: () => {
+const e = entry('tfa_reset', 'reset 2FA for ' + u.name + ' · setup required at next sign-in', 'users/' + u.id + ' · twoFactor',
+[['-', '"twoFactor": { "totp": ' + u.app + ', "passkeys": ' + u.pk.length + ' },'], ['-', '"recoveryCodes": "revoked",'], ['+', '"twoFactor": "setup pending",'], ['+', '"sessionsRevoked": ' + u.sessions]],
+{ src: 'afterChange hook · Users · Reset 2FA' });
+commit(e, { reset: null, users: S.users.map((x) => x.id === u.id ? Object.assign({}, x, { pk: [], app: false, codes: 0, reset: true, sessions: 0 }) : x),
+toast: 'Two-factor reset for ' + u.name + ' · they set it up again at next sign-in', toastLink: true });
+} };
+}
+
+// ---------- your security (signed-in admin) ----------
+const sec = {
+who: me.name.toUpperCase() + ' · YOU',
+chip: tfaOn(me) ? chip('green', '2FA ON') : chip('amber', '2FA SETUP PENDING'),
+pkTitle: 'PASSKEYS · ' + me.pk.length,
+pk: me.pk.map((p) => ({ n: p.n, m: p.m })),
+app: me.app ? chip('green', 'ON') : chip('neutral', 'NOT SET UP'),
+appText: me.app ? 'Six-digit codes from your authenticator app, for when no passkey is at hand.' : 'Not set up. Your passkey covers two-factor; an app adds a second way in.',
+codes: me.codes + ' of 10 left',
+codesStyle: DISPLAY + 'font-size: 26px; line-height: 1.15; letter-spacing: -0.02em; color: ' + (me.codes <= 3 ? '#8A4B00' : '#0A1222'),
+regen: () => this.setState({ regen: 'ask', menu: null, confirm: null, reset: null })
+};
+
+// ---------- regenerate recovery codes (ask, then show the new codes once) ----------
+const SAMPLE_CODES = ['7KQF-2M9X', 'P4TZ-8HWC', 'R2DN-6YLB', 'V9GJ-3QSE', 'C5XM-7TKA', 'H8LW-4NPF', 'B3YR-9ZUD', 'M6EC-2VJQ', 'T7HS-5GXN', 'W4PA-8KRM'];
+let rg = { on: false, ask: false, show: false, title: '', body: '', backLabel: '', codes: [], cancel: noop, confirm: noop, done: noop };
+const doneRegen = () => this.setState({ regen: null, toast: 'New recovery codes active · the old ones no longer work', toastLink: true });
+if (S.regen === 'ask') {
+rg = { on: true, ask: true, show: false, title: 'Regenerate recovery codes?',
+body: 'You get 10 new codes, shown once. Your ' + plural(me.codes, 'remaining code stops', 'remaining codes stop') + ' working straight away.',
+backLabel: 'Keep current codes', codes: [],
+cancel: () => this.setState({ regen: null }),
+confirm: () => {
+const e = entry('tfa_code', 'regenerated recovery codes · old ones revoked', 'users/' + me.id + ' · twoFactor',
+[['-', '"recoveryCodes.left": ' + me.codes + ','], ['+', '"recoveryCodes.left": 10,'], ['+', '"recoveryCodes.shownOnce": true']], { src: 'afterChange hook · Users · Your security' });
+commit(e, { regen: 'show', toast: '', toastLink: false, users: S.users.map((x) => x.id === me.id ? Object.assign({}, x, { codes: 10 }) : x) });
+},
+done: noop };
+} else if (S.regen === 'show') {
+rg = { on: true, ask: false, show: true, title: 'Save your new recovery codes',
+body: 'Each code signs you in once if you lose access to your passkeys and authenticator app. This is the only time they are shown.',
+backLabel: 'Close, I saved them', codes: SAMPLE_CODES.map((t) => ({ t: t })),
+cancel: doneRegen, confirm: noop, done: doneRegen };
+}
+
+// ---------- add admin sheet ----------
+const F = S.inv; const E = S.invErr;
+const setInv = (p, clr) => { const ne = Object.assign({}, E); (clr || []).forEach((k) => { delete ne[k]; }); this.setState({ inv: Object.assign({}, F, p), invErr: ne }); };
+const blankInv = { name: '', email: '', expiry: '7' };
+const inv = {
+name: F.name, setName: (e) => setInv({ name: e.target.value }, ['name']),
+nameErr: !!E.name, nameInvalid: E.name ? 'true' : 'false', nameStyle: inpBase(!!E.name),
+email: F.email, setEmail: (e) => setInv({ email: e.target.value }, ['email']),
+emailErr: !!E.email, emailMsg: E.email || '', emailInvalid: E.email ? 'true' : 'false', emailStyle: inpBase(!!E.email) + '; ' + MONO + 'font-size: 14px',
+expiry: F.expiry, expiryLabel: EXP[F.expiry], setExpiry: (e) => setInv({ expiry: e.target.value }),
+submit: () => {
+const nm = F.name.trim().replace(/\s+/g, ' '); const em = F.email.trim().toLowerCase(); const err = {};
+if (!nm) err.name = true;
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) err.email = 'Enter an email address, like name@example.org';
+else if (S.users.some((u) => u.email === em)) err.email = 'This person is already an admin.';
+if (Object.keys(err).length) { this.setState({ invErr: err }); return; }
+const id = ('0' + S.nextId).slice(-2);
+const nu = { id: id, name: nm, email: em, added: 'Today', last: 'Never', status: 'invited', sessions: 0, pk: [], app: false, codes: 0, reset: false };
+const e = entry('invite', 'invited ' + nm + ' as an admin', 'users/' + id,
+[['+', '"name": "' + nm + '",'], ['+', '"email": "' + em + '",'], ['+', '"inviteExpires": "' + EXP[F.expiry] + '",'], ['+', '"twoFactor": "required at first sign-in"']]);
+commit(e, { users: S.users.concat([nu]), nextId: S.nextId + 1, drawer: false, tab: 'admins', inv: blankInv, invErr: {},
+toast: 'Invite sent to ' + em + ' · expires in ' + EXP[F.expiry], toastLink: true });
+}
+};
+
+// ---------- audit tab ----------
+const AT = { export: ['EXPORT', 'blue'], approve: ['APPROVE', 'green'], score: ['SCORE', 'neutral'], publish: ['PUBLISH', 'green'], erase: ['ERASE', 'amber'], settings: ['SETTINGS', 'neutral'], invite: ['INVITE', 'blue'], remove: ['REMOVE', 'amber'],
+tfa_setup: ['2FA SETUP', 'green'], tfa_reset: ['2FA RESET', 'amber'], tfa_code: ['RECOVERY', 'amber'] };
+const fd = S.fD === 'all' ? 9999 : parseInt(S.fD, 10);
+const typeOk = (t) => S.fT === 'all' || (S.fT === 'tfa' ? /^tfa_/.test(t) : t === S.fT);
+const list = S.audit.filter((a) => (S.fA === 'all' || a.actor === S.fA) && typeOk(a.type) && a.age <= fd);
+const audit = list.map((a) => {
+const u = a.actor !== 'sys';
+const isOpen = S.open === a.id;
+return {
+when: a.when, text: a.text, target: a.target, sample: !!a.sample,
+actor: u ? a.who : 'System',
+ini: u ? initials(a.who, a.actor) : 'SY',
+avatar: 'flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 10.5px; font-weight: 500; ' + (u ? 'background: #EEF2FB; color: #0138AC' : 'background: #F3F4F2; color: #3D4556'),
+chip: chip(AT[a.type][1], AT[a.type][0]),
+exp: isOpen ? 'true' : 'false', isOpen: isOpen,
+toggle: () => this.setState({ open: isOpen ? null : a.id }),
+chev: 'transition: transform 120ms; ' + (isOpen ? 'transform: rotate(180deg)' : ''),
+wrap: 'border-top: 1px solid #EEF0F3; ' + (a.fresh ? 'background: #EEF2FB' : ''),
+meta: 'auditEvents/' + a.id + ' · ' + (u ? 'users/' + a.actor : 'system') + ' · ' + a.src + '',
+lines: a.lines.map((l) => ({ sign: l[0] === ' ' ? '' : l[0] === '-' ? '−' : '+', text: l[1], sr: l[0] === '+' ? 'added: ' : l[0] === '-' ? 'removed: ' : '',
+style: 'display: block; padding: 0 14px; white-space: pre-wrap; ' + (l[0] === '+' ? 'background: #E8F6EE; color: #0B7A47' : l[0] === '-' ? 'background: #EEF0F3; color: #646B7A' : 'color: #3D4556') })),
+hasNote: !!a.note, note: a.note || ''
+};
+});
+const exportLog = () => {
+const e = entry('export', 'exported the audit log (' + list.length + ' events, CSV)', 'auditEvents', [['+', '"export": { "format": "csv", "rows": ' + list.length + ' },'], [' ', '"filters": { "actor": "' + S.fA + '", "action": "' + S.fT + '", "days": "' + S.fD + '" }']], { src: 'plugin-import-export · afterOperation hook' });
+commit(e, { toast: 'Exported auditEvents.csv · ' + list.length + ' events', toastLink: false });
+};
+
+// ---------- KPIs ----------
+const nInv = S.users.filter((u) => u.status === 'invited').length;
+const nToday = S.users.filter((u) => /^Today/.test(u.last)).length;
+const ev7 = S.audit.filter((a) => a.age <= 7).length;
+const nTfa = S.users.filter(tfaOn).length;
+const nPend = S.users.length - nTfa;
+const num = (c) => DISPLAY + 'font-size: 34px; line-height: 1.15; letter-spacing: -0.02em; color: ' + c;
+const kpis = [
+{ label: 'ADMINS', num: String(S.users.length), numStyle: num('#0138AC'), sub: nActive + ' active · all with full access' },
+{ label: '2FA SET UP', num: nTfa + ' of ' + S.users.length, numStyle: num(nPend ? '#0A1222' : '#0B7A47'), sub: (nPend ? plural(nPend, 'setup pending', 'setups pending') + ' · ' : '') + 'required for every admin' },
+{ label: 'PENDING INVITES', num: String(nInv), numStyle: num('#0A1222'), sub: 'Shown as Invited until first sign-in' },
+{ label: 'ACTIVE TODAY', num: String(nToday), numStyle: num('#0A1222'), sub: 'Admins signed in since 00:00 UTC' },
+{ label: 'AUDIT EVENTS · 7 DAYS', num: String(ev7), numStyle: num('#0A1222'), sub: 'Last: ' + S.audit[0].when.toLowerCase() }
+];
+
+// ---------- tabs ----------
+const TABS = [['admins', 'Admins', String(S.users.length)], ['audit', 'Audit log', S.newAudit ? S.newAudit + ' NEW' : String(S.audit.length)]];
+const tabs = TABS.map((t) => { const on = S.tab === t[0]; const hot = t[0] === 'audit' && S.newAudit > 0;
+return { id: 'tab-' + t[0], panel: 'panel-' + t[0], label: t[1], count: t[2], sel: on ? 'true' : 'false', style: seg(on),
+countStyle: MONO + 'font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 999px; ' + (hot ? 'background: #0138AC; color: #ffffff' : 'background: ' + (on ? '#F3F4F2' : '#E5E7EB') + '; color: #3D4556'),
+pick: () => this.setState({ tab: t[0], menu: null, newAudit: t[0] === 'audit' ? 0 : S.newAudit }) }; });
+
+const filtered = S.fA !== 'all' || S.fT !== 'all' || S.fD !== '30';
+const actorHelp = 'All actors covers every admin in the log, including admins added or removed later (' + plural(S.users.length, 'admin', 'admins') + ' now), and System.';
+return {
+totalOpen: String(QUEUE_OPEN), queueAria: QUEUE_OPEN + ' items need action',
+q: S.q, setQ: (e) => this.setState({ q: e.target.value }),
+tabs: tabs, kpis: kpis,
+isAdmins: S.tab === 'admins', isAudit: S.tab === 'audit',
+users: users,
+usersCount: plural(S.users.length, 'ADMIN', 'ADMINS') + ' · ' + nActive + ' ACTIVE · ' + nInv + ' INVITED',
+rm: rm, rs: rs, rg: rg, sec: sec,
+policyChip: chip('green', 'ENFORCED · NO OPT-OUT'),
+drawer: S.drawer, openDrawer: () => this.setState({ drawer: true, menu: null, confirm: null, reset: null, regen: null, invErr: {} }), closeDrawer: () => this.setState({ drawer: false }),
+inv: inv,
+selStyle: inpBase(false) + '; min-height: 44px; appearance: none; -webkit-appearance: none; padding-right: 34px; font-size: 14px; cursor: pointer',
+audit: audit, auditEmpty: audit.length === 0, auditCount: audit.length + ' OF ' + S.audit.length + ' EVENTS',
+fA: S.fA, fT: S.fT, fD: S.fD, actorHelp: actorHelp,
+setFA: (e) => this.setState({ fA: e.target.value }), setFT: (e) => this.setState({ fT: e.target.value }), setFD: (e) => this.setState({ fD: e.target.value }),
+filtered: filtered, clearFilters: () => this.setState({ fA: 'all', fT: 'all', fD: '30' }),
+exportLog: exportLog,
+sampleChip: chip('neutral', 'SAMPLE DATA'),
+toastOn: !!S.toast, toast: S.toast, toastLink: S.toastLink,
+closeToast: () => this.setState({ toast: '', toastLink: false }),
+goAudit: () => this.setState({ tab: 'audit', toast: '', toastLink: false, newAudit: 0, fA: 'all', fT: 'all', fD: '30', open: S.audit[0].id })
+};
+}
+}
+</script>
+</body>
+</html>

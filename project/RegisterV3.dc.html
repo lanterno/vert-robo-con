@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Register for Summit 2027 (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+.ghost:hover{background:#F3F4F2}
+.mi:hover{background:#F3F4F2}
+.flink{color:#0A1222;text-decoration:none}.flink:hover{color:#0138AC;text-decoration:underline}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.s5{grid-column:span 5}.s7{grid-column:span 7}
+@media (max-width: 900px){.regrid{grid-template-columns:minmax(0,1fr) !important}.s5,.s7{grid-column:1/-1 !important}.stick{position:static !important}.pad{padding:24px !important}}
+</style>
+</helmet>
+<div style="font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E4E6EA; border-bottom: 1px solid #D5D8DE; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 14px; color: #0A1222">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">
+<span id="cc-state" style="font-weight: 500">Preview state</span>
+<span role="group" aria-labelledby="cc-state" style="display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 10px; background: #F3F4F2; border: 1px solid #D5D8DE">
+<sc-for list="{{views}}" as="v" hint-placeholder-count="4">
+<button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button>
+</sc-for>
+</span>
+</span>
+<label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 500">Simulate
+<select value="{{sim}}" onChange="{{onSim}}" style="min-height: 34px; padding: 0 8px; border: 1px solid #D5D8DE; border-radius: 9px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 400">
+<option value="none">None</option>
+<option value="neterror">Network error</option>
+<option value="already">Already registered</option>
+</select>
+</label>
+<button type="button" onClick="{{fillSample}}" style="min-height: 34px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 9px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer">Fill sample answers</button>
+<button type="button" onClick="{{resetAll}}" style="min-height: 34px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 9px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer">Reset</button>
+<sc-if value="{{showConfirmSim}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{confirmEmail}}" style="min-height: 34px; padding: 0 12px; border: 1px dashed #3D4556; border-radius: 9px; background: transparent; font: inherit; font-size: 14px; cursor: pointer">Simulate: confirm email</button>
+</sc-if>
+</div>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html" aria-current="true" style="background: #F3F4F2; color: #0A1222">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<div style="display: flex; align-items: center; gap: 8px">
+<sc-if value="{{regPill.on}}" hint-placeholder-val="{{ true }}">
+<a href="{{regPill.href}}" aria-current="{{regPill.current}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-size: 15px; font-weight: 500; text-decoration: none"><span aria-hidden="true" style="{{regPill.dot}}"></span>{{regPill.label}}</a>
+</sc-if>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</div>
+</header>
+
+<!-- PAGE -->
+<main style="padding: 40px 32px 112px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+<nav aria-label="Breadcrumb" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><a href="SummitV3.dc.html" style="color: #646B7A; text-decoration: none">SUMMITS</a> / <a href="SummitV3.dc.html" style="color: #646B7A; text-decoration: none">2027</a> / <span aria-current="page" style="color: #0A1222">REGISTER</span></nav>
+
+<div class="regrid" style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 40px 48px; align-items: start">
+
+<!-- LEFT: summary -->
+<aside class="s5 stick" aria-label="Summit summary" style="position: sticky; top: 96px; display: flex; flex-direction: column; gap: 24px">
+<span style="{{sumChip.style}}"><span aria-hidden="true" style="{{sumChip.dot}}"></span>{{sumChip.label}}</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 72px; line-height: 0.95; letter-spacing: -0.04em">Vert Robo Con Summit <span style="color: #0138AC">2027</span></h1>
+<p style="margin: 0; font-size: 18px; color: #3D4556">Three days of keynotes, panels and pitches about robots that measure, repair and protect a warming planet. Online, and free for everyone.</p>
+<div style="border: 1px solid #E5E7EB; border-radius: 24px; overflow: hidden">
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #E5E7EB; border-bottom: 1px solid #E5E7EB">
+<div style="background: #ffffff; padding: 18px 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">DATES</dt><dd style="margin: 4px 0 0; font-weight: 600">April 20–22, 2027</dd></div>
+<div style="background: #ffffff; padding: 18px 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WHERE</dt><dd style="margin: 4px 0 0; font-weight: 600">Online</dd></div>
+<div style="background: #ffffff; padding: 18px 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">DAILY</dt><dd style="margin: 4px 0 0; font-weight: 600">[HH:MM–HH:MM] UTC</dd></div>
+<div style="background: #ffffff; padding: 18px 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">COST</dt><dd style="margin: 4px 0 0; font-weight: 600">Free · open to everyone</dd></div>
+</dl>
+<div style="padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHAT YOU GET</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{perks}}" as="p" hint-placeholder-count="4">
+<li style="display: flex; gap: 12px; align-items: flex-start; font-size: 16px; color: #3D4556">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 3px"><path d="M5 12l5 5L20 7"></path></svg>{{p}}</li>
+</sc-for>
+</ul>
+<p style="margin: 6px 0 0; padding-top: 16px; border-top: 1px solid #E5E7EB; font-size: 15px; color: #3D4556">Questions? <a href="ContactV3.dc.html" style="font-weight: 500">Contact the summit team</a> or email <a href="mailto:hello@vert-robo-con.example" style="font-weight: 500">hello@vert-robo-con.example</a>. We’ll respond within 24–48 hours.</p>
+</div>
+</div>
+</aside>
+
+<!-- RIGHT -->
+<div class="s7" style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+
+<sc-if value="{{showClosingChip}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>CLOSES IN 3 DAYS</span>
+<span style="font-size: 15px; color: #3D4556">Registration closes [DATE].</span>
+</div>
+</sc-if>
+
+<!-- FORM -->
+<sc-if value="{{showForm}}" hint-placeholder-val="{{ true }}">
+<section class="pad" aria-labelledby="reg-title" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 40px; display: flex; flex-direction: column; gap: 36px">
+
+<sc-if value="{{showNetErr}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px 18px; border-radius: 16px; background: #FEF3F2; color: #B42318">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16v.01"></path></svg>
+<span style="flex: 1 1 280px; font-size: 15px; font-weight: 500">We couldn’t send your registration. Your answers are saved on this device.</span>
+<button type="button" onClick="{{retry}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #B42318; border-radius: 12px; background: #ffffff; color: #B42318; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Try again</button>
+</div>
+</sc-if>
+
+<sc-if value="{{showAlready}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px 18px; border-radius: 16px; background: #EEF2FB; color: #0A1222">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8v.01"></path></svg>
+<span style="flex: 1 1 280px; font-size: 15px">You’re already registered with <strong style="font-weight: 600">{{emailShown}}</strong>. We’ve re-sent your confirmation and manage link.</span>
+<a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Manage registration</a>
+</div>
+</sc-if>
+
+<sc-if value="{{showErrSummary}}" hint-placeholder-val="{{ false }}">
+<div role="alert" aria-labelledby="err-title" style="padding: 20px 22px; border-radius: 16px; background: #FEF3F2; border: 1px solid #F4C7C3; display: flex; flex-direction: column; gap: 10px">
+<h3 id="err-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; color: #B42318">{{errTitle}}</h3>
+<ul style="margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 4px; color: #B42318">
+<sc-for list="{{errList}}" as="x" hint-placeholder-count="2">
+<li><a href="{{x.href}}" onClick="{{x.pick}}" style="color: #B42318; font-size: 16px; font-weight: 500">{{x.msg}}</a></li>
+</sc-for>
+</ul>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">/SUMMITS/2027/REGISTER · FREE · OPEN TO EVERYONE</span>
+<h2 id="reg-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1; letter-spacing: -0.035em">{{formTitle}}</h2>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Takes about two minutes. Every field is required unless it says optional.</p>
+</div>
+
+<!-- 01 ABOUT YOU -->
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<legend style="width: 100%; padding: 0 0 12px; margin-bottom: 20px; border-bottom: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">01 · ABOUT YOU</legend>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="reg-name" style="font-size: 15px; font-weight: 500">Full name</label>
+<input id="reg-name" type="text" autocomplete="name" value="{{form.name}}" onChange="{{on.name}}" aria-invalid="{{err.name.inv}}" aria-describedby="reg-name-err" style="{{st.name}}">
+<sc-if value="{{err.name.on}}" hint-placeholder-val="{{ false }}"><span id="reg-name-err" style="font-size: 14px; color: #B42318">{{err.name.msg}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="reg-email" style="font-size: 15px; font-weight: 500">Email</label>
+<input id="reg-email" type="email" autocomplete="email" value="{{form.email}}" onChange="{{on.email}}" aria-invalid="{{err.email.inv}}" aria-describedby="reg-email-help reg-email-err" style="{{st.email}}">
+<sc-if value="{{err.email.on}}" hint-placeholder-val="{{ false }}"><span id="reg-email-err" style="font-size: 14px; color: #B42318">{{err.email.msg}}</span></sc-if>
+<span id="reg-email-help" style="font-size: 13px; color: #646B7A">Your confirmation and join links go here.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="reg-org" style="font-size: 15px; font-weight: 500">Organization <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<input id="reg-org" type="text" autocomplete="organization" value="{{form.org}}" onChange="{{on.org}}" style="{{st.org}}">
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="reg-role" style="font-size: 15px; font-weight: 500">Role</label>
+<select id="reg-role" value="{{form.role}}" onChange="{{on.role}}" aria-invalid="{{err.role.inv}}" aria-describedby="reg-role-err" style="{{st.role}}">
+<option value="">Choose your role</option>
+<option value="Researcher">Researcher</option>
+<option value="Founder or startup">Founder or startup</option>
+<option value="Investor">Investor</option>
+<option value="Policy or government">Policy or government</option>
+<option value="NGO">NGO</option>
+<option value="Student">Student</option>
+<option value="Other">Other</option>
+</select>
+<sc-if value="{{err.role.on}}" hint-placeholder-val="{{ false }}"><span id="reg-role-err" style="font-size: 14px; color: #B42318">{{err.role.msg}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="reg-country" style="font-size: 15px; font-weight: 500">Country</label>
+<input id="reg-country" type="text" role="combobox" list="reg-countries" autocomplete="country-name" placeholder="Start typing a country" value="{{form.country}}" onChange="{{on.country}}" aria-invalid="{{err.country.inv}}" aria-describedby="reg-country-err reg-country-help" style="{{st.country}}">
+<datalist id="reg-countries">
+<option value="Australia"></option><option value="Brazil"></option><option value="Canada"></option><option value="Chile"></option><option value="France"></option><option value="Germany"></option><option value="India"></option><option value="Japan"></option><option value="Kenya"></option><option value="Netherlands"></option><option value="New Zealand"></option><option value="Nigeria"></option><option value="Norway"></option><option value="Singapore"></option><option value="South Africa"></option><option value="Spain"></option><option value="United Kingdom"></option><option value="United States"></option>
+</datalist>
+<sc-if value="{{err.country.on}}" hint-placeholder-val="{{ false }}"><span id="reg-country-err" style="font-size: 14px; color: #B42318">{{err.country.msg}}</span></sc-if>
+<span id="reg-country-help" style="font-size: 13px; color: #646B7A">Helps us pick session times that work.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="reg-tz" style="font-size: 15px; font-weight: 500">Time zone <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<input id="reg-tz" type="text" list="reg-tzs" value="{{form.tz}}" onChange="{{on.tz}}" aria-describedby="reg-tz-help" style="{{st.tz}}">
+<datalist id="reg-tzs">
+<option value="UTC"></option><option value="Europe/Berlin"></option><option value="Europe/London"></option><option value="America/New_York"></option><option value="America/Los_Angeles"></option><option value="America/Sao_Paulo"></option><option value="Africa/Nairobi"></option><option value="Asia/Kolkata"></option><option value="Asia/Singapore"></option><option value="Australia/Sydney"></option>
+</datalist>
+<span id="reg-tz-help" style="font-size: 13px; color: #646B7A">Detected from your browser. Calendar events and emails use it, or UTC if you leave it empty.</span>
+</div>
+</div>
+</fieldset>
+
+<!-- 02 YOUR SUMMIT -->
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 28px">
+<legend style="width: 100%; padding: 0 0 12px; margin-bottom: 20px; border-bottom: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">02 · YOUR SUMMIT</legend>
+
+<div role="group" aria-labelledby="reg-days-l" aria-describedby="reg-days-err reg-days-help" style="display: flex; flex-direction: column; gap: 8px">
+<span id="reg-days-l" style="font-size: 15px; font-weight: 500">Days you plan to attend</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3">
+<button id="{{d.id}}" type="button" role="checkbox" aria-checked="{{d.checked}}" onClick="{{d.toggle}}" style="{{d.style}}">
+<span style="{{d.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px; line-height: 1.3">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{d.label}}</span>
+<span style="font-weight: 600; font-size: 16px">{{d.date}}</span>
+<span style="font-size: 13px; color: #646B7A">[HH:MM–HH:MM] UTC</span>
+</span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{err.days.on}}" hint-placeholder-val="{{ false }}"><span id="reg-days-err" style="font-size: 14px; color: #B42318">{{err.days.msg}}</span></sc-if>
+<span id="reg-days-help" style="font-size: 13px; color: #646B7A">Untick any day you’ll miss. You can change this later.</span>
+</div>
+
+<div role="group" aria-labelledby="reg-topics-l" style="display: flex; flex-direction: column; gap: 10px">
+<span id="reg-topics-l" style="font-size: 15px; font-weight: 500">Topics you care about <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{topics}}" as="t" hint-placeholder-count="9">
+<button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">Based on past summit sessions. We’ll suggest sessions when the program is published.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<button type="button" role="checkbox" aria-checked="{{pitch.checked}}" onClick="{{pitch.toggle}}" style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 16px; color: #0A1222; text-align: left; cursor: pointer">
+<span style="{{pitch.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>I’d also like to pitch or speak</button>
+<sc-if value="{{pitch.on}}" hint-placeholder-val="{{ false }}">
+<div style="margin-left: 34px; padding: 16px 18px; border-radius: 16px; background: #F3F4F2; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 15px; color: #3D4556">Pitches and speaker ideas have their own short forms. Your registration stays as it is.</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{pitchLinks}}" as="l" hint-placeholder-count="3">
+<a href="GetInvolvedV3.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #ffffff; border: 1px solid #D5D8DE; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">{{l}}<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<label for="reg-a11y" style="font-size: 15px; font-weight: 500">Accessibility or captioning needs <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<span aria-live="polite" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{a11yCount}} / 300</span>
+</span>
+<textarea id="reg-a11y" maxlength="300" rows="4" value="{{form.a11y}}" onChange="{{on.a11y}}" aria-describedby="reg-a11y-help" style="{{st.a11y}}"></textarea>
+<span id="reg-a11y-help" style="font-size: 13px; color: #646B7A">For example live captions, a screen-reader-friendly agenda or extra breaks. Only the summit team sees this.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 360px">
+<label for="reg-heard" style="font-size: 15px; font-weight: 500">How did you hear about us? <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<select id="reg-heard" value="{{form.heard}}" onChange="{{on.heard}}" style="{{st.heard}}">
+<option value="">Choose one</option>
+<option value="linkedin">LinkedIn</option>
+<option value="slack">Slack community</option>
+<option value="digest">Monthly digest</option>
+<option value="colleague">A colleague or friend</option>
+<option value="past">A past summit</option>
+<option value="search">Search</option>
+<option value="other">Other</option>
+</select>
+</div>
+</fieldset>
+
+<!-- 03 CONSENT -->
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<legend style="width: 100%; padding: 0 0 12px; margin-bottom: 20px; border-bottom: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">03 · CONSENT</legend>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<button id="reg-consent" type="button" role="checkbox" aria-checked="{{c1.checked}}" aria-invalid="{{err.consent.inv}}" aria-describedby="reg-consent-err" onClick="{{c1.toggle}}" style="{{c1.style}}">
+<span style="{{c1.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>Send me summit emails: confirmation, join links and changes</button>
+<sc-if value="{{err.consent.on}}" hint-placeholder-val="{{ false }}"><span id="reg-consent-err" style="margin-left: 34px; font-size: 14px; color: #B42318">{{err.consent.msg}}</span></sc-if>
+</div>
+<button type="button" role="checkbox" aria-checked="{{c2.checked}}" onClick="{{c2.toggle}}" style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 16px; color: #0A1222; text-align: left; cursor: pointer">
+<span style="{{c2.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>Also send me the monthly digest <span style="color: #646B7A">(optional)</span></button>
+<p style="margin: 8px 0 0; font-size: 14px; color: #646B7A">We use your answers only to run the summit, never sell them, and you can delete them from your manage link. <a href="PrivacyV3.dc.html" style="font-weight: 500">How we use this →</a></p>
+</fieldset>
+
+<div style="display: flex; flex-direction: column; gap: 14px; padding-top: 24px; border-top: 1px solid #E5E7EB">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<button type="button" onClick="{{submit}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 28px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 17px; font-weight: 500; cursor: pointer">{{submitLabel}}
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+<sc-if value="{{showSaved}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>ANSWERS SAVED ON THIS DEVICE</span>
+</sc-if>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #646B7A">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</section>
+</sc-if>
+
+<!-- CONFIRMATION -->
+<sc-if value="{{showConf}}" hint-placeholder-val="{{ false }}">
+<section class="pad" aria-labelledby="conf-title" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 40px; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; color: #0B7A47; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<h2 id="conf-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1.02; letter-spacing: -0.035em">{{conf.title}}</h2>
+<p style="margin: 0; font-size: 17px; color: #3D4556">{{conf.sub}}</p>
+<div style="align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #F3F4F2">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">REFERENCE</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 15px; font-weight: 500">VRC-2027-0142</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<div style="position: relative">
+<button type="button" aria-haspopup="menu" aria-expanded="{{calExpanded}}" onClick="{{toggleCal}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Add to calendar
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{calOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="Add to calendar" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 300px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); padding: 6px">
+<sc-for list="{{calItems}}" as="c" hint-placeholder-count="3">
+<button type="button" role="menuitem" class="mi" onClick="{{c.pick}}" style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer">{{c.label}}<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{c.meta}}</span></button>
+</sc-for>
+<p style="margin: 6px 0 0; padding: 10px 12px 6px; border-top: 1px solid #E5E7EB; font-size: 13px; color: #646B7A">3 events, one per day, in {{tzShown}} time.</p>
+</div>
+</sc-if>
+</div>
+<a href="ProgramV3.dc.html" aria-describedby="conf-agenda-note" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font-size: 16px; font-weight: 500; text-decoration: none">See the program
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+<span id="conf-agenda-note" style="font-size: 13px; color: #646B7A">The program is published [DATE]. We’ll email you, and you can build your agenda from then.</span>
+<sc-if value="{{toastConf}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 12px; background: #0A1222; color: #ffffff; font-size: 15px">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}
+<button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h3 style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</h3>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px">
+<sc-for list="{{conf.steps}}" as="st" hint-placeholder-count="4">
+<li style="{{st.style}}">
+<span style="{{st.num}}">{{st.n}}</span>
+<strong style="font-weight: 600; font-size: 15px; line-height: 1.35">{{st.t}}</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{st.w}}</span>
+</li>
+</sc-for>
+</ol>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<a href="MyVRCV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none">Manage or cancel any time from the link in your email
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+<p style="margin: 0; font-size: 14px; color: #646B7A">We’ve emailed a receipt and a link to manage this to <strong style="font-weight: 600; color: #0A1222">{{emailShown}}</strong>.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; padding: 24px; border-radius: 20px; background: #F3F4F2">
+<span style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">Not a member yet?</strong>
+<span style="font-size: 15px; color: #3D4556">Meet researchers, founders and funders between summits.</span>
+</span>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; background: #0A1222; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</section>
+</sc-if>
+
+<!-- OPENS SOON / CLOSED -->
+<sc-if value="{{showNotifyCard}}" hint-placeholder-val="{{ false }}">
+<section class="pad" aria-labelledby="nc-title" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 40px; display: flex; flex-direction: column; gap: 28px">
+<sc-if value="{{showOpens}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>OPENS MON 7 DEC 2026</span>
+<h2 id="nc-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1.02; letter-spacing: -0.035em">Registration opens Monday, December 7, 2026</h2>
+<p style="margin: 0; font-size: 17px; color: #3D4556">It’s free and online. Leave your email and we’ll tell you the moment it opens, and nothing else unless you ask.</p>
+</div>
+</sc-if>
+<sc-if value="{{showClosed}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>CLOSED</span>
+<h2 id="nc-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 48px; line-height: 1.02; letter-spacing: -0.035em">Registration for 2027 has closed</h2>
+<p style="margin: 0; font-size: 17px; color: #3D4556">Thank you to everyone who signed up. You can still follow the program, and every session is free to watch afterwards.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px">
+<a href="ProgramV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">See the program</a>
+<a href="WatchV3.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 16px; font-weight: 500; text-decoration: none"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>Watch the recordings</a>
+</div>
+</div>
+</sc-if>
+
+<!-- notify-me -->
+<div style="display: flex; flex-direction: column; gap: 14px; padding-top: 24px; border-top: 1px solid #E5E7EB">
+<span style="font-weight: 600; font-size: 16px">{{n.heading}}</span>
+<sc-if value="{{n.collapsed}}" hint-placeholder-val="{{ true }}">
+<button type="button" class="ghost" onClick="{{n.expand}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"></path></svg>{{n.label}}</button>
+</sc-if>
+<sc-if value="{{n.expanded}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<label for="nt-email" style="font-size: 15px; font-weight: 500">Email</label>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<input id="nt-email" type="email" autocomplete="email" value="{{n.email}}" onChange="{{n.onEmail}}" aria-invalid="{{n.inv}}" aria-describedby="nt-err" style="{{n.inputStyle}}">
+<button type="button" onClick="{{n.submit}}" style="min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{n.err}}" hint-placeholder-val="{{ false }}"><span id="nt-err" style="font-size: 14px; color: #B42318">Enter your email address</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{n.topics}}" as="t" hint-placeholder-count="4">
+<button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">One email to confirm, then only the topics you pick. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{n.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px; border-radius: 16px; background: #F3F4F2">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 3px"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+<span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Check your inbox to confirm</strong><span style="font-size: 15px; color: #3D4556">We sent a link to {{n.email}}. Nothing else arrives until you click it.</span></span>
+</div>
+</sc-if>
+<sc-if value="{{n.subscribed}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-size: 15px; font-weight: 500"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>You’re on the list · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></span>
+</sc-if>
+</div>
+
+<sc-if value="{{showOpens}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<button type="button" onClick="{{icsReminder}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Add a reminder to my calendar (.ics)</button>
+<sc-if value="{{toastOpens}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 12px; background: #0A1222; color: #ffffff; font-size: 15px">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}
+<button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+</div>
+</div>
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">An open community for people who build, fund and use robots that help a warming planet.</p>
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 380px; margin-top: 8px">
+<label for="ft-email" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">MONTHLY DIGEST</label>
+<sc-if value="{{ft.idle}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; gap: 8px">
+<input id="ft-email" type="email" autocomplete="email" placeholder="you@example.org" value="{{ft.email}}" onChange="{{ft.onEmail}}" aria-invalid="{{ft.inv}}" aria-describedby="ft-err" style="{{ft.inputStyle}}">
+<button type="button" onClick="{{ft.submit}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{ft.err}}" hint-placeholder-val="{{ false }}"><span id="ft-err" style="font-size: 14px; color: #B42318">Enter your email address</span></sc-if>
+</sc-if>
+<sc-if value="{{ft.pending}}" hint-placeholder-val="{{ false }}"><span role="status" style="font-size: 15px; color: #3D4556">Check your inbox to confirm.</span></sc-if>
+<sc-if value="{{ft.done}}" hint-placeholder-val="{{ false }}"><span role="status" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-size: 14px; font-weight: 500"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>You’re on the list · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></span></sc-if>
+</div>
+</div>
+<sc-for list="{{footGroups}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.title}}" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.label}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="4">
+<a class="flink" href="{{l.href}}">{{l.label}}</a>
+</sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">
+<span>© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<span style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="HomeV3.dc.html#join" aria-label="Slack: join the network" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2zM13 3v6h2a2 2 0 0 0 0-4M11 21v-6H9a2 2 0 0 0 0 4"></path></svg></a>
+</span>
+</div>
+</div>
+</footer>
+
+<!-- CANVAS: confirmation email preview (not part of the page) -->
+<section aria-label="Confirmation email preview" style="background: #E4E6EA; padding: 20px 32px 96px; display: flex; flex-direction: column; align-items: center; gap: 24px">
+<span style="align-self: stretch; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS · CONFIRMATION EMAIL PREVIEW · NOT PART OF THE PAGE</span>
+<div style="width: 600px; max-width: 100%; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 48px -28px rgba(10,18,34,0.35)">
+<div style="padding: 14px 24px; border-bottom: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: #646B7A">
+<span><strong style="font-weight: 500; color: #0A1222">Vert Robo Con Summit</strong> &lt;hello@vert-robo-con.example&gt;</span>
+<span>Subject: You’re registered for Vert Robo Con Summit 2027</span>
+</div>
+<div style="padding: 36px 40px; display: flex; flex-direction: column; gap: 22px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 40px; height: 25px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px">Vert Robo Con</span></span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em">You’re registered, {{firstName}}</h2>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Thanks for signing up. Here’s everything you need, in one place.</p>
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">VERT ROBO CON SUMMIT 2027</span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<strong style="font-weight: 600; font-size: 18px">April 20–22, 2027 · Online</strong>
+<span style="font-size: 15px; color: #3D4556">[HH:MM–HH:MM] UTC each day · Free · open to everyone</span>
+</span>
+<span style="display: flex; flex-wrap: wrap; gap: 8px">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">Apple / Outlook (.ics)</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">Google</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">Outlook.com</a>
+</span>
+</div>
+<span style="display: flex; align-items: center; gap: 12px"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">REF</span><span style="font-family: 'Geist Mono', monospace; font-size: 15px; font-weight: 500">VRC-2027-0142</span></span>
+<a href="MyVRCV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Manage my registration</a>
+<p style="margin: 0; font-size: 15px; color: #3D4556">Your join link arrives [N] days before the summit. No account or password needed: the button above is your personal link.</p>
+</div>
+<div style="padding: 20px 40px 28px; border-top: 1px solid #E5E7EB; font-size: 13px; color: #646B7A; display: flex; flex-direction: column; gap: 6px">
+<span>Sent by the summit team · <a href="mailto:hello@vert-robo-con.example" style="color: #646B7A">hello@vert-robo-con.example</a> · We’ll respond within 24–48 hours.</span>
+<span>You’re getting this because you registered for the 2027 summit. <a href="PrivacyV3.dc.html" style="color: #646B7A">Privacy</a> · <a href="MyVRCV3.dc.html#email" style="color: #646B7A">Unsubscribe from summit emails</a></span>
+</div>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3900}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = Object.assign({ view: 'open', sim: 'none', ftState: 'idle', ftEmail: '', ftErr: false, menu: null }, this.blank(), this.blankFlow());
+}
+blank() {
+return { form: { name: '', email: '', org: '', role: '', country: '', tz: 'Europe/Berlin', a11y: '', heard: '' },
+days: [true, true, true], topics: [], pitch: false, c1: false, c2: false, dirty: false };
+}
+blankFlow() {
+return { tried: false, result: '', jump: '', calOpen: false, toastAt: '', toastText: '', nState: 'collapsed', nEmail: '', nErr: false, nTopics: null };
+}
+renderVals() {
+const s = this.state;
+const F = s.form;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const TONE = {
+blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'],
+amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#646B7A']
+};
+const chip = (tone, label) => ({ label,
+style: 'align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + TONE[tone][0] + '; color: ' + TONE[tone][1] + '; ' + MONO + 'font-size: 12px; letter-spacing: 0.04em',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + TONE[tone][2] });
+
+// validation
+const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(F.email.trim());
+const errs = [];
+if (!F.name.trim()) errs.push(['name', 'reg-name', 'Enter your full name']);
+if (!F.email.trim()) errs.push(['email', 'reg-email', 'Enter your email address']);
+else if (!emailOk) errs.push(['email', 'reg-email', 'Enter an email address like name@example.org']);
+if (!F.role) errs.push(['role', 'reg-role', 'Choose your role']);
+if (!F.country.trim()) errs.push(['country', 'reg-country', 'Choose your country']);
+if (!s.days.some(Boolean)) errs.push(['days', 'reg-day-1', 'Choose at least one day']);
+if (!s.c1) errs.push(['consent', 'reg-consent', 'Tick the box so we can send your join links']);
+const err = {};
+['name', 'email', 'role', 'country', 'days', 'consent'].forEach((k) => {
+const x = errs.find((r) => r[0] === k);
+const on = s.tried && !!x;
+err[k] = { on, msg: x ? x[2] : '', inv: on ? 'true' : 'false' };
+});
+const errList = errs.map((r) => ({ href: '#' + r[1], msg: r[2], pick: () => this.setState({ jump: r[1] }) }));
+const errTitle = errs.length === 1 ? 'There is 1 problem' : 'There are ' + errs.length + ' problems';
+
+// inputs
+const IDS = { name: 'reg-name', email: 'reg-email', org: 'reg-org', role: 'reg-role', country: 'reg-country', tz: 'reg-tz', a11y: 'reg-a11y', heard: 'reg-heard' };
+const inBase = 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; color: #0A1222; background: #ffffff; ';
+const st = {};
+const on = {};
+Object.keys(IDS).forEach((k) => {
+const bad = err[k] && err[k].on;
+st[k] = inBase + (bad ? 'border: 1px solid #B42318; box-shadow: 0 0 0 1px #B42318' : 'border: 1px solid #D5D8DE')
++ (s.jump === IDS[k] ? '; outline: 2px solid #0138AC; outline-offset: 3px' : '')
++ (k === 'a11y' ? '; padding: 12px 14px; resize: vertical; line-height: 1.5' : '');
+on[k] = (e) => this.setState({ form: Object.assign({}, this.state.form, { [k]: e.target.value }), jump: '', dirty: true });
+});
+
+const box = (checked, bad) => 'flex: 0 0 auto; width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; '
++ (checked ? 'background: #0138AC; border: 1px solid #0138AC; color: #ffffff' : 'background: #ffffff; border: 1.5px solid ' + (bad ? '#B42318' : '#8A909C') + '; color: transparent');
+
+// days
+const DAYS = [['DAY 1', 'Tue, Apr 20'], ['DAY 2', 'Wed, Apr 21'], ['DAY 3', 'Thu, Apr 22']];
+const days = DAYS.map((d, i) => {
+const c = s.days[i];
+return { id: 'reg-day-' + (i + 1), label: d[0], date: d[1], checked: c ? 'true' : 'false', box: box(c, err.days.on),
+style: 'display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 16px; font: inherit; color: #0A1222; text-align: left; cursor: pointer; '
++ (c ? 'background: #EEF2FB; border: 1px solid #0138AC' : 'background: #ffffff; border: 1px solid ' + (err.days.on ? '#B42318' : '#D5D8DE'))
++ (s.jump === 'reg-day-1' && i === 0 ? '; outline: 2px solid #0138AC; outline-offset: 3px' : ''),
+toggle: () => { const a = this.state.days.slice(); a[i] = !a[i]; this.setState({ days: a, dirty: true }); } };
+});
+
+// chips
+const chipBtn = (sel) => 'min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; '
++ (sel ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const TOPICS = ['Methane leaks', 'Soil carbon', 'Floods and storms', 'Greenhouses', 'Technician training', 'Start-ups', 'Funding', 'Research', 'Water'];
+const topics = TOPICS.map((t) => {
+const sel = s.topics.includes(t);
+return { label: t, pressed: sel ? 'true' : 'false', style: chipBtn(sel),
+pick: () => { const cur = this.state.topics; this.setState({ topics: cur.includes(t) ? cur.filter((x) => x !== t) : cur.concat([t]), dirty: true }); } };
+});
+
+const pitch = { on: s.pitch, checked: s.pitch ? 'true' : 'false', box: box(s.pitch, false), toggle: () => this.setState({ pitch: !this.state.pitch, dirty: true }) };
+const c1 = { checked: s.c1 ? 'true' : 'false', box: box(s.c1, err.consent.on), toggle: () => this.setState({ c1: !this.state.c1, jump: '', dirty: true }),
+style: 'display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 16px; color: #0A1222; text-align: left; cursor: pointer'
++ (s.jump === 'reg-consent' ? '; outline: 2px solid #0138AC; outline-offset: 3px' : '') };
+const c2 = { checked: s.c2 ? 'true' : 'false', box: box(s.c2, false), toggle: () => this.setState({ c2: !this.state.c2, dirty: true }) };
+
+// flow
+const inFormView = ['open', 'closing'].includes(s.view);
+const done = s.result === 'registered';
+const submit = () => {
+if (errs.length) { this.setState({ tried: true, result: '', jump: '' }); return; }
+const sim = this.state.sim;
+this.setState({ tried: false, jump: '', calOpen: false, toastAt: '',
+result: sim === 'already' ? 'already' : sim === 'neterror' ? 'neterror' : 'registered' });
+};
+const retry = () => this.setState({ result: 'registered', calOpen: false, toastAt: '' });
+
+const sumChip = done ? chip('green', 'REGISTERED')
+: { opens: chip('blue', 'OPENS MON 7 DEC 2026'), open: chip('blue', 'REGISTER FREE'), closing: chip('amber', 'CLOSES IN 3 DAYS'), closed: chip('neutral', 'CLOSED') }[s.view];
+
+const stepStyle = (first) => 'display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 2px solid ' + (first ? '#0138AC' : '#E5E7EB');
+const numStyle = (first) => 'width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 13px; '
++ (first ? 'background: #0138AC; color: #ffffff' : 'background: #EEF2FB; color: #0138AC');
+const mkSteps = (arr) => arr.map((x, i) => ({ n: String(i + 1), t: x[0], w: x[1], style: stepStyle(i === 0), num: numStyle(i === 0) }));
+const conf = { title: 'You’re registered for Vert Robo Con Summit 2027',
+sub: 'You’re all set. Join links arrive by email, and there’s no account to make.',
+steps: mkSteps([['Confirmation email', 'NOW'], ['Program out: build your agenda', '[DATE]'], ['Join links by email', '[N] DAYS BEFORE'], ['Recordings', 'AFTER THE EVENT']]) };
+
+const tzShown = F.tz.trim() || 'UTC';
+const calItems = [['Apple Calendar or Outlook', '.ICS', 'Calendar file downloaded'], ['Google Calendar', 'OPENS GOOGLE', 'Opened Google Calendar with 3 events'], ['Outlook.com', 'OPENS OUTLOOK', 'Opened Outlook.com with 3 events']]
+.map((c) => ({ label: c[0], meta: c[1], pick: () => this.setState({ calOpen: false, toastAt: 'conf', toastText: c[2] }) }));
+
+// notify-me
+const closedCtx = s.view === 'closed';
+const NT = ['Summit announcements', 'Program published', 'Recordings', 'Monthly digest'];
+const nSel = s.nTopics || (closedCtx ? ['Summit announcements'] : ['Summit announcements', 'Program published']);
+const nOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.nEmail.trim());
+const n = {
+heading: closedCtx ? 'Hear about the 2028 summit first' : 'Get an email when registration opens',
+label: closedCtx ? 'Get notified about 2028' : 'Email me when it opens',
+collapsed: s.nState === 'collapsed', expanded: s.nState === 'expanded', pending: s.nState === 'pending', subscribed: s.nState === 'subscribed',
+email: s.nEmail, err: s.nErr, inv: s.nErr ? 'true' : 'false',
+inputStyle: 'flex: 1 1 260px; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; background: #ffffff; border: 1px solid ' + (s.nErr ? '#B42318' : '#D5D8DE'),
+onEmail: (e) => this.setState({ nEmail: e.target.value, nErr: false }),
+expand: () => this.setState({ nState: 'expanded' }),
+submit: () => (nOk ? this.setState({ nState: 'pending', nErr: false }) : this.setState({ nErr: true })),
+topics: NT.map((t) => {
+const sel = nSel.includes(t);
+return { label: t, pressed: sel ? 'true' : 'false', style: chipBtn(sel),
+pick: () => this.setState({ nTopics: sel ? nSel.filter((x) => x !== t) : nSel.concat([t]) }) };
+})
+};
+
+// footer digest
+const ftOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.ftEmail.trim());
+const ft = { idle: s.ftState === 'idle', pending: s.ftState === 'pending', done: s.ftState === 'done',
+email: s.ftEmail, err: s.ftErr, inv: s.ftErr ? 'true' : 'false',
+inputStyle: 'flex: 1 1 auto; min-width: 0; box-sizing: border-box; min-height: 44px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 15px; background: #ffffff; border: 1px solid ' + (s.ftErr ? '#B42318' : '#D5D8DE'),
+onEmail: (e) => this.setState({ ftEmail: e.target.value, ftErr: false }),
+submit: () => (ftOk ? this.setState({ ftState: 'pending', ftErr: false }) : this.setState({ ftErr: true })) };
+
+const footGroups = [
+{ label: 'SUMMIT', title: 'Summit', links: [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']] },
+{ label: 'LEARN', title: 'Learn', links: [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']] },
+{ label: 'COMMUNITY', title: 'Community', links: [['Join', 'HomeV3.dc.html#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']] },
+{ label: 'ABOUT', title: 'About', links: [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']] }
+].map((g) => ({ label: g.label, title: g.title, links: g.links.map((l) => ({ label: l[0], href: l[1] })) }));
+
+// header menus (as HomeV3)
+const MENUS = {
+community: { label: 'Community', items: [['Join the network', 'Slack community or email updates', 'HomeV3.dc.html#join'], ['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'], ['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'], ['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'], ['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'], ['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'], ['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'], ['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'], ['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'], ['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'], ['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => {
+const open = s.menu === key;
+return { label: MENUS[key].label, id: 'menu-' + key, open, expanded: open ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (open ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => this.setState({ menu: this.state.menu === key ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) this.setState({ menu: null }); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], go: () => this.setState({ menu: null }) })) };
+});
+
+// canvas controls
+const VIEWS = [['opens', 'Opens soon'], ['open', 'Open'], ['closing', 'Closing soon'], ['closed', 'Closed']];
+const views = VIEWS.map((v) => {
+const sel = s.view === v[0];
+return { label: v[1], pressed: sel ? 'true' : 'false',
+style: 'min-height: 30px; padding: 0 12px; border: 0; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; '
++ (sel ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556'),
+pick: () => this.setState(Object.assign({ view: v[0] }, this.blankFlow())) };
+});
+
+return {
+views, sim: s.sim, onSim: (e) => this.setState({ sim: e.target.value }),
+fillSample: () => this.setState({ form: { name: 'Jordan Lee', email: 'jordan.lee@example.org', org: '', role: 'Researcher', country: 'Germany', tz: 'Europe/Berlin', a11y: '', heard: '' }, c1: true, days: [true, true, true], jump: '', dirty: true }),
+resetAll: () => this.setState(Object.assign({ view: 'open', sim: 'none', ftState: 'idle', ftEmail: '', ftErr: false }, this.blank(), this.blankFlow())),
+showConfirmSim: s.nState === 'pending' || s.ftState === 'pending',
+confirmEmail: () => this.setState({ nState: this.state.nState === 'pending' ? 'subscribed' : this.state.nState, ftState: this.state.ftState === 'pending' ? 'done' : this.state.ftState }),
+sumChip,
+perks: ['Live sessions and Q&A', 'Join links by email', 'Recordings afterwards', 'Your own agenda and calendar'],
+showClosingChip: s.view === 'closing' && !done,
+showForm: inFormView && !done, showConf: inFormView && done,
+showNetErr: s.result === 'neterror', showAlready: s.result === 'already',
+showErrSummary: s.tried && errs.length > 0, errTitle, errList,
+showSaved: s.dirty,
+formTitle: 'Register',
+submitLabel: 'Register',
+form: F, on, st, err, days, topics, pitch, c1, c2,
+pitchLinks: ['Startup pitch', 'Research pitch', 'Recommend a speaker'],
+a11yCount: F.a11y.length,
+submit, retry,
+conf, calOpen: s.calOpen, calExpanded: s.calOpen ? 'true' : 'false', calItems, tzShown,
+toggleCal: () => this.setState({ calOpen: !this.state.calOpen }),
+toastConf: s.toastAt === 'conf', toastOpens: s.toastAt === 'opens', toastText: s.toastText,
+closeToast: () => this.setState({ toastAt: '' }),
+icsReminder: () => this.setState({ toastAt: 'opens', toastText: 'Calendar file downloaded' }),
+emailShown: F.email.trim() || '[email]',
+firstName: F.name.trim().split(' ')[0] || '[first name]',
+showNotifyCard: s.view === 'opens' || s.view === 'closed', showOpens: s.view === 'opens', showClosed: closedCtx,
+n, ft, footGroups,
+menus,
+regPill: { on: inFormView, href: done ? 'MyVRCV3.dc.html' : 'RegisterV3.dc.html', current: done ? 'false' : 'page', label: done ? 'My summit' : 'Register for 2027',
+dot: 'width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; background: ' + (s.view === 'closing' ? '#D9822B' : '#0138AC') }
+};
+}
+}
+</script>
+</body>
+</html>

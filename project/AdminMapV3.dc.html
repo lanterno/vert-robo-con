@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Map organizations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.orow:hover{background:#F7F8F9}
+.ghost:hover{background:#F3F4F2}
+.sec:hover{background:#F7F8F9}
+.mi:hover{background:#F3F4F2}
+.nm:hover{color:#0138AC;text-decoration:underline}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 2440px; display: flex; flex-direction: column; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 14px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the product) -->
+<div style="background: #E9EAEC; border-bottom: 1px dashed #A7ADB8; padding: 8px 24px; font-family: 'Geist Mono', monospace; font-size: 11.5px; line-height: 1.5; color: #3D4556">Canvas note · Organizations live in Postgres, with a custom list view (filters, bulk select, CSV · JSON · GeoJSON export) and a custom MapLibre pin field. Geocoding is Photon, then Nominatim, on approval; its kill switch lives in Site settings. Versions on. Every save clears the page cache, so changes go live at once. · The 25 rows are fictional sample organizations from the demo dataset; edit times, admins and the Photon/Nominatim split are sample too.</div>
+
+<!-- CANVAS CONTROL -->
+<div style="display: flex; align-items: center; gap: 14px; min-height: 40px; padding: 0 24px; background: #F3F4F2; border-bottom: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span id="geo-ctl" style="font-size: 13px; color: #3D4556">Site settings › Geocoding kill switch</span>
+<div role="group" aria-labelledby="geo-ctl" style="display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: #E5E7EB">
+<sc-for list="{{geoCtl}}" as="g" hint-placeholder-count="2"><button type="button" aria-pressed="{{g.pressed}}" onClick="{{g.pick}}" style="{{g.style}}">{{g.label}}</button></sc-for>
+</div>
+</div>
+
+<div style="position: relative; flex: 1 0 auto; display: flex; align-items: stretch; min-height: 2280px">
+
+<!-- TOAST -->
+<sc-if value="{{toast.show}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 76px; left: 264px; z-index: 70; max-width: 640px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 14px; border-radius: 14px; background: #0A1222; color: #ffffff; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); font-size: 14px">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%; background: #1DB46C; display: flex; align-items: center; justify-content: center; color: #ffffff"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<span style="flex: 1 1 auto"><span style="font-weight: 500">{{toast.text}}</span><span style="color: #9AA3B5"> · {{toast.sub}}</span></span>
+<button type="button" onClick="{{toast.dismiss}}" aria-label="Dismiss notification" style="flex: 0 0 auto; width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- EDIT DRAWER -->
+<sc-if value="{{drawer}}" hint-placeholder-val="{{ true }}">
+<button type="button" aria-label="Close the editor" onClick="{{d.close}}" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 50; border: 0; padding: 0; background: rgba(10,18,34,0.2); cursor: default"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="ed-h" style="position: absolute; top: 0; right: 0; bottom: 0; z-index: 51; width: 540px; box-sizing: border-box; background: #ffffff; border-left: 1px solid #E5E7EB; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column; overflow-y: auto">
+
+<div style="position: sticky; top: 0; z-index: 5; background: #ffffff; padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{d.eyebrow}}</span>
+<h2 id="ed-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.title}}</h2>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+<span style="{{d.pubChip.style}}"><span aria-hidden="true" style="{{d.pubChip.dot}}"></span>{{d.pubChip.label}}</span>
+<span style="{{d.verChip.style}}"><span aria-hidden="true" style="{{d.verChip.dot}}"></span>{{d.verChip.label}}</span>
+<a href="MapV3.dc.html" style="font-size: 13px; font-weight: 500">View on the public map</a>
+</span>
+</div>
+<button type="button" aria-label="Close" onClick="{{d.close}}" style="flex: 0 0 auto; width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="display: flex; align-items: center; gap: 8px">
+<span role="status" style="{{d.dirtyStyle}}">{{d.dirtyText}}</span>
+<sc-if value="{{d.dirty}}" hint-placeholder-val="{{ false }}"><button type="button" class="ghost" onClick="{{d.discard}}" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Discard</button></sc-if>
+<button type="button" onClick="{{d.save}}" aria-disabled="{{d.saveDis}}" aria-describedby="ed-live" style="{{d.saveStyle}}">Save changes</button>
+</div>
+<sc-if value="{{d.closeAsk}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-labelledby="cl-h" aria-describedby="cl-d" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #FFF4E5; color: #8A4B00">
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong id="cl-h" style="font-size: 14px; font-weight: 600">Close without saving?</strong><span id="cl-d" style="font-size: 13px">{{d.closeText}}</span></span>
+<button type="button" class="ghost" onClick="{{d.keepEditing}}" style="flex: 0 0 auto; min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Keep editing</button>
+<button type="button" onClick="{{d.discardClose}}" style="flex: 0 0 auto; min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Discard and close</button>
+</div>
+</sc-if>
+<span id="ed-live" style="font-size: 12.5px; color: #646B7A">Changes go live as soon as you save.</span>
+</div>
+
+<div style="padding: 18px 24px 28px; display: flex; flex-direction: column; gap: 22px">
+
+<sc-if value="{{d.hasSugg}}" hint-placeholder-val="{{ false }}">
+<div role="note" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #EEF2FB">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px"><path d="M22 12h-6l-2 3h-4l-2-3H2"></path><path d="M5.5 5h13L22 12v7H2v-7z"></path></svg>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; font-size: 14px"><strong style="font-weight: 600">{{d.suggTitle}}</strong><span style="font-size: 13px; color: #3D4556">{{d.suggText}}</span></span>
+<a href="AdminQueueV3.dc.html" style="flex: 0 0 auto; font-size: 13px; font-weight: 500; white-space: nowrap">Review in queue</a>
+</div>
+</sc-if>
+<sc-if value="{{d.hasDupe}}" hint-placeholder-val="{{ false }}">
+<div role="note" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #FFF4E5; color: #8A4B00; font-size: 13px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9822B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"></path></svg>
+<span><strong style="font-weight: 600">Possible duplicate.</strong> {{d.dupeText}}</span>
+</div>
+</sc-if>
+
+<!-- DETAILS -->
+<section aria-labelledby="sd-h" style="display: flex; flex-direction: column; gap: 14px">
+<h3 id="sd-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A">DETAILS</h3>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 12px">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Name</span>
+<input type="text" value="{{form.name}}" onChange="{{d.setName}}" aria-invalid="{{d.nameInvalid}}" style="{{d.nameStyle}}">
+<sc-if value="{{d.nameErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">Enter the organization’s name.</span></sc-if>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Website</span>
+<input type="url" value="{{form.web}}" onChange="{{d.setWeb}}" style="{{d.monoInp}}">
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Robot type</span>
+<span style="position: relative; display: block">
+<select value="{{form.type}}" onChange="{{d.setType}}" style="{{selStyle}}"><option value="Ground">Ground robot</option><option value="Ocean">Ocean robot</option><option value="Aerial">Aerial robot</option><option value="Arm">Robotic arm</option><option value="Multiple">Multiple</option><option value="Other">Other</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Main application</span>
+<input type="text" value="{{form.app}}" onChange="{{d.setApp}}" style="{{d.inp}}">
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">HQ country</span>
+<input type="text" value="{{form.country}}" onChange="{{d.setCountry}}" style="{{d.inp}}">
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Founded</span>
+<input type="text" inputmode="numeric" value="{{form.founded}}" onChange="{{d.setFounded}}" style="{{d.monoInp}}">
+</label>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span id="dep-l" style="font-size: 14px; font-weight: 500">Deployed</span>
+<div role="group" aria-labelledby="dep-l" style="align-self: flex-start; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{d.depSeg}}" as="s" hint-placeholder-count="3"><button type="button" aria-pressed="{{s.pressed}}" onClick="{{s.pick}}" style="{{s.style}}">{{s.label}}</button></sc-for>
+</div>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 500">Adaptation or mitigation</span>
+<span style="position: relative; display: block">
+<select value="{{form.am}}" onChange="{{d.setAm}}" style="{{selStyle}}"><option value="Mitigation">Mitigation</option><option value="Adaptation">Adaptation</option><option value="Both">Both</option><option value="N/A">Not stated</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 500">One-sentence description</span><span style="{{d.countStyle}}">{{d.count}}</span></span>
+<textarea rows="3" value="{{form.desc}}" onChange="{{d.setDesc}}" aria-describedby="desc-help" style="{{d.areaStyle}}"></textarea>
+<span id="desc-help" style="font-size: 13px; color: #646B7A">Shown on the map card and in the downloads. Plain text, up to 240 characters.</span>
+</label>
+</section>
+
+<!-- LOCATION -->
+<section aria-labelledby="sl-h" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="display: inline-flex; align-items: center; gap: 10px"><h3 id="sl-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A">LOCATION</h3><span style="{{pin.chip.style}}"><span aria-hidden="true" style="{{pin.chip.dot}}"></span>{{pin.chip.label}}</span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #0A1222">{{pin.coords}}</span>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden">
+<div style="position: relative; height: 190px; background: #EEF1F4; overflow: hidden">
+<img src="img/world-map.svg" alt="{{pin.alt}}" style="{{pin.img}}">
+<sc-if value="{{pin.rough}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="{{pin.ring}}"></span></sc-if>
+<span title="Drag to move the pin" style="{{pin.style}}"><svg aria-hidden="true" width="30" height="38" viewBox="0 0 30 38"><path d="M15 37s-13-11-13-21a13 13 0 0 1 26 0c0 10-13 21-13 21z" fill="#0138AC" stroke="#ffffff" stroke-width="2"></path><circle cx="15" cy="15" r="5" fill="#ffffff"></circle></svg></span>
+<div style="position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; background: #ffffff; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">
+<button type="button" aria-label="Zoom in" style="width: 32px; height: 32px; border: 0; border-bottom: 1px solid #E5E7EB; background: #ffffff; font: inherit; font-size: 16px; cursor: pointer; color: #0A1222">+</button>
+<button type="button" aria-label="Zoom out" style="width: 32px; height: 32px; border: 0; background: #ffffff; font: inherit; font-size: 16px; cursor: pointer; color: #0A1222">−</button>
+</div>
+<div style="position: absolute; left: 10px; bottom: 10px; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 10px; background: rgba(255,255,255,0.94); box-shadow: 0 1px 3px rgba(10,18,34,0.14)">
+<span style="padding: 0 6px; font-size: 12px; font-weight: 500; color: #3D4556">Drag, or nudge ≈1 km</span>
+<sc-for list="{{pin.nudges}}" as="n" hint-placeholder-count="4">
+<button type="button" aria-label="{{n.label}}" onClick="{{n.go}}" style="width: 30px; height: 30px; border: 1px solid #D5D8DE; border-radius: 8px; background: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #0A1222; padding: 0"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{n.icon}}"></path></svg></button>
+</sc-for>
+</div>
+<span style="position: absolute; right: 8px; bottom: 6px; padding: 1px 6px; border-radius: 4px; background: rgba(255,255,255,0.85); font-size: 10.5px; color: #3D4556">© OpenStreetMap contributors</span>
+</div>
+<div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #E5E7EB">
+<span style="font-size: 13px; color: #3D4556">{{pin.note}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{geo.run}}" aria-disabled="{{geo.dis}}" aria-describedby="geo-chain" style="{{geo.btn}}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg>Re-geocode</button>
+<button type="button" class="sec" onClick="{{man.toggle}}" aria-expanded="{{man.exp}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"></circle><path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path></svg>Set coordinates manually</button>
+</div>
+<span id="geo-chain" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{geo.chain}}</span>
+
+<sc-if value="{{geo.off}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 12px; background: #FFF4E5; color: #8A4B00; font-size: 13px">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9822B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 1px"><path d="M12 3l10 18H2z"></path><path d="M12 10v4M12 17.5v.5"></path></svg>
+<span><strong style="font-weight: 600">Geocoding is off in Site settings</strong> (kill switch), so Re-geocode is paused. You can still drag the pin or set coordinates by hand. <a href="AdminSettingsV3.dc.html" style="color: #8A4B00; font-weight: 500">Site settings</a></span>
+</div>
+</sc-if>
+
+<sc-if value="{{geo.ask}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-labelledby="rp-h" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #F3F4F2">
+<strong id="rp-h" style="font-size: 14px; font-weight: 600">Replace the manual pin?</strong>
+<span style="font-size: 13px; color: #3D4556">Someone set this pin by hand, so the geocoder normally leaves it alone. Re-geocoding puts the Photon or Nominatim result in the form. Nothing changes on the site until you save.</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{geo.keep}}" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Keep manual pin</button>
+<button type="button" onClick="{{geo.run}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Re-geocode anyway</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{geo.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 12px; border: 1px solid #E5E7EB">
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{geo.steps}}" as="s" hint-placeholder-count="2">
+<li style="display: grid; grid-template-columns: 22px 88px minmax(0, 1fr); align-items: center; gap: 8px; font-size: 13px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{s.n}}</span>
+<span style="font-weight: 600">{{s.svc}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; color: #3D4556"><span aria-hidden="true" style="{{s.dot}}"></span>{{s.text}}</span>
+</li>
+</sc-for>
+</ol>
+<span style="font-size: 13px; color: #0A1222">{{geo.result}}</span>
+<sc-if value="{{geo.far}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: #FFF4E5; color: #8A4B00; font-size: 13px">
+<span style="flex: 1 1 auto"><strong style="font-weight: 600">{{geo.farText}}</strong> Check it against the website before you save.</span>
+<button type="button" onClick="{{geo.undo}}" style="flex: 0 0 auto; min-height: 36px; padding: 0 12px; border: 1px solid #E8C79A; border-radius: 10px; background: #ffffff; color: #8A4B00; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Put back the previous pin</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{man.on}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #F7F8F9; border: 1px solid #E5E7EB">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 500">Latitude</span><input type="text" inputmode="decimal" value="{{man.lat}}" onChange="{{man.setLat}}" aria-invalid="{{man.invalid}}" placeholder="-27.4824" style="{{man.inp}}"></label>
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 500">Longitude</span><input type="text" inputmode="decimal" value="{{man.lng}}" onChange="{{man.setLng}}" aria-invalid="{{man.invalid}}" placeholder="153.0240" style="{{man.inp}}"></label>
+</div>
+<sc-if value="{{man.hasErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 500; color: #B42318">{{man.err}}</span></sc-if>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="flex: 1 1 auto; font-size: 12.5px; color: #646B7A">Decimal degrees. A manual pin is never overwritten by the geocoder.</span>
+<button type="button" class="ghost" onClick="{{man.toggle}}" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Cancel</button>
+<button type="button" onClick="{{man.apply}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Use these coordinates</button>
+</div>
+</div>
+</sc-if>
+</div>
+<div style="padding: 8px 14px; background: #F7F8F9; border-top: 1px solid #E5E7EB; display: flex; justify-content: space-between; gap: 12px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">
+<span>Validated against the HQ country · cached</span><span>{{pin.field}}</span>
+</div>
+</div>
+</section>
+
+<!-- VERSION HISTORY -->
+<section aria-labelledby="sv-h" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<h3 id="sv-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A">VERSION HISTORY</h3>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{d.verCount}}</span>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; border: 1px solid #E5E7EB; border-radius: 14px">
+<sc-for list="{{vers}}" as="v" hint-placeholder-count="3">
+<li style="{{v.row}}">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; color: #0A1222">{{v.v}}</span>
+<span style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+<span style="font-size: 14px">{{v.what}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{v.meta}}</span>
+</span>
+<span style="display: flex; justify-content: flex-end">
+<sc-if value="{{v.isCur}}" hint-placeholder-val="{{ false }}"><span style="{{v.curChip.style}}"><span aria-hidden="true" style="{{v.curChip.dot}}"></span>{{v.curChip.label}}</span></sc-if>
+<sc-if value="{{v.canRestore}}" hint-placeholder-val="{{ false }}"><button type="button" class="sec" onClick="{{v.restore}}" aria-label="{{v.restoreLabel}}" style="min-height: 34px; padding: 0 10px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; color: #0A1222; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Restore pin</button></sc-if>
+</span>
+</li>
+</sc-for>
+</ol>
+<span style="font-size: 12.5px; color: #646B7A">Every save writes a version and an Audit log event. Restoring loads that pin into the form; you still save.</span>
+</section>
+
+<!-- PUBLISHING -->
+<section aria-labelledby="sp-h" style="display: flex; flex-direction: column; gap: 10px; padding-top: 18px; border-top: 1px solid #E5E7EB">
+<h3 id="sp-h" style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A">PUBLISHING</h3>
+<sc-if value="{{d.isPub}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="flex: 1 1 auto; font-size: 14px; color: #3D4556">On the public map, in search and in the CSV · JSON · GeoJSON downloads.</span>
+<button type="button" class="sec" onClick="{{d.askUnpub}}" aria-expanded="{{d.unpubExp}}" style="flex: 0 0 auto; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Unpublish</button>
+</div>
+</sc-if>
+<sc-if value="{{d.unpubAsk}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-labelledby="up-h" aria-describedby="up-d" style="display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 14px; background: #F3F4F2">
+<strong id="up-h" style="font-size: 15px; font-weight: 600">{{d.unpubTitle}}</strong>
+<span id="up-d" style="font-size: 13px; color: #3D4556">It leaves the public map, search and the downloads at once. The record and its history stay here, and you can publish it again at any time.</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{d.keepPub}}" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Keep published</button>
+<button type="button" onClick="{{d.unpublish}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Unpublish</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{d.isUnpub}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="flex: 1 1 auto; font-size: 14px; color: #3D4556">Hidden from the public map and the downloads. Admins still see it here.</span>
+<button type="button" onClick="{{d.republish}}" style="flex: 0 0 auto; min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Publish again</button>
+</div>
+</sc-if>
+</section>
+</div>
+</aside>
+</sc-if>
+
+<!-- SIDEBAR -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- MAIN -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<!-- PAGE -->
+<main style="padding: 22px 24px 32px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">MAP · COLLECTIONS · ORGANIZATIONS</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em">Organizations</h1>
+<p style="margin: 0; font-size: 14px; color: #3D4556">Every organization on the public map. New ones arrive through the Suggest form and the <a href="AdminQueueV3.dc.html">moderation queue</a>; fix details, pins and duplicates here.</p>
+</div>
+<div style="display: flex; gap: 8px; position: relative">
+<a href="MapV3.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">Public map
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+<button type="button" onClick="{{ex.toggle}}" aria-haspopup="menu" aria-expanded="{{ex.exp}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Export
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{ex.open}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="Export organizations" style="position: absolute; right: 0; top: 48px; z-index: 30; width: 340px; box-sizing: border-box; padding: 8px; border-radius: 16px; background: #ffffff; border: 1px solid #E5E7EB; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 2px">
+<span role="none" style="padding: 6px 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{ex.scope}}</span>
+<sc-for list="{{ex.items}}" as="f" hint-placeholder-count="3">
+<button type="button" role="menuitem" class="mi" onClick="{{f.go}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; font: inherit; text-align: left; cursor: pointer; color: #0A1222"><span style="font-size: 14px; font-weight: 600">{{f.label}}</span><span style="font-size: 12.5px; color: #646B7A">{{f.desc}}</span></button>
+</sc-for>
+<span role="none" style="margin-top: 4px; padding: 10px; border-radius: 10px; background: #F3F4F2; font-size: 12.5px; color: #3D4556">Licence: <strong style="font-weight: 600; color: #0A1222">CC BY 4.0</strong>. Credit “Vert Robo Con, vert-robo-con.example/map”. Unpublished records are never exported.</span>
+</div>
+</sc-if>
+</div>
+</div>
+
+<!-- BUILD NOTE -->
+<div role="note" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 14px; background: #EEF2FB; color: #0A1222">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg>
+<span style="flex: 1 1 auto; font-size: 14px"><strong style="font-weight: 600">Changes go live as soon as you save.</strong> {{buildNote}}</span>
+<a href="AdminSystemV3.dc.html" style="flex: 0 0 auto; font-size: 14px; font-weight: 500; white-space: nowrap">Jobs, email &amp; backups</a>
+</div>
+
+<!-- KPI TILES -->
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px 18px; display: flex; flex-direction: column; gap: 2px; background: #ffffff">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{k.label}}</span>
+<span style="{{k.numStyle}}">{{k.num}}</span>
+<span style="font-size: 13px; color: #646B7A">{{k.sub}}</span>
+<sc-if value="{{k.hasLink}}" hint-placeholder-val="{{ false }}"><a href="AdminQueueV3.dc.html" style="margin-top: 2px; font-size: 13px; font-weight: 500">Review in queue › Map</a></sc-if>
+</div>
+</sc-for>
+</div>
+
+<!-- DATA QUALITY -->
+<section aria-labelledby="dq-h" style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 24px; padding: 14px 18px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div style="flex: 0 1 280px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">DATA QUALITY · HQ COUNTRY</span>
+<h2 id="dq-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.25; letter-spacing: -0.01em">Spellings merged on import</h2>
+<span style="font-size: 13px; color: #646B7A">On import, each group below became one country, which is why the map shows 18.</span>
+</div>
+<div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<ul aria-label="HQ spellings merged by the import" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px">
+<li style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; white-space: nowrap">England, Scotland, UK → <span style="color: #0A1222; font-weight: 500">United Kingdom</span></li>
+<li style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; white-space: nowrap">USA, US → <span style="color: #0A1222; font-weight: 500">United States</span></li>
+<li style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; white-space: nowrap">Holland, Netherland → <span style="color: #0A1222; font-weight: 500">Netherlands</span></li>
+<li style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; white-space: nowrap">Brasil → <span style="color: #0A1222; font-weight: 500">Brazil</span></li>
+<li style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; white-space: nowrap">“France,Spain” → <span style="color: #0A1222; font-weight: 500">France</span></li>
+<li style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 12px; white-space: nowrap">“Kenya,Nigeria” → <span style="color: #0A1222; font-weight: 500">Kenya</span></li>
+</ul>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>1 ROW WITH NO COUNTRY</span>
+<span style="font-size: 13px; color: #3D4556">Not counted in the 18. Pick “Not set” under HQ country to find it and add one.</span>
+</div>
+</div>
+</section>
+
+<!-- FILTERS -->
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 260px">
+<span style="font-size: 13px; font-weight: 500">Search</span>
+<span style="position: relative; display: block">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Name, application, country or website" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 12px 0 36px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; width: 190px">
+<span style="font-size: 13px; font-weight: 500">HQ country</span>
+<span style="position: relative; display: block">
+<select value="{{fCountry}}" onChange="{{setCountry}}" style="{{selStyle}}"><option value="all">All countries</option><option value="United States">United States · 13</option><option value="United Kingdom">United Kingdom · 9</option><option value="Canada">Canada · 8</option><option value="Germany">Germany · 8</option><option value="Australia">Australia · 7</option><option value="Brazil">Brazil · 7</option><option value="India">India · 7</option><option value="Netherlands">Netherlands · 7</option><option value="France">France · 6</option><option value="Japan">Japan · 6</option><option value="Kenya">Kenya · 6</option><option value="Norway">Norway · 6</option><option value="South Africa">South Africa · 6</option><option value="Spain">Spain · 6</option><option value="Chile">Chile · 5</option><option value="New Zealand">New Zealand · 4</option><option value="Nigeria">Nigeria · 4</option><option value="Singapore">Singapore · 4</option><option value="none">Not set · 1</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 13px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; width: 160px">
+<span style="font-size: 13px; font-weight: 500">Deployed</span>
+<span style="position: relative; display: block">
+<select value="{{fDep}}" onChange="{{setDep}}" style="{{selStyle}}"><option value="all">Any</option><option value="Yes">Yes · 70</option><option value="No">No · 48</option><option value="Unclear">Unclear · 2</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 13px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; width: 190px">
+<span style="font-size: 13px; font-weight: 500">Coordinate source</span>
+<span style="position: relative; display: block">
+<select value="{{fSrc}}" onChange="{{setSrc}}" style="{{selStyle}}"><option value="all">Any source</option><option value="photon">Photon</option><option value="nominatim">Nominatim</option><option value="manual">Manual · 9</option><option value="country">Country only · 58</option></select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 13px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<sc-if value="{{filtered}}" hint-placeholder-val="{{ false }}">
+<button type="button" class="ghost" onClick="{{clearFilters}}" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear filters</button>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span id="rt-l" style="width: 120px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">ROBOT TYPE</span>
+<div role="group" aria-labelledby="rt-l" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{typeChips}}" as="t" hint-placeholder-count="7"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}"><span aria-hidden="true" style="{{t.dot}}"></span>{{t.label}}<span style="{{t.nStyle}}">{{t.n}}</span></button></sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span id="na-l" style="width: 120px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">NEEDS ATTENTION</span>
+<div role="group" aria-labelledby="na-l" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{attn}}" as="a" hint-placeholder-count="3"><button type="button" aria-pressed="{{a.pressed}}" onClick="{{a.pick}}" title="{{a.tip}}" style="{{a.style}}"><span aria-hidden="true" style="{{a.dot}}"></span>{{a.label}}<span style="{{a.nStyle}}">{{a.n}}</span></button></sc-for>
+</div>
+</div>
+</div>
+
+<!-- RESULTS / BULK BAR -->
+<sc-if value="{{noBulk}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 44px">
+<span style="font-size: 14px; color: #3D4556">{{resultText}}</span>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">SORTED BY LAST EDITED · NEWEST FIRST</span>
+</div>
+</sc-if>
+<sc-if value="{{bulk.on}}" hint-placeholder-val="{{ false }}">
+<div role="region" aria-label="Bulk actions" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 44px; padding: 6px 8px 6px 16px; border-radius: 14px; background: #0A1222; color: #ffffff">
+<span style="font-size: 14px; font-weight: 600; margin-right: 8px">{{bulk.label}}</span>
+<button type="button" onClick="{{bulk.regeo}}" aria-disabled="{{bulk.regeoDis}}" title="{{bulk.regeoTip}}" style="{{bulk.regeoStyle}}">Re-geocode</button>
+<span aria-hidden="true" style="width: 1px; height: 22px; background: #2E3850"></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #9AA3B5">EXPORT</span>
+<sc-for list="{{bulk.exports}}" as="x" hint-placeholder-count="3"><button type="button" onClick="{{x.go}}" aria-label="{{x.aria}}" style="min-height: 34px; padding: 0 10px; border: 1px solid #2E3850; border-radius: 10px; background: #141D30; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; cursor: pointer">{{x.label}}</button></sc-for>
+<span aria-hidden="true" style="width: 1px; height: 22px; background: #2E3850"></span>
+<button type="button" onClick="{{bulk.unpub}}" aria-expanded="{{bulk.askExp}}" style="min-height: 34px; padding: 0 12px; border: 1px solid #2E3850; border-radius: 10px; background: #141D30; color: #ffffff; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Unpublish</button>
+<span style="margin-left: auto; font-size: 12.5px; color: #9AA3B5">Licence: CC BY 4.0</span>
+<button type="button" onClick="{{bulk.clear}}" style="min-height: 34px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: #BFD0F5; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Clear selection</button>
+</div>
+</sc-if>
+<sc-if value="{{bulk.ask}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-labelledby="bu-h" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 14px; background: #F3F4F2">
+<span id="bu-h" style="flex: 1 1 auto; font-size: 14px">{{bulk.askText}}</span>
+<button type="button" class="ghost" onClick="{{bulk.cancel}}" style="min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Keep published</button>
+<button type="button" onClick="{{bulk.confirm}}" style="min-height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">{{bulk.confirmLabel}}</button>
+</div>
+</sc-if>
+
+<!-- TABLE -->
+<div role="table" aria-label="Organizations" aria-rowcount="{{rowCount}}" style="border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<div role="row" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) 132px 168px 108px 92px 138px 140px; align-items: center; min-height: 40px; padding-right: 12px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; border-radius: 16px 16px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader" style="display: flex; justify-content: center"><input type="checkbox" checked="{{allOn}}" onChange="{{toggleAll}}" aria-label="Select all shown organizations" style="width: 18px; height: 18px; margin: 0; accent-color: #0138AC; cursor: pointer"></span>
+<span role="columnheader">NAME</span>
+<span role="columnheader">ROBOT TYPE</span>
+<span role="columnheader">APPLICATION</span>
+<span role="columnheader">HQ</span>
+<span role="columnheader">DEPLOYED</span>
+<span role="columnheader">COORDINATES</span>
+<span role="columnheader">LAST EDITED</span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+<div role="row" class="orow" aria-current="{{r.current}}" style="{{r.rowStyle}}">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" checked="{{r.ck}}" onChange="{{r.toggleCk}}" aria-label="{{r.ckLabel}}" style="width: 18px; height: 18px; margin: 0; accent-color: #0138AC; cursor: pointer"></span>
+<span role="cell" style="min-width: 0; display: flex; flex-direction: column; gap: 1px; padding-right: 12px">
+<button type="button" class="nm" onClick="{{r.open}}" aria-label="{{r.openLabel}}" style="{{r.nameStyle}}">{{r.name}}</button>
+<span style="display: flex; align-items: center; gap: 6px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #646B7A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.host}}</span>
+<sc-for list="{{r.flags}}" as="f" hint-placeholder-count="1"><span style="{{f.style}}">{{f.label}}</span></sc-for>
+</span>
+</span>
+<span role="cell" style="display: flex; align-items: center; gap: 8px; font-size: 14px; white-space: nowrap"><span aria-hidden="true" style="{{r.typeDot}}"></span>{{r.type}}</span>
+<span role="cell" style="font-size: 14px; color: #3D4556; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px">{{r.app}}</span>
+<span role="cell" style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px">{{r.country}}</span>
+<span role="cell"><span style="{{r.dep.style}}"><span aria-hidden="true" style="{{r.dep.dot}}"></span>{{r.dep.label}}</span></span>
+<span role="cell"><span style="{{r.src.style}}"><span aria-hidden="true" style="{{r.src.dot}}"></span>{{r.src.label}}</span></span>
+<span role="cell" style="font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #3D4556; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.edited}}</span>
+</div>
+</sc-for>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; color: #646B7A">
+<strong style="color: #0A1222; font-size: 15px">No organizations match</strong>
+<span>Try another robot type or country, or clear the search.</span>
+<button type="button" onClick="{{clearFilters}}" style="margin-top: 6px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear filters</button>
+</div>
+</sc-if>
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid #E5E7EB; background: #F7F8F9; border-radius: 0 0 16px 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">PAGE 1 OF 5 · 25 PER PAGE</span>
+<button type="button" aria-disabled="true" style="min-height: 34px; padding: 0 12px; border: 1px solid #E5E7EB; border-radius: 10px; background: #ffffff; color: #9AA3B5; font: inherit; font-size: 13px; cursor: not-allowed">Previous</button>
+<button type="button" class="sec" style="min-height: 34px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 10px; background: #ffffff; color: #0A1222; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Next</button>
+<span style="margin-left: auto; font-size: 13px; color: #646B7A">Public downloads (CSV · JSON · GeoJSON) are generated from published records · Licence: CC BY 4.0</span>
+</div>
+</div>
+
+</main>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2440}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const C = { 'Singapore': [1.3521, 103.8198], 'United Kingdom': [55.3781, -3.436], 'Canada': [56.1304, -106.3468], 'South Africa': [-30.5595, 22.9375], 'France': [46.2276, 2.2137], 'Japan': [36.2048, 138.2529], 'Nigeria': [9.082, 8.6753], 'United States': [39.8283, -98.5795], 'Kenya': [-0.0236, 37.9062] };
+// Sample rows (fictional organizations from the demo dataset): id, name, website, type, application, HQ, founded, deployed, adaptation/mitigation, coord source, lat, lng, what the geocoder returns now (source, lat, lng), description, extra
+const R = [
+['kelpcombe-robotics', 'Kelpcombe Robotics', 'https://kelpcombe-robotics.example/', 'Ocean', 'Ocean data', 'Singapore', '2014', 'Yes', 'Adaptation', 'country', null, null, null, null, null, 'A solar-powered surface vessel that records temperature, oxygen and acidity along coastal transects for months at a time.', { edit: ['Edited main application', '03', 'Today 09:41'] }],
+['rowanburrow-instruments', 'Rowanburrow Instruments', 'https://rowanburrow-instruments.example/', 'Ground', 'Agriculture', 'United States', '2017', 'Yes', 'Both', 'manual', 30.2006, -97.6628, 'photon', 30.2006, -97.6628, 'A compact electric robot that weeds and thins crops row by row so farms can cut fertiliser and diesel.', { by: '01', edit: ['Edited description', '01', 'Yesterday 16:20'], sugg: 'MAP-0457', st: ['Suggested edit waiting · MAP-0457', 'From Sample Submitter 02, 26 h ago. It proposes a different city, so the pin may change when it is approved.'] }],
+['puffinhollow-labs', 'Puffinhollow Labs', 'https://puffinhollow-labs.example/', 'Arm', 'Construction', 'Australia', '2023', 'Yes', 'Mitigation', 'manual', -27.4824, 153.024, 'photon', -16.9203, 145.771, 'A robotic arm cell that sprays insulation into wall cavities of older homes with minimal disruption.', { by: '02', when: '3 days ago', why: 'HQ is in Brisbane; Photon had matched Cairns' }],
+['sorrelmere-robotics', 'Sorrelmere Robotics', 'https://sorrelmere-robotics.example/', 'Aerial', 'Wind turbines', 'United Kingdom', '2013', 'No', 'Mitigation', 'country', null, null, null, null, null, 'A small quadcopter that climbs or circles turbine blades to find cracks before they spread, currently in pilot trials.', { edit: ['Edited HQ country · England → United Kingdom', '03', '5 days ago'] }],
+['ploverridge-instruments', 'Ploverridge Instruments', 'https://ploverridge-instruments.example/', 'Aerial', 'Land restoration', 'Canada', '2009', 'Yes', 'Mitigation', 'country', null, null, null, null, null, 'A drone fleet that scatters seed pods over cleared slopes and logs which ones take root.', { sugg: 'MAP-0458', st: ['New-organization suggestion looks like this record · MAP-0458', '“Plover Ridge Instruments” from Sample Submitter 05. Merge it into this record in the queue instead of publishing a second pin.'] }],
+['ploverhollow-dynamics', 'Ploverhollow Dynamics', 'https://ploverhollow-dynamics.example/', 'Ocean', 'Ocean data', 'Brazil', '2022', 'Yes', 'Adaptation', 'manual', -25.3821, -49.3255, 'photon', -25.388, -49.3101, 'A small diving robot that records temperature, oxygen and acidity along coastal transects for months at a time.', { by: '01' }],
+['tansywick-dynamics', 'Tansywick Dynamics', 'https://tansywick-dynamics.example/', 'Aerial', 'Agriculture', 'Norway', '2022', 'Yes', 'Both', 'manual', 63.4737, 10.3257, 'photon', 63.4737, 10.3258, 'A small quadcopter that weeds and thins crops row by row so farms can cut fertiliser and diesel.', { by: '01' }],
+['bramblemere-works', 'Bramblemere Works', 'https://bramblemere-works.example/', 'Aerial', 'Wind turbines', 'France', '2022', 'Yes', 'Mitigation', 'manual', 43.6015, 1.3877, 'photon', 43.6016, 1.3877, 'A fixed-wing survey drone that climbs or circles turbine blades to find cracks before they spread.', { by: '01' }],
+['gorsereach-systems', 'Gorsereach Systems', 'https://gorsereach-systems.example/', 'Aerial', 'Biodiversity', 'Spain', '2019', 'Yes', 'N/A', 'manual', 43.2254, -2.8864, 'photon', 43.2254, -2.8865, 'A small quadcopter that counts birds, insects and grazing animals from repeat survey routes.', { by: '01' }],
+['wrenmere-labs', 'Wrenmere Labs', 'https://wrenmere-labs.example/', 'Arm', 'Recycling and waste', 'India', '2020', 'Yes', 'Mitigation', 'manual', 18.5063, 73.9137, 'photon', 18.5204, 73.8567, 'A tracked rover that picks recyclable material off fast conveyor belts at sorting plants.', { by: '01' }],
+['shoallark-works', 'Shoallark Works', 'https://shoallark-works.example/', 'Ground', 'Soil carbon', 'Germany', '2008', 'Yes', 'Mitigation', 'photon', 48.2133, 11.5762, 'photon', 48.2133, 11.5762, 'A wheeled field robot that drills shallow cores across fields to map how much carbon the soil holds.', null],
+['alderford-works', 'Alderford Works', 'https://alderford-works.example/', 'Ocean', 'Ocean data', 'United Kingdom', '2008', 'Yes', 'Adaptation', 'nominatim', 55.8825, -3.1343, 'nominatim', 55.8825, -3.1343, 'A remotely operated sub that records temperature, oxygen and acidity along coastal transects for months at a time.', null],
+['cobblecombe-works', 'Cobblecombe Works', 'https://cobblecombe-works.example/', 'Ocean', 'Recycling and waste', 'Japan', '2014', 'Yes', 'Both', 'photon', 43.1309, 141.326, 'photon', 43.1309, 141.326, 'A solar-powered surface vessel that skims floating litter from harbours and river mouths.', null],
+['mosscombe-dynamics', 'Mosscombe Dynamics', 'https://mosscombe-dynamics.example/', 'Aerial', 'Land restoration', 'South Africa', '2013', 'Yes', 'Mitigation', 'country', null, null, null, null, null, 'A drone fleet that scatters seed pods over cleared slopes and logs which ones take root.', null],
+['junipercombe-labs', 'Junipercombe Labs', 'https://junipercombe-labs.example/', 'Aerial', 'Biodiversity', 'France', '2009', 'No', 'Adaptation', 'country', null, null, null, null, null, 'A drone fleet that counts birds, insects and grazing animals from repeat survey routes, currently in pilot trials.', null],
+['tidedale-instruments', 'Tidedale Instruments', 'https://tidedale-instruments.example/', 'Arm', 'Recycling and waste', 'Japan', '2011', 'Yes', 'Mitigation', 'country', null, null, null, null, null, 'A compact electric robot that picks recyclable material off fast conveyor belts at sorting plants.', null],
+['tidefield-robotics', 'Tidefield Robotics', 'https://tidefield-robotics.example/', 'Ocean', 'Inspection', 'Nigeria', '2010', 'No', 'Mitigation', 'country', null, null, null, null, null, 'A small diving robot that inspects cables, foundations and moorings at offshore energy sites, currently in pilot trials.', { dupe: 'Another Tidefield Robotics record has the same website (tidefield-robotics.example) and HQ. Keep the better one and unpublish the other.' }],
+['tidefield-robotics-2', 'Tidefield Robotics', 'https://tidefield-robotics.example/', 'Ocean', 'Inspection', 'Nigeria', '2010', 'No', 'Mitigation', 'country', null, null, null, null, null, 'A small diving robot that inspects cables, foundations and moorings at offshore energy sites, currently in pilot trials.', { dupe: 'Another Tidefield Robotics record has the same website (tidefield-robotics.example) and HQ. Keep the better one and unpublish the other.' }],
+['alderfield-collective', 'Alderfield Collective', 'https://alderfield-collective.example/', 'Ground', 'Agriculture', 'United States', '2022', 'Yes', 'Both', 'country', null, null, null, null, null, 'A wheeled field robot that weeds and thins crops row by row so farms can cut fertiliser and diesel.', { dupe: 'A record named “Alder Field Collective”, on another page, has the same website (alderfield-collective.example). Keep one and unpublish the other.' }],
+['quillreach-systems', 'Quillreach Systems', 'https://quillreach-systems.example/', 'Multiple', 'Ocean data', 'Germany', 'N/A', 'No', 'Adaptation', 'nominatim', 53.5761, 9.9583, 'nominatim', 53.5761, 9.9583, 'A robot that swims and crawls that records temperature, oxygen and acidity along coastal transects for months at a time, currently in pilot trials.', null],
+['thistlewick-field-robotics', 'Thistlewick Field Robotics', 'https://thistlewick-field-robotics.example/', 'Multiple', 'Environmental monitoring', 'Canada', '2016', 'Yes', 'Adaptation', 'country', null, null, null, null, null, 'An air-and-ground robot pair that patrols dry woodland at night and flags new hot spots for local crews.', null],
+['brackford-systems', 'Brackford Systems', 'https://brackford-systems.example/', 'Arm', 'Recycling and waste', 'Chile', '2018', 'Yes', 'Mitigation', 'nominatim', -33.4758, -70.6662, 'nominatim', -33.4758, -70.6662, 'A modular robot kit that picks recyclable material off fast conveyor belts at sorting plants.', null],
+['kelpford-systems', 'Kelpford Systems', 'https://kelpford-systems.example/', 'Ground', 'Agriculture', 'Kenya', '2022', 'Yes', 'Both', 'country', null, null, null, null, null, 'A compact electric robot that weeds and thins crops row by row so farms can cut fertiliser and diesel.', null],
+['shoalford-autonomy', 'Shoalford Autonomy', 'https://shoalford-autonomy.example/', 'Ground', 'Land restoration', 'Spain', '2015', 'No', 'Mitigation', 'photon', 43.2606, -3.0008, 'photon', 43.2606, -3.0008, 'A tracked rover that scatters seed pods over cleared slopes and logs which ones take root, currently in pilot trials.', null],
+['nettleburrow-works', 'Nettleburrow Works', 'https://nettleburrow-works.example/', 'Ocean', 'Recycling and waste', 'Canada', '2020', 'Yes', 'Both', 'country', null, null, null, null, null, 'An uncrewed catamaran that skims floating litter from harbours and river mouths.', null]
+];
+const orgs = R.map((r) => {
+const x = r[16] || {};
+const o = { id: r[0], name: r[1], web: r[2], type: r[3], app: r[4], country: r[5], founded: r[6], dep: r[7], dep0: r[7], am: r[8], src: r[9], src0: r[9], lat: r[10], lng: r[11],
+geo: r[12] ? { src: r[12], lat: r[13], lng: r[14] } : null, desc: r[15], pub: true, sugg: x.sugg || '', st: x.st || ['', ''], dupe: x.dupe || '' };
+o.c0 = o.src === 'country' ? { lat: C[o.country][0], lng: C[o.country][1] } : null;
+if (o.c0) { o.lat = o.c0.lat; o.lng = o.c0.lng; }
+const v = [{ what: 'Imported from the retired Google Sheet', who: 'sys', when: '[DATE]', snap: null }];
+if (o.src === 'manual') {
+v.push({ what: 'Geocoded with Photon', who: 'sys', when: '[DATE]', snap: { src: 'photon', lat: o.geo.lat, lng: o.geo.lng } });
+v.push({ what: 'Pin set by hand' + (x.why ? ' · ' + x.why : ''), who: x.by || '01', when: x.when || '[DATE]', snap: { src: 'manual', lat: o.lat, lng: o.lng } });
+} else if (o.src === 'country') v.push({ what: 'No confident geocoder match · pin at the country centre', who: 'sys', when: '[DATE]', snap: null });
+else v.push({ what: 'Geocoded with ' + (o.src === 'photon' ? 'Photon' : 'Nominatim') + ' · city-level pin', who: 'sys', when: '[DATE]', snap: { src: o.src, lat: o.lat, lng: o.lng } });
+if (x.edit) v.push({ what: x.edit[0], who: x.edit[1], when: x.edit[2], snap: null });
+o.vers = v;
+return o;
+});
+const first = orgs.find((o) => o.id === 'puffinhollow-labs');
+this.state = { orgs: orgs, sel: first.id, form: this.pick(first), base: { lat: first.lat, lng: first.lng }, regeo: null, askReplace: false, manual: false, mLat: '', mLng: '', mErr: '', askUnpub: false, nameErr: false, closeAsk: false,
+q: '', fType: 'all', fCountry: 'all', fDep: 'all', fSrc: 'all', attn: '', checked: [], bulkAsk: false, exportOpen: false, geo: true, pending: 0, toast: null };
+}
+pick(o) { return { name: o.name, web: o.web, type: o.type, app: o.app, country: o.country, founded: o.founded, dep: o.dep, am: o.am, desc: o.desc, lat: o.lat, lng: o.lng, src: o.src }; }
+renderVals() {
+const S = this.state; const F = S.form;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const DISPLAY = "font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; ";
+const TONES = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#8A91A0'] };
+const chip = (tone, label) => { const t = TONES[tone]; return { label: label,
+style: 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: ' + t[0] + '; color: ' + t[1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap; line-height: 1.5',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + t[2] + '; flex: 0 0 auto' }; };
+const mini = (tone, label) => ({ label: label, style: 'flex: 0 0 auto; padding: 0 6px; border-radius: 999px; background: ' + TONES[tone][0] + '; color: ' + TONES[tone][1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.04em; line-height: 1.6; white-space: nowrap' });
+const dot = (c) => 'flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: ' + c;
+const seg = (on) => 'display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const inp = (bad) => 'width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; color: #0A1222';
+const selStyle = 'appearance: none; -webkit-appearance: none; width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 34px 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; color: #0A1222; cursor: pointer';
+const ADM = { '01': ['Sample Admin 01', 'S1'], '02': ['Sample Admin 02', 'S2'], '03': ['Sample Admin 03', 'S3'], sys: ['System', 'System'] };
+const TYPES = { Ground: ['Ground robot', '#1F9D5C'], Ocean: ['Ocean robot', '#0B6FB8'], Aerial: ['Aerial robot', '#6D5BD0'], Arm: ['Robotic arm', '#D9822B'], Multiple: ['Multiple', '#A7ADB8'], Other: ['Other', '#A7ADB8'] };
+const SRC = { photon: ['blue', 'PHOTON', 'Photon'], nominatim: ['blue', 'NOMINATIM', 'Nominatim'], manual: ['neutral', 'MANUAL', 'manual'], country: ['amber', 'COUNTRY ONLY', 'country only'] };
+const srcChip = (s) => chip(SRC[s][0], SRC[s][1]);
+const r4 = (n) => Math.round(n * 10000) / 10000;
+const fmt = (n) => (n < 0 ? '−' : '') + Math.abs(n).toFixed(4);
+const host = (u) => String(u || '').replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '');
+const thou = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const km = (a, b) => { const k = Math.PI / 180; const h = Math.pow(Math.sin((b.lat - a.lat) * k / 2), 2) + Math.cos(a.lat * k) * Math.cos(b.lat * k) * Math.pow(Math.sin((b.lng - a.lng) * k / 2), 2); return 2 * 6371 * Math.asin(Math.sqrt(h)); };
+const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+const say = (text, sub, link, patch) => this.setState(Object.assign({ toast: { text: text, sub: sub, link: !!link } }, patch || {}));
+const ev = (e) => (e && e.target ? e.target.value : '');
+
+// ---------- canvas control ----------
+const geoCtl = [[true, 'On'], [false, 'Off']].map(([v, l]) => ({ label: l, pressed: S.geo === v ? 'true' : 'false', style: seg(S.geo === v).replace('min-height: 34px', 'min-height: 30px'),
+pick: () => this.setState({ geo: v, askReplace: false }) }));
+
+// ---------- filters ----------
+const q = S.q.trim().toLowerCase();
+const match = (o) => (!q || (o.name + ' ' + o.app + ' ' + o.country + ' ' + host(o.web)).toLowerCase().indexOf(q) > -1)
+&& (S.fType === 'all' || o.type === S.fType) && (S.fCountry === 'all' || o.country === S.fCountry)
+&& (S.fDep === 'all' || o.dep === S.fDep) && (S.fSrc === 'all' || o.src === S.fSrc)
+&& (!S.attn || (S.attn === 'country' && o.src === 'country') || (S.attn === 'dupe' && !!o.dupe) || (S.attn === 'sugg' && !!o.sugg));
+const visible = S.orgs.filter(match);
+const filtered = !!(q || S.fType !== 'all' || S.fCountry !== 'all' || S.fDep !== 'all' || S.fSrc !== 'all' || S.attn);
+const clearFilters = () => this.setState({ q: '', fType: 'all', fCountry: 'all', fDep: 'all', fSrc: 'all', attn: '' });
+const pill = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid ' + (on ? '#0A1222; background: #0A1222; color: #ffffff' : '#D5D8DE; background: #ffffff; color: #0A1222');
+const nStyle = (on) => MONO + 'font-size: 12px; color: ' + (on ? '#C8CEDA' : '#646B7A');
+const typeChips = [['all', 'All', 120], ['Ground', 'Ground', 29], ['Ocean', 'Ocean', 31], ['Aerial', 'Aerial', 37], ['Arm', 'Robotic arm', 11], ['Multiple', 'Multiple', 9], ['Other', 'Other', 3]].map(([k, l, n]) => {
+const on = S.fType === k;
+return { label: l, n: String(n), pressed: on ? 'true' : 'false', style: pill(on), nStyle: nStyle(on), dot: k === 'all' ? 'display: none' : dot(TYPES[k][1]),
+pick: () => this.setState({ fType: k, checked: [], bulkAsk: false }) };
+});
+const fixedPins = S.orgs.filter((o) => o.src0 === 'country' && o.src !== 'country').length;
+const attn = [['country', 'Country-level pin', String(58 - fixedPins), 'Pin sits at the country centre because the geocoder found no confident city match'],
+['dupe', 'Possible duplicate', '3 pairs', 'Same name or same website as another record'],
+['sugg', 'Pending suggestion', '2', 'A suggestion in the moderation queue touches this record']].map(([k, l, n, tip]) => {
+const on = S.attn === k;
+return { label: l, n: n, tip: tip, pressed: on ? 'true' : 'false', style: pill(on), nStyle: nStyle(on), dot: dot(k === 'sugg' ? '#0138AC' : '#D9822B'),
+pick: () => this.setState({ attn: on ? '' : k, checked: [], bulkAsk: false }) };
+});
+
+// ---------- rows ----------
+const rows = visible.map((o) => {
+const on = S.sel === o.id; const ck = S.checked.indexOf(o.id) > -1; const last = o.vers[o.vers.length - 1];
+const flags = [];
+if (!o.pub) flags.push(mini('neutral', 'UNPUBLISHED'));
+if (o.sugg) flags.push(mini('blue', o.sugg));
+if (o.dupe) flags.push(mini('amber', 'DUPLICATE?'));
+return { id: o.id, name: o.name, host: host(o.web), flags: flags, type: TYPES[o.type][0], typeDot: dot(TYPES[o.type][1]), app: o.app, country: o.country,
+dep: o.dep === 'Yes' ? chip('green', 'YES') : o.dep === 'No' ? chip('neutral', 'NO') : chip('amber', 'UNCLEAR'), src: srcChip(o.src),
+edited: last.when + ' · ' + ADM[last.who][1],
+ck: ck, ckLabel: 'Select ' + o.name, current: on ? 'true' : 'false', openLabel: 'Edit ' + o.name,
+toggleCk: () => this.setState({ checked: ck ? S.checked.filter((x) => x !== o.id) : S.checked.concat([o.id]), bulkAsk: false }),
+open: () => openOrg(o),
+nameStyle: 'align-self: flex-start; max-width: 100%; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ' + (o.pub ? '#0A1222' : '#646B7A'),
+rowStyle: 'display: grid; grid-template-columns: 44px minmax(0, 1fr) 132px 168px 108px 92px 138px 140px; align-items: center; min-height: 54px; padding-right: 12px; border-top: 1px solid #EEF0F3; ' + (on ? 'background: #EEF2FB; box-shadow: inset 3px 0 0 #0138AC' : ck ? 'background: #F7F8F9' : '')
+};
+});
+const openOrg = (o) => this.setState({ sel: o.id, form: this.pick(o), base: { lat: o.lat, lng: o.lng }, regeo: null, askReplace: false, manual: false, mLat: '', mLng: '', mErr: '', askUnpub: false, nameErr: false, closeAsk: false, exportOpen: false });
+const allOn = visible.length > 0 && visible.every((o) => S.checked.indexOf(o.id) > -1);
+const toggleAll = () => this.setState({ checked: allOn ? S.checked.filter((id) => !visible.some((o) => o.id === id)) : S.checked.concat(visible.filter((o) => S.checked.indexOf(o.id) < 0).map((o) => o.id)), bulkAsk: false });
+
+// ---------- bulk ----------
+const selOrgs = S.orgs.filter((o) => S.checked.indexOf(o.id) > -1);
+const nSel = selOrgs.length;
+const FMT = [['CSV', 'csv', 'Spreadsheet, one row per organization'], ['JSON', 'json', 'Same fields as the public download'], ['GeoJSON', 'geojson', 'Points with coordinates, for GIS tools']];
+const bulk = { on: nSel > 0, label: plural(nSel, 'selected', 'selected'), ask: S.bulkAsk && nSel > 0, askExp: S.bulkAsk ? 'true' : 'false',
+regeoDis: S.geo ? 'false' : 'true', regeoTip: S.geo ? 'Photon, then Nominatim. Manual pins are skipped.' : 'Geocoding is off in Site settings',
+regeoStyle: 'min-height: 34px; padding: 0 12px; border: 1px solid #2E3850; border-radius: 10px; background: #141D30; font: inherit; font-size: 13px; font-weight: 500; ' + (S.geo ? 'color: #ffffff; cursor: pointer' : 'color: #646B7A; cursor: not-allowed'),
+regeo: () => {
+if (!S.geo) return;
+const m = selOrgs.filter((o) => o.src === 'manual').length; const c = selOrgs.filter((o) => o.src === 'country').length; const k = nSel - m - c;
+const parts = [];
+if (k) parts.push(k + ' unchanged');
+if (c) parts.push(c + ' still country-level, no confident match');
+if (m) parts.push(plural(m, 'manual pin', 'manual pins') + ' skipped');
+say('Re-geocoded ' + plural(nSel, 'organization', 'organizations'), parts.join(' · '), false);
+},
+exports: FMT.map(([l, ext]) => ({ label: l, aria: 'Export selected as ' + l, go: () => { const n = selOrgs.filter((o) => o.pub).length;
+say('organizations-selected.' + ext + ' · ' + plural(n, 'row', 'rows'), 'Licence: CC BY 4.0' + (n < nSel ? ' · unpublished rows left out' : ''), false); } })),
+unpub: () => { if (!selOrgs.some((o) => o.pub)) { say('Nothing to unpublish', 'the selected organizations are already unpublished', false, { bulkAsk: false }); return; } this.setState({ bulkAsk: !S.bulkAsk }); },
+cancel: () => this.setState({ bulkAsk: false }),
+askText: 'Unpublish ' + plural(selOrgs.filter((o) => o.pub).length, 'organization', 'organizations') + '? They leave the public map and the downloads at once. Records and history stay here.',
+confirmLabel: 'Unpublish ' + selOrgs.filter((o) => o.pub).length,
+confirm: () => {
+const ids = selOrgs.filter((o) => o.pub).map((o) => o.id);
+if (!ids.length) { this.setState({ bulkAsk: false }); return; }
+const nv = { what: 'Unpublished · bulk action', who: '01', when: 'Just now', snap: null };
+say(plural(ids.length, 'organization', 'organizations') + ' unpublished', 'off the map at once', true,
+{ orgs: S.orgs.map((o) => ids.indexOf(o.id) > -1 ? Object.assign({}, o, { pub: false, vers: o.vers.concat([nv]) }) : o), checked: [], bulkAsk: false, pending: S.pending + 1 });
+},
+clear: () => this.setState({ checked: [], bulkAsk: false })
+};
+
+// ---------- export menu ----------
+const nUnpub = S.orgs.filter((o) => !o.pub).length;
+const nPub = 120 - nUnpub;
+const ex = { open: S.exportOpen, exp: S.exportOpen ? 'true' : 'false', toggle: () => this.setState({ exportOpen: !S.exportOpen }),
+scope: 'ALL ' + nPub + ' PUBLISHED ORGANIZATIONS',
+items: FMT.map(([l, ext, desc]) => ({ label: l, desc: desc, go: () => say('organizations.' + ext + ' · ' + nPub + ' rows', 'Licence: CC BY 4.0 · published records only', false, { exportOpen: false }) })) };
+
+// ---------- drawer ----------
+const o = S.orgs.find((x) => x.id === S.sel) || S.orgs[0];
+const FL = [['name', 'name'], ['web', 'website'], ['type', 'robot type'], ['app', 'application'], ['country', 'HQ country'], ['founded', 'founded'], ['dep', 'deployed'], ['am', 'adaptation or mitigation'], ['desc', 'description']];
+const changed = FL.filter(([k]) => String(F[k]) !== String(o[k])).map(([, l]) => l);
+if (F.lat !== o.lat || F.lng !== o.lng || F.src !== o.src) changed.push('pin (' + SRC[F.src][2] + ')');
+const dirty = changed.length > 0;
+const setF = (k) => (e) => this.setState({ form: Object.assign({}, S.form, { [k]: ev(e) }), nameErr: k === 'name' ? false : S.nameErr });
+const closeD = () => this.setState({ sel: null, form: this.pick(o), base: { lat: o.lat, lng: o.lng }, askUnpub: false, askReplace: false, manual: false, regeo: null, nameErr: false, mErr: '', closeAsk: false });
+const pubAct = (pub) => {
+const nv = { what: pub ? 'Published again' : 'Unpublished · hidden from the public map and downloads', who: '01', when: 'Just now', snap: null };
+say(o.name + (pub ? ' published again' : ' unpublished'), (pub ? 'back on' : 'off') + ' the map at once', true,
+{ orgs: S.orgs.map((x) => x.id === o.id ? Object.assign({}, x, { pub: pub, vers: x.vers.concat([nv]) }) : x), askUnpub: false, pending: S.pending + 1 });
+};
+const descLen = String(F.desc || '').length;
+const d = {
+eyebrow: 'ORGANIZATIONS · /map?org=' + o.id,
+title: F.name || o.name,
+pubChip: o.pub ? chip('green', 'PUBLISHED') : chip('neutral', 'UNPUBLISHED'),
+verChip: dirty ? chip('amber', 'UNSAVED · V' + o.vers.length) : chip('neutral', 'V' + o.vers.length),
+dirty: dirty,
+dirtyText: dirty ? plural(changed.length, 'unsaved change', 'unsaved changes') + ': ' + changed.join(', ') : 'No unsaved changes',
+dirtyStyle: 'flex: 1 1 auto; min-width: 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ' + (dirty ? '#8A4B00' : '#646B7A'),
+saveDis: dirty ? 'false' : 'true',
+saveStyle: 'flex: 0 0 auto; min-height: 40px; padding: 0 16px; border: 0; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 500; ' + (dirty ? 'background: #0138AC; color: #ffffff; cursor: pointer' : 'background: #E5E7EB; color: #646B7A; cursor: not-allowed'),
+save: () => {
+if (!dirty) return;
+const nm = String(F.name || '').trim();
+if (!nm) { this.setState({ nameErr: true }); return; }
+const nv = { what: 'Edited ' + changed.join(', '), who: '01', when: 'Just now', snap: { src: F.src, lat: F.lat, lng: F.lng } };
+say(nm + ' saved as v' + (o.vers.length + 1), 'live at once', true,
+{ orgs: S.orgs.map((x) => x.id === o.id ? Object.assign({}, x, F, { name: nm, vers: x.vers.concat([nv]) }) : x), form: Object.assign({}, F, { name: nm }), base: { lat: F.lat, lng: F.lng },
+regeo: null, askReplace: false, manual: false, nameErr: false, closeAsk: false, pending: S.pending + 1 });
+},
+discard: () => this.setState({ form: this.pick(o), base: { lat: o.lat, lng: o.lng }, regeo: null, askReplace: false, manual: false, nameErr: false, mErr: '', closeAsk: false }),
+close: () => { if (dirty) { this.setState({ closeAsk: true }); return; } closeD(); },
+closeAsk: S.closeAsk && dirty,
+closeText: dirty ? 'You changed the ' + changed.join(', ') + '. Discarding cannot be undone.' : '',
+keepEditing: () => this.setState({ closeAsk: false }),
+discardClose: closeD,
+hasSugg: !!o.sugg, suggTitle: o.st[0], suggText: o.st[1],
+hasDupe: !!o.dupe, dupeText: o.dupe,
+setName: setF('name'), setWeb: setF('web'), setType: setF('type'), setApp: setF('app'), setCountry: setF('country'), setFounded: setF('founded'), setAm: setF('am'), setDesc: setF('desc'),
+nameErr: S.nameErr, nameInvalid: S.nameErr ? 'true' : 'false', nameStyle: inp(S.nameErr), inp: inp(false), monoInp: inp(false) + '; ' + MONO + 'font-size: 13.5px',
+areaStyle: 'width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid ' + (descLen > 240 ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; font: inherit; font-size: 14px; line-height: 1.5; color: #0A1222; resize: vertical',
+count: descLen + ' / 240', countStyle: MONO + 'font-size: 12px; color: ' + (descLen > 240 ? '#B42318' : '#646B7A'),
+depSeg: ['Yes', 'No', 'Unclear'].map((v) => ({ label: v, pressed: F.dep === v ? 'true' : 'false', style: seg(F.dep === v), pick: () => this.setState({ form: Object.assign({}, S.form, { dep: v }) }) })),
+verCount: plural(o.vers.length, 'version', 'versions'),
+isPub: o.pub, isUnpub: !o.pub, unpubAsk: o.pub && S.askUnpub, unpubExp: S.askUnpub ? 'true' : 'false',
+unpubTitle: 'Unpublish ' + o.name + '?',
+askUnpub: () => this.setState({ askUnpub: !S.askUnpub }), keepPub: () => this.setState({ askUnpub: false }),
+unpublish: () => pubAct(false), republish: () => pubAct(true)
+};
+
+// ---------- pin preview (cropped world map, approx. projection fitted to the map image) ----------
+const proj = (lat, lng) => ({ x: (43.9 + 0.2516 * lng) / 100 * 1600, y: (38 + (37.8 - lat) * 0.614) / 100 * 788 });
+const bp = proj(S.base.lat, S.base.lng);
+const clampN = (v, a) => Math.max(-a, Math.min(a, v));
+const offX = clampN((F.lng - S.base.lng) * 1000, 210); const offY = clampN((S.base.lat - F.lat) * 1000, 80);
+const moved = F.lat !== S.base.lat || F.lng !== S.base.lng;
+const pinNote = F.src === 'country' ? 'Country centre only: the geocoder found no confident city match. The public map spreads these pins around the centre, so drag it to the real HQ or set coordinates by hand.'
+: moved ? 'Moved by hand. coord_source becomes manual, and the geocoder never overwrites it.'
+: F.src === 'manual' ? 'Set by hand. The geocoder never overwrites a manual pin.'
+: F.src === 'photon' ? 'From Photon (OpenStreetMap search), checked against the HQ country and cached.'
+: 'From Nominatim, after Photon found no match that passed the country check. Cached.';
+const pin = {
+img: 'position: absolute; left: ' + Math.round(245 - bp.x) + 'px; top: ' + Math.round(95 - bp.y) + 'px; width: 1600px; height: 788px; max-width: none; filter: grayscale(1) contrast(0.8) brightness(1.12); opacity: 0.7',
+style: 'position: absolute; left: ' + Math.round(245 + offX) + 'px; top: ' + Math.round(95 + offY) + 'px; width: 30px; height: 38px; margin: -38px 0 0 -15px; cursor: grab; filter: drop-shadow(0 3px 4px rgba(10,18,34,0.3))',
+rough: F.src === 'country',
+ring: 'position: absolute; left: 245px; top: 95px; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; box-sizing: border-box; border: 2px dashed #D9822B; background: rgba(217,130,43,0.08)',
+chip: srcChip(F.src), coords: fmt(F.lat) + ', ' + fmt(F.lng), field: 'coord_source = ' + F.src,
+alt: 'Greyscale map preview with the pin for ' + (F.name || o.name) + ', ' + F.country,
+note: pinNote,
+nudges: [['Move pin north', 'M12 19V5M6 11l6-6 6 6', 0, 1], ['Move pin south', 'M12 5v14M6 13l6 6 6-6', 0, -1], ['Move pin west', 'M19 12H5M11 6l-6 6 6 6', -1, 0], ['Move pin east', 'M5 12h14M13 6l6 6-6 6', 1, 0]]
+.map(([label, icon, x, y]) => ({ label: label, icon: icon, go: () => this.setState({ form: Object.assign({}, S.form, { lat: r4(F.lat + y * 0.01), lng: r4(F.lng + x * 0.01), src: 'manual' }), regeo: null, askReplace: false }) }))
+};
+
+// ---------- re-geocode (Photon, then Nominatim; kill switch from Site settings) ----------
+const RG = S.regeo;
+const stepDot = (tone) => 'width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; background: ' + TONES[tone][2];
+const geo = {
+off: !S.geo, dis: S.geo ? 'false' : 'true', ask: S.askReplace && S.geo,
+chain: S.geo ? 'PHOTON → NOMINATIM (FALLBACK, 1 REQ/S) · KILL SWITCH: ON' : 'KILL SWITCH: OFF IN SITE SETTINGS · GEOCODER PAUSED',
+btn: 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 500; ' + (S.geo ? 'border: 1px solid #0138AC; background: #ffffff; color: #0138AC; cursor: pointer' : 'border: 1px solid #E5E7EB; background: #F7F8F9; color: #9AA3B5; cursor: not-allowed'),
+keep: () => this.setState({ askReplace: false }),
+run: () => {
+if (!S.geo) return;
+if (F.src === 'manual' && !S.askReplace) { this.setState({ askReplace: true, manual: false }); return; }
+const g = o.geo; const prev = { lat: F.lat, lng: F.lng, src: F.src };
+let steps; let next;
+if (g && g.src === 'photon') { steps = [['Photon', 'Match in ' + F.country + ', passes the country check', 'green'], ['Nominatim', 'Not needed', 'neutral']]; next = g; }
+else if (g) { steps = [['Photon', 'No match that passes the country check', 'amber'], ['Nominatim', 'Match in ' + F.country + ', passes the country check', 'green']]; next = g; }
+else { steps = [['Photon', 'No match that passes the country check', 'amber'], ['Nominatim', 'No match that passes the country check', 'amber']];
+next = o.c0 ? { src: 'country', lat: o.c0.lat, lng: o.c0.lng } : prev; }
+this.setState({ form: Object.assign({}, S.form, { lat: next.lat, lng: next.lng, src: next.src }), base: { lat: next.lat, lng: next.lng }, askReplace: false, manual: false,
+regeo: { steps: steps, prev: prev, dist: Math.round(km(prev, next)), none: !g } });
+},
+done: !!RG,
+steps: RG ? RG.steps.map((s, i) => ({ n: String(i + 1), svc: s[0], text: s[1], dot: stepDot(s[2]) })) : [],
+result: !RG ? '' : RG.none ? (RG.dist < 1 ? 'No confident match, so the pin stays at the country centre. Set it by hand if you know the address.' : 'No confident match, so the pin goes back to the country centre. Set it by hand if you know the address.') : RG.dist < 1 ? 'Same place as before. Nothing to save for the pin.' : 'The pin moved to the geocoder’s result. Save to keep it.',
+far: !!RG && !RG.none && RG.dist >= 50,
+farText: RG ? 'The new pin is ' + thou(RG.dist) + ' km from the previous one.' : '',
+undo: () => { if (!RG) return; this.setState({ form: Object.assign({}, S.form, { lat: RG.prev.lat, lng: RG.prev.lng, src: RG.prev.src }), base: { lat: RG.prev.lat, lng: RG.prev.lng }, regeo: null }); }
+};
+
+// ---------- manual coordinates ----------
+const man = { on: S.manual, exp: S.manual ? 'true' : 'false', lat: S.mLat, lng: S.mLng, err: S.mErr, hasErr: !!S.mErr, invalid: S.mErr ? 'true' : 'false',
+inp: inp(!!S.mErr) + '; ' + MONO + 'font-size: 14px',
+toggle: () => this.setState({ manual: !S.manual, mLat: S.manual ? '' : String(F.lat), mLng: S.manual ? '' : String(F.lng), mErr: '', askReplace: false }),
+setLat: (e) => this.setState({ mLat: ev(e), mErr: '' }), setLng: (e) => this.setState({ mLng: ev(e), mErr: '' }),
+apply: () => {
+const la = parseFloat(String(S.mLat).replace('−', '-')); const ln = parseFloat(String(S.mLng).replace('−', '-'));
+if (isNaN(la) || la < -90 || la > 90 || isNaN(ln) || ln < -180 || ln > 180) { this.setState({ mErr: 'Enter a latitude from −90 to 90 and a longitude from −180 to 180, like −27.4824 and 153.0240.' }); return; }
+this.setState({ form: Object.assign({}, S.form, { lat: r4(la), lng: r4(ln), src: 'manual' }), base: { lat: r4(la), lng: r4(ln) }, manual: false, regeo: null, mErr: '' });
+} };
+
+// ---------- version history ----------
+const vers = o.vers.map((v, i) => {
+const isCur = i === o.vers.length - 1;
+return { v: 'V' + (i + 1), what: v.what, meta: ADM[v.who][0] + ' · ' + v.when, isCur: isCur, curChip: chip('neutral', 'CURRENT'),
+canRestore: !isCur && !!v.snap, restoreLabel: 'Restore the pin from version ' + (i + 1),
+row: 'display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 14px; ' + (isCur ? '' : 'border-top: 1px solid #EEF0F3'),
+restore: () => { if (!v.snap) return; say('Pin from v' + (i + 1) + ' loaded into the form', 'review it, then save', false,
+{ form: Object.assign({}, S.form, v.snap), base: { lat: v.snap.lat, lng: v.snap.lng }, regeo: null, askReplace: false, manual: false }); } };
+}).reverse();
+
+// ---------- KPIs and build state ----------
+const depD = (v) => S.orgs.reduce((a, x) => a + (x.dep === v ? 1 : 0) - (x.dep0 === v ? 1 : 0), 0);
+const depDelta = depD('Yes');
+const num = (blue) => DISPLAY + 'font-size: 30px; line-height: 1.15; letter-spacing: -0.02em; color: ' + (blue ? '#0138AC' : '#0A1222');
+const kpis = [
+{ label: 'ORGANIZATIONS', num: String(nPub), sub: nUnpub ? plural(nUnpub, 'unpublished', 'unpublished') + ' this session' : 'Published on the public map', hasLink: false, numStyle: num(false) },
+{ label: 'COUNTRIES', num: '18', sub: 'HQ countries, spellings merged', hasLink: false, numStyle: num(false) },
+{ label: 'DEPLOYED', num: String(70 + depDelta), sub: (48 + depD('No')) + ' not yet · ' + (2 + depD('Unclear')) + ' unclear', hasLink: false, numStyle: num(false) },
+{ label: 'PENDING SUGGESTIONS', num: '3', sub: '2 new organizations · 1 edit', hasLink: true, numStyle: num(true) },
+{ label: 'COUNTRY-LEVEL PINS', num: String(58 - fixedPins), sub: 'No city match yet; fix by hand', hasLink: false, numStyle: num(false) }
+];
+const live = (tone, label) => { const c = chip(tone, label); c.dot = 'width: 7px; height: 7px; border-radius: 50%; background: ' + TONES[tone][2] + '; box-shadow: 0 0 0 3px rgba(217,130,43,0.22); flex: 0 0 auto'; return c; };
+// shared top bar and sidebar (same values as AdminQueueV3: 16 open = 3 join · 3 map · 2 job · 4 msg · 1 nom · 1 int · 2 doc)
+const totalOpen = 16;
+const buildNote = 'The public map matches this list.';
+
+return {
+geoCtl: geoCtl, toast: S.toast ? { show: true, text: S.toast.text, sub: S.toast.sub, link: S.toast.link, dismiss: () => this.setState({ toast: null }) } : { show: false, text: '', sub: '', link: false, dismiss: () => this.setState({ toast: null }) },
+drawer: !!S.sel, d: d, form: F, pin: pin, geo: geo, man: man, vers: vers, selStyle: selStyle,
+q: S.q, setQ: (e) => this.setState({ q: ev(e), checked: [], bulkAsk: false }),
+fCountry: S.fCountry, fDep: S.fDep, fSrc: S.fSrc,
+setCountry: (e) => this.setState({ fCountry: ev(e), checked: [], bulkAsk: false }), setDep: (e) => this.setState({ fDep: ev(e), checked: [], bulkAsk: false }), setSrc: (e) => this.setState({ fSrc: ev(e), checked: [], bulkAsk: false }),
+filtered: filtered, clearFilters: clearFilters, typeChips: typeChips, attn: attn,
+rows: rows, empty: visible.length === 0, rowCount: String(visible.length + 1), allOn: allOn, toggleAll: toggleAll,
+resultText: filtered ? plural(visible.length, 'organization matches', 'organizations match') + ' on this page · filters apply to all 120 in the live list' : 'Showing 25 of 120 organizations',
+noBulk: nSel === 0, bulk: bulk, ex: ex, kpis: kpis, buildNote: buildNote,
+totalOpen: totalOpen, queueAria: totalOpen + ' items need action'
+};
+}
+}
+</script>
+</body>
+</html>

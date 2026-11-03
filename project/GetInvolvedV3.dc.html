@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Get involved (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+@media (prefers-reduced-motion: reduce){.lift,.lift:hover{transition:none;transform:none}}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px;display:inline-flex;align-items:center;gap:4px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.tlink{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0;border:0;background:none;font:inherit;font-size:15px;font-weight:500;color:#0138AC;cursor:pointer;text-decoration:none}
+.tlink:hover{color:#002A80;text-decoration:underline}
+.opt{background:#ffffff}.opt:hover{background:#F3F4F2}
+.flink{color:#0A1222;text-decoration:none}.flink:hover{color:#0138AC}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.mbtn{width:100%;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer}
+.fbtn{align-self:flex-start;padding:0;border:0;background:none;font:inherit;text-align:left;cursor:pointer}
+</style>
+</helmet>
+<div style="position: relative; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EAEC; border-bottom: 1px solid #D5D8DE; padding: 6px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 20px; font-size: 13px; color: #3D4556">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #3D4556">Canvas control · not part of the page</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">Call state
+<span role="group" aria-label="Call state" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: #D9DBDF">
+<sc-for list="{{calls}}" as="c" hint-placeholder-count="4"><button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</span></span>
+<span style="display: inline-flex; align-items: center; gap: 8px">Next submit
+<span role="group" aria-label="Next submit" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: #D9DBDF">
+<sc-for list="{{fails}}" as="c" hint-placeholder-count="2"><button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</span></span>
+</div>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<sc-if value="{{i.isLink}}" hint-placeholder-val="{{ true }}"><a class="mitem" href="{{i.href}}" aria-current="{{i.current}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a></sc-if>
+<sc-if value="{{i.isBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="mitem mbtn" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></button></sc-if>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<button type="button" onClick="{{openJoin}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Join the network</button>
+</div>
+</header>
+
+<!-- HERO -->
+<section style="padding: 64px 32px 80px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 64px; align-items: flex-end">
+<div style="flex: 1.3 1 560px; display: flex; flex-direction: column; gap: 24px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">GET INVOLVED</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 88px; line-height: 0.95; letter-spacing: -0.045em">Help build <span style="color: #0138AC">robots for a cooler planet</span></h1>
+<p style="margin: 0; max-width: 620px; font-size: 20px; line-height: 1.5; color: #3D4556">Pitch at the summit, sponsor it, nominate a speaker, or lend a hand with a network project.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px">
+<a href="#calls" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">See the summit calls
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"></path></svg></a>
+<a href="#network" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; color: #0A1222; font-size: 16px; font-weight: 500; text-decoration: none">Network projects</a>
+</div>
+</div>
+<dl style="flex: 1 1 380px; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #E5E7EB; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden">
+<div style="background: #ffffff; padding: 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT 2027</dt><dd style="margin: 4px 0 0; font-weight: 600">April 20–22, 2027</dd></div>
+<div style="background: #ffffff; padding: 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">PITCH CALLS</dt><dd style="margin: 4px 0 0; font-weight: 600">{{callText}}</dd></div>
+<div style="background: #ffffff; padding: 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">NETWORK</dt><dd style="margin: 4px 0 0; font-weight: 600">120+ members, 18 countries</dd></div>
+<div style="background: #ffffff; padding: 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">PROJECTS</dt><dd style="margin: 4px 0 0; font-weight: 600">3 active · 2 coming</dd></div>
+</dl>
+</div>
+</section>
+
+<!-- SUMMIT 2027 CALLS -->
+<section id="calls" style="padding: 96px 32px; border-top: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">01 — SUMMIT 2027 · APRIL 20–22, 2027</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Calls for the 2027 summit</h2>
+</div>
+<p style="margin: 0; max-width: 420px; font-size: 18px; color: #3D4556">Four ways to take part. Every form saves as you go and sends you a link to check its status.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px">
+<div role="tablist" aria-label="Summit calls" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: #F3F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" role="tab" id="{{t.tabId}}" aria-selected="{{t.selected}}" aria-controls="call-panel" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+<div role="group" aria-label="Page address" style="flex: 0 1 460px; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border: 1px solid #E5E7EB; border-radius: 999px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A; overflow: hidden; white-space: nowrap">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+<span style="overflow: hidden; text-overflow: ellipsis">vert-robo-con.example<span style="color: #0A1222">{{tabPath}}</span></span>
+</div>
+</div>
+
+<div id="call-panel" role="tabpanel" aria-labelledby="{{tabPanelBy}}" style="border: 1px solid #E5E7EB; border-radius: 28px; padding: 40px">
+
+<!-- PITCH TABS (startup + research) -->
+<sc-if value="{{isPitch}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px; align-items: flex-start">
+<div style="flex: 1.4 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="{{pt.chip}}"><span aria-hidden="true" style="{{pt.dot}}"></span>{{pt.chipLabel}}</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.02em">{{pt.title}}</h3>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHO IT’S FOR</span>
+<p style="margin: 0; font-size: 17px; color: #3D4556">{{pt.who}}</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHAT YOU GET</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{pt.get}}" as="g" hint-placeholder-count="3">
+<li style="display: flex; gap: 10px; align-items: flex-start; font-size: 16px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 4px"><path d="M5 12l5 5 9-10"></path></svg>{{g.text}}</li>
+</sc-for>
+</ul>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SELECTION CRITERIA</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
+<sc-for list="{{pt.criteria}}" as="c" hint-placeholder-count="4">
+<li style="background: #F3F4F2; border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC">{{c.n}}</span>
+<strong style="font-weight: 600; font-size: 16px">{{c.title}}</strong>
+<span style="font-size: 14px; line-height: 1.45; color: #3D4556">{{c.text}}</span>
+</li>
+</sc-for>
+</ol>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">TIMELINE</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr))">
+<sc-for list="{{pt.timeline}}" as="t" hint-placeholder-count="4">
+<li style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<span aria-hidden="true" style="display: flex; align-items: center"><span style="{{t.dot}}"></span><span style="{{t.line}}"></span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{t.k}}</span>
+<span style="font-weight: 600; font-size: 15px; padding-right: 12px">{{t.d}}</span>
+</li>
+</sc-for>
+</ol>
+</div>
+</div>
+
+<!-- right column -->
+<div style="flex: 1 1 380px; min-width: 0; box-sizing: border-box; background: #F3F4F2; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<sc-if value="{{pt.notClosed}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHAT WE’LL ASK</span>
+<p style="margin: 0; font-size: 15px; color: #3D4556">Four short steps, so you can prepare. Your draft saves as you go.</p>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{pt.ask}}" as="a" hint-placeholder-count="4">
+<li style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border-radius: 14px; padding: 14px 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; padding-top: 2px">{{a.n}}</span>
+<span style="display: flex; flex-direction: column; line-height: 1.4"><strong style="font-weight: 600; font-size: 15px">{{a.title}}</strong><span style="font-size: 14px; color: #646B7A">{{a.text}}</span></span>
+</li>
+</sc-for>
+</ol>
+</sc-if>
+
+<sc-if value="{{pt.showClosing}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>CLOSES IN 3 DAYS</span>
+</sc-if>
+
+<sc-if value="{{pt.showApply}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<button type="button" onClick="{{pt.start}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">{{pt.startLabel}}
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+<span style="font-size: 13px; color: #646B7A; text-align: center">Closes [DATE]. Free to apply, about [N] minutes.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{pt.submitted}}" hint-placeholder-val="{{ false }}">
+<div style="background: #ffffff; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>SUBMITTED · {{pt.ref}}</span>
+<span style="font-size: 15px; color: #3D4556">In review. You can edit until [DATE].</span>
+<a class="tlink" href="MyVRCV3.dc.html">Track status
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+</sc-if>
+
+<!-- notify-me (Opens soon) -->
+<sc-if value="{{pt.showSoon}}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{pt.nf.isIdle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{pt.nf.open}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"></path><path d="M10 21h4"></path></svg>{{pt.nf.idleLabel}}</button>
+</sc-if>
+<sc-if value="{{pt.nf.isOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email
+<input type="email" value="{{pt.nf.email}}" onChange="{{pt.nf.onEmail}}" placeholder="you@example.org" aria-invalid="{{pt.nf.invalid}}" style="{{pt.nf.inputStyle}}"></label>
+<button type="button" onClick="{{pt.nf.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{pt.nf.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 500; color: #B42318">{{pt.nf.err}}</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{pt.nf.topics}}" as="o" hint-placeholder-count="3"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">One email to confirm, then only what you picked. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{pt.nf.isPending}}" hint-placeholder-val="{{ false }}">
+<div style="background: #ffffff; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600">Check your inbox to confirm</strong>
+<span style="font-size: 14px; color: #3D4556">We sent a link to {{pt.nf.email}}. Nothing else arrives until you confirm.</span>
+<button type="button" onClick="{{pt.nf.confirm}}" style="align-self: flex-start; margin-top: 4px; padding: 4px 8px; border: 1px dashed #A3A9B5; border-radius: 8px; background: transparent; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A; cursor: pointer">CANVAS · Simulate: confirm email</button>
+</div>
+</sc-if>
+<sc-if value="{{pt.nf.isOn}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a class="tlink" href="MyVRCV3.dc.html">Manage</a>
+</span>
+</sc-if>
+</sc-if>
+
+<!-- closed -->
+<sc-if value="{{pt.showClosed}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: #ffffff; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>CLOSED</span>
+<h4 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.02em">Applications closed</h4>
+<p style="margin: 0; font-size: 15px; color: #3D4556">Decisions go out by [DATE]. Until the next call opens, see who pitched last time.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PITCHES AT 2025</span>
+<sc-for list="{{past}}" as="p" hint-placeholder-count="2">
+<a href="ProgramV3.dc.html" class="lift" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #ffffff; border-radius: 14px; padding: 16px 18px; color: #0A1222; text-decoration: none">
+<span style="display: flex; flex-direction: column; line-height: 1.4"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{p.when}}</span><strong style="font-weight: 600; font-size: 16px">{{p.title}}</strong></span>
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<!-- SPONSOR TAB -->
+<sc-if value="{{isSponsor}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 48px">
+<div style="flex: 1 1 520px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHY SPONSOR</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.02em">Put your name behind the field’s yearly meeting point</h3>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px">
+<button type="button" onClick="{{openSponsor}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Express interest</button>
+<a class="tlink" href="#" style="font-size: 14px">Download the deck (PDF · [SIZE]) · generated from this page</a>
+<span style="font-size: 14px; color: #646B7A">Questions first? <a href="mailto:hello@vert-robo-con.example">hello@vert-robo-con.example</a></span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+<div style="background: #0138AC; color: #ffffff; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #BFD0F5">COMMUNITY</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 64px; line-height: 0.9; letter-spacing: -0.04em">120+</span>
+<span style="font-size: 16px; color: #E4EAF8">members in 18 countries</span>
+</div>
+<div style="background: #F3F4F2; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SUMMIT 2026</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 64px; line-height: 0.9; letter-spacing: -0.04em">[N]</span>
+<span style="font-size: 16px; color: #3D4556">registered in 2026</span>
+</div>
+<div style="background: #F3F4F2; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">AUDIENCE</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 64px; line-height: 0.9; letter-spacing: -0.04em">[N]</span>
+<span style="font-size: 16px; color: #3D4556">countries watching</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{tiers}}" as="t" hint-placeholder-count="3">
+<article style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{t.name}}</span>
+<sc-if value="{{t.taken}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #646B7A"></span>TAKEN</span></sc-if>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">{{t.price}}</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1">
+<sc-for list="{{t.perks}}" as="k" hint-placeholder-count="5">
+<li style="display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: #3D4556"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 4px"><path d="M5 12l5 5 9-10"></path></svg>{{k.text}}</li>
+</sc-for>
+</ul>
+<sc-if value="{{t.free}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{t.ask}}" style="min-height: 44px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Ask about this tier</button>
+</sc-if>
+<sc-if value="{{t.taken}}" hint-placeholder-val="{{ false }}">
+<span style="min-height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #F3F4F2; font-size: 15px; color: #646B7A">Taken for 2027</span>
+</sc-if>
+</article>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px; align-items: flex-start">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">PAST PARTNERS</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #E5E7EB; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden">
+<li style="background: #ffffff; padding: 24px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; text-align: center">Example Polytechnic</li>
+<li style="background: #ffffff; padding: 24px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; text-align: center">Example University</li>
+<li style="background: #ffffff; padding: 24px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; text-align: center">Example Wetlands Trust</li>
+<li style="background: #ffffff; padding: 24px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; text-align: center">Example Coastal Trust</li>
+<li style="background: #ffffff; padding: 24px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; text-align: center">Example Makerspace</li>
+<li style="background: #E8F6EE; padding: 18px 24px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #0B7A47">GOLD SPONSOR · 2025</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px">Example Climate Fund</span></li>
+</ul>
+</div>
+<div style="flex: 1.2 1 460px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">QUESTIONS</span>
+<div style="border-top: 1px solid #E5E7EB">
+<sc-for list="{{faq}}" as="q" hint-placeholder-count="4">
+<div style="border-bottom: 1px solid #E5E7EB">
+<h4 style="margin: 0"><button type="button" aria-expanded="{{q.expanded}}" aria-controls="{{q.pid}}" onClick="{{q.toggle}}" style="width: 100%; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border: 0; background: none; font: inherit; font-size: 17px; font-weight: 600; color: #0A1222; text-align: left; cursor: pointer">{{q.q}}
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{q.icon}}"><path d="M12 5v14M5 12h14"></path></svg></button></h4>
+<sc-if value="{{q.open}}" hint-placeholder-val="{{ false }}">
+<p id="{{q.pid}}" style="margin: 0; padding: 0 40px 18px 0; font-size: 16px; color: #3D4556">{{q.a}}</p>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- RECOMMEND A SPEAKER TAB -->
+<sc-if value="{{isSpeaker}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px; align-items: flex-start">
+<div style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 20px">
+<span style="display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>OPEN UNTIL [DATE]</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.02em">Recommend a speaker for 2027</h3>
+<p style="margin: 0; font-size: 17px; color: #3D4556">Know someone whose work the field should hear? Tell us who, and what they could talk about.</p>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">WHAT HELPS</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 16px">
+<li style="display: flex; gap: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 4px"><path d="M5 12l5 5 9-10"></path></svg>A specific talk or session idea, not only a name</li>
+<li style="display: flex; gap: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 4px"><path d="M5 12l5 5 9-10"></path></svg>Why their work matters for climate action now</li>
+<li style="display: flex; gap: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 4px"><path d="M5 12l5 5 9-10"></path></svg>Whether they know you’re nominating them</li>
+</ul>
+</div>
+</div>
+<div style="flex: 1.3 1 480px; min-width: 0; box-sizing: border-box; border: 1px solid #E5E7EB; border-radius: 24px; padding: 28px">
+<sc-if value="{{spk.showForm}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<sc-if value="{{spk.hasErrs}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="background: #FEF3F2; color: #B42318; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 14px">
+<strong style="font-weight: 600">{{spk.errTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px"><sc-for list="{{spk.errs}}" as="e" hint-placeholder-count="2"><li><a href="{{e.href}}" style="color: #B42318">{{e.msg}}</a></li></sc-for></ul>
+</div>
+</sc-if>
+<sc-if value="{{spk.netErr}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="background: #FEF3F2; color: #B42318; border-radius: 12px; padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 500">We couldn’t send that. Your answers are saved.<button type="button" onClick="{{spk.retry}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #B42318; border-radius: 10px; background: #ffffff; color: #B42318; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Try again</button></div>
+</sc-if>
+<sc-for list="{{spk.fields}}" as="f" hint-placeholder-count="5">
+<div id="{{f.domId}}" style="display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{f.isInput}}" hint-placeholder-val="{{ true }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500"><span>{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<input type="{{f.type}}" value="{{f.value}}" onChange="{{f.onInput}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.inputStyle}}"></label>
+</sc-if>
+<sc-if value="{{f.isArea}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500"><span>{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<textarea value="{{f.value}}" onChange="{{f.onInput}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.areaStyle}}"></textarea></label>
+</sc-if>
+<sc-if value="{{f.isChips}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 15px; font-weight: 500">{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<span role="radiogroup" aria-label="{{f.label}}" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></span>
+</sc-if>
+<sc-if value="{{f.isCheck}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; gap: 12px; align-items: flex-start">
+<button type="button" role="checkbox" aria-checked="{{f.checked}}" aria-labelledby="{{f.labelId}}" aria-invalid="{{f.invalid}}" onClick="{{f.toggle}}" style="{{f.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button>
+<span id="{{f.labelId}}" style="font-size: 14px; color: #3D4556">{{f.checkText}} <sc-if value="{{f.hasLink}}" hint-placeholder-val="{{ true }}"><a href="{{f.linkHref}}">{{f.linkText}}</a></sc-if> <span style="color: #646B7A">{{f.opt}}</span></span>
+</span>
+</sc-if>
+<sc-if value="{{f.hasMeta}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span>{{f.help}}</span><span style="{{f.counterStyle}}">{{f.counter}}</span></span>
+</sc-if>
+<sc-if value="{{f.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 500; color: #B42318">{{f.err}}</span></sc-if>
+</div>
+</sc-for>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+<button type="button" onClick="{{spk.submit}}" style="align-self: flex-start; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Send nomination</button>
+</div>
+</sc-if>
+<sc-if value="{{spk.done}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #1DB46C; color: #ffffff; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<h4 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">Thanks. We review nominations for 2027 until [DATE].</h4>
+<span style="align-self: flex-start; padding: 6px 12px; border-radius: 10px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 13px">REF · NOM-2027-031</span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">If {{spk.name}} fits the 2027 program, we’ll contact them directly and let you know.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<button type="button" onClick="{{spk.again}}" style="min-height: 44px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Nominate someone else</button>
+<a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Track status</a>
+</div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">{{spk.foot}}</p>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</section>
+
+<!-- NETWORK -->
+<section id="network" style="background: #F3F4F2; padding: 96px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">02 — NETWORK</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 0.98; letter-spacing: -0.035em">Lend a hand, all year</h2>
+</div>
+<p style="margin: 0; max-width: 420px; font-size: 18px; color: #3D4556">The network runs on volunteers and member-led projects. Each one shows where it honestly stands.</p>
+</div>
+
+<div style="border-radius: 32px; background: #0A1222; color: #ffffff; padding: 48px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 32px 64px; align-items: center">
+<div style="flex: 1.1 1 400px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #7FD6A8">VOLUNTEER</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 52px; line-height: 0.98; letter-spacing: -0.035em">Volunteer with us</h3>
+<p style="margin: 0; font-size: 18px; color: #C8CEDA; max-width: 480px">Give a few hours a month to the summit, the research, or the people joining the field next.</p>
+<button type="button" onClick="{{openVolunteer}}" style="align-self: flex-start; margin-top: 8px; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Volunteer with us
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+<ul style="flex: 1 1 380px; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{roles}}" as="r" hint-placeholder-count="5">
+<li style="display: flex; gap: 16px; align-items: baseline; padding: 14px 18px; border-radius: 14px; background: #141D30"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #7FD6A8">{{r.n}}</span><span style="display: flex; flex-direction: column; line-height: 1.4"><strong style="font-weight: 600; font-size: 16px">{{r.title}}</strong><span style="font-size: 14px; color: #9AA3B5">{{r.text}}</span></span></li>
+</sc-for>
+</ul>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px">
+<sc-for list="{{projects}}" as="p" hint-placeholder-count="5">
+<article style="background: #ffffff; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{p.kicker}}</span>
+<span style="{{p.chip}}"><span aria-hidden="true" style="{{p.dot}}"></span>{{p.status}}</span>
+</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{p.name}}</h3>
+<p style="margin: 0; flex: 1; font-size: 15px; color: #3D4556">{{p.desc}}</p>
+<sc-if value="{{p.isJoin}}" hint-placeholder-val="{{ true }}">
+<button type="button" class="tlink" onClick="{{p.join}}">Join the channel
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</sc-if>
+<sc-if value="{{p.isRead}}" hint-placeholder-val="{{ false }}">
+<a class="tlink" href="ResearchV3.dc.html">Read and suggest
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</sc-if>
+<sc-if value="{{p.iIdle}}" hint-placeholder-val="{{ false }}">
+<button type="button" class="tlink" onClick="{{p.openI}}" aria-expanded="false">Register interest
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</sc-if>
+<sc-if value="{{p.iOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 12px; border-top: 1px solid #E5E7EB">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email
+<input type="email" value="{{p.email}}" onChange="{{p.onEmail}}" placeholder="you@example.org" aria-invalid="{{p.invalid}}" style="{{p.inputStyle}}"></label>
+<sc-if value="{{p.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 500; color: #B42318">{{p.err}}</span></sc-if>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500"><span>Note <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<input type="text" value="{{p.note}}" onChange="{{p.onNote}}" placeholder="What you’d like to help with" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 16px"></label>
+<span style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<button type="button" onClick="{{p.send}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Register interest</button>
+<button type="button" class="tlink" onClick="{{p.cancel}}" style="color: #3D4556; padding: 0 8px">Cancel</button>
+</span>
+<span style="font-size: 13px; color: #646B7A">One email to confirm, then only what you picked. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{p.iDone}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; font-weight: 500; color: #0B7A47"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #1DB46C; color: #ffffff; display: inline-flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>{{p.doneText}}</span>
+</sc-if>
+</article>
+</sc-for>
+<article style="border: 1px dashed #A3A9B5; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">YOUR IDEA</span>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">Propose a project</h3>
+<p style="margin: 0; flex: 1; font-size: 15px; color: #3D4556">Something the network should build, study or teach together? Pitch it in a few lines.</p>
+<button type="button" onClick="{{openPropose}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>Propose a project</button>
+</article>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 48px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">One email a month: summit news, new videos and jobs.</p>
+<sc-if value="{{dg.isIdle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{dg.open}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>{{dg.idleLabel}}</button>
+</sc-if>
+<sc-if value="{{dg.isOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 440px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Email
+<input type="email" value="{{dg.email}}" onChange="{{dg.onEmail}}" placeholder="you@example.org" aria-invalid="{{dg.invalid}}" style="{{dg.inputStyle}}"></label>
+<button type="button" onClick="{{dg.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{dg.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 500; color: #B42318">{{dg.err}}</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{dg.topics}}" as="o" hint-placeholder-count="4"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">One email to confirm, then only what you picked. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{dg.isPending}}" hint-placeholder-val="{{ false }}">
+<div style="max-width: 440px; background: #EEF2FB; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600">Check your inbox to confirm</strong>
+<span style="font-size: 14px; color: #3D4556">We sent a link to {{dg.email}}.</span>
+<button type="button" onClick="{{dg.confirm}}" style="align-self: flex-start; margin-top: 4px; padding: 4px 8px; border: 1px dashed #A3A9B5; border-radius: 8px; background: transparent; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A; cursor: pointer">CANVAS · Simulate: confirm email</button>
+</div>
+</sc-if>
+<sc-if value="{{dg.isOn}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a class="tlink" href="MyVRCV3.dc.html">Manage</a>
+</span>
+</sc-if>
+</div>
+<nav aria-label="Summit" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="flink" href="RegisterV3.dc.html">Register / Notify me</a>
+<a class="flink" href="ProgramV3.dc.html">Program</a>
+<a class="flink" href="GetInvolvedV3.dc.html" onClick="{{pickSponsor}}">Sponsor the summit</a>
+<a class="flink" href="SummitV3.dc.html">Past editions</a>
+</nav>
+<nav aria-label="Learn" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">LEARN</span>
+<a class="flink" href="ResearchV3.dc.html">White paper</a>
+<a class="flink" href="WatchV3.dc.html">Watch</a>
+<a class="flink" href="NewsV3.dc.html">News</a>
+<a class="flink" href="#">RSS</a>
+<a class="flink" href="MapV3.dc.html">Map data (CSV · JSON)</a>
+</nav>
+<nav aria-label="Community" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">COMMUNITY</span>
+<button type="button" class="flink fbtn" onClick="{{openJoinFoot}}">Join</button>
+<a class="flink" href="JobsV3.dc.html">Jobs</a>
+<a class="flink" href="JobsV3.dc.html">Internships</a>
+<a class="flink" href="GetInvolvedV3.dc.html" aria-current="page" style="color: #0138AC">Get involved</a>
+<a class="flink" href="ResearchV3.dc.html">Code of conduct</a>
+</nav>
+<nav aria-label="About" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">ABOUT</span>
+<a class="flink" href="PeopleV3.dc.html">Team</a>
+<a class="flink" href="ContactV3.dc.html">Consulting</a>
+<a class="flink" href="ContactV3.dc.html">Contact</a>
+<a class="flink" href="PrivacyV3.dc.html">Privacy</a>
+<a class="flink" href="MyVRCV3.dc.html">My VRC</a>
+</nav>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">
+<span>© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<span style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<button type="button" onClick="{{openJoinFoot}}" aria-label="Join the Slack community" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v7M14 14v7M3 14h7M14 10h7"></path><circle cx="7" cy="7" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg></button>
+</span>
+</div>
+</div>
+</footer>
+
+<!-- SIDE SHEET (pitch stepper, sponsor, volunteer, propose, join) -->
+<sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 50">
+<button type="button" aria-label="Close" onClick="{{closeSheet}}" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: rgba(10,18,34,0.45); cursor: pointer"></button>
+<div role="dialog" aria-modal="true" aria-labelledby="sheet-title" onKeyDown="{{sheetKey}}" style="{{sh.panelStyle}}">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{sh.eye}}</span>
+<h2 id="sheet-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{sh.title}}</h2>
+</div>
+<button type="button" aria-label="Close" onClick="{{closeSheet}}" style="flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<sc-if value="{{sh.showForm}}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{sh.hasIntro}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 15px; color: #3D4556">{{sh.intro}}</p></sc-if>
+<sc-if value="{{sh.isStepper}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{sh.steps}}" as="s" hint-placeholder-count="4"><li aria-current="{{s.current}}" style="display: flex; flex-direction: column; gap: 8px"><span style="{{s.labelStyle}}">{{s.label}}</span><span aria-hidden="true" style="{{s.bar}}"></span></li></sc-for>
+</ol>
+<span style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px">
+<span style="display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A"><span aria-hidden="true" style="{{sh.saveDot}}"></span>{{sh.saveText}}</span>
+<button type="button" class="tlink" onClick="{{sh.later}}" style="font-size: 14px">Save and finish later</button>
+</span>
+<sc-if value="{{sh.hasLater}}" hint-placeholder-val="{{ false }}"><span role="status" style="font-size: 13px; color: #3D4556; background: #F3F4F2; border-radius: 10px; padding: 8px 12px">{{sh.laterMsg}}</span></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{sh.hasErrs}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="background: #FEF3F2; color: #B42318; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 14px">
+<strong style="font-weight: 600">{{sh.errTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px"><sc-for list="{{sh.errs}}" as="e" hint-placeholder-count="2"><li><a href="{{e.href}}" style="color: #B42318">{{e.msg}}</a></li></sc-for></ul>
+</div>
+</sc-if>
+<sc-if value="{{sh.netErr}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="background: #FEF3F2; color: #B42318; border-radius: 12px; padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 500">We couldn’t send that. Your answers are saved.<button type="button" onClick="{{sh.retry}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #B42318; border-radius: 10px; background: #ffffff; color: #B42318; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Try again</button></div>
+</sc-if>
+
+<sc-if value="{{sh.isReview}}" hint-placeholder-val="{{ false }}">
+<sc-for list="{{sh.review}}" as="g" hint-placeholder-count="3">
+<div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; justify-content: space-between; align-items: center"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span><button type="button" class="tlink" onClick="{{g.edit}}" aria-label="{{g.aria}}" style="font-size: 14px">Edit</button></span>
+<dl style="margin: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{g.rows}}" as="r" hint-placeholder-count="4"><div style="display: flex; flex-direction: column"><dt style="font-size: 13px; color: #646B7A">{{r.label}}</dt><dd style="margin: 0; font-size: 15px; overflow-wrap: anywhere">{{r.value}}</dd></div></sc-for>
+</dl>
+</div>
+</sc-for>
+</sc-if>
+
+<sc-for list="{{sh.fields}}" as="f" hint-placeholder-count="4">
+<div id="{{f.domId}}" style="display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{f.isInput}}" hint-placeholder-val="{{ true }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500"><span>{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<input type="{{f.type}}" value="{{f.value}}" onChange="{{f.onInput}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.inputStyle}}"></label>
+</sc-if>
+<sc-if value="{{f.isArea}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500"><span>{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<textarea value="{{f.value}}" onChange="{{f.onInput}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.areaStyle}}"></textarea></label>
+</sc-if>
+<sc-if value="{{f.isSelect}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500"><span>{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<sc-if value="{{f.isTier}}" hint-placeholder-val="{{ false }}"><select value="{{f.value}}" onChange="{{f.onInput}}" aria-invalid="{{f.invalid}}" style="{{f.inputStyle}}"><option value="">Choose a tier</option><option value="[TIER 1]" disabled="disabled">[TIER 1] · taken</option><option value="[TIER 2]">[TIER 2]</option><option value="[TIER 3]">[TIER 3]</option><option value="Not sure yet">Not sure yet</option></select></sc-if>
+<sc-if value="{{f.isEdition}}" hint-placeholder-val="{{ false }}"><select value="{{f.value}}" onChange="{{f.onInput}}" style="{{f.inputStyle}}"><option value="2027">2027 · April 20–22, 2027</option></select></sc-if>
+<sc-if value="{{f.isHours}}" hint-placeholder-val="{{ false }}"><select value="{{f.value}}" onChange="{{f.onInput}}" aria-invalid="{{f.invalid}}" style="{{f.inputStyle}}"><option value="">Choose one</option><option value="1–2 hours">1–2 hours</option><option value="3–5 hours">3–5 hours</option><option value="6–10 hours">6–10 hours</option><option value="More than 10 hours">More than 10 hours</option></select></sc-if>
+<sc-if value="{{f.isRole}}" hint-placeholder-val="{{ false }}"><select value="{{f.value}}" onChange="{{f.onInput}}" style="{{f.inputStyle}}"><option value="">Choose one</option><option value="Researcher">Researcher</option><option value="Founder or startup">Founder or startup</option><option value="Investor or funder">Investor or funder</option><option value="Policy or government">Policy or government</option><option value="NGO">NGO</option><option value="Student">Student</option><option value="Other">Other</option></select></sc-if>
+</label>
+</sc-if>
+<sc-if value="{{f.isChips}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 15px; font-weight: 500">{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<span role="group" aria-label="{{f.label}}" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{f.options}}" as="o" hint-placeholder-count="4"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></span>
+</sc-if>
+<sc-if value="{{f.isRadio}}" hint-placeholder-val="{{ false }}">
+<span id="{{f.labelId}}" style="font-size: 15px; font-weight: 500">{{f.label}}</span>
+<div role="radiogroup" aria-labelledby="{{f.labelId}}" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{f.radios}}" as="r" hint-placeholder-count="2">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.card}}">
+<span aria-hidden="true" style="{{r.ring}}"><span style="{{r.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; font-size: 16px">{{r.title}}<sc-if value="{{r.rec}}" hint-placeholder-val="{{ false }}"><span style="{{r.recChip}}">RECOMMENDED</span></sc-if></span>
+<span style="font-size: 14px; color: #3D4556">{{r.desc}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{f.isCheck}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; gap: 12px; align-items: flex-start">
+<button type="button" role="checkbox" aria-checked="{{f.checked}}" aria-labelledby="{{f.labelId}}" aria-invalid="{{f.invalid}}" onClick="{{f.toggle}}" style="{{f.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button>
+<span id="{{f.labelId}}" style="font-size: 14px; color: #3D4556">{{f.checkText}} <sc-if value="{{f.hasLink}}" hint-placeholder-val="{{ true }}"><a href="{{f.linkHref}}">{{f.linkText}}</a></sc-if> <span style="color: #646B7A">{{f.opt}}</span></span>
+</span>
+</sc-if>
+<sc-if value="{{f.isNote}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 13px; color: #646B7A">{{f.checkText}} <a href="{{f.linkHref}}">{{f.linkText}}</a></p>
+</sc-if>
+<sc-if value="{{f.isFile}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 15px; font-weight: 500">{{f.label}} <span style="font-weight: 400; color: #646B7A">{{f.opt}}</span></span>
+<sc-if value="{{f.noFile}}" hint-placeholder-val="{{ true }}">
+<label style="position: relative; display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px dashed #A3A9B5; border-radius: 12px; cursor: pointer; font-size: 15px; color: #0138AC; font-weight: 500">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M5 20h14"></path></svg>Choose a PDF
+<input type="file" accept="application/pdf" onChange="{{f.onFile}}" style="position: absolute; width: 1px; height: 1px; opacity: 0">
+</label>
+</sc-if>
+<sc-if value="{{f.hasFile}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 15px"><span style="display: inline-flex; align-items: center; gap: 8px; min-width: 0; overflow-wrap: anywhere"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>{{f.value}}</span><button type="button" class="tlink" onClick="{{f.clearFile}}" style="font-size: 14px">Remove</button></span>
+</sc-if>
+</sc-if>
+<sc-if value="{{f.isCombo}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500"><span>{{f.label}}</span>
+<span style="position: relative; display: block">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 16px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="text" role="combobox" aria-expanded="{{f.c.expanded}}" aria-controls="org-list" aria-autocomplete="list" value="{{f.c.q}}" onChange="{{f.c.onQ}}" placeholder="Start typing, e.g. Kelp" aria-invalid="{{f.invalid}}" style="{{f.c.inputStyle}}">
+</span></label>
+<sc-if value="{{f.c.showList}}" hint-placeholder-val="{{ false }}">
+<ul id="org-list" role="listbox" aria-label="Organizations on the map" style="margin: 0; padding: 6px; list-style: none; border: 1px solid #E5E7EB; border-radius: 12px; box-shadow: 0 12px 28px -12px rgba(10,18,34,0.25); display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{f.c.items}}" as="o" hint-placeholder-count="2"><li role="option" aria-selected="false"><button type="button" class="opt" onClick="{{o.pick}}" style="width: 100%; min-height: 44px; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 12px; border: 0; border-radius: 8px; font: inherit; font-size: 15px; text-align: left; cursor: pointer; color: #0A1222"><strong style="font-weight: 600">{{o.name}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{o.meta}}</span></button></li></sc-for>
+<sc-if value="{{f.c.noMatch}}" hint-placeholder-val="{{ false }}"><li style="padding: 8px 12px; font-size: 14px; color: #646B7A">No organizations on the map match that.</li></sc-if>
+<li role="option" aria-selected="false" style="border-top: 1px solid #E5E7EB; margin-top: 4px; padding-top: 4px"><button type="button" class="opt" onClick="{{f.c.setNew}}" style="width: 100%; min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 0; border-radius: 8px; font: inherit; font-size: 15px; font-weight: 500; color: #0138AC; text-align: left; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Not on the map yet</button></li>
+</ul>
+</sc-if>
+<sc-if value="{{f.c.hasPick}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #EEF2FB"><span style="display: flex; flex-direction: column; line-height: 1.35"><strong style="font-weight: 600">{{f.c.pickName}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #3D4556">{{f.c.pickMeta}}</span></span><button type="button" class="tlink" onClick="{{f.c.clear}}" style="font-size: 14px">Change</button></span>
+<span style="font-size: 13px; color: #0B7A47">Website and robot type filled in from the map. Check they’re still right.</span>
+</sc-if>
+<sc-if value="{{f.c.isNew}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500">Organization name
+<input type="text" value="{{f.c.newName}}" onChange="{{f.c.onNewName}}" aria-invalid="{{f.invalid}}" style="{{f.inputStyle}}"></label>
+<span style="display: flex; gap: 12px; align-items: center">
+<button type="button" role="checkbox" aria-checked="{{f.c.addChecked}}" aria-label="Also add us to the map" onClick="{{f.c.toggleAdd}}" style="{{f.c.addBox}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button>
+<span style="font-size: 15px">Also add us to the map</span>
+</span>
+<span style="font-size: 13px; color: #646B7A">An admin reviews every map addition before it goes live.</span>
+<button type="button" class="tlink" onClick="{{f.c.search}}" style="align-self: flex-start; font-size: 14px">Search the map instead</button>
+</sc-if>
+<sc-if value="{{f.c.showNewLink}}" hint-placeholder-val="{{ true }}">
+<button type="button" class="tlink" onClick="{{f.c.setNew}}" style="align-self: flex-start; font-size: 14px">Not on the map yet?</button>
+</sc-if>
+</sc-if>
+<sc-if value="{{f.hasMeta}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span>{{f.help}}</span><span style="{{f.counterStyle}}">{{f.counter}}</span></span>
+</sc-if>
+<sc-if value="{{f.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 500; color: #B42318">{{f.err}}</span></sc-if>
+</div>
+</sc-for>
+
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+<div style="display: flex; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid #E5E7EB">
+<sc-if value="{{sh.canBack}}" hint-placeholder-val="{{ false }}"><button type="button" class="tlink" onClick="{{sh.back}}" style="color: #3D4556">Back</button></sc-if>
+<span style="flex: 1"></span>
+<button type="button" onClick="{{sh.next}}" style="min-height: 48px; padding: 0 22px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">{{sh.nextLabel}}</button>
+</div>
+</sc-if>
+
+<!-- confirmation -->
+<sc-if value="{{sh.isDone}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 18px">
+<sc-if value="{{dn.isOk}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #1DB46C; color: #ffffff; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span></sc-if>
+<sc-if value="{{dn.isPending}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #FFF4E5; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A4B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span></sc-if>
+<h3 role="status" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em">{{dn.headline}}</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{dn.lead}}</p>
+<sc-if value="{{dn.hasRef}}" hint-placeholder-val="{{ true }}"><span style="align-self: flex-start; padding: 6px 12px; border-radius: 10px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 13px">REFERENCE · {{dn.ref}}</span></sc-if>
+<sc-if value="{{dn.hasChips}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+<sc-for list="{{dn.chips}}" as="c" hint-placeholder-count="4"><span style="{{c.style}}"><span aria-hidden="true" style="{{c.dot}}"></span>{{c.label}}</span></sc-for>
+</span>
+</sc-if>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{dn.steps}}" as="s" hint-placeholder-count="3"><li style="display: flex; gap: 14px; align-items: flex-start"><span style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px">{{s.n}}</span><span style="display: flex; flex-direction: column; line-height: 1.4"><strong style="font-weight: 600; font-size: 15px">{{s.t}}</strong><span style="font-size: 14px; color: #646B7A">{{s.w}}</span></span></li></sc-for>
+</ol>
+<sc-if value="{{dn.hasNote}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 15px; font-weight: 500">{{dn.note}}</p></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<sc-for list="{{dn.actions}}" as="a" hint-placeholder-count="2"><sc-if value="{{a.isLink}}" hint-placeholder-val="{{ true }}"><a href="{{a.href}}" style="{{a.style}}">{{a.label}}</a></sc-if><sc-if value="{{a.isBtn}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{a.click}}" style="{{a.bstyle}}">{{a.label}}</button></sc-if></sc-for>
+</div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">{{dn.foot}}</p>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3720}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { call: 'soon', fail: false, tab: 'startup', sheet: null, sheetY: 24, ctx: '', track: 'startup', step: 0, v: { 'sponsor.edition': '2027' }, tried: {}, done: {}, saved: false, later: '', netErr: false, spkNet: false, orgQ: '', org: null, faq: 0, nf: {}, interest: {}, menu: null };
+}
+renderVals() {
+const S = this.state;
+const set = (o) => this.setState(o);
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const TONE = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], grey: ['#F3F4F2', '#3D4556', '#646B7A'] };
+const chip = (t) => 'display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: ' + TONE[t][0] + '; color: ' + TONE[t][1] + '; ' + MONO + 'font-size: 11px; letter-spacing: 0.06em; white-space: nowrap';
+const dot = (t) => 'width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; background: ' + TONE[t][2];
+const seg = (on, small) => 'display: inline-flex; align-items: center; min-height: ' + (small ? '30px' : '44px') + '; padding: 0 ' + (small ? '10px' : '18px') + '; border: 0; border-radius: ' + (small ? '7px' : '10px') + '; font: inherit; font-size: ' + (small ? '12px' : '15px') + '; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const pill = (on, sm) => 'min-height: ' + (sm ? '36px' : '40px') + '; padding: 0 14px; border-radius: 999px; font: inherit; font-size: ' + (sm ? '13px' : '14px') + '; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const inp = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; color: #0A1222; background: #ffffff; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE');
+const area = (bad) => inp(bad) + '; min-height: 120px; padding: 12px 14px; line-height: 1.5; resize: vertical';
+const box = (on, bad) => 'flex: 0 0 auto; width: 24px; height: 24px; padding: 0; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: 1.5px solid ' + (on ? '#0138AC' : bad ? '#B42318' : '#A3A9B5') + '; background: ' + (on ? '#0138AC' : '#ffffff') + '; color: ' + (on ? '#ffffff' : 'transparent');
+const okEmail = (x) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x || '');
+const EMAIL_MSG = 'Enter an email address like name@example.org';
+const val = (k) => (S.v[k] === undefined ? '' : S.v[k]);
+const setV = (k, x) => set({ v: Object.assign({}, S.v, { [k]: x }), saved: true, netErr: false });
+
+// Y offsets so the sheet opens next to what was clicked on the tall canvas artboard
+// the join sheet (HomeV3 fields) with every error showing and a project intro is ~1,600px, so never start a sheet lower than this on the 3720px artboard
+const Y = { top: 24, calls: 860, net: 2000, foot: 2840 };
+const SHEET_MAX_Y = 2050;
+// reopening a form that was already sent starts it fresh instead of showing the old confirmation
+const openSheet = (name, y, extra) => {
+const ex = Object.assign({}, extra || {});
+const vPatch = ex.vPatch || {};
+delete ex.vPatch;
+let v = S.v; let done = S.done; let tried = S.tried;
+if (name !== 'pitch' && S.done[name]) {
+v = {};
+Object.keys(S.v).forEach((k) => { if (k.indexOf(name + '.') !== 0) v[k] = S.v[k]; });
+if (name === 'sponsor') v['sponsor.edition'] = '2027';
+done = Object.assign({}, S.done, { [name]: false });
+tried = Object.assign({}, S.tried, { [name + '-0']: false });
+}
+set(Object.assign({ sheet: name, sheetY: Math.min(y, SHEET_MAX_Y), netErr: false, later: '', saved: false, menu: null, v: Object.assign({}, v, vPatch), done: done, tried: tried }, ex));
+};
+const closeSheet = () => set({ sheet: null });
+
+// ---------- form schemas ----------
+const F = (id, label, o) => Object.assign({ id: id, label: label, kind: 'text', req: true }, o || {});
+const CONSENT = F('consent', 'Consent', { kind: 'check', href: 'PrivacyV3.dc.html', link: 'How we use this →' });
+const joinPath = val('join.path') || 'slack';
+const PATHS = [
+{ key: 'slack', title: 'Slack community', rec: true, desc: 'An admin approves each request by hand, then we email you an invite, typically within 24–48 hours.' },
+{ key: 'email', title: 'Email updates only', rec: false, desc: 'The monthly digest. No Slack account needed.' }
+];
+const you = (role) => [F('name', 'Full name', { need: 'Enter your full name' }), F('email', 'Email', { kind: 'email', help: 'Your receipt and status link go here.' }), F('role', role, { ph: 'Founder, CTO, PhD researcher', need: 'Enter your role' }), F('country', 'Country', { ph: 'Where you are based', need: 'Enter your country' })];
+const ROBOTS = ['Aerial', 'Ground', 'Ocean', 'Robotic arm', 'Other'];
+const FORMS = {
+startup: [you('Your role in the organization'),
+[F('org', 'Find your organization on the map', { kind: 'combo' }), F('website', 'Website', { kind: 'url', ph: 'https://', need: 'Enter your website' }), F('stage', 'Stage', { kind: 'chips', options: ['Pre-seed', 'Seed', 'Series A', 'Later', 'Non-profit'], need: 'Choose a stage' }), F('robot', 'Robot type', { kind: 'chips', options: ROBOTS, need: 'Choose a robot type' }), F('deploy', 'Deployment', { kind: 'chips', options: ['In the field', 'Pilot', 'Not yet'], need: 'Choose how far deployment has got' })],
+[F('pitch', 'One-line pitch', { max: 140, ph: 'What your robot does, and for whom', need: 'Write a one-line pitch' }), F('problem', 'The problem', { kind: 'area', max: 600, need: 'Describe the problem' }), F('solution', 'The solution and its climate impact', { kind: 'area', max: 600, need: 'Describe the solution and its impact' }), F('traction', 'Traction', { kind: 'area', max: 600, help: 'Pilots, customers, partners, funding so far.', need: 'Describe your traction so far' }), F('link', 'Deck or video link', { kind: 'url', ph: 'https://', need: 'Add a link to your deck or video' })],
+[CONSENT]],
+research: [you('Your role in the lab'),
+[F('lab', 'Lab or institution', { need: 'Enter your lab or institution' }), F('pi', 'Principal investigator (PI)', { need: 'Enter the PI’s name' }), F('website', 'Lab website', { kind: 'url', ph: 'https://', req: false }), F('robot', 'Robot type', { kind: 'chips', options: ROBOTS, need: 'Choose a robot type' })],
+[F('title', 'Project title', { need: 'Enter a project title' }), F('abstract', 'Abstract', { kind: 'area', max: 1200, need: 'Write a short abstract' }), F('pubs', 'Related publications', { kind: 'area', req: false, max: 600, help: 'Links, one per line.' }), F('stage', 'Stage', { kind: 'chips', options: ['Concept', 'Lab prototype', 'Field trial'], need: 'Choose a stage' }), F('link', 'Deck or video link', { kind: 'url', ph: 'https://', req: false })],
+[CONSENT]],
+sponsor: [[F('org', 'Organization', { need: 'Enter your organization' }), F('contact', 'Contact name', { need: 'Enter a contact name' }), F('email', 'Email', { kind: 'email' }), F('tier', 'Tier', { kind: 'select', sel: 'tier', need: 'Choose a tier, or Not sure yet' }), F('edition', 'Edition', { kind: 'select', sel: 'edition' }), F('message', 'Message', { kind: 'area', req: false, max: 600, ph: 'Goals, sessions you care about, questions' }), CONSENT]],
+volunteer: [[F('role', 'Role', { kind: 'chips', options: ['Summit organizing', 'Research team', 'Video production', 'Schools kit', 'Local chapters'], need: 'Choose a role' }), F('hours', 'Hours per month', { kind: 'select', sel: 'hours', need: 'Choose how many hours' }), F('skills', 'Skills', { kind: 'multi', req: false, options: ['Event production', 'Video editing', 'Writing', 'Research', 'Design', 'Community building', 'Web development'] }), F('more', 'Other skills', { req: false, ph: 'Anything we missed' }), F('email', 'Email', { kind: 'email' }), CONSENT]],
+propose: [[F('pname', 'Project name', { need: 'Enter a project name' }), F('pdesc', 'What it would do', { kind: 'area', max: 400, need: 'Describe what it would do' }), F('phelp', 'How the network could help', { kind: 'area', max: 400, req: false }), F('name', 'Your name', { need: 'Enter your name' }), F('email', 'Your email', { kind: 'email' }), CONSENT]],
+// same fields as the HomeV3 join sheet
+join: [[F('name', 'Full name', { need: 'Enter your full name' }), F('email', 'Email', { kind: 'email', help: 'We send your invite or the digest here. Nothing else without asking.' }),
+F('role', 'Role', { kind: 'select', sel: 'role', req: false }),
+F('country', 'Country', { req: false, ph: 'Start typing, e.g. Kenya' }),
+F('interests', 'Interests', { kind: 'multi', req: false, options: ['Air', 'Land', 'Sea', 'Materials', 'Policy', 'Funding', 'Jobs'] }),
+F('path', 'How would you like to take part?', { kind: 'radio', def: 'slack', options: PATHS }),
+F('coc', 'Code of conduct', { kind: 'check', text: 'I’ve read the', href: 'ResearchV3.dc.html', link: 'code of conduct', need: 'Confirm you’ve read the code of conduct' }),
+F('privacy', 'How we use this', { kind: 'note', req: false, text: 'We use your name and email to send your invite or digest, and nothing else.', href: 'PrivacyV3.dc.html', link: 'How we use this →' })]],
+speaker: [[F('sname', 'Speaker name', { need: 'Enter the speaker’s name' }), F('saff', 'Affiliation', { need: 'Enter their affiliation' }), F('topic', 'Topic or session idea', { need: 'Enter a topic or session idea' }), F('why', 'Why them', { kind: 'area', max: 500, need: 'Say why them' }), F('knows', 'Do they know you’re nominating them?', { kind: 'chips', options: ['Yes', 'No', 'Not sure'], need: 'Choose an answer' }), F('yname', 'Your name', { need: 'Enter your name' }), F('yemail', 'Your email', { kind: 'email' }), CONSENT]]
+};
+const CONSENT_TEXT = { startup: 'I agree that VRC stores these answers to review my application and contact me about it.', research: 'I agree that VRC stores these answers to review my application and contact me about it.', sponsor: 'I agree that VRC stores these details to reply about sponsorship.', volunteer: 'I agree that VRC stores these details to contact me about volunteering.', propose: 'I agree that VRC stores this proposal and contacts me about it.', join: 'I agree that VRC stores my details to review my request and email my Slack invite once it’s approved.', joinEmail: 'I agree that VRC stores my email to send the monthly digest.', speaker: 'I agree that VRC stores this nomination and contacts me about it.' };
+
+const ORGS = [
+{ name: 'Kelpcombe Robotics', country: 'Singapore', type: 'Ocean', web: 'https://vert-robo-con.example/orgs/kelpcombe-robotics' },
+{ name: 'Tidecombe Field Robotics', country: 'New Zealand', type: 'Ocean', web: 'https://vert-robo-con.example/orgs/tidecombe-field-robotics' },
+{ name: 'Mosswick Dynamics', country: 'Canada', type: 'Ocean', web: 'https://vert-robo-con.example/orgs/mosswick-dynamics' },
+{ name: 'Heathmere Dynamics', country: 'Chile', type: 'Ocean', web: 'https://vert-robo-con.example/orgs/heathmere-dynamics' },
+{ name: 'Shoallark Works', country: 'Germany', type: 'Ground', web: 'https://vert-robo-con.example/orgs/shoallark-works' },
+{ name: 'Rillholm Autonomy', country: 'South Africa', type: 'Ground', web: 'https://vert-robo-con.example/orgs/rillholm-autonomy' }
+];
+
+const errOf = (form, f) => {
+const x = val(form + '.' + f.id);
+const need = f.need || ('Enter ' + f.label.toLowerCase());
+if (f.kind === 'combo') {
+if (S.org) return '';
+if (val(form + '.notOnMap')) return String(val(form + '.orgName')).trim() ? '' : 'Enter your organization’s name';
+return 'Pick your organization, or choose “Not on the map yet”';
+}
+if (f.kind === 'check') return f.req && !x ? (f.need || 'Tick the box to continue') : '';
+if (f.kind === 'multi' || f.kind === 'radio' || f.kind === 'note') return '';
+if (!String(x).trim()) return f.req ? (f.kind === 'email' ? 'Enter your email address' : need) : '';
+if (f.kind === 'email' && !okEmail(x)) return EMAIL_MSG;
+if (f.kind === 'url' && !/^https?:\/\/\S+\.\S+/.test(x)) return 'Enter a full link starting with https://';
+if (f.max && String(x).length > f.max) return f.label + ': keep it to ' + f.max + ' characters or fewer';
+return '';
+};
+
+const fieldVals = (form, f, show) => {
+const key = form + '.' + f.id;
+const x = val(key);
+const e = show ? errOf(form, f) : '';
+const len = String(x).length;
+const o = {
+domId: 'f-' + form + '-' + f.id, label: f.label, opt: f.req ? '' : '(optional)', help: f.help || '', ph: f.ph || '',
+type: f.kind === 'email' ? 'email' : f.kind === 'url' ? 'url' : 'text', value: Array.isArray(x) ? x.join(', ') : x,
+// defaults so every kind-specific hole resolves for every field
+options: [], checked: 'false', box: '', checkText: '', toggle: () => {}, labelId: 'lbl-' + form + '-' + f.id, hasLink: false, linkHref: '', linkText: '', isRadio: f.kind === 'radio', radios: [], noFile: false, hasFile: false, onFile: () => {}, clearFile: () => {},
+c: { q: '', expanded: 'false', inputStyle: '', onQ: () => {}, showList: false, noMatch: false, items: [], hasPick: false, pickName: '', pickMeta: '', clear: () => {}, isNew: false, newName: '', onNewName: () => {}, addChecked: 'false', addBox: '', toggleAdd: () => {}, setNew: () => {}, search: () => {}, showNewLink: false },
+isInput: ['text', 'email', 'url'].indexOf(f.kind) > -1, isArea: f.kind === 'area', isSelect: f.kind === 'select',
+isTier: f.sel === 'tier', isEdition: f.sel === 'edition', isHours: f.sel === 'hours', isRole: f.sel === 'role',
+isChips: f.kind === 'chips' || f.kind === 'multi', isCheck: f.kind === 'check', isFile: f.kind === 'file', isCombo: f.kind === 'combo', isNote: f.kind === 'note',
+err: e, hasErr: !!e, invalid: e ? 'true' : 'false',
+inputStyle: inp(!!e), areaStyle: area(!!e),
+onInput: (ev) => setV(key, ev.target.value),
+hasMeta: !!(f.help || f.max),
+counter: f.max ? len + ' / ' + f.max : '',
+counterStyle: MONO + 'font-size: 12px; white-space: nowrap; color: ' + (!f.max ? '#646B7A' : len > f.max ? '#B42318; font-weight: 500' : len >= 0.9 * f.max ? '#8A4B00; font-weight: 500' : '#646B7A')
+};
+if (o.isChips) {
+const arr = Array.isArray(x) ? x : [];
+o.options = f.options.map((opt) => {
+const on = f.kind === 'multi' ? arr.indexOf(opt) > -1 : x === opt;
+return { label: opt, pressed: on ? 'true' : 'false', style: pill(on, true) + (e && !on ? '; border-color: #B42318' : ''),
+pick: () => setV(key, f.kind === 'multi' ? (on ? arr.filter((y) => y !== opt) : arr.concat(opt)) : opt) };
+});
+}
+if (o.isCheck) {
+o.checked = x ? 'true' : 'false';
+o.box = box(!!x, !!e);
+o.toggle = () => setV(key, !x);
+o.checkText = f.text || CONSENT_TEXT[form === 'join' && joinPath === 'email' ? 'joinEmail' : form];
+o.hasLink = !!f.href; o.linkHref = f.href || ''; o.linkText = f.link || '';
+}
+if (o.isNote) { o.checkText = f.text || ''; o.hasLink = !!f.href; o.linkHref = f.href || ''; o.linkText = f.link || ''; }
+if (o.isRadio) {
+const cur = x || f.def;
+o.value = cur;
+o.radios = f.options.map((r) => {
+const on = cur === r.key;
+return { title: r.title, desc: r.desc, rec: r.rec, checked: on ? 'true' : 'false',
+recChip: 'display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; ' + MONO + 'font-size: 11px; letter-spacing: 0.06em; font-weight: 500',
+card: 'display: flex; align-items: flex-start; gap: 12px; width: 100%; box-sizing: border-box; padding: 14px 16px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ' + (on ? 'background: #EEF2FB; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid #E5E7EB'),
+ring: 'flex: 0 0 auto; margin-top: 3px; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; border: 2px solid ' + (on ? '#0138AC' : '#A3A9B5') + '; display: flex; align-items: center; justify-content: center; background: #ffffff',
+dot: 'width: 10px; height: 10px; border-radius: 50%; background: ' + (on ? '#0138AC' : 'transparent'),
+pick: () => setV(key, r.key) };
+});
+}
+if (o.isFile) {
+o.noFile = !x; o.hasFile = !!x;
+o.onFile = (ev) => setV(key, String(ev.target.value || '').split(/[\\/]/).pop());
+o.clearFile = () => setV(key, '');
+}
+if (o.isCombo) {
+const q = S.orgQ;
+const isNew = !!val(form + '.notOnMap');
+const pick = ORGS.find((g) => g.name === S.org);
+const items = (q && !pick && !isNew) ? ORGS.filter((g) => g.name.toLowerCase().indexOf(q.trim().toLowerCase()) > -1) : [];
+const setNew = (on) => set({ v: Object.assign({}, S.v, { [form + '.notOnMap']: on }), org: null, orgQ: on ? '' : S.orgQ, saved: true });
+o.c = {
+q: q, expanded: (q && !pick && !isNew) ? 'true' : 'false',
+inputStyle: inp(!!e) + '; padding-left: 40px',
+onQ: (ev) => set({ orgQ: ev.target.value, org: null, saved: true }),
+showList: !!q && !pick && !isNew, noMatch: !!q && !pick && !isNew && items.length === 0,
+items: items.map((g) => ({ name: g.name, meta: (g.country + ' · ' + g.type).toUpperCase(),
+pick: () => set({ org: g.name, orgQ: g.name, saved: true, v: Object.assign({}, S.v, { [form + '.website']: g.web, [form + '.robot']: g.type }) }) })),
+hasPick: !!pick, pickName: pick ? pick.name : '', pickMeta: pick ? (pick.country + ' · ' + pick.type + ' · on the map').toUpperCase() : '',
+clear: () => set({ org: null, orgQ: '' }),
+isNew: isNew, newName: val(form + '.orgName'), onNewName: (ev) => setV(form + '.orgName', ev.target.value),
+addChecked: val(form + '.addMap') ? 'true' : 'false', addBox: box(!!val(form + '.addMap'), false), toggleAdd: () => setV(form + '.addMap', !val(form + '.addMap')),
+setNew: () => setNew(true), search: () => setNew(false),
+showNewLink: !q && !pick && !isNew
+};
+}
+return o;
+};
+
+const errSummary = (list) => ({ hasErrs: list.length > 0, errTitle: list.length === 1 ? 'Check 1 answer' : 'Check ' + list.length + ' answers', errs: list.map((x) => ({ msg: x.m, href: '#' + x.id })) });
+
+// ---------- header menus (same as HomeV3) ----------
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', 'sheet:join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => {
+const on = S.menu === key;
+const here = key === 'community';
+return { label: MENUS[key].label, id: 'menu-' + key, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on || here ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => set({ menu: on ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) set({ menu: null }); },
+items: MENUS[key].items.map((i) => { const isBtn = i[2] === 'sheet:join'; return { label: i[0], desc: i[1], href: isBtn ? '' : i[2], isLink: !isBtn, isBtn: isBtn, current: i[2] === 'GetInvolvedV3.dc.html' ? 'page' : 'false', go: isBtn ? () => openSheet('join', Y.top, { ctx: '' }) : () => set({ menu: null }) }; }) };
+});
+
+// ---------- canvas controls ----------
+const calls = [['soon', 'Opens soon'], ['open', 'Open'], ['closing', 'Closing soon'], ['closed', 'Closed']].map(([k, l]) => ({ label: l, pressed: S.call === k ? 'true' : 'false', style: seg(S.call === k, true), pick: () => set({ call: k }) }));
+const fails = [[false, 'Succeeds'], [true, 'Network error']].map(([k, l]) => ({ label: l, pressed: S.fail === k ? 'true' : 'false', style: seg(S.fail === k, true), pick: () => set({ fail: k }) }));
+const callText = { soon: 'Startup pitches open Dec 8, 2026', open: 'Open · closing [DATE]', closing: 'Closing in 3 days', closed: 'Closed for 2027' }[S.call];
+
+// ---------- tabs ----------
+const TABS = [['startup', 'Startup pitch', '/summits/2027/pitch?track=startup'], ['research', 'Research pitch', '/summits/2027/pitch?track=research'], ['sponsor', 'Sponsor', '/summits/sponsor'], ['speaker', 'Recommend a speaker', '/get-involved?tab=speaker']];
+const tabs = TABS.map(([k, l]) => ({ label: l, tabId: 'tab-' + k, selected: S.tab === k ? 'true' : 'false', style: seg(S.tab === k, false), pick: () => set({ tab: k }) }));
+const tabPath = TABS.find((t) => t[0] === S.tab)[2];
+const isPitch = S.tab === 'startup' || S.tab === 'research';
+
+// ---------- notify-me ----------
+const nfv = (key, topics, pre, idleLabel) => {
+const n = S.nf[key] || { s: 'idle', email: '', sel: pre, err: '' };
+const up = (p) => set({ nf: Object.assign({}, S.nf, { [key]: Object.assign({}, n, p) }) });
+return { idleLabel: idleLabel, isIdle: n.s === 'idle', isOpen: n.s === 'open', isPending: n.s === 'pending', isOn: n.s === 'on',
+email: n.email, err: n.err, hasErr: !!n.err, invalid: n.err ? 'true' : 'false', inputStyle: inp(!!n.err),
+onEmail: (e) => up({ email: e.target.value, err: '' }), open: () => up({ s: 'open' }),
+submit: () => (okEmail(n.email) ? up({ s: 'pending', err: '' }) : up({ err: EMAIL_MSG })),
+confirm: () => up({ s: 'on' }),
+topics: topics.map((t) => { const on = n.sel.indexOf(t) > -1; return { label: t, pressed: on ? 'true' : 'false', style: pill(on, true), pick: () => up({ sel: on ? n.sel.filter((y) => y !== t) : n.sel.concat(t) }) }; }) };
+};
+
+// ---------- pitch tabs ----------
+const T = S.tab === 'research' ? 'research' : 'startup';
+const TRACK = {
+startup: { title: 'Pitch your startup at the summit',
+who: 'Early-stage startups deploying robots for climate mitigation or adaptation, in the field or close to it.',
+get: ['A [N]-minute pitch and live Q&A on Day 1', 'Feedback from investors and researchers', 'A listing on the Vert Robo Con map'],
+criteria: [['Climate impact', 'How much it cuts emissions or helps people adapt'], ['Deployment readiness', 'How close the robot is to working in the field'], ['Team', 'Who is building it, and why them'], ['Fit with the summit tracks', 'How it connects to the 2027 themes']],
+timeline: [['OPENS', 'Dec 8, 2026'], ['CLOSES', '[DATE]'], ['DECISIONS', '[DATE]'], ['PITCH DAY', 'Apr 20, 2027']],
+ask: [['You', 'Name, email, your role, country'], ['Organization', 'Find yourself on the map, website, stage, robot type, deployment'], ['Pitch', 'One-line pitch, problem, solution and impact, traction, deck or video link'], ['Review', 'Check every answer, then send']],
+opens: 'OPENS DEC 8', remind: 'Remind me on Dec 8', ref: 'PIT-2027-018', steps: ['You', 'Organization', 'Pitch', 'Review'], day: 'Apr 20' },
+research: { title: 'Pitch your research at the summit',
+who: 'Labs and research groups working on robots for climate mitigation or adaptation, from concept to field trial.',
+get: ['A [N]-minute pitch and live Q&A on Day 3', 'Feedback from founders, funders and other researchers', 'A listing on the Vert Robo Con map'],
+criteria: [['Climate impact', 'How much it could cut emissions or help people adapt'], ['Path to deployment', 'What it would take to reach the field'], ['Team', 'Who is doing the work, and why them'], ['Fit with the summit tracks', 'How it connects to the 2027 themes']],
+timeline: [['OPENS', '[DATE]'], ['CLOSES', '[DATE]'], ['DECISIONS', '[DATE]'], ['PITCH DAY', 'Apr 22, 2027']],
+ask: [['You', 'Name, email, your role, country'], ['Lab', 'Lab or institution, PI, website, robot type'], ['Project', 'Title, abstract, related publications, stage, links'], ['Review', 'Check every answer, then send']],
+opens: 'OPENS [DATE]', remind: 'Remind me when it opens', ref: 'PIT-2027-019', steps: ['You', 'Lab', 'Project', 'Review'], day: 'Apr 22' }
+};
+const tr = TRACK[T];
+const passed = { soon: 0, open: 1, closing: 1, closed: 2 }[S.call];
+const cs = { soon: [tr.opens, 'blue'], open: ['OPEN', 'blue'], closing: ['CLOSES IN 3 DAYS', 'amber'], closed: ['CLOSED', 'grey'] }[S.call];
+const live = S.call === 'open' || S.call === 'closing';
+const hasDraft = S.track === T && (S.step > 0 || Object.keys(S.v).some((k) => k.indexOf(T + '.') === 0));
+const pt = {
+title: tr.title, who: tr.who, chipLabel: cs[0], chip: chip(cs[1]), dot: dot(cs[1]),
+get: tr.get.map((g) => ({ text: g })),
+criteria: tr.criteria.map((c, i) => ({ n: '0' + (i + 1), title: c[0], text: c[1] })),
+timeline: tr.timeline.map((t, i) => ({ k: t[0], d: t[1],
+dot: 'flex: 0 0 auto; width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #0138AC; background: ' + (i < passed ? '#0138AC' : '#ffffff'),
+line: 'flex: 1; height: 2px; background: ' + (i === 3 ? 'transparent' : i < passed - 1 ? '#0138AC' : '#E5E7EB') })),
+ask: tr.ask.map((a, i) => ({ n: '0' + (i + 1), title: a[0], text: a[1] })),
+notClosed: S.call !== 'closed',
+showSoon: S.call === 'soon', showClosing: S.call === 'closing' && !S.done[T], showClosed: S.call === 'closed',
+showApply: live && !S.done[T], submitted: live && !!S.done[T], ref: tr.ref,
+startLabel: hasDraft ? 'Continue application' : 'Start application',
+start: () => openSheet('pitch', Y.calls, { track: T, step: S.track === T ? S.step : 0 }),
+nf: nfv('remind-' + T, ['Summit announcements', 'Program published', 'Monthly digest'], ['Summit announcements'], tr.remind)
+};
+const past = [{ when: 'DAY 1 · JUN 10, 2025 · 14:45–15:30 UTC', title: 'Pitch round: water and wetland teams' }, { when: 'DAY 2 · JUN 11, 2025 · 15:15–16:00 UTC', title: 'Pitch round: city and cold-climate teams' }];
+
+// ---------- sponsor ----------
+const TIERS = [
+{ name: '[TIER 1]', taken: true, perks: ['Welcome slot in the opening session', 'Logo on the summit page, stream and recordings', 'Named sponsor of one session', 'Features in the monthly digest', 'Intros to startups and labs you choose'] },
+{ name: '[TIER 2]', taken: false, perks: ['Named sponsor of one session', 'Logo on the summit page and stream', 'A feature in the monthly digest', 'Thanks in the session intros', 'Credit on the session recording'] },
+{ name: '[TIER 3]', taken: false, perks: ['Logo on the summit page', 'Thanks in the opening remarks', 'Listing in the summit recap', 'Credit on the recordings', 'A thank-you post to the network'] }
+];
+const openSponsor = (tier) => openSheet('sponsor', Y.calls, tier ? { vPatch: { 'sponsor.tier': tier } } : {});
+const tiers = TIERS.map((t) => ({ name: t.name, taken: t.taken, free: !t.taken, price: '[PRICE] or on request', perks: t.perks.map((p) => ({ text: p })), ask: () => openSponsor(t.name) }));
+const FAQ = [
+['Can we sponsor a single session?', 'Yes, if it fits the program. Name the session or topic when you express interest and we’ll suggest options.'],
+['Is it online only?', 'Yes. The 2027 summit runs online, April 20–22, 2027, and is free and open to everyone.'],
+['Do you offer in-kind sponsorship?', 'Tell us what you’d like to offer and pick “Not sure yet” as the tier. We’ll reply with what’s possible.'],
+['When do we need to decide?', 'By [DATE] to be listed on the program page and in the session intros.']
+];
+const faq = FAQ.map((f, i) => { const open = S.faq === i; return { q: f[0], a: f[1], open: open, expanded: open ? 'true' : 'false', pid: 'faq-' + i, icon: 'flex: 0 0 auto; transition: transform .2s ease; transform: rotate(' + (open ? '45deg' : '0deg') + ')', toggle: () => set({ faq: open ? -1 : i }) }; });
+
+// ---------- speaker (inline form) ----------
+const spkShow = !!S.tried['speaker-0'];
+const spkFields = FORMS.speaker[0];
+const spkErrList = spkFields.map((f) => ({ id: 'f-speaker-' + f.id, m: errOf('speaker', f) })).filter((x) => x.m);
+const spk = Object.assign({
+showForm: !S.done.speaker, done: !!S.done.speaker, netErr: S.spkNet,
+fields: spkFields.map((f) => fieldVals('speaker', f, spkShow)),
+submit: () => { if (spkErrList.length) set({ tried: Object.assign({}, S.tried, { 'speaker-0': true }) }); else if (S.fail) set({ spkNet: true }); else set({ done: Object.assign({}, S.done, { speaker: true }), spkNet: false }); },
+retry: () => set({ done: Object.assign({}, S.done, { speaker: true }), spkNet: false }),
+again: () => { const v = Object.assign({}, S.v); Object.keys(v).forEach((k) => { if (k.indexOf('speaker.') === 0) delete v[k]; }); set({ v: v, done: Object.assign({}, S.done, { speaker: false }), tried: Object.assign({}, S.tried, { 'speaker-0': false }) }); },
+name: val('speaker.sname') || 'they',
+foot: 'We’ve emailed a receipt and a link to manage this to ' + (val('speaker.yemail') || '[EMAIL]') + '.'
+}, errSummary(spkShow ? spkErrList : []));
+
+// ---------- network ----------
+const roles = [['Summit organizing', 'Speakers, sessions and the live stream'], ['Research team', 'The white paper and the map data'], ['Video production', 'Editing talks into chapters and clips'], ['Schools kit', 'Material for students and teachers'], ['Local chapters', 'Meetups where you live']].map((r, i) => ({ n: '0' + (i + 1), title: r[0], text: r[1] }));
+const PROJECTS = [
+{ id: 'repair', name: 'Fix-it Circle', kicker: 'COMMUNITY', status: 'ACTIVE', tone: 'green', desc: 'Monthly online sessions where members bring a broken sensor, rover or drone and work out the fix together.', action: 'join' },
+{ id: 'parts', name: 'Open Parts Library', kicker: 'COMMUNITY', status: 'ACTIVE', tone: 'green', desc: 'A shared list of spare parts, drawings and suppliers for common field robots, kept up to date by members.', action: 'join' },
+{ id: 'notes', name: 'Field note template', kicker: 'RESEARCH', status: 'ACTIVE', tone: 'green', desc: 'A shared template for writing up a deployment for the white paper. Read it and suggest changes, section by section.', action: 'read' },
+{ id: 'schools', name: 'Schools kit', kicker: 'EDUCATION', status: 'COMING SOON', tone: 'grey', desc: 'Classroom projects on robots and the climate that teachers can run with simple kits. Start date [DATE].', action: 'interest', doneText: 'We’ll email you when it starts.' },
+{ id: 'hub', name: 'Learning hub', kicker: 'EDUCATION', status: 'COMING LATER', tone: 'grey', desc: 'Short online lessons on running and repairing field robots, planned for a later stage.', action: 'interest', doneText: 'We’ll email you when it opens.' }
+];
+const projects = PROJECTS.map((p) => {
+const it = S.interest[p.id] || { s: 'idle', email: '', note: '', err: '' };
+const up = (o) => set({ interest: Object.assign({}, S.interest, { [p.id]: Object.assign({}, it, o) }) });
+const isI = p.action === 'interest';
+return { name: p.name, kicker: p.kicker, status: p.status, desc: p.desc, doneText: p.doneText || '', chip: chip(p.tone), dot: dot(p.tone),
+isJoin: p.action === 'join', isRead: p.action === 'read',
+iIdle: isI && it.s === 'idle', iOpen: isI && it.s === 'open', iDone: isI && it.s === 'done',
+join: () => openSheet('join', Y.net + 520, { ctx: p.name }),
+openI: () => up({ s: 'open' }), cancel: () => up({ s: 'idle', err: '' }),
+email: it.email, note: it.note, err: it.err, hasErr: !!it.err, invalid: it.err ? 'true' : 'false', inputStyle: inp(!!it.err),
+onEmail: (e) => up({ email: e.target.value, err: '' }), onNote: (e) => up({ note: e.target.value }),
+send: () => (okEmail(it.email) ? up({ s: 'done', err: '' }) : up({ err: EMAIL_MSG })) };
+});
+const dg = nfv('digest', ['Monthly digest', 'Summit announcements', 'New videos', 'Job alerts'], ['Monthly digest'], 'Get the monthly digest');
+
+// ---------- side sheet ----------
+const shName = S.sheet;
+// always computed (falls back to the join form) so every hole resolves even while the sheet is closed
+const sk = shName || 'join';
+const fk = sk === 'pitch' ? S.track : sk;
+let sh = {};
+let dn = {};
+{
+const steps = FORMS[fk];
+const si = sk === 'pitch' ? S.step : 0;
+const cur = steps[si].filter((f) => !f.when || f.when());
+const tKey = fk + '-' + si;
+const show = !!S.tried[tKey];
+const errList = cur.map((f) => ({ id: 'f-' + fk + '-' + f.id, m: errOf(fk, f) })).filter((x) => x.m);
+const isDone = !!S.done[fk];
+const finish = () => set({ done: Object.assign({}, S.done, { [fk]: true }), netErr: false });
+const trk = TRACK[S.track];
+const META = {
+pitch: { eye: 'SUMMIT 2027 · ' + (S.track === 'startup' ? 'STARTUP' : 'RESEARCH') + ' PITCH', title: S.track === 'startup' ? 'Apply to pitch your startup' : 'Apply to pitch your research', intro: '' },
+sponsor: { eye: 'SUMMIT 2027 · SPONSORSHIP', title: 'Express interest in sponsoring', intro: 'No commitment yet. Tell us a little and the summit team will reply within 24–48 hours.' },
+volunteer: { eye: 'NETWORK · VOLUNTEER', title: 'Volunteer with us', intro: 'Pick a role and how much time you have. A team lead will get in touch.' },
+propose: { eye: 'NETWORK · PROJECTS', title: 'Propose a project', intro: 'An idea the network could run together? Tell us about it in a few lines.' },
+join: { eye: 'COMMUNITY · FREE', title: 'Join the network', intro: joinPath === 'email'
+? 'Free. The monthly digest starts right away, no approval needed.' + (S.ctx ? ' The ' + S.ctx + ' channel is on Slack, so choose Slack community to join it.' : '')
+: (S.ctx ? 'Ask to join, and we’ll add you to the ' + S.ctx + ' channel once you’re approved. ' : 'Free. ') + 'An admin reviews each request and emails your Slack invite once it’s approved, typically within 24–48 hours.' }
+}[sk];
+const NEXT = { pitch: si < 3 ? 'Continue' : 'Submit application', sponsor: 'Send', volunteer: 'Send', propose: 'Send proposal', join: joinPath === 'email' ? 'Subscribe' : 'Request to join' }[sk];
+const em = val(fk + '.email');
+const display = (f) => {
+const x = val(fk + '.' + f.id);
+if (f.kind === 'combo') return S.org ? S.org + ' · on the map' : (val(fk + '.orgName') || 'Not given') + (val(fk + '.addMap') ? ' · add to the map' : '');
+if (Array.isArray(x)) return x.join(', ') || 'Not given';
+return x ? String(x) : 'Not given';
+};
+sh = Object.assign({
+panelStyle: 'position: absolute; right: 0; top: ' + S.sheetY + 'px; width: 480px; max-width: 100%; min-height: 860px; box-sizing: border-box; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); padding: 28px 32px 32px; display: flex; flex-direction: column; gap: 20px',
+eye: META.eye, title: META.title, intro: META.intro, hasIntro: !!META.intro && !isDone,
+showForm: !isDone, isDone: isDone,
+isStepper: sk === 'pitch',
+steps: sk === 'pitch' ? trk.steps.map((n, i) => ({ label: '0' + (i + 1) + ' ' + n.toUpperCase(), current: i === si ? 'step' : 'false',
+labelStyle: MONO + 'font-size: 11px; letter-spacing: 0.06em; color: ' + (i <= si ? '#0A1222' : '#646B7A'),
+bar: 'height: 4px; border-radius: 999px; background: ' + (i <= si ? '#0138AC' : '#E5E7EB') })) : [],
+saveText: S.saved ? 'SAVED JUST NOW' : 'AUTOSAVE ON',
+saveDot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + (S.saved ? '#1DB46C' : '#A3A9B5'),
+later: () => set({ later: okEmail(em) ? 'ok' : 'noemail' }),
+hasLater: !!S.later,
+laterMsg: S.later === 'ok' ? 'We’ve emailed a link to finish later to ' + em + '.' : 'Add your email in step 1 first, so we can send you the link.',
+netErr: S.netErr, retry: finish,
+isReview: sk === 'pitch' && si === 3,
+review: sk === 'pitch' && si === 3 ? steps.slice(0, 3).map((g, i) => ({ title: '0' + (i + 1) + ' ' + trk.steps[i].toUpperCase(), aria: 'Edit ' + trk.steps[i], edit: () => set({ step: i }), rows: g.map((f) => ({ label: f.label, value: display(f) })) })) : [],
+fields: cur.map((f) => fieldVals(fk, f, show)),
+canBack: sk === 'pitch' && si > 0,
+back: () => set({ step: si - 1, netErr: false }),
+nextLabel: NEXT,
+next: () => {
+if (errList.length) { set({ tried: Object.assign({}, S.tried, { [tKey]: true }) }); return; }
+if (sk === 'pitch' && si < 3) { set({ step: si + 1 }); return; }
+if (S.fail) set({ netErr: true }); else finish();
+}
+}, errSummary(show ? errList : []));
+
+const btnA = (p) => 'display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; font-size: 15px; font-weight: 500; text-decoration: none; ' + (p ? 'background: #0138AC; color: #ffffff' : 'border: 1px solid #D5D8DE; color: #0A1222');
+const noop = () => {};
+const act = (label, href) => ({ label: label, href: href, isLink: true, isBtn: false, click: noop, style: btnA(true), bstyle: '' });
+const closeA = { label: 'Close', href: '', isLink: false, isBtn: true, click: closeSheet, style: '', bstyle: 'font: inherit; cursor: pointer; background: #ffffff; ' + btnA(false) };
+const steps3 = (arr) => arr.map((s, i) => ({ n: String(i + 1), t: s[0], w: s[1] }));
+const first = String(val('join.name')).trim().split(' ')[0] || 'there';
+const D = {
+pitch: { headline: 'Thanks, we’ve got it', lead: 'Your ' + (S.track === 'startup' ? 'startup' : 'research') + ' pitch application is in.', ref: trk.ref,
+chips: [['SUBMITTED', 'green'], ['IN REVIEW', 'grey'], ['DECISION BY [DATE]', 'amber'], ['PITCH DAY · ' + trk.day.toUpperCase(), 'blue']],
+steps: [['We read every application', 'Over the next [N] days'], ['A short call if we have questions', 'Only if needed'], ['Decision by email', 'By [DATE]']],
+note: 'You can edit until [DATE].', actions: [act('Track status', 'MyVRCV3.dc.html'), closeA] },
+sponsor: { headline: 'Thanks. The summit team will reply within 24–48 hours.', lead: 'Your interest in sponsoring the 2027 summit is in. Nothing is committed yet.', ref: 'SPN-2027-004',
+steps: [['We read your note', 'Within 24–48 hours'], ['A call to match a tier to your goals', 'About [N] minutes'], ['You confirm', 'By [DATE] to be listed on the program']],
+actions: [act('Track status', 'MyVRCV3.dc.html'), closeA] },
+volunteer: { headline: 'Thanks, we’ve got it', lead: 'Thanks for offering your time.', ref: 'VOL-0212',
+steps: [['A team lead reads it', 'Within 24–48 hours'], ['A short intro call', 'To agree on the role'], ['You join the team channel', 'On Slack']],
+actions: [act('Manage this', 'MyVRCV3.dc.html'), closeA] },
+propose: { headline: 'Thanks, we’ve got it', lead: 'Your proposal is in.', ref: 'PRJ-0019',
+steps: [['We read every proposal', 'Within 24–48 hours'], ['We may ask a few questions', 'By email'], ['If it fits, it’s listed here', 'With its current status']],
+actions: [act('Track status', 'MyVRCV3.dc.html'), closeA] },
+join: joinPath === 'email'
+? { headline: 'Welcome, ' + first + '.', lead: 'You’re subscribed to the monthly digest. Confirm your address from the email we sent to ' + (em || '[EMAIL]') + '.', ref: 'MBR-2026-0312',
+steps: [['Confirm your email', 'One click on the link we just sent'], ['Your first digest arrives on [DATE]', 'One email a month. Unsubscribe in one click.'], ['Switch to Slack any time', 'From the Manage link in every email']],
+actions: [act('Manage this', 'MyVRCV3.dc.html'), closeA] }
+: { headline: 'Request received, ' + first + '.', pending: true, lead: 'We’ve received your request to join Slack. An admin reviews every request by hand, and your invite is emailed to ' + (em || '[EMAIL]') + ' once approved, typically within 24–48 hours.' + (S.ctx ? ' We’ll add you to the ' + S.ctx + ' channel at the same time.' : ''), ref: 'MBR-2026-0312',
+chips: [['PENDING APPROVAL', 'amber']],
+steps: [['An admin reviews your request', 'Typically within 24–48 hours. Follow the status in My VRC.'], ['Accept the invite', 'Slack emails it once your request is approved. Check spam if it isn’t there.'], ['Say hello in #welcome', 'Introduce yourself and what you work on.'], ['Try #jobs and #[CHANNEL]', 'Open roles, plus the people working on your topic.']],
+actions: [act('Track your request', 'MyVRCV3.dc.html'), closeA] }
+}[sk];
+dn = { isPending: !!D.pending, isOk: !D.pending, headline: D.headline, lead: D.lead, ref: D.ref, hasRef: !!D.ref, note: D.note || '', hasNote: !!D.note,
+hasChips: !!D.chips, chips: (D.chips || []).map((c) => ({ label: c[0], style: chip(c[1]), dot: dot(c[1]) })),
+steps: steps3(D.steps), actions: D.actions,
+foot: 'We’ve emailed a receipt and a link to manage this to ' + (em || '[EMAIL]') + '.' };
+}
+
+return {
+calls, fails, callText, tabs, tabPath, tabPanelBy: 'tab-' + S.tab,
+isPitch, isSponsor: S.tab === 'sponsor', isSpeaker: S.tab === 'speaker',
+pt, past, tiers, faq, spk, roles, projects, dg,
+openSponsor: () => openSponsor(null),
+openJoin: () => openSheet('join', Y.top, { ctx: '' }),
+openJoinFoot: () => openSheet('join', Y.foot, { ctx: '' }),
+menus, menuOpen: !!S.menu, closeMenu: () => set({ menu: null }),
+openVolunteer: () => openSheet('volunteer', Y.net, {}),
+openPropose: () => openSheet('propose', Y.net + 520, {}),
+pickSponsor: () => set({ tab: 'sponsor' }),
+sheetOpen: !!shName, closeSheet, sheetKey: (e) => { if (e && e.key === 'Escape') closeSheet(); }, sh, dn
+};
+}
+}
+</script>
+</body>
+</html>

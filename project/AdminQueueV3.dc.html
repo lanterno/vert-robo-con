@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Moderation queue</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.qrow:hover{background:#F7F8F9}
+.ghost:hover{background:#F3F4F2}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 1750px; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 14px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the product) -->
+<div style="background: #E9EAEC; border-bottom: 1px dashed #A7ADB8; padding: 8px 24px; font-family: 'Geist Mono', monospace; font-size: 11.5px; line-height: 1.5; color: #3D4556">Canvas note · One Queue view merges join requests, map suggestions, jobs, messages, nominations, internship applications and document suggestions (Suggest an edit in the Research reader, ref SUG-…), all stored in Postgres. Map pin confirm is a custom MapLibre field component. Approvals send emails through the pg-boss worker. Approval of a map suggestion or a job goes live at once.</div>
+
+<div style="display: flex; align-items: stretch; min-height: 1700px">
+
+<!-- SIDEBAR -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- MAIN -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<!-- PAGE -->
+<main style="padding: 22px 24px 32px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">MODERATION · EDITION 2027</span>
+<div style="display: flex; align-items: center; gap: 12px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em">Queue</h1>
+<span style="display: inline-flex; align-items: baseline; gap: 6px; padding: 3px 12px; border-radius: 999px; background: #EEF2FB; color: #0138AC"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">{{totalOpen}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em">PENDING</span></span>
+</div>
+<p style="margin: 0; font-size: 14px; color: #3D4556">Join requests, map suggestions, jobs, messages, nominations, internship applications and document suggestions in one list. Oldest first, so nothing passes the 24–48 hour promise unseen.</p>
+</div>
+<div style="display: flex; gap: 8px">
+<a href="AdminSystemV3.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">Email templates</a>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; color: #0A1222; font-size: 14px; font-weight: 500; text-decoration: none">Browse collections
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+</div>
+</div>
+
+<!-- TABS -->
+<div role="tablist" aria-label="Queue type" style="display: flex; gap: 4px; border-bottom: 1px solid #E5E7EB">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="8">
+<button type="button" role="tab" aria-selected="{{t.selected}}" aria-controls="queue-list" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}<span style="{{t.badge}}">{{t.count}}</span></button>
+</sc-for>
+</div>
+
+<!-- FILTERS -->
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">STATUS</span>
+<div role="group" aria-label="Status" style="display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{statuses}}" as="f" hint-placeholder-count="7">
+<button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}</button>
+</sc-for>
+</div>
+<button type="button" role="switch" aria-checked="{{over24.checked}}" onClick="{{over24.toggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{over24.track}}"><span style="{{over24.knob}}"></span></span>Age over 24 h<span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #D9822B"></span></button>
+<button type="button" role="switch" aria-checked="{{mine.checked}}" onClick="{{mine.toggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{mine.track}}"><span style="{{mine.knob}}"></span></span>Assigned to me</button>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{showing}}</span>
+</div>
+
+<!-- TOAST -->
+<sc-if value="{{toast.show}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; font-size: 14px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path></svg>
+<span style="flex: 1">{{toast.text}}<span style="color: #9AA3B5"> · {{toast.sub}}</span></span>
+<sc-if value="{{toast.canUndo}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{toast.undo}}" style="min-height: 36px; padding: 0 14px; border: 1px solid #2E3850; border-radius: 10px; background: #141D30; color: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Undo</button>
+</sc-if>
+<sc-if value="{{toast.lingering}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{toast.later}}" style="min-height: 32px; padding: 0 10px; border: 1px dashed #9AA3B5; border-radius: 8px; background: transparent; color: #C8CEDA; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; cursor: pointer">CANVAS · 2 S LATER</button>
+</sc-if>
+<button type="button" aria-label="Dismiss" onClick="{{toast.dismiss}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- BODY -->
+<div style="display: flex; align-items: flex-start; gap: 16px">
+
+<!-- LIST -->
+<section id="queue-list" role="tabpanel" aria-label="Queue items" style="flex: 0 0 560px; width: 560px; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden; background: #ffffff">
+<sc-if value="{{bulk.show}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; background: #EEF2FB; border-bottom: 1px solid #D9E2F5">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #0138AC; margin-right: 4px">{{bulk.label}}</span>
+<button type="button" aria-disabled="{{bulk.dis}}" onClick="{{bulk.replied}}" style="{{bulk.btn}}">Mark replied</button>
+<button type="button" aria-disabled="{{bulk.dis}}" onClick="{{bulk.close}}" style="{{bulk.btn}}">Close</button>
+<button type="button" onClick="{{bulk.clear}}" style="min-height: 36px; padding: 0 8px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Clear</button>
+<sc-if value="{{bulk.mixed}}" hint-placeholder-val="{{ false }}">
+<span style="flex-basis: 100%; font-size: 13px; color: #3D4556">Mark replied and Close apply to messages. Open the Messages tab to select only messages.</span>
+</sc-if>
+</div>
+</sc-if>
+<div style="max-height: 1290px; overflow-y: auto">
+<div style="position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: 44px 36px minmax(0, 1fr) 64px 168px; align-items: center; height: 40px; padding: 0 12px 0 0; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<button type="button" role="checkbox" aria-checked="{{allChecked}}" aria-label="Select all visible items" onClick="{{toggleAll}}" style="width: 44px; height: 40px; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0"><span aria-hidden="true" style="{{allBox}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span></button>
+<span></span>
+<span>ITEM</span>
+<span style="text-align: right; padding-right: 12px">AGE</span>
+<span>STATUS</span>
+</div>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 56px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; color: #646B7A">
+<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1DB46C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path></svg>
+<strong style="color: #0A1222; font-size: 15px">{{emptyTitle}}</strong>
+<span>{{emptyText}}</span>
+<sc-if value="{{filtersOn}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{clearFilters}}" style="margin-top: 8px; display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; color: #0A1222">Clear filters</button>
+</sc-if>
+</div>
+</sc-if>
+<ul style="margin: 0; padding: 0; list-style: none">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+<li style="{{r.liStyle}}">
+<button type="button" role="checkbox" aria-checked="{{r.ck}}" aria-label="{{r.ckLabel}}" onClick="{{r.toggleCk}}" style="width: 44px; height: 56px; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; flex: 0 0 44px"><span aria-hidden="true" style="{{r.ckBox}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span></button>
+<button type="button" class="qrow" onClick="{{r.pick}}" aria-current="{{r.current}}" style="{{r.rowStyle}}">
+<span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 8px; background: #F3F4F2; color: #3D4556; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{r.icon}}"></path></svg></span>
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span style="display: flex; align-items: baseline; gap: 8px; min-width: 0"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; flex: 0 0 auto">{{r.id}}</span><span style="font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.subject}}</span></span>
+<span style="font-size: 13px; color: #646B7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.who}} · {{r.typeLabel}}</span>
+</span>
+<span style="{{r.ageStyle}}">{{r.ageLabel}}</span>
+<span style="{{r.chip.style}}"><span aria-hidden="true" style="{{r.chip.dot}}"></span>{{r.chip.label}}</span>
+</button>
+</li>
+</sc-for>
+</ul>
+</div>
+</section>
+
+<!-- DETAIL · NOTHING SELECTED -->
+<sc-if value="{{noDetail}}" hint-placeholder-val="{{ false }}">
+<section aria-label="Item detail" style="flex: 1 1 auto; min-width: 0; min-height: 320px; box-sizing: border-box; border: 1px dashed #D5D8DE; border-radius: 16px; background: #F7F8F9; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 32px; text-align: center; color: #646B7A">
+<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v6H4zM4 14h16v6H4z"></path></svg>
+<strong style="color: #0A1222; font-size: 15px; font-weight: 600">No item to review</strong>
+<span style="font-size: 14px">{{noDetailText}}</span>
+</section>
+</sc-if>
+
+<!-- DETAIL -->
+<sc-if value="{{hasDetail}}" hint-placeholder-val="{{ true }}">
+<section aria-label="Item detail" style="flex: 1 1 auto; min-width: 0; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff; display: flex; flex-direction: column">
+
+<div style="padding: 20px 24px 18px; border-bottom: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><span style="color: #0138AC">{{d.id}}</span>·<span>{{d.typeCaps}}</span></span>
+<span style="{{d.chip.style}}"><span aria-hidden="true" style="{{d.chip.dot}}"></span>{{d.chip.label}}</span>
+</div>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em">{{d.title}}</h2>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 13px; color: #646B7A">
+<span>{{d.submitted}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="{{d.asgAvatar}}">{{d.asgInit}}</span>{{d.asgLabel}}</span>
+<sc-if value="{{d.canAssign}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{d.assignMe}}" style="min-height: 32px; padding: 0 6px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Assign to me</button></sc-if>
+</div>
+<sc-if value="{{d.infoSent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px; background: #FFF4E5; color: #8A4B00; font-size: 14px"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3zM3 7l9 6 9-6"></path></svg><span><strong style="font-weight: 600">Email sent · waiting for reply.</strong> The submitter’s answer reopens the item here and in My VRC.</span></div>
+</sc-if>
+<sc-if value="{{d.showDone}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{d.doneStyle}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path></svg><span>{{d.doneLine}}</span></div>
+</sc-if>
+</div>
+
+<div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 20px">
+
+<!-- JOIN REQUEST -->
+<sc-if value="{{d.isJoin}}" hint-placeholder-val="{{ true }}">
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px">
+<sc-for list="{{d.facts}}" as="f" hint-placeholder-count="4">
+<div style="min-width: 0"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="margin: 2px 0 0; font-size: 15px; font-weight: 500; overflow-wrap: anywhere">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WHY DO YOU WANT TO JOIN?</span>
+<p style="margin: 0; padding: 14px 16px; border-radius: 12px; background: #F3F4F2; font-size: 15px; color: #0A1222">{{d.why}}</p>
+</div>
+<span style="{{d.digestChip.style}}"><span aria-hidden="true" style="{{d.digestChip.dot}}"></span>{{d.digestChip.label}}</span>
+
+<div style="border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SLACK INVITE LINK</span>
+<a href="AdminSettingsV3.dc.html#h-slack" style="font-size: 13px; font-weight: 500; text-decoration: none">Replace link</a>
+</div>
+<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
+<span style="font-size: 15px; font-weight: 600">expires in 9 days</span><span style="color: #A7ADB8">·</span><span style="font-family: 'Geist Mono', monospace; font-size: 14px">41/400 uses</span>
+</div>
+<span aria-hidden="true" style="display: block; height: 6px; border-radius: 999px; background: #F3F4F2; overflow: hidden"><span style="display: block; width: 10.25%; height: 100%; background: #0138AC; border-radius: 999px"></span></span>
+<span style="font-size: 13px; color: #646B7A">Slack invite links last up to 30 days and 400 uses, and anyone holding one can join. That is why it only appears in the approval email.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EMAIL PREVIEW · TEMPLATE “JOIN APPROVED + SLACK INVITE”</span>
+<div style="border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden">
+<div style="padding: 10px 16px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 2px 8px; font-size: 13px">
+<span style="color: #646B7A">To</span><span style="font-family: 'Geist Mono', monospace; font-size: 12.5px">{{d.email}}</span>
+<span style="color: #646B7A">Subject</span><span style="font-weight: 500">You’re approved: join the Vert Robo Con Slack</span>
+</div>
+<div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: #3D4556">
+<span>Hi {{d.who}},</span>
+<span>An admin approved your request to join the Vert Robo Con Slack. Use this link to join:</span>
+<span style="align-self: flex-start; padding: 6px 10px; border-radius: 8px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 13px">https://vert-robo-con.example/join/••••••••</span>
+<span>The link is shared and expires. If it no longer works, reply to this email and we’ll send a fresh one. You can see your request status in My VRC.</span>
+</div>
+</div>
+</div>
+
+<sc-if value="{{d.open}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{d.approve}}" style="{{ui.btnP}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>Approve and send invite</button>
+<button type="button" onClick="{{d.reqInfo}}" style="{{ui.btnS}}">Request info</button>
+<button type="button" onClick="{{d.reject}}" style="{{ui.btnS}}">Decline</button>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- MAP · NEW ORGANIZATION -->
+<sc-if value="{{d.isMapNew}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUGGESTION PAYLOAD · NEW ORGANIZATION</span>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 16px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 14px">
+<sc-for list="{{d.facts}}" as="f" hint-placeholder-count="9">
+<div style="min-width: 0"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 500; overflow-wrap: anywhere">{{f.v}}</dd></div>
+</sc-for>
+<div style="grid-column: 1 / -1"><dt style="display: flex; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A"><span>DESCRIPTION</span><span>{{d.descCount}}</span></dt><dd style="margin: 2px 0 0; font-size: 14px">{{d.desc}}</dd></div>
+</dl>
+</div>
+<sc-if value="{{d.hasDupe}}" hint-placeholder-val="{{ true }}">
+<div style="border: 1px solid #F3D9B5; background: #FFF9F0; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #8A4B00"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8h12v12H8zM4 16V4h12"></path></svg>Possible duplicates: Thistleburrow Field Robotics (92% match)</span>
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #ffffff; border: 1px solid #EFE3D2">
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">Thistleburrow Field Robotics</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #646B7A">EXISTING RECORD · AUSTRALIA · AERIAL · 2013</span></span>
+<button type="button" onClick="{{d.startMerge}}" style="{{ui.btnSsm}}">Merge into existing</button>
+</div>
+<span style="font-size: 13px; color: #3D4556">Same country and robot type, and a near-identical name. Merging shows a field-by-field diff against Thistleburrow Field Robotics instead of creating a new organization.</span>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- MAP · DIFF (suggested edit or merge) -->
+<sc-if value="{{d.isDiff}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{d.diffTitle}}</span>
+<sc-if value="{{d.merging}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{d.stopMerge}}" style="min-height: 32px; padding: 0 4px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Create as new organization instead</button></sc-if>
+</div>
+<div role="region" tabindex="0" aria-label="Field diff, scrolls inside this box" style="max-height: 380px; overflow-y: auto; border: 1px solid #E5E7EB; border-radius: 14px">
+<div role="table" aria-label="Current versus suggested values">
+<div role="row" style="position: sticky; top: 0; z-index: 1; display: grid; grid-template-columns: 104px minmax(0, 1fr) minmax(0, 1fr) 64px; align-items: center; min-height: 36px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">
+<span role="columnheader" style="padding: 0 12px">FIELD</span><span role="columnheader" style="padding: 0 12px">{{d.curHead}}</span><span role="columnheader" style="padding: 0 12px">SUGGESTED</span><span role="columnheader" style="padding: 0 8px; text-align: center">ACCEPT</span>
+</div>
+<sc-for list="{{d.diff}}" as="x" hint-placeholder-count="6">
+<div role="row" style="{{x.rowStyle}}">
+<span role="cell" style="padding: 10px 12px; font-size: 13px; font-weight: 500; color: #3D4556">{{x.field}}</span>
+<span role="cell" style="{{x.curStyle}}">{{x.cur}}</span>
+<span role="cell" style="{{x.sugStyle}}">{{x.sug}}</span>
+<span role="cell" style="display: flex; justify-content: center">
+<sc-if value="{{x.changed}}" hint-placeholder-val="{{ true }}">
+<button type="button" role="checkbox" aria-checked="{{x.acc}}" aria-label="{{x.accLabel}}" onClick="{{x.toggle}}" style="width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0"><span aria-hidden="true" style="{{x.box}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span></button>
+</sc-if>
+<sc-if value="{{x.same}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">SAME</span></sc-if>
+</span>
+</div>
+</sc-for>
+</div>
+</div>
+<span style="font-size: 13px; color: #646B7A">{{d.accSummary}}</span>
+</div>
+</sc-if>
+
+<!-- MAP · PIN CONFIRM -->
+<sc-if value="{{d.isMap}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #E5E7EB">
+<span style="display: inline-flex; align-items: center; gap: 10px"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">MAP PIN</span><span style="{{pin.chip.style}}"><span aria-hidden="true" style="{{pin.chip.dot}}"></span>{{pin.chip.label}}</span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #0A1222">{{pin.lat}}, {{pin.lng}}</span>
+</div>
+<div style="position: relative; height: 210px; background: #EEF1EC; overflow: hidden">
+<svg aria-hidden="true" width="100%" height="100%" viewBox="0 0 520 210" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0">
+<path d="M0 150 C 90 130, 150 175, 240 150 S 400 120, 520 140 L520 210 L0 210 Z" fill="#D7E5F2"></path>
+<path d="M0 60 L520 92" stroke="#ffffff" stroke-width="7" fill="none"></path>
+<path d="M150 0 L210 210" stroke="#ffffff" stroke-width="5" fill="none"></path>
+<path d="M330 0 C 320 60, 360 110, 350 210" stroke="#ffffff" stroke-width="4" fill="none"></path>
+<path d="M0 112 L520 30" stroke="#F6F7F4" stroke-width="3" fill="none"></path>
+<rect x="390" y="16" width="70" height="44" rx="4" fill="#E1E8DC"></rect>
+<rect x="40" y="10" width="80" height="36" rx="4" fill="#E1E8DC"></rect>
+</svg>
+<span style="{{pin.style}}"><svg aria-hidden="true" width="30" height="38" viewBox="0 0 30 38"><path d="M15 37s-13-11-13-21a13 13 0 0 1 26 0c0 10-13 21-13 21z" fill="#0138AC" stroke="#ffffff" stroke-width="2"></path><circle cx="15" cy="15" r="5" fill="#ffffff"></circle></svg></span>
+<div style="position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; background: #ffffff; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">
+<button type="button" aria-label="Zoom in" style="width: 32px; height: 32px; border: 0; border-bottom: 1px solid #E5E7EB; background: #ffffff; font: inherit; font-size: 16px; cursor: pointer; color: #0A1222">+</button>
+<button type="button" aria-label="Zoom out" style="width: 32px; height: 32px; border: 0; background: #ffffff; font: inherit; font-size: 16px; cursor: pointer; color: #0A1222">−</button>
+</div>
+<div style="position: absolute; left: 10px; bottom: 10px; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 10px; background: rgba(255,255,255,0.94); box-shadow: 0 1px 3px rgba(10,18,34,0.14)">
+<span style="padding: 0 6px; font-size: 12px; font-weight: 500; color: #3D4556">Drag to adjust</span>
+<sc-for list="{{pin.nudges}}" as="n" hint-placeholder-count="4">
+<button type="button" aria-label="{{n.label}}" onClick="{{n.go}}" style="width: 30px; height: 30px; border: 1px solid #D5D8DE; border-radius: 8px; background: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #0A1222; padding: 0"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{n.icon}}"></path></svg></button>
+</sc-for>
+</div>
+<span style="position: absolute; right: 8px; bottom: 6px; padding: 1px 6px; border-radius: 4px; background: rgba(255,255,255,0.85); font-size: 10.5px; color: #3D4556">© OpenStreetMap contributors · Protomaps</span>
+</div>
+<div style="padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; border-top: 1px solid #E5E7EB">
+<span style="flex: 1 1 260px; font-size: 13px; color: #3D4556">{{pin.note}}</span>
+<button type="button" onClick="{{pin.photon}}" style="{{ui.btnXs}}">Geocode with Photon</button>
+<button type="button" onClick="{{pin.nominatim}}" style="{{ui.btnXs}}">Try Nominatim</button>
+</div>
+<div style="padding: 8px 14px; background: #F7F8F9; border-top: 1px solid #E5E7EB; display: flex; justify-content: space-between; gap: 12px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">
+<span>Geocoded at approval · cached · OSM attribution</span><span>{{pin.field}}</span>
+</div>
+</div>
+<sc-if value="{{d.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<button type="button" onClick="{{d.approve}}" aria-disabled="{{d.approveDis}}" style="{{d.approveStyle}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>{{d.approveLabel}}</button>
+<button type="button" onClick="{{d.reqInfo}}" style="{{ui.btnS}}">Request info</button>
+<button type="button" onClick="{{d.reject}}" style="{{ui.btnS}}">Reject</button>
+<span style="font-size: 13px; color: #646B7A">Publishing makes it live at once.</span>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- JOB POST -->
+<sc-if value="{{d.isJob}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px">
+<span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 10px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path></svg></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EMPLOYER</span><strong style="font-size: 15px; font-weight: 600">{{d.job.employer}}</strong><span style="font-size: 13px; color: #646B7A">{{d.job.orgMeta}}</span></span>
+<span style="{{d.job.linkChip.style}}"><span aria-hidden="true" style="{{d.job.linkChip.dot}}"></span>{{d.job.linkChip.label}}</span>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px">
+<sc-for list="{{d.facts}}" as="f" hint-placeholder-count="6">
+<div style="min-width: 0"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 500; overflow-wrap: anywhere">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">LISTING FOR</span>
+<div role="group" aria-label="Listing length" style="display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{d.job.days}}" as="y" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{y.pressed}}" onClick="{{y.pick}}" style="{{y.style}}">{{y.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #646B7A">Expires automatically; the poster gets a renew link.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">PUBLIC CARD PREVIEW · /JOBS</span>
+<div style="padding: 18px 20px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 24px -18px rgba(10,18,34,0.3)">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{d.job.cardEyebrow}}</span><span style="{{d.job.newChip.style}}"><span aria-hidden="true" style="{{d.job.newChip.dot}}"></span>{{d.job.newChip.label}}</span></span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">{{d.job.title}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{d.job.cardMeta}}</span>
+<span style="display: flex; align-items: center; gap: 12px"><span style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 14px; font-weight: 500">Apply</span><span style="font-size: 13px; color: #646B7A">{{d.job.cardFoot}}</span></span>
+</div>
+</div>
+<sc-if value="{{d.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<button type="button" onClick="{{d.approve}}" style="{{ui.btnP}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>Publish</button>
+<button type="button" onClick="{{d.reqInfo}}" style="{{ui.btnS}}">Request changes</button>
+<button type="button" onClick="{{d.reject}}" style="{{ui.btnS}}">Reject</button>
+<span style="font-size: 13px; color: #646B7A">Publishing makes it live at once.</span>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- MESSAGE -->
+<sc-if value="{{d.isMsg}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="{{d.msg.intentChip.style}}"><span aria-hidden="true" style="{{d.msg.intentChip.dot}}"></span>{{d.msg.intentChip.label}}</span>
+<span style="font-size: 14px; color: #3D4556">From <strong style="font-weight: 600; color: #0A1222">{{d.who}}</strong> · <span style="font-family: 'Geist Mono', monospace; font-size: 12.5px">{{d.email}}</span></span>
+</div>
+<p style="margin: 0; padding: 16px 18px; border-radius: 14px; background: #F3F4F2; font-size: 15px; line-height: 1.6; color: #0A1222">{{d.msg.body}}</p>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #3D4556"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4l5 5-5 5M20 9H9a5 5 0 0 0-5 5v6"></path></svg>Forwarded to <a href="mailto:hello@vert-robo-con.example">hello@vert-robo-con.example</a> with Reply-To</span>
+<span style="{{d.msg.slaStyle}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{d.msg.sla}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">STATUS</span>
+<div role="group" aria-label="Message status" style="display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{d.msg.seg}}" as="g" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{g.pressed}}" onClick="{{g.pick}}" style="{{g.style}}">{{g.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{d.msg.isNew}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{d.msg.markReplied}}" style="{{ui.btnP}}">Mark replied</button>
+</sc-if>
+</div>
+<span style="font-size: 13px; color: #646B7A">Reply from your own mail client, then mark it replied here so the 24–48 hour promise stays visible in the queue.</span>
+</sc-if>
+
+<!-- NOMINATION / INTERNSHIP -->
+<sc-if value="{{d.isOther}}" hint-placeholder-val="{{ false }}">
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px">
+<sc-for list="{{d.facts}}" as="f" hint-placeholder-count="6">
+<div style="min-width: 0"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="margin: 2px 0 0; font-size: 15px; font-weight: 500; overflow-wrap: anywhere">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+<p style="margin: 0; padding: 14px 16px; border-radius: 12px; background: #F3F4F2; font-size: 15px">{{d.why}}</p>
+<sc-if value="{{d.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{d.approve}}" style="{{ui.btnP}}">{{d.approveLabel}}</button>
+<button type="button" onClick="{{d.reqInfo}}" style="{{ui.btnS}}">Request info</button>
+<button type="button" onClick="{{d.reject}}" style="{{ui.btnS}}">Decline</button>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- DOCUMENT SUGGESTION -->
+<sc-if value="{{d.isDoc}}" hint-placeholder-val="{{ false }}">
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px">
+<sc-for list="{{d.facts}}" as="f" hint-placeholder-count="6">
+<div style="min-width: 0"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{f.k}}</dt><dd style="margin: 2px 0 0; font-size: 15px; font-weight: 500; overflow-wrap: anywhere">{{f.v}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; gap: 12px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A"><span>{{d.doc.section}}</span><a href="ResearchV3.dc.html" style="font-family: 'Geist', system-ui, sans-serif; font-size: 13px; letter-spacing: 0; font-weight: 500; text-decoration: none">Open in the reader</a></span>
+<blockquote style="margin: 0; padding: 12px 16px; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; line-height: 1.55; color: #3D4556">{{d.doc.snippet}}</blockquote>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; align-items: center; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">COMMENT<span style="{{d.doc.kindChip.style}}"><span aria-hidden="true" style="{{d.doc.kindChip.dot}}"></span>{{d.doc.kindChip.label}}</span></span>
+<p style="margin: 0; padding: 14px 16px; border-radius: 12px; background: #F3F4F2; font-size: 15px; color: #0A1222">{{d.doc.comment}}</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<span style="{{d.doc.creditChip.style}}"><span aria-hidden="true" style="{{d.doc.creditChip.dot}}"></span>{{d.doc.creditChip.label}}</span>
+<span style="font-size: 13px; color: #646B7A">{{d.doc.note}}</span>
+</div>
+<sc-if value="{{d.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{d.approve}}" style="{{ui.btnP}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>{{d.approveLabel}}</button>
+<button type="button" onClick="{{d.reqInfo}}" aria-disabled="{{d.doc.noEmail}}" style="{{d.doc.infoStyle}}">Request info</button>
+<button type="button" onClick="{{d.reject}}" style="{{ui.btnS}}">Decline</button>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- HISTORY -->
+<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">HISTORY · AUDIT LOG</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{d.history}}" as="h" hint-placeholder-count="3">
+<li style="display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; font-size: 13px; color: #3D4556"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{h.t}}</span><span>{{h.e}}</span></li>
+</sc-for>
+</ol>
+</div>
+
+</div>
+</section>
+</sc-if>
+</div>
+</main>
+</div>
+</div>
+
+<!-- DIALOG: Reject / Request info -->
+<sc-if value="{{dlg.open}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" onClick="{{dlg.cancel}}" style="position: absolute; inset: 0; z-index: 30; background: rgba(10,18,34,0.36)"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="dlg-title" style="position: absolute; z-index: 31; top: 230px; left: 564px; width: 560px; box-sizing: border-box; padding: 24px; border-radius: 20px; background: #ffffff; box-shadow: 0 32px 64px -24px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 id="dlg-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.1; letter-spacing: -0.02em">{{dlg.title}}</h2>
+<span style="font-size: 14px; color: #646B7A">To {{dlg.who}} · <span style="font-family: 'Geist Mono', monospace; font-size: 12.5px">{{dlg.email}}</span></span>
+</div>
+<button type="button" aria-label="Close dialog" onClick="{{dlg.cancel}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F3F4F2; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #3D4556"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span id="tpl-label" style="font-size: 14px; font-weight: 500">Template</span>
+<div role="radiogroup" aria-labelledby="tpl-label" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{dlg.tpls}}" as="p" hint-placeholder-count="3">
+<button type="button" role="radio" aria-checked="{{p.checked}}" onClick="{{p.pick}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Message
+<textarea rows="8" value="{{dlg.msg}}" onChange="{{dlg.setMsg}}" style="width: 100%; box-sizing: border-box; min-height: 180px; padding: 12px 14px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 400; line-height: 1.55; color: #0A1222; resize: vertical"></textarea>
+<span style="font-size: 13px; font-weight: 400; color: #646B7A">Edit freely. The template stays unchanged in Jobs, email &amp; backups · Email templates.</span>
+</label>
+<button type="button" role="switch" aria-checked="{{dlg.notifyChecked}}" onClick="{{dlg.toggleNotify}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222"><span aria-hidden="true" style="{{dlg.track}}"><span style="{{dlg.knob}}"></span></span>Notify submitter</button>
+<span style="font-size: 13px; color: #646B7A">{{dlg.note}}</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" onClick="{{dlg.cancel}}" style="{{ui.btnS}}">Cancel</button>
+<button type="button" onClick="{{dlg.send}}" style="{{ui.btnP}}">{{dlg.sendLabel}}</button>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1750}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { tab: 'all', status: 'open', over24: false, mine: false, sel: 'JOIN-0312', st: {}, info: {}, asg: {}, linger: null, toast: null, checked: [], dlg: null, tpl: 0, msg: '', notify: true, acc: {}, merge: false, pinSrc: null, regeo: false, dx: 0, dy: 0, days: 60, q: '' };
+}
+items() {
+const DESC = 'Drones that count birds and grazing animals along repeat survey routes.';
+return [
+{ id: 'JOIN-0312', type: 'join', subject: 'Slack join · marine robotics researcher', who: 'Sample Registrant 01', email: 'registrant01@example.org', age: 31, status: 'pending', asg: 'me', org: '[ORG]', role: 'PhD researcher, marine robotics', country: '[COUNTRY]', digest: true, why: 'I build underwater inspection robots and want to meet people working on ocean monitoring and restoration.' },
+{ id: 'MAP-0457', type: 'map', kind: 'edit', subject: 'Suggested edit · Cloverreach Systems', who: 'Sample Submitter 02', email: 'submitter02@example.org', age: 26, status: 'pending', asg: 'me' },
+{ id: 'MSG-1093', type: 'msg', intent: 'Sponsor interest', subject: 'Sponsoring Summit 2027', who: 'Sample Sender 03', email: 'sender03@example.org', age: 31, status: 'new', asg: 'me', body: 'Hello, our organization would like to learn about sponsorship options for the 2027 summit. Could someone share what is possible and who we should talk to?' },
+{ id: 'JOB-0219', type: 'job', subject: '[JOB TITLE] · Osiercombe Robotics', who: 'Sample Poster 04', email: 'poster04@example.org', age: 20, status: 'review', asg: 'S2' },
+{ id: 'MAP-0458', type: 'map', kind: 'new', subject: 'New organization · Thistleburrow Robotics', who: 'Sample Submitter 05', email: 'submitter05@example.org', age: 5, status: 'pending', asg: null, name: 'Thistleburrow Robotics', country: 'Australia', robot: 'Aerial', app: 'Biodiversity monitoring', deployed: 'Yes', role: 'Both', desc: DESC, dupe: true },
+{ id: 'JOIN-0313', type: 'join', subject: 'Slack join · agricultural robotics founder', who: 'Sample Registrant 06', email: 'registrant06@example.org', age: 3, status: 'pending', asg: null, org: '[ORG]', role: 'Co-founder, agricultural robotics', country: '[COUNTRY]', digest: false, why: 'We are an early-stage team working on weeding robots and would like feedback from people who have deployed in the field.' },
+{ id: 'MSG-1091', type: 'msg', intent: 'Consulting', subject: 'Drone monitoring for a restoration NGO', who: 'Sample Sender 07', email: 'sender07@example.org', age: 52, status: 'new', asg: null, body: 'We are a small restoration NGO exploring whether drones could help us monitor planting sites. Could we book a short call to understand the options?' },
+{ id: 'MSG-1090', type: 'msg', intent: 'Volunteer', subject: 'Helping with the summit program', who: 'Sample Sender 08', email: 'sender08@example.org', age: 9, status: 'new', asg: null, body: 'I would like to help with the summit, for example moderating a session or reviewing pitches. I can give about [N] hours a week.' },
+{ id: 'MSG-1088', type: 'msg', intent: 'Contact', subject: 'Citing the white paper', who: 'Sample Sender 09', email: 'sender09@example.org', age: 40, status: 'new', asg: 'me', body: 'Can we cite figures from the white paper in a university report, and is there a preferred citation format?' },
+{ id: 'NOM-0041', type: 'nom', subject: 'Speaker nomination · [NAME]', who: 'Sample Nominator 10', email: 'nominator10@example.org', age: 14, status: 'review', asg: 'S2', why: 'Nominated for a talk on [TOPIC]. The nominator says the nominee has field deployment experience and has not spoken at a VRC summit before.' },
+{ id: 'INT-0027', type: 'int', subject: 'Internship application · Research', who: 'Sample Applicant 11', email: 'applicant11@example.org', age: 28, status: 'review', asg: null, why: 'Interested in the research track. Available [N] hours a week, remote, from [DATE]. CV or portfolio link below.' },
+{ id: 'JOB-0220', type: 'job', subject: '[JOB TITLE] · [VALUE] (new org)', who: 'Sample Poster 12', email: 'poster12@example.org', age: 47, status: 'info', asg: 'me' },
+{ id: 'JOIN-0309', type: 'join', subject: 'Slack join · climate policy researcher', who: 'Sample Registrant 13', email: 'registrant13@example.org', age: 29, status: 'info', asg: null, org: '[ORG]', role: 'Policy researcher', country: '[COUNTRY]', digest: true, why: 'I study how public funding reaches climate technology and want to follow robotics projects and their deployment.' },
+{ id: 'MAP-0452', type: 'map', kind: 'edit', subject: 'Suggested edit · Juniperdale Robotics', who: 'Sample Submitter 14', email: 'submitter14@example.org', age: 72, status: 'approved', asg: 'me' },
+{ id: 'JOIN-0301', type: 'join', subject: 'Slack join · ocean data engineer', who: 'Sample Registrant 15', email: 'registrant15@example.org', age: 96, status: 'approved', asg: 'me', org: '[ORG]', role: 'Data engineer', country: '[COUNTRY]', digest: false, why: 'I work with ocean sensor data and want to learn from teams running uncrewed vessels.' },
+{ id: 'MSG-1085', type: 'msg', intent: 'Contact', subject: 'Question about a Heathmere Dynamics listing', who: 'Sample Sender 16', email: 'sender16@example.org', age: 80, status: 'replied', asg: 'me', body: 'Is the Heathmere Dynamics card on the map up to date? I would like to contact the team about a pilot.' },
+{ id: 'MAP-0449', type: 'map', kind: 'new', subject: 'New organization · [VALUE]', who: 'Sample Submitter 17', email: 'submitter17@example.org', age: 110, status: 'rejected', asg: 'S2', name: '[VALUE]', country: '[COUNTRY]', robot: '[VALUE]', app: '[VALUE]', deployed: '[VALUE]', role: '[VALUE]', desc: '[VALUE]', dupe: false },
+{ id: 'MAP-0459', type: 'map', kind: 'new', subject: 'New organization · Kelp Example Robotics (sample)', who: 'Sample Applicant 018', email: 'applicant018@example.org', age: 8, status: 'pending', asg: null, name: 'Kelp Example Robotics (sample)', country: 'Norway', robot: 'Ocean', app: 'Kelp restoration', deployed: 'Yes', role: 'Both', desc: 'Electric surface vessel that replants kelp on degraded nearshore reefs.', dupe: false },
+{ id: 'SUG-0112', type: 'doc', doc: 'wp', subject: 'White paper · 2 Opportunities · Correction', who: 'Sample Reader 19', email: 'reader19@example.org', age: 18, status: 'pending', asg: null, sec: '2 · Opportunities', kind: 'Correction', credit: true, snippet: 'Drones survey forests and wetlands from above. Field robots pull weeds without sprays and inspect long rows of solar panels. Small subs replant damaged reefs and log water quality where nobody else is measuring.', comment: 'The reef sentence could name a deployed example and say where it ran. As written it reads like all reef replanting is already done by robots. [DETAIL]' },
+{ id: 'SUG-0111', type: 'doc', doc: 'coc', subject: 'Code of conduct · 2 Reporting a problem · Other', who: 'Sample Reader 20', email: 'reader20@example.org', age: 36, status: 'review', asg: 'me', sec: '2 · Reporting a problem', kind: 'Other', credit: false, snippet: 'If someone breaks these rules in Slack, at the summit or anywhere else members meet, tell a moderator. [POLICY TEXT]', comment: 'Could this section link to the full conduct rules it refers to, so people can read them without searching?' },
+{ id: 'SUG-0107', type: 'doc', doc: 'pr', subject: 'Principles · 3 Share the tools · Missing case study', who: 'Anonymous reader', email: '', age: 130, status: 'approved', asg: 'S2', sec: '3 · Share the tools', kind: 'Missing case study', credit: false, snippet: 'We share what worked and what failed across fields, so the next team starts from evidence instead of guesswork.', comment: 'An example of a project that shared its failures openly would make this principle concrete. [DETAIL]' }
+];
+}
+renderVals() {
+const st = this.state;
+const ITEMS = this.items();
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const TONE = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#8A909C'] };
+const mk = (label, t) => ({ label: label, style: 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: ' + TONE[t][0] + '; color: ' + TONE[t][1] + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; justify-self: start; align-self: center', dot: 'width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; background: ' + TONE[t][2] });
+const B = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap; box-sizing: border-box; ';
+const ui = {
+btnP: B + 'border: 0; background: #0138AC; color: #ffffff',
+btnS: B + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnSsm: B + 'min-height: 40px; padding: 0 14px; font-size: 14px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnXs: B + 'min-height: 36px; padding: 0 12px; font-size: 13px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222'
+};
+const seg = (on) => 'min-height: 34px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const box = (on) => 'width: 18px; height: 18px; box-sizing: border-box; border-radius: 5px; display: flex; align-items: center; justify-content: center; border: 1.5px solid ' + (on ? '#0138AC' : '#A7ADB8') + '; background: ' + (on ? '#0138AC' : '#ffffff');
+const sw = (on) => ({ checked: on ? 'true' : 'false',
+track: 'position: relative; width: 34px; height: 20px; border-radius: 999px; display: inline-block; flex: 0 0 auto; background: ' + (on ? '#0138AC' : '#C9CDD5'),
+knob: 'position: absolute; top: 2px; left: ' + (on ? '16px' : '2px') + '; width: 16px; height: 16px; border-radius: 50%; background: #ffffff' });
+
+const OPEN = ['pending', 'review', 'info', 'new'];
+const cur = (it) => st.st[it.id] || it.status;
+const isOpen = (it) => OPEN.indexOf(cur(it)) > -1 || st.linger === it.id;
+const asgOf = (it) => (st.asg[it.id] !== undefined ? st.asg[it.id] : it.asg);
+const TYPES = [
+{ key: 'join', label: 'Join requests', one: 'Join request', icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM19 8v6M22 11h-6', src: 'Join form · Slack path' },
+{ key: 'map', label: 'Map', one: 'Map suggestion', icon: 'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', src: 'Suggest form on /map' },
+{ key: 'job', label: 'Jobs', one: 'Job post', icon: 'M3 8h18v12H3zM8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3M3 13h18', src: 'Post a job on /jobs' },
+{ key: 'msg', label: 'Messages', one: 'Message', icon: 'M3 6h18v12H3zM3 7l9 6 9-6', src: 'Contact form' },
+{ key: 'nom', label: 'Nominations', one: 'Speaker nomination', icon: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3', src: 'Nominate a speaker' },
+{ key: 'int', label: 'Internships', one: 'Internship application', icon: 'M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5', src: 'Internship form on /jobs' },
+{ key: 'doc', label: 'Document suggestions', one: 'Document suggestion', icon: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z', src: 'Suggest an edit in the Research reader' }
+];
+const DOCN = { wp: ['White paper · 2025 edition', 'next edition'], coc: ['Code of conduct · v1.0', 'next version'], pr: ['Design principles · v1.0', 'next version'] };
+const T = {}; TYPES.forEach((t) => { T[t.key] = t; });
+const stMeta = (it, s) => {
+if (s === 'pending') return mk('Pending approval', 'amber');
+if (s === 'review') return mk('In review', 'neutral');
+if (s === 'info') return mk('Needs info', 'amber');
+if (s === 'new') return mk('New', 'blue');
+if (s === 'approved') return mk(it.type === 'join' ? 'Approved, invite sent' : (it.type === 'map' || it.type === 'job') ? 'Published' : it.type === 'doc' ? 'Accepted' : 'Approved', 'green');
+if (s === 'replied') return mk('Replied', 'green');
+if (s === 'closed') return mk('Closed', 'neutral');
+return mk(it.type === 'join' || it.type === 'doc' ? 'Declined' : 'Rejected', 'neutral');
+};
+const ageLabel = (h) => (h >= 48 ? Math.floor(h / 24) + ' d ' + (h % 24) + ' h' : h + ' h');
+const snap = () => ({ st: Object.assign({}, st.st), info: Object.assign({}, st.info) });
+const setSt = (patch) => Object.assign({}, this.state.st, patch);
+
+// counts
+const openCount = (k) => ITEMS.filter((it) => (k === 'all' || it.type === k) && isOpen(it)).length;
+const totalOpen = openCount('all');
+const tabsDef = [{ key: 'all', label: 'All' }].concat(TYPES);
+const tabs = tabsDef.map((t) => {
+const on = st.tab === t.key;
+return { label: t.label, count: openCount(t.key), selected: on ? 'true' : 'false',
+style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; margin-bottom: -1px; border: 0; border-bottom: 2px solid ' + (on ? '#0138AC' : 'transparent') + '; background: transparent; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; color: ' + (on ? '#0A1222' : '#3D4556'),
+badge: MONO + 'min-width: 20px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; font-size: 11px; text-align: center; ' + (on ? 'background: #0138AC; color: #ffffff' : 'background: #F3F4F2; color: #3D4556'),
+pick: () => this.setState({ tab: t.key, checked: [] }) };
+});
+
+// filters
+const SF = [['open', 'Open'], ['pending', 'Pending approval'], ['review', 'In review'], ['info', 'Needs info'], ['approved', 'Approved'], ['rejected', 'Rejected'], ['all', 'All']];
+const statuses = SF.map(([k, l]) => ({ label: l, pressed: st.status === k ? 'true' : 'false', style: seg(st.status === k), pick: () => this.setState({ status: k, checked: [] }) }));
+const matchStatus = (it) => {
+const s = cur(it); const f = st.status;
+if (st.linger === it.id) return true;
+if (f === 'open') return OPEN.indexOf(s) > -1;
+if (f === 'all') return true;
+if (f === 'pending') return s === 'pending';
+if (f === 'approved') return s === 'approved' || s === 'replied';
+if (f === 'rejected') return s === 'rejected' || s === 'closed';
+return s === f;
+};
+const q = st.q.trim().toLowerCase();
+const filtersOn = st.status !== 'open' || st.over24 || st.mine || !!q;
+const visible = ITEMS.filter((it) => (st.tab === 'all' || it.type === st.tab) && matchStatus(it)
+&& (!st.over24 || it.age > 24) && (!st.mine || asgOf(it) === 'me')
+&& (!q || (it.id + ' ' + it.subject + ' ' + it.who).toLowerCase().indexOf(q) > -1))
+.sort((a, b) => b.age - a.age);
+// the detail always shows an item that is in the list: the selected one, else the first visible one
+const selIt = visible.find((x) => x.id === st.sel) || visible[0] || null;
+const selId = selIt ? selIt.id : null;
+const rowBase = 'flex: 1; min-width: 0; height: 56px; display: grid; grid-template-columns: 36px minmax(0, 1fr) 64px 168px; align-items: center; padding: 0 12px 0 0; border: 0; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ';
+const rows = visible.map((it) => {
+const on = it.id === selId; const ck = st.checked.indexOf(it.id) > -1; const old = it.age > 24 && OPEN.indexOf(cur(it)) > -1;
+return { id: it.id, subject: it.subject, who: it.who, typeLabel: T[it.type].one, icon: T[it.type].icon,
+ageLabel: ageLabel(it.age),
+ageStyle: MONO + 'justify-self: end; margin-right: 12px; font-size: 12px; padding: 2px 7px; border-radius: 6px; ' + (old ? 'background: #FFF4E5; color: #8A4B00' : 'color: #646B7A'),
+chip: stMeta(it, cur(it)),
+current: on ? 'true' : 'false',
+liStyle: 'display: flex; align-items: center; border-bottom: 1px solid #EEF0F3; ' + (on ? 'background: #EEF2FB' : (st.linger === it.id ? 'background: #F4FBF7' : 'background: #ffffff')),
+rowStyle: rowBase + 'background: transparent',
+ck: ck ? 'true' : 'false', ckLabel: 'Select ' + it.id, ckBox: box(ck),
+toggleCk: () => { const c = this.state.checked; this.setState({ checked: ck ? c.filter((x) => x !== it.id) : c.concat([it.id]) }); },
+pick: () => this.setState({ sel: it.id, merge: false, pinSrc: null, regeo: false, dx: 0, dy: 0, days: 60 }) };
+});
+const allOn = visible.length > 0 && visible.every((it) => st.checked.indexOf(it.id) > -1);
+
+// bulk
+const checkedItems = ITEMS.filter((it) => st.checked.indexOf(it.id) > -1);
+const allMsgs = checkedItems.length > 0 && checkedItems.every((it) => it.type === 'msg');
+const bulkSet = (s, word) => () => {
+if (!allMsgs) return;
+const sn = snap(); const p = {};
+checkedItems.forEach((it) => { p[it.id] = s; });
+this.setState({ st: setSt(p), checked: [], linger: null, toast: { text: checkedItems.length + (checkedItems.length === 1 ? ' message ' : ' messages ') + word, sub: 'audit events written', snap: sn } });
+};
+const bulk = { show: st.checked.length > 0, label: st.checked.length + ' SELECTED', dis: allMsgs ? 'false' : 'true', mixed: !allMsgs,
+btn: 'min-height: 36px; padding: 0 14px; border-radius: 10px; font: inherit; font-size: 14px; font-weight: 500; ' + (allMsgs ? 'border: 1px solid #0138AC; background: #ffffff; color: #0138AC; cursor: pointer' : 'border: 1px solid #D5D8DE; background: #ffffff; color: #8A909C; cursor: not-allowed'),
+replied: bulkSet('replied', 'marked replied'), close: bulkSet('closed', 'closed'),
+clear: () => this.setState({ checked: [] }) };
+
+// toast
+const tt = st.toast;
+const toast = { show: !!tt, text: tt ? tt.text : '', sub: tt ? tt.sub : '', canUndo: !!(tt && tt.snap), lingering: !!st.linger,
+undo: () => { const s = this.state.toast; if (s && s.snap) this.setState({ st: s.snap.st, info: s.snap.info, linger: null, toast: null }); },
+later: () => this.setState({ linger: null }),
+dismiss: () => this.setState({ toast: null, linger: null }) };
+
+// detail
+const it = selIt || ITEMS.find((x) => x.id === st.sel) || ITEMS[0];
+// per-item view state (merge, pin, listing length) only belongs to the item the admin picked
+const ls = it.id === st.sel ? st : { merge: false, pinSrc: null, regeo: false, dx: 0, dy: 0, days: 60 };
+const s = cur(it);
+const open = OPEN.indexOf(s) > -1;
+const a = asgOf(it);
+const approveTo = (text, sub) => () => {
+const sn = snap();
+this.setState({ sel: it.id, st: setSt({ [it.id]: 'approved' }), linger: it.id, toast: { text: text, sub: sub, snap: sn } });
+};
+const openDlg = (kind) => () => { if (kind === 'info' && !it.email) return; this.setState({ dlg: { kind: kind, id: it.id }, tpl: 0, msg: this.tplText(kind, 0, it), notify: !!it.email }); };
+const d = {
+id: it.id, typeCaps: T[it.type].one.toUpperCase(), chip: stMeta(it, s), who: it.who, email: it.email,
+title: it.type === 'map' ? (it.kind === 'new' ? it.name : it.subject.replace('Suggested edit · ', '')) : it.type === 'msg' ? it.subject : it.type === 'job' ? it.subject : it.type === 'nom' ? 'Nomination · [NAME]' : it.type === 'doc' ? it.kind + ' · ' + DOCN[it.doc][0].split(' · ')[0] + ', section ' + it.sec : it.who,
+submitted: 'Submitted ' + ageLabel(it.age) + ' ago · ' + T[it.type].src + ' · ' + it.who,
+asgInit: a === 'me' ? 'S1' : a ? a : '–',
+asgAvatar: 'width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 10px; ' + (a ? 'background: #EEF2FB; color: #0138AC' : 'background: #F3F4F2; color: #646B7A'),
+asgLabel: a === 'me' ? 'Assigned to you' : a ? 'Assigned to Sample Admin 02' : 'Unassigned',
+canAssign: a !== 'me', assignMe: () => this.setState({ asg: Object.assign({}, this.state.asg, { [it.id]: 'me' }) }),
+open: open, infoSent: s === 'info',
+isJoin: it.type === 'join', isMap: it.type === 'map', isJob: it.type === 'job', isMsg: it.type === 'msg', isOther: it.type === 'nom' || it.type === 'int', isDoc: it.type === 'doc',
+isMapNew: it.type === 'map' && it.kind === 'new' && !(ls.merge && it.dupe),
+isDiff: it.type === 'map' && (it.kind === 'edit' || !!(ls.merge && it.dupe)),
+reqInfo: openDlg('info'), reject: openDlg('reject'),
+approveLabel: 'Approve', approveDis: 'false', approveStyle: ui.btnP,
+facts: [], why: '', digestChip: mk('', 'neutral'), approve: () => {}, desc: '', descCount: '', hasDupe: false, startMerge: () => {}, diff: [], diffTitle: '', curHead: 'CURRENT', merging: false, stopMerge: () => {}, accSummary: '',
+job: { employer: '', title: '', orgMeta: '', linkChip: mk('', 'neutral'), cardEyebrow: '', newChip: mk('', 'neutral'), cardMeta: '', cardFoot: '', days: [] },
+msg: { body: '', intentChip: mk('', 'neutral'), isNew: false, sla: '', slaStyle: '', seg: [], markReplied: () => {} },
+doc: { section: '', snippet: '', comment: '', kindChip: mk('', 'neutral'), creditChip: mk('', 'neutral'), note: '', noEmail: 'false', infoStyle: ui.btnS }
+};
+const doneMap = { approved: ['green', it.type === 'join' ? 'Approved, invite sent · email queued through the jobs queue · audit event written' : (it.type === 'map' || it.type === 'job') ? 'Published · live at once · audit event written' : it.type === 'doc' ? 'Accepted for the ' + DOCN[it.doc][1] + ' · ' + (it.email ? 'submitter notified' : 'no email left, nothing sent') + ' · audit event written' : 'Approved · submitter notified · audit event written'],
+rejected: ['neutral', (it.type === 'join' || it.type === 'doc' ? 'Declined' : 'Rejected') + ' · audit event written.' + (it.type === 'doc' ? (it.email ? ' The submitter gets the reply by email.' : ' No email was left, so nothing is sent.') : ' The submitter sees this status in My VRC.')],
+replied: ['green', 'Replied · reply sent from the admin’s mail client'], closed: ['neutral', 'Closed · no further action'] };
+d.showDone = !!doneMap[s];
+d.doneLine = doneMap[s] ? doneMap[s][1] : '';
+d.doneStyle = 'display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px; font-size: 14px; ' + (doneMap[s] && doneMap[s][0] === 'green' ? 'background: #E8F6EE; color: #0B7A47' : 'background: #F3F4F2; color: #3D4556');
+const hist = [{ t: ageLabel(it.age), e: 'Submitted · ALTCHA check passed · ' + (it.email ? 'receipt email with ref ' + it.id + ' sent' : 'no email left, so no receipt sent') }];
+if (a) hist.push({ t: '—', e: 'Assigned to ' + (a === 'me' ? 'Sample Admin 01 (you)' : 'Sample Admin 02') });
+if (s === 'info') hist.push({ t: 'now', e: 'Needs info · email sent through the jobs queue · waiting for reply' });
+if (s === 'approved') hist.push({ t: 'now', e: d.doneLine });
+if (s === 'rejected' || s === 'replied' || s === 'closed') hist.push({ t: 'now', e: d.doneLine });
+d.history = hist;
+
+if (it.type === 'join') {
+d.facts = [{ k: 'NAME', v: it.who }, { k: 'EMAIL', v: it.email }, { k: 'ORGANIZATION', v: it.org }, { k: 'ROLE', v: it.role }];
+d.why = it.why;
+d.digestChip = it.digest ? mk('Also subscribed to digest', 'green') : mk('Not subscribed to digest', 'neutral');
+d.approve = approveTo(it.id + ' approved, invite sent to ' + it.email, 'removed from pending in 2 s');
+}
+const NEWF = (x) => [{ k: 'NAME', v: x.name }, { k: 'WEBSITE', v: '[VALUE]' }, { k: 'COUNTRY', v: x.country }, { k: 'CITY', v: '[CITY]' }, { k: 'ROBOT TYPE', v: x.robot }, { k: 'APPLICATION', v: x.app }, { k: 'DEPLOYED', v: x.deployed }, { k: 'CLIMATE ROLE', v: x.role }, { k: 'FOUNDED', v: '[VALUE]' }];
+if (it.type === 'map') {
+let diff = null; let curHead = 'CURRENT';
+if (it.kind === 'new') {
+d.facts = NEWF(it); d.desc = it.desc; d.descCount = it.desc === '[VALUE]' ? '[N] / 140' : it.desc.length + ' / 140';
+d.hasDupe = !!it.dupe; d.startMerge = () => this.setState({ sel: it.id, merge: true });
+}
+if (ls.merge && it.dupe) {
+curHead = 'THISTLEBURROW FIELD ROBOTICS (EXISTING)';
+diff = [['Name', 'Thistleburrow Field Robotics', it.name, true, false], ['Website', 'https://vert-robo-con.example/orgs/thistleburrow-field-robotics', '[VALUE]', true], ['Country', 'Australia', 'Australia'], ['City', '[CITY]', '[CITY]', true], ['Robot type', 'Aerial', 'Aerial'], ['Application', 'Biodiversity monitoring', 'Biodiversity monitoring'], ['Deployed', 'Yes', 'Yes'], ['Climate role', 'Both', 'Both'], ['Description', 'A drone fleet that counts birds, insects and grazing animals from repeat survey routes.', it.desc, true], ['Founded', '2013', '[VALUE]', true, false]];
+d.diffTitle = 'MERGE ' + it.id + ' INTO THISTLEBURROW FIELD ROBOTICS · CURRENT | SUGGESTED';
+} else if (it.id === 'MAP-0457') {
+diff = [['Name', 'Cloverreach Systems', 'Cloverreach Systems'], ['Website', 'https://vert-robo-con.example/orgs/cloverreach-systems', 'https://vert-robo-con.example/orgs/cloverreach-systems'], ['City', '[CITY]', '[CITY]', true], ['Application', 'Water management', 'Water management'], ['Deployed', 'Yes', 'Yes'], ['Description', 'A drone that docks on a mobile base that samples rivers and reservoirs and warns operators about rising pollution.', '[VALUE]', true]];
+d.diffTitle = 'SUGGESTED EDIT · CURRENT | SUGGESTED';
+} else if (it.id === 'MAP-0452') {
+diff = [['Name', 'Juniperdale Robotics', 'Juniperdale Robotics'], ['Website', 'https://vert-robo-con.example/orgs/juniperdale-robotics', '[VALUE]', true], ['Application', 'Agriculture', 'Agriculture'], ['Deployed', 'No', 'Yes', true]];
+d.diffTitle = 'SUGGESTED EDIT · CURRENT | SUGGESTED';
+}
+d.merging = !!(ls.merge && it.dupe); d.stopMerge = () => this.setState({ sel: it.id, merge: false }); d.curHead = curHead;
+let nCh = 0; let nAcc = 0;
+if (diff) {
+d.diff = diff.map((r) => {
+const key = it.id + (d.merging ? ':m:' : ':') + r[0];
+const changed = !!r[3];
+const acc = changed && (st.acc[key] !== undefined ? st.acc[key] : r[4] !== false);
+if (changed) { nCh += 1; if (acc) nAcc += 1; }
+const cell = 'padding: 10px 12px; font-size: 13.5px; line-height: 1.45; overflow-wrap: anywhere; ';
+return { field: r[0], cur: r[1], sug: r[2], changed: changed, same: !changed,
+acc: acc ? 'true' : 'false', accLabel: 'Accept ' + r[0] + ' change', box: box(acc),
+toggle: () => this.setState({ acc: Object.assign({}, this.state.acc, { [key]: !acc }) }),
+rowStyle: 'display: grid; grid-template-columns: 104px minmax(0, 1fr) minmax(0, 1fr) 64px; align-items: center; border-bottom: 1px solid #EEF0F3; ' + (changed ? 'background: #FFFBF4' : 'background: #ffffff'),
+curStyle: cell + (changed ? 'color: #3D4556' : 'color: #646B7A'),
+sugStyle: cell + (changed ? (acc ? 'background: #E8F6EE; color: #0A1222; font-weight: 500; align-self: stretch; display: flex; align-items: center' : 'color: #646B7A; text-decoration: line-through') : 'color: #646B7A') };
+});
+d.accSummary = 'Accepting ' + nAcc + ' of ' + nCh + ' changed fields. Unchecked fields keep the current value.';
+}
+const dis = !!diff && nAcc === 0;
+d.approveDis = dis ? 'true' : 'false';
+d.approveStyle = dis ? ui.btnP + '; background: #A7ADB8; cursor: not-allowed' : ui.btnP;
+d.approveLabel = d.merging ? 'Merge into Thistleburrow Field Robotics' : it.kind === 'new' ? 'Approve and publish' : 'Approve ' + nAcc + ' of ' + nCh + ' changes';
+const ap = approveTo(d.merging ? it.id + ' merged into Thistleburrow Field Robotics' : it.id + ' published', 'live at once');
+d.approve = () => { if (!dis) ap(); };
+}
+if (it.type === 'job') {
+const sd = it.id === 'JOB-0219';
+d.job = { employer: sd ? 'Osiercombe Robotics' : '[VALUE]', title: '[JOB TITLE]',
+orgMeta: sd ? 'On the map · US · Underwater · pin 42.4191, -71.0931 (manual)' : 'Pending new organization · not on the map yet',
+linkChip: sd ? mk('Linked map org', 'green') : mk('Pending new org', 'amber'),
+cardEyebrow: (sd ? 'OSIERCOMBE ROBOTICS' : '[VALUE]') + ' · ' + (sd ? 'FULL-TIME' : 'INTERNSHIP'),
+newChip: mk('New', 'blue'),
+cardMeta: (sd ? 'REMOTE OR [CITY]' : '[CITY]') + ' · ' + (sd ? '[VALUE]' : 'SALARY NOT GIVEN'),
+cardFoot: 'Listed for ' + ls.days + ' days · expires [DATE]',
+days: [30, 60, 90].map((n) => ({ label: n + ' days', pressed: ls.days === n ? 'true' : 'false', style: seg(ls.days === n), pick: () => this.setState({ sel: it.id, days: n }) })) };
+d.facts = [{ k: 'TITLE', v: '[JOB TITLE]' }, { k: 'ROLE TYPE', v: sd ? 'Full-time' : 'Internship' }, { k: 'LOCATION', v: sd ? 'Remote or [CITY]' : '[CITY]' }, { k: 'SALARY (OPTIONAL)', v: sd ? '[VALUE]' : 'Not given' }, { k: 'APPLY URL', v: '[VALUE]' }, { k: 'POSTER EMAIL', v: it.email }];
+d.approve = approveTo(it.id + ' published', 'live at once · expires in ' + ls.days + ' days');
+}
+if (it.type === 'msg') {
+const elapsed = it.age;
+const late = s === 'new' && elapsed > 24;
+d.msg = { body: it.body, intentChip: mk(it.intent, 'blue'), isNew: s === 'new',
+sla: s === 'new' ? 'Reply within 24–48 hours · ' + elapsed + ' h elapsed' + (elapsed > 48 ? ' · overdue' : '') : 'Reply within 24–48 hours · ' + (s === 'replied' ? 'answered' : 'closed'),
+slaStyle: 'display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; font-size: 14px; ' + (late ? 'padding: 2px 8px; border-radius: 8px; background: #FFF4E5; color: #8A4B00; font-weight: 500' : 'color: #3D4556'),
+seg: [['new', 'New'], ['replied', 'Replied'], ['closed', 'Closed']].map(([k, l]) => ({ label: l, pressed: s === k ? 'true' : 'false', style: seg(s === k),
+pick: () => { const sn = snap(); this.setState({ sel: it.id, st: setSt({ [it.id]: k }), linger: k === 'new' ? null : it.id, toast: k === 'new' ? null : { text: it.id + ' marked ' + l.toLowerCase(), sub: 'audit event written', snap: sn } }); } })),
+markReplied: () => { const sn = snap(); this.setState({ sel: it.id, st: setSt({ [it.id]: 'replied' }), linger: it.id, toast: { text: it.id + ' marked replied', sub: 'removed from pending in 2 s', snap: sn } }); } };
+}
+if (it.type === 'nom') {
+d.facts = [{ k: 'NOMINEE', v: '[NAME]' }, { k: 'AFFILIATION', v: '[ORG]' }, { k: 'SUGGESTED TOPIC', v: '[TOPIC]' }, { k: 'NOMINATED BY', v: it.who }];
+d.why = it.why; d.approveLabel = 'Add to speaker shortlist';
+d.approve = approveTo(it.id + ' added to the speaker shortlist', 'visible in Summit · Speakers');
+}
+if (it.type === 'int') {
+d.facts = [{ k: 'APPLICANT', v: it.who }, { k: 'EMAIL', v: it.email }, { k: 'TRACK', v: 'Research · Open' }, { k: 'CV OR PORTFOLIO', v: '[LINK]' }];
+d.why = it.why; d.approveLabel = 'Move to interview';
+d.approve = approveTo(it.id + ' moved to interview', 'applicant notified');
+}
+if (it.type === 'doc') {
+const dn = DOCN[it.doc];
+d.facts = [{ k: 'DOCUMENT', v: dn[0] }, { k: 'SECTION', v: it.sec }, { k: 'FROM', v: it.who }, { k: 'EMAIL', v: it.email || 'None left (optional field)' }, { k: 'CREDIT', v: it.credit ? 'Credit me by name in the ' + dn[1] : 'No credit asked' }, { k: 'SOURCE', v: 'Suggest an edit · ResearchV3 reader' }];
+d.doc = { section: 'SUGGESTION ON SECTION ' + it.sec.toUpperCase(), snippet: it.snippet, comment: it.comment,
+kindChip: mk(it.kind, 'neutral'),
+creditChip: it.credit ? mk('Credit by name', 'blue') : mk('Uncredited', 'neutral'),
+note: 'Accepting adds it to the change list for the ' + dn[1] + '. The published text changes only when a new version is published in Content · Documents.' + (it.email ? '' : ' No email was left, so the submitter is not notified.'),
+noEmail: it.email ? 'false' : 'true',
+infoStyle: it.email ? ui.btnS : ui.btnS + '; color: #8A909C; cursor: not-allowed' };
+d.approveLabel = 'Accept for the ' + dn[1];
+d.approve = approveTo(it.id + ' accepted for the ' + dn[1], it.email ? 'submitter notified' : 'no email left, nothing sent');
+}
+
+// pin
+const PINS = { 'MAP-0457': { lat: 43.6786, lng: 1.4942, src: 'manual', place: '[CITY], France', note: 'Current pin, set by hand on the old map. The suggested city differs, so re-geocode or adjust by hand.' },
+'MAP-0458': { lat: null, src: 'photon', place: '[CITY], Australia' }, 'MAP-0452': { lat: null, src: 'photon', place: '[CITY], UK' }, 'MAP-0449': { lat: null, src: 'nominatim', place: '[CITY], [COUNTRY]' }, 'MAP-0459': { lat: null, src: 'photon', place: '[CITY], Norway' } };
+const P = PINS[it.id] || { lat: null, src: 'photon', place: '[CITY]' };
+const src = ls.pinSrc || P.src;
+const numeric = P.lat !== null && !ls.regeo;
+const off = (v) => (v > 0 ? '+' : '−') + Math.abs(v * 0.001).toFixed(4);
+const pin = {
+chip: src === 'manual' ? mk('Manual', 'neutral') : mk(src === 'photon' ? 'Photon' : 'Nominatim', 'blue'),
+lat: numeric ? (P.lat + ls.dy * 0.001).toFixed(4) : (ls.dy ? '[LAT] ' + off(ls.dy) : '[LAT]'),
+lng: numeric ? (P.lng + ls.dx * 0.001).toFixed(4) : (ls.dx ? '[LNG] ' + off(ls.dx) : '[LNG]'),
+field: 'coord_source = ' + src,
+note: (ls.dx || ls.dy) ? 'Moved by hand. coord_source is now manual and the geocoder will not overwrite it.' : ls.regeo ? (src === 'photon' ? 'Photon result for “' + P.place + '”. Cached; Nominatim is the fallback.' : 'Nominatim result for “' + P.place + '” (fallback, max 1 request/s). Cached.') : (P.note || 'Photon result for “' + P.place + '”. Cached; Nominatim is the fallback.'),
+style: 'position: absolute; left: calc(50% + ' + ((ls.regeo ? 46 : 0) + ls.dx * 14) + 'px); top: calc(50% + ' + ((ls.regeo ? -16 : 0) - ls.dy * 14) + 'px); width: 30px; height: 38px; margin: -38px 0 0 -15px; filter: drop-shadow(0 3px 4px rgba(10,18,34,0.3))',
+photon: () => this.setState({ sel: it.id, pinSrc: 'photon', regeo: true, dx: 0, dy: 0 }),
+nominatim: () => this.setState({ sel: it.id, pinSrc: 'nominatim', regeo: true, dx: 0, dy: 0 }),
+nudges: [['Move pin north', 'M12 19V5M6 11l6-6 6 6', 0, 1], ['Move pin south', 'M12 5v14M6 13l6 6 6-6', 0, -1], ['Move pin west', 'M19 12H5M11 6l-6 6 6 6', -1, 0], ['Move pin east', 'M5 12h14M13 6l6 6-6 6', 1, 0]]
+.map(([label, icon, x, y]) => ({ label: label, icon: icon, go: () => this.setState({ sel: it.id, dx: ls.dx + x, dy: ls.dy + y, pinSrc: 'manual' }) }))
+};
+
+// dialog
+let dlg = { open: false, title: '', who: '', email: '', msg: '', tpls: [], setMsg: () => {}, notifyChecked: 'true', track: '', knob: '', toggleNotify: () => {}, note: '', sendLabel: '', cancel: () => {}, send: () => {} };
+if (st.dlg) {
+const di = ITEMS.find((x) => x.id === st.dlg.id) || it;
+const kind = st.dlg.kind;
+const names = this.tplNames(kind);
+const verb = kind === 'info' ? (di.type === 'job' ? 'Request changes' : 'Request info') : (di.type === 'join' || di.type === 'nom' || di.type === 'int' || di.type === 'doc' ? 'Decline' : 'Reject');
+const ns = sw(st.notify);
+dlg = { open: true, title: verb + ' · ' + di.id, who: di.who, email: di.email || 'no email left', msg: st.msg,
+tpls: names.map((n, i) => ({ label: n, checked: st.tpl === i ? 'true' : 'false',
+style: 'min-height: 36px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; ' + (st.tpl === i ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE'),
+pick: () => this.setState({ tpl: i, msg: this.tplText(kind, i, di) }) })),
+setMsg: (e) => this.setState({ msg: e.target.value }),
+notifyChecked: ns.checked, track: ns.track, knob: ns.knob,
+toggleNotify: () => { if (di.email) this.setState({ notify: !this.state.notify }); },
+note: st.notify ? 'Sent through the jobs queue as a templated email, with the reference ' + di.id + '. Logged in the audit log.' : 'No email is sent. The status still changes in My VRC.',
+sendLabel: kind === 'info' ? (st.notify ? 'Send request' : 'Mark as Needs info') : verb + (st.notify ? ' and notify' : ''),
+cancel: () => this.setState({ dlg: null }),
+send: () => {
+const sn = snap();
+if (kind === 'info') {
+this.setState({ dlg: null, st: setSt({ [di.id]: 'info' }), linger: null, toast: { text: st.notify ? di.id + ' · Email sent · waiting for reply' : di.id + ' marked Needs info', sub: 'chip set to Needs info', snap: sn } });
+} else {
+this.setState({ dlg: null, st: setSt({ [di.id]: 'rejected' }), linger: di.id, toast: { text: di.id + (verb === 'Decline' ? ' declined' : ' rejected'), sub: st.notify ? 'submitter notified' : 'no email sent', snap: sn } });
+}
+} };
+}
+
+const o24 = sw(st.over24); const mn = sw(st.mine);
+return {
+ui: ui, totalOpen: totalOpen, queueAria: totalOpen + ' items need action', tabs: tabs, statuses: statuses,
+q: st.q, setQ: (e) => this.setState({ q: e.target.value }),
+over24: { checked: o24.checked, track: o24.track, knob: o24.knob, toggle: () => this.setState({ over24: !this.state.over24 }) },
+mine: { checked: mn.checked, track: mn.track, knob: mn.knob, toggle: () => this.setState({ mine: !this.state.mine }) },
+showing: 'SHOWING ' + visible.length + ' · OLDEST FIRST',
+rows: rows, empty: rows.length === 0, hasDetail: !!selIt, noDetail: !selIt, filtersOn: filtersOn,
+emptyTitle: filtersOn ? 'No items match' : 'Nothing waiting here',
+emptyText: filtersOn ? 'No items match this tab and these filters.' : 'Every item in this tab has been handled.',
+noDetailText: filtersOn ? 'Nothing in the list matches right now. Clear the filters to see open items again.' : 'This tab is clear. Pick another tab to keep going.',
+clearFilters: () => this.setState({ status: 'open', over24: false, mine: false, q: '', checked: [] }),
+allChecked: allOn ? 'true' : 'false', allBox: box(allOn),
+toggleAll: () => this.setState({ checked: allOn ? [] : visible.map((x) => x.id) }),
+bulk: bulk, toast: toast, d: d, pin: pin, dlg: dlg
+};
+}
+tplNames(kind) {
+return kind === 'info' ? ['Missing details', 'Confirm affiliation', 'Custom message'] : ['Outside our focus', 'Duplicate record', 'Incomplete or spam', 'Custom message'];
+}
+tplText(kind, i, it) {
+const hi = 'Hi ' + it.who + ',\n\n';
+const sign = '\n\nThe Vert Robo Con team';
+const ref = ' (' + it.id + ')';
+if (kind === 'info') {
+if (i === 0) return hi + 'Thanks for your submission' + ref + '. Before we can review it, could you tell us [DETAIL]? Reply to this email, or update it from your My VRC page.' + sign;
+if (i === 1) return hi + 'Thanks for reaching out' + ref + '. Could you confirm your organization and your role there? It helps us keep the network focused on robots for climate work.' + sign;
+return hi + sign;
+}
+if (i === 0) return hi + 'Thanks for your submission' + ref + '. After review we can’t accept it, because it falls outside the network’s focus on robotics for climate action.' + sign;
+if (i === 1) {
+const DUP = { join: 'You already have a request or a Slack account with this email, so there is nothing more to do.', job: 'This role is already listed on the jobs board.', nom: 'This person has already been nominated for this edition.', int: 'We already have an application from you for this track.', msg: 'We already have an earlier message from you on this topic and will answer it there.', map: 'This organization is already on the map. If something in its listing is out of date, you can suggest an edit from its map card.', doc: 'Someone already suggested this change to this section, and it is already on our list of changes to review.' };
+return hi + 'Thanks for your submission' + ref + '. ' + (DUP[it.type] || DUP.map) + sign;
+}
+if (i === 2) return hi + 'Thanks for your submission' + ref + '. We couldn’t review it because key details were missing. You’re welcome to submit again with [DETAIL].' + sign;
+return hi + sign;
+}
+}
+</script>
+</body>
+</html>

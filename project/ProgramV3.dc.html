@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Summit program (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px;display:inline-flex;align-items:center;gap:4px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.sublink{color:#3D4556;text-decoration:none;padding:14px 0;border-bottom:2px solid transparent}
+.sublink:hover{color:#0A1222;border-bottom-color:#0A1222}
+.rowbtn:hover .rt{color:#0138AC}
+.mi:hover{background:#F3F4F2}
+.flink{color:#0A1222;text-decoration:none}.flink:hover{color:#0138AC}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+</style>
+</helmet>
+<div style="font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EBEE; border-bottom: 1px dashed #A9AFBA; padding: 8px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; font-size: 13px; color: #3D4556">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">Preview state
+<span role="group" aria-label="Preview state" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: #D9DCE1">
+<sc-for list="{{cvStates}}" as="c" hint-placeholder-count="4"><button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</span></span>
+<span style="display: inline-flex; align-items: center; gap: 8px">Edition
+<span role="group" aria-label="Edition" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: #D9DCE1">
+<sc-for list="{{cvEds}}" as="c" hint-placeholder-count="2"><button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</span></span>
+<span style="color: #3D4556">{{cvNote}}</span>
+</div>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: fixed; inset: 0; z-index: 19"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,0.9); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html" aria-current="true" style="background: #F3F4F2; color: #0A1222">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<div style="display: flex; align-items: center; gap: 8px">
+<button type="button" onClick="{{openAg}}" aria-haspopup="dialog" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="#0138AC" stroke="#0138AC" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"></path></svg>My agenda ({{agCount}})</button>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</div>
+</header>
+
+<!-- PAGE HEADER -->
+<section style="padding: 40px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+<nav aria-label="Breadcrumb" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><a href="SummitV3.dc.html" style="color: #646B7A; text-decoration: none">SUMMITS</a> / <a href="SummitV3.dc.html" style="color: #646B7A; text-decoration: none">{{year}}</a> / <span aria-current="page" style="color: #0A1222">PROGRAM</span></nav>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 48px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 88px; line-height: 0.92; letter-spacing: -0.045em">Program</h1>
+<p style="margin: 0; font-size: 18px; color: #3D4556">{{meta}}</p>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px; padding-bottom: 6px">
+<span style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px">
+<sc-for list="{{stateChips}}" as="c" hint-placeholder-count="2"><span style="{{c.st}}"><span aria-hidden="true" style="{{c.dot}}"></span>{{c.t}}</span></sc-for>
+</span>
+<sc-if value="{{published}}" hint-placeholder-val="{{ true }}">
+<a href="#" style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg>Download PDF · generated from this page</a>
+</sc-if>
+</div>
+</div>
+</div>
+</section>
+
+<!-- EDITION SUBNAV -->
+<nav aria-label="Summit sections" style="margin-top: 28px; border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; display: flex; flex-wrap: wrap; gap: 0 32px; font-size: 15px; font-weight: 500">
+<a class="sublink" href="SummitV3.dc.html">Overview</a>
+<a class="sublink" href="ProgramV3.dc.html" aria-current="page" style="color: #0A1222; border-bottom-color: #0A1222">Program</a>
+<a class="sublink" href="SummitV3.dc.html#speakers">Speakers</a>
+<a class="sublink" href="WatchV3.dc.html">Recordings</a>
+<a class="sublink" href="SummitV3.dc.html#partners">Partners</a>
+<a class="sublink" href="GetInvolvedV3.dc.html">Get involved</a>
+</div>
+</nav>
+
+<!-- NOT PUBLISHED (2027) -->
+<sc-if value="{{unp}}" hint-placeholder-val="{{ false }}">
+<section style="padding: 48px 32px 96px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 64px">
+<div style="flex: 1 1 520px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SUMMIT 2027 · PROGRAM</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 52px; line-height: 1; letter-spacing: -0.035em">Not published yet. Program announced [DATE].</h2>
+<p style="margin: 0; max-width: 620px; font-size: 18px; color: #3D4556">All three days will appear here with times in UTC and your own time zone, so you can star sessions and build your agenda.</p>
+</div>
+<div style="flex: 0 1 440px; display: flex; flex-direction: column; gap: 10px">
+<sc-if value="{{nfPage.c}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{nfPage.open}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg>{{nfPage.cta}}</button></sc-if>
+<sc-if value="{{nfPage.x}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 14px; font-weight: 500">Email</span>
+<span style="display: flex; gap: 8px"><input type="email" value="{{nfPage.email}}" onChange="{{nfPage.setEmail}}" aria-invalid="{{nfPage.invalid}}" placeholder="name@example.org" style="{{nfPage.inputStyle}}"><button type="button" onClick="{{nfPage.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap">Notify me</button></span></label>
+<sc-if value="{{nfPage.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org</span></sc-if>
+<span role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nfPage.topics}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></span>
+<span style="font-size: 12px; color: #646B7A">We only email you about these topics. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</sc-if>
+<sc-if value="{{nfPage.p}}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 14px; background: #EEF2FB"><strong style="font-weight: 600">Check your inbox to confirm</strong><span style="font-size: 14px; color: #3D4556">We sent a confirmation link to {{nfPage.email}}.</span><button type="button" onClick="{{nfPage.confirm}}" style="align-self: flex-start; margin-top: 4px; padding: 4px 10px; border: 1px dashed #A9AFBA; border-radius: 8px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; cursor: pointer">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{nfPage.s}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: #0B7A47"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1DB46C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>You're on the list · <a href="MyVRCV3.dc.html">Manage</a></span></sc-if>
+</div>
+</div>
+
+<!-- skeleton day cards -->
+<svg aria-hidden="true" width="0" height="0" style="position: absolute"><defs><pattern id="hx" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#F3F4F2"></rect><rect width="3" height="8" fill="#E5E7EB"></rect></pattern></defs></svg>
+<div role="group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px" aria-label="Program days, not published yet">
+<sc-for list="{{skel}}" as="k" hint-placeholder-count="3">
+<div style="border: 1px dashed #D5D8DE; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<span style="display: flex; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A"><span>{{k.label}}</span><span>THEME TBA</span></span>
+<svg aria-hidden="true" width="100%" height="22"><rect width="80%" height="22" rx="8" fill="url(#hx)"></rect></svg>
+<svg aria-hidden="true" width="100%" height="44"><rect width="100%" height="44" rx="12" fill="url(#hx)"></rect></svg>
+<svg aria-hidden="true" width="100%" height="44"><rect width="100%" height="44" rx="12" fill="url(#hx)"></rect></svg>
+<svg aria-hidden="true" width="100%" height="44"><rect width="100%" height="44" rx="12" fill="url(#hx)"></rect></svg>
+</div>
+</sc-for>
+</div>
+
+<!-- proposed tracks (same as SummitV3) -->
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.02em">Proposed tracks</h3>
+<span style="display: flex; flex-wrap: wrap; gap: 16px; font-size: 15px; font-weight: 500"><button type="button" onClick="{{see2026}}" style="padding: 0; border: 0; background: none; color: #0138AC; font: inherit; cursor: pointer">See the 2026 program →</button><a href="GetInvolvedV3.dc.html" style="text-decoration: none">Pitch your startup · opens Dec 8 →</a></span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<sc-for list="{{trackPreview}}" as="t" hint-placeholder-count="4">
+<div style="background: #F3F4F2; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<span style="display: flex; justify-content: space-between; align-items: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{t.n}}<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>DRAFT</span></span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.015em">{{t.t}}</span>
+<span style="font-size: 15px; color: #3D4556">Sessions announced with the program</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+</sc-if>
+
+<!-- CONTROLS (sticky) -->
+<sc-if value="{{published}}" hint-placeholder-val="{{ true }}">
+<div style="position: sticky; top: 73px; z-index: 10; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 20px 32px 16px; display: flex; flex-direction: column; gap: 14px">
+<div role="tablist" aria-label="Summit days" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3">
+<button type="button" role="tab" aria-selected="{{d.selected}}" aria-controls="program-sessions" onClick="{{d.pick}}" style="{{d.style}}">
+<span style="display: flex; justify-content: space-between; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px"><span>{{d.label}}</span><span style="{{d.countSt}}">{{d.count}}</span></span>
+<span style="font-weight: 600; font-size: 16px; line-height: 1.35">{{d.theme}}</span>
+<span style="{{d.liveSt}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>LIVE NOW</span>
+</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<div role="group" aria-label="Session type" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{kinds}}" as="f" hint-placeholder-count="5"><button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}</button></sc-for>
+</div>
+<label style="display: inline-flex"><span class="sr">Track</span>
+<select value="{{track}}" onChange="{{onTrack}}" style="min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 500; background: #ffffff; color: #0A1222; cursor: pointer">
+<option value="all">All tracks</option>
+<option value="Emissions">Emissions</option>
+<option value="Soil and farming">Soil and farming</option>
+<option value="Disaster recovery">Disaster recovery</option>
+<option value="Greenhouses">Greenhouses</option>
+<option value="Skills">Skills</option>
+<option value="Wetlands">Wetlands</option>
+<option value="Ice and heat">Ice and heat</option>
+<option value="Maintenance">Maintenance</option>
+</select></label>
+<label style="position: relative; flex: 1 1 240px; max-width: 320px; display: block"><span class="sr">Search sessions and speakers</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Search sessions and speakers" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px">
+</label>
+<div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px">
+<div role="group" aria-label="Time zone" style="display: inline-flex; gap: 2px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{tzOpts}}" as="o" hint-placeholder-count="2"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div>
+<div role="group" aria-label="Clock format" style="display: inline-flex; gap: 2px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{hOpts}}" as="o" hint-placeholder-count="2"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SESSION LIST -->
+<section id="program-sessions" role="tabpanel" aria-label="Sessions" style="padding: 24px 32px 96px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><span>{{listLabel}}</span><span>{{listNote}}</span></div>
+
+<sc-if value="{{isLive}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; padding: 8px; border-radius: 20px; background: #E8F6EE">
+<button type="button" onClick="{{liveNow.open}}" style="flex: 1.4 1 380px; display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 0; border-radius: 14px; background: #ffffff; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>NOW</span>
+<span style="font-size: 16px"><strong style="font-weight: 600">{{liveNow.title}}</strong><span style="color: #3D4556"> · ends {{liveNow.end}}</span></span>
+</button>
+<button type="button" onClick="{{liveNext.open}}" style="flex: 1 1 300px; display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 0; border-radius: 14px; background: #ffffff; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<span style="padding: 3px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em">NEXT</span>
+<span style="font-size: 16px"><strong style="font-weight: 600">{{liveNext.title}}</strong><span style="color: #3D4556"> · {{liveNext.start}}</span></span>
+</button>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none; align-self: center">Join session
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+</div>
+</sc-if>
+
+<sc-if value="{{isProv}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; padding: 12px 16px; border-radius: 12px; background: #EEF2FB; color: #0138AC; font-size: 15px">This is a draft. Times and speakers can still change; rows marked “Updated” changed since you last looked, and your starred sessions follow along.</p>
+</sc-if>
+
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{rows}}" as="s" hint-placeholder-count="6">
+<li style="{{s.li}}">
+<button type="button" class="rowbtn" onClick="{{s.open}}" style="flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: flex-start; padding: 20px 8px 20px 24px; border: 0; border-radius: 16px; background: transparent; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<span style="flex: 0 0 150px; display: flex; flex-direction: column; gap: 2px; font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556; padding-top: 1px"><span>{{s.time}}</span><span style="font-size: 11px; color: #646B7A">{{s.dur}}</span></span>
+<span style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 2px"><span style="{{s.badge}}">{{s.kindLabel}}</span><span style="{{s.nowSt}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>HAPPENING NOW</span><span style="{{s.updSt}}">UPDATED [DATE]</span></span>
+<span class="rt" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.3; letter-spacing: -0.01em">{{s.title}}</span>
+<span style="font-size: 14px; color: #646B7A">{{s.trackLine}}</span>
+<span style="display: flex; align-items: center; gap: 10px; margin-top: 6px">
+<span aria-hidden="true" style="display: inline-flex; flex: 0 0 auto"><span style="{{s.a0}}">{{s.t0}}</span><span style="{{s.a1}}">{{s.t1}}</span><span style="{{s.a2}}">{{s.t2}}</span><span style="{{s.a3}}">{{s.t3}}</span></span>
+<span style="font-size: 14px; color: #3D4556; line-height: 1.4">{{s.names}}</span>
+</span>
+</span>
+</button>
+<span style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 0 16px 0 4px">
+<span style="{{s.recSt}}">IN EDITING</span>
+<button type="button" onClick="{{s.open}}" aria-label="{{s.watchLabel}}" style="{{s.watchSt}}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>Watch <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{s.vdur}}</span></button>
+<button type="button" aria-pressed="{{s.starred}}" aria-label="{{s.starLabel}}" onClick="{{s.toggleStar}}" style="{{s.starSt}}"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="{{s.starFill}}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"></path></svg></button>
+</span>
+</li>
+</sc-for>
+</ol>
+
+<sc-if value="{{noRows}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 48px 24px; border: 1px dashed #D5D8DE; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.015em">No sessions match</strong>
+<span style="color: #646B7A; font-size: 15px">Try another day, type or track, or a different search.</span>
+<button type="button" onClick="{{clearFilters}}" style="margin-top: 6px; min-height: 44px; padding: 0 18px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Clear filters</button>
+</div>
+</sc-if>
+</div>
+</section>
+</sc-if>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">The monthly digest: summit news, new videos, jobs and research, once a month.</p>
+<sc-if value="{{nfFoot.c}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{nfFoot.open}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{nfFoot.cta}}</button></sc-if>
+<sc-if value="{{nfFoot.x}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; max-width: 420px"><span style="font-size: 14px; font-weight: 500">Email</span>
+<span style="display: flex; gap: 8px"><input type="email" value="{{nfFoot.email}}" onChange="{{nfFoot.setEmail}}" aria-invalid="{{nfFoot.invalid}}" placeholder="name@example.org" style="{{nfFoot.inputStyle}}"><button type="button" onClick="{{nfFoot.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap">Notify me</button></span></label>
+<sc-if value="{{nfFoot.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org</span></sc-if>
+<span role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px; max-width: 420px"><sc-for list="{{nfFoot.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></span>
+<span style="font-size: 12px; color: #646B7A">We only email you about these topics. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</sc-if>
+<sc-if value="{{nfFoot.p}}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 14px; background: #EEF2FB; max-width: 420px"><strong style="font-weight: 600">Check your inbox to confirm</strong><span style="font-size: 14px; color: #3D4556">We sent a confirmation link to {{nfFoot.email}}.</span><button type="button" onClick="{{nfFoot.confirm}}" style="align-self: flex-start; margin-top: 4px; padding: 4px 10px; border: 1px dashed #A9AFBA; border-radius: 8px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; cursor: pointer">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{nfFoot.s}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: #0B7A47"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1DB46C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>You're on the list · <a href="MyVRCV3.dc.html">Manage</a></span></sc-if>
+</div>
+<sc-for list="{{footGroups}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 140px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="5"><a class="flink" href="{{l.href}}" onClick="{{l.go}}">{{l.label}}</a></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">
+<span>© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<span style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"></rect><path d="M10 9.5v5l4.5-2.5z"></path></svg></a>
+<a href="HomeV3.dc.html#join" aria-label="Slack: join the network" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #3D4556; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v8M15 13v8M3 15h8M13 9h8"></path></svg></a>
+</span>
+</div>
+</div>
+</footer>
+
+<!-- SESSION DETAIL DRAWER (also /summits/[YEAR]/program/[session]) -->
+<sc-if value="{{hasDet}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 40; display: flex; justify-content: flex-end">
+<button type="button" aria-label="Close session details" onClick="{{closeDet}}" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(10,18,34,0.42); cursor: pointer"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="sd-title" style="position: relative; width: 520px; max-width: 100%; height: 100%; box-sizing: border-box; overflow-y: auto; background: #ffffff; box-shadow: -24px 0 60px -30px rgba(10,18,34,0.45)">
+<div style="position: sticky; top: 0; z-index: 2; background: #ffffff; border-bottom: 1px solid #E5E7EB; padding: 12px 16px 12px 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{dt.path}}</span>
+<button type="button" aria-label="Close session details" onClick="{{closeDet}}" style="flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 28px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; flex-wrap: wrap; gap: 6px"><span style="{{dt.badge}}">{{dt.kindLabel}}</span><span style="{{dt.trackSt}}">{{dt.trackLabel}}</span><span style="{{dt.nowSt}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>HAPPENING NOW</span></span>
+<h2 id="sd-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em">{{dt.title}}</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{dt.dayLine}}</span>
+<span style="font-size: 16px; font-weight: 500">{{dt.timeBoth}}</span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">[SESSION ABSTRACT]</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px">
+<button type="button" aria-pressed="{{dt.starred}}" onClick="{{dt.toggleStar}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="{{dt.starFill}}" stroke="#0138AC" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"></path></svg>{{dt.starText}}</button>
+<sc-if value="{{dt.showCal}}" hint-placeholder-val="{{ true }}">
+<div style="position: relative">
+<button type="button" aria-haspopup="menu" aria-expanded="{{calExp}}" onClick="{{toggleCal}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg>Add to calendar<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{calOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="Add to calendar" style="position: absolute; top: 50px; left: 0; z-index: 3; min-width: 260px; padding: 6px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 14px; box-shadow: 0 18px 40px -18px rgba(10,18,34,0.4); display: flex; flex-direction: column">
+<sc-for list="{{calOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="menuitem" class="mi" onClick="{{o.pick}}" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: #0A1222; font: inherit; font-size: 15px; text-align: left; cursor: pointer">{{o.label}}<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{o.meta}}</span></button></sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</div>
+
+<sc-if value="{{dt.joinInfo}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 14px; padding: 18px 20px; border-radius: 16px; background: #F3F4F2">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 2px"><strong style="font-weight: 600; font-size: 15px">Join link</strong><span style="font-size: 15px; color: #3D4556">Registered attendees get the join link here and by email on the day.</span></span>
+</div>
+</sc-if>
+<sc-if value="{{dt.joinLive}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; border-radius: 16px; background: #E8F6EE">
+<span style="display: flex; flex-direction: column; gap: 2px"><strong style="font-weight: 600; font-size: 15px">Your join link is ready</strong><span style="font-size: 14px; color: #0B7A47">Sent to your email too · <a href="MyVRCV3.dc.html" style="color: #0B7A47">Manage</a></span></span>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join session</a>
+</div>
+</sc-if>
+
+<!-- recording area -->
+<sc-if value="{{dt.recEditing}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; border: 1px solid #E5E7EB; border-radius: 16px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><strong style="font-weight: 600; font-size: 16px">Recording</strong><span style="padding: 3px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em">RECORDING IN EDITING</span></span>
+<span style="font-size: 15px; color: #3D4556">The recording will appear here and in Watch once it is published.</span>
+<sc-if value="{{nfRec.c}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{nfRec.open}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{nfRec.cta}}</button></sc-if>
+<sc-if value="{{nfRec.x}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 14px; font-weight: 500">Email</span>
+<span style="display: flex; gap: 8px"><input type="email" value="{{nfRec.email}}" onChange="{{nfRec.setEmail}}" aria-invalid="{{nfRec.invalid}}" placeholder="name@example.org" style="{{nfRec.inputStyle}}"><button type="button" onClick="{{nfRec.submit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap">Notify me</button></span></label>
+<sc-if value="{{nfRec.hasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email address, like name@example.org</span></sc-if>
+<span role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nfRec.topics}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></span>
+<span style="font-size: 12px; color: #646B7A">We only email you about these topics. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</sc-if>
+<sc-if value="{{nfRec.p}}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 14px; background: #EEF2FB"><strong style="font-weight: 600">Check your inbox to confirm</strong><span style="font-size: 14px; color: #3D4556">We sent a confirmation link to {{nfRec.email}}.</span><button type="button" onClick="{{nfRec.confirm}}" style="align-self: flex-start; margin-top: 4px; padding: 4px 10px; border: 1px dashed #A9AFBA; border-radius: 8px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; cursor: pointer">CANVAS · SIMULATE: CONFIRM EMAIL</button></div></sc-if>
+<sc-if value="{{nfRec.s}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: #0B7A47"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1DB46C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>You're on the list · <a href="MyVRCV3.dc.html">Manage</a></span></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{dt.recFuture}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; display: flex; align-items: center; gap: 10px; font-size: 15px; color: #3D4556"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"></rect><path d="M16 10l5-3v10l-5-3"></path></svg>Recorded. The video appears here after the summit.</p>
+</sc-if>
+<sc-if value="{{dt.recPlayer}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{poster}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{play}}" aria-label="{{dt.playLabel}}" style="position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #0A1222; cursor: pointer">
+<img src="{{dt.poster}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.78">
+<span style="position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(10,18,34,0.35)"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#0A1222"><path d="M8 5v14l11-7z"></path></svg></span>
+<span style="position: absolute; left: 14px; bottom: 14px; right: 90px; text-align: left; padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{dt.vtitle}}</span>
+<span style="position: absolute; right: 14px; bottom: 14px; padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 11px">{{dt.vdur}}</span>
+</button>
+</sc-if>
+<sc-if value="{{playing}}" hint-placeholder-val="{{ false }}">
+<div style="width: 100%; aspect-ratio: 16 / 9; border-radius: 20px; background: #0A1222; color: #9AA3B5; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 16px; box-sizing: border-box">
+<span style="flex: 1; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">PRIVACY-ENHANCED PLAYER LOADS HERE<br>{{dt.vtitle}}</span>
+<span aria-hidden="true" style="height: 4px; border-radius: 999px; background: #2E3850"><span style="display: block; width: 8%; height: 4px; border-radius: 999px; background: #ffffff"></span></span>
+<span style="display: flex; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 11px"><span>0:41 / {{dt.vdur}}</span><button type="button" onClick="{{stop}}" style="padding: 0; border: 0; background: none; color: #C8CEDA; font: inherit; cursor: pointer">BACK TO POSTER</button></span>
+</div>
+</sc-if>
+<div role="tablist" aria-label="About this recording" style="display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: #F3F4F2; align-self: flex-start">
+<sc-for list="{{vtabs}}" as="t" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<div role="tabpanel" style="font-size: 15px; color: #3D4556">
+<sc-if value="{{vSum}}" hint-placeholder-val="{{ true }}"><p style="margin: 0">{{dt.summary}}</p></sc-if>
+<sc-if value="{{vTr}}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 8px"><span style="display: flex; gap: 12px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; padding-top: 2px">00:00</span>[TRANSCRIPT]</span><span style="display: flex; gap: 12px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; padding-top: 2px">[MM:SS]</span>[TRANSCRIPT]</span><span style="font-size: 13px; color: #646B7A">Generated from the recording · <a href="#">Download .txt</a></span></div></sc-if>
+<sc-if value="{{vCh}}" hint-placeholder-val="{{ false }}"><ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px"><li style="display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #E5E7EB"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; padding-top: 2px">00:00</span>[CHAPTER TITLE]</li><li style="display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #E5E7EB"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0138AC; padding-top: 2px">[MM:SS]</span>[CHAPTER TITLE]</li></ol></sc-if>
+</div>
+<a href="{{dt.yt}}" style="align-self: flex-start; font-size: 14px; color: #646B7A">Open the video page</a>
+</div>
+</sc-if>
+
+<!-- speakers -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{dt.spHead}}</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px">
+<sc-for list="{{dtSp}}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{p.open}}" class="lift" style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #E5E7EB; border-radius: 14px; background: #ffffff; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<span aria-hidden="true" style="{{p.av}}">{{p.t}}</span>
+<span style="display: flex; flex-direction: column; min-width: 0; line-height: 1.3"><strong style="font-weight: 600; font-size: 14px">{{p.name}}</strong><span style="font-size: 12px; color: #646B7A">{{p.sub}}</span></span>
+</button>
+</sc-for>
+<sc-if value="{{dt.hasMod}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px dashed #D5D8DE; border-radius: 14px">
+<span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: #F3F4F2; flex: 0 0 auto"></span>
+<span style="display: flex; flex-direction: column; line-height: 1.3"><strong style="font-weight: 600; font-size: 14px">[MODERATOR NAME]</strong><span style="font-size: 12px; color: #646B7A">Moderator · [AFFILIATION]</span></span>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{dt.noSp}}" hint-placeholder-val="{{ false }}"><span style="font-size: 15px; color: #646B7A">[SPEAKERS] · speaker records for this session are still being added.</span></sc-if>
+</div>
+
+<!-- related -->
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">RELATED SESSIONS</span>
+<sc-for list="{{dtRel}}" as="r" hint-placeholder-count="2">
+<button type="button" class="rowbtn" onClick="{{r.open}}" style="display: flex; gap: 16px; align-items: flex-start; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 14px; background: #ffffff; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<span style="flex: 0 0 110px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556; padding-top: 2px">{{r.time}}</span>
+<span style="display: flex; flex-direction: column; gap: 4px"><span style="{{r.badge}}">{{r.kindLabel}}</span><span class="rt" style="font-weight: 600; font-size: 15px">{{r.title}}</span></span>
+</button>
+</sc-for>
+</div>
+</div>
+</aside>
+</div>
+</sc-if>
+
+<!-- PERSON DRAWER -->
+<sc-if value="{{hasPer}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 50; display: flex; justify-content: flex-end">
+<button type="button" aria-label="Close person details" onClick="{{closePer}}" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(10,18,34,0.2); cursor: pointer"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="pd-name" style="position: relative; width: 440px; max-width: 100%; height: 100%; box-sizing: border-box; overflow-y: auto; background: #ffffff; box-shadow: -24px 0 60px -30px rgba(10,18,34,0.45); padding: 16px 28px 28px; display: flex; flex-direction: column; gap: 22px">
+<span style="display: flex; justify-content: space-between; align-items: center">
+<button type="button" onClick="{{closePer}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px 0 0; border: 0; background: none; color: #0138AC; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Back to session</button>
+<a href="PeopleV3.dc.html" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{ps.path}}</a>
+</span>
+<span aria-hidden="true" style="{{ps.av}}">{{ps.t}}</span>
+<span style="display: flex; flex-direction: column; gap: 4px">
+<h2 id="pd-name" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em"><a href="PeopleV3.dc.html" style="color: #0A1222; text-decoration: none">{{ps.name}}</a></h2>
+<span style="font-size: 15px; color: #3D4556">{{ps.sub}}</span>
+</span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{ps.bio}}</p>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">APPEARS IN</span>
+<sc-for list="{{psApp}}" as="a" hint-placeholder-count="1">
+<button type="button" class="rowbtn" onClick="{{a.open}}" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px; background: #ffffff; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<span aria-hidden="true" style="width: 32px; height: 32px; flex: 0 0 auto; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+<span style="display: flex; flex-direction: column"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{a.label}}</span><span class="rt" style="font-weight: 600; font-size: 15px">{{a.title}}</span></span>
+</button>
+</sc-for>
+</div>
+<span style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px"><a href="PeopleV3.dc.html">Full profile in People →</a><sc-if value="{{ps.hasLi}}" hint-placeholder-val="{{ true }}"><a href="{{ps.li}}">LinkedIn</a></sc-if></span>
+</aside>
+</div>
+</sc-if>
+
+<!-- MY AGENDA DRAWER -->
+<sc-if value="{{ag}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 40; display: flex; justify-content: flex-end">
+<button type="button" aria-label="Close My agenda" onClick="{{closeAg}}" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(10,18,34,0.42); cursor: pointer"></button>
+<aside role="dialog" aria-modal="true" aria-labelledby="ag-title" style="position: relative; width: 480px; max-width: 100%; height: 100%; box-sizing: border-box; overflow-y: auto; background: #ffffff; box-shadow: -24px 0 60px -30px rgba(10,18,34,0.45); padding: 20px 28px 28px; display: flex; flex-direction: column; gap: 20px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="display: flex; flex-direction: column"><h2 id="ag-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">My agenda</h2><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{agSub}}</span></span>
+<button type="button" aria-label="Close My agenda" onClick="{{closeAg}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</span>
+<sc-if value="{{agEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 40px 20px; border: 1px dashed #D5D8DE; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"></path></svg>
+<strong style="font-weight: 600">Star sessions to build your agenda</strong>
+<span style="font-size: 15px; color: #646B7A">Use the star on any session in the program.</span>
+</div>
+</sc-if>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{agItems}}" as="a" hint-placeholder-count="3">
+<li style="display: contents">
+<span style="{{a.hs}}">{{a.head}}</span>
+<span style="{{a.rs}}">
+<span style="flex: 0 0 100px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{a.time}}</span>
+<span style="flex: 1 1 auto; font-weight: 600; font-size: 15px; line-height: 1.35">{{a.title}}</span>
+<button type="button" aria-pressed="true" aria-label="{{a.rl}}" onClick="{{a.remove}}" style="flex: 0 0 auto; width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: #0138AC; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"></path></svg></button>
+</span>
+</li>
+</sc-for>
+</ol>
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 16px; border-top: 1px solid #E5E7EB">
+<button type="button" onClick="{{agIcs}}" style="min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Add all to calendar (.ics)</button>
+<button type="button" disabled="disabled" aria-disabled="true" aria-describedby="feed-note" style="min-height: 48px; padding: 0 20px; border: 1px solid #E5E7EB; border-radius: 12px; background: #F3F4F2; color: #646B7A; font: inherit; font-size: 16px; font-weight: 500; cursor: not-allowed">Copy calendar feed URL</button>
+<span id="feed-note" style="font-size: 13px; color: #646B7A">Register to get a live calendar feed that updates when times change. Free · open to everyone. <a href="RegisterV3.dc.html">Register</a></span>
+<span style="display: flex; gap: 8px">
+<button type="button" onClick="{{agPrint}}" style="flex: 1; min-height: 44px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Print</button>
+<button type="button" onClick="{{agShare}}" style="flex: 1; min-height: 44px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Share link</button>
+</span>
+<span style="font-size: 13px; color: #646B7A">Saved on this device. Once you register, your agenda follows the link in your email to <a href="MyVRCV3.dc.html">My VRC</a>.</span>
+</div>
+</aside>
+</div>
+</sc-if>
+
+<!-- TOAST -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; font-size: 15px; box-shadow: 0 18px 40px -18px rgba(10,18,34,0.6)">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>{{toast}}
+<button type="button" aria-label="Dismiss" onClick="{{clearToast}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2260}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const nf = (tp) => ({ st: 'c', email: '', err: false, tp: tp });
+this.state = { ps: 'concluded', ed: '2026', day: 1, kind: 'all', track: 'all', q: '', tz: 'utc', h12: false,
+star: { s4: true, s6: true }, det: null, ag: false, menu: null, cal: false, per: null, play: false, vtab: 'summary', toast: '',
+nf: { page: nf(['prog', 'ann']), rec: nf(['rec']), foot: nf(['dig']) } };
+}
+renderVals() {
+const st = this.state;
+const M = "font-family: 'Geist Mono', monospace; ";
+const HIDE = 'display: none';
+const TONE = { blue: ['#EEF2FB', '#0138AC'], green: ['#E8F6EE', '#0B7A47'], amber: ['#FFF4E5', '#8A4B00'], neutral: ['#F3F4F2', '#3D4556'] };
+const chip = (t) => M + 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap; background: ' + TONE[t][0] + '; color: ' + TONE[t][1];
+const dotSt = (t) => t === 'green' ? 'width: 6px; height: 6px; border-radius: 50%; background: #1DB46C' : HIDE;
+const K = { keynote: ['Keynote', 'blue'], session: ['Session', 'green'], pitch: ['Pitches', 'amber'], remarks: ['Remarks', 'neutral'] };
+const badge = (k) => M + 'align-self: flex-start; padding: 2px 10px; border-radius: 999px; font-size: 11px; letter-spacing: 0.04em; background: ' + TONE[K[k][1]][0] + '; color: ' + TONE[K[k][1]][1];
+const seg = (on, sm) => 'min-height: ' + (sm ? 30 : 36) + 'px; padding: 0 ' + (sm ? 10 : 12) + 'px; border: 0; border-radius: ' + (sm ? 8 : 9) + 'px; font: inherit; font-size: ' + (sm ? 13 : 14) + 'px; font-weight: 500; cursor: pointer; white-space: nowrap; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const pill = (on) => 'min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const topicSt = (on) => 'min-height: 32px; padding: 0 12px; border-radius: 999px; font: inherit; font-size: 13px; cursor: pointer; ' + (on ? 'background: #EEF2FB; color: #0138AC; border: 1px solid #BFD0F5' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const B = (id) => id;
+
+// people: [name, role, affiliation, photo, bio]
+const P = {
+rc: ['Ruth Calloway', 'Leak Survey Technician', 'Example Gas Utility', 'img/avatar-04.svg'],
+th: ['Tobias Hartnell', 'Founder', 'Example Leak Sensing', 'img/avatar-05.svg'],
+sa: ['Selin Aydemir', 'PhD Researcher', 'Example University'],
+gp: ['Gregor Pazdera', 'Environmental Inspector', 'Example Regional Environment Agency'],
+at: ['Amaya Thorne', 'Agronomist', 'Example Farmers’ Cooperative', 'img/avatar-07.svg'],
+lb: ['Lorcan Beddoes', 'Sensor Engineer', 'Example Field Tools Co.'],
+cv: ['Chidinma Varga', 'Data Scientist', 'Example Data Commons', 'img/avatar-10.svg'],
+hw: ['Hollis Wexford', 'City Resilience Officer', 'City of Example', 'img/avatar-02.svg', 'Coordinated the clean-up after two river floods in one year and now writes the city’s rules for when drones and ground robots go in before people do.'],
+ab: ['Anaïs Brekke', 'Programme Evaluator', 'Example Climate Fund', 'img/avatar-01.svg', 'Reads the final reports of grant-funded robot pilots and follows up a year later to see which machines are still in use, and why the others stopped.'],
+po: ['Pieter Oduro', 'Emergency Planner', 'Example County Civil Protection'],
+ek: ['Esme Kintyre', 'Drone Pilot & Trainer', 'Example Search and Rescue Volunteers', 'img/avatar-08.svg'],
+mf: ['Matías Ferland', 'Structural Engineer', 'Example Polytechnic'],
+nt: ['Ngozi Tremaine', 'Claims Analyst', 'Example Mutual'],
+ms: ['Mina Saarinen', 'Grower', 'Example Greenhouse Cooperative', 'img/avatar-11.svg'],
+te: ['Taro Ellingsen', 'Automation Engineer', 'Example Vertical Farms'],
+al: ['Adaeze Lindholm', 'Plant Scientist', 'Example University'],
+bc: ['Bruno Castellane', 'Energy Manager', 'Example Greenhouse Cooperative'],
+dm: ['Dagny Morrow', 'Apprenticeship Coordinator', 'Example Polytechnic', 'img/avatar-12.svg'],
+ir: ['Ishaan Reval', 'Field Service Manager', 'Example Field Tools Co.'],
+cn: ['Colette Nyquist', 'Maintenance Lead', 'Example Wind Cooperative'],
+fg: ['Femi Garrow', 'MSc Student', 'Example University', 'img/avatar-13.svg'],
+lm: ['Lena Moravec', 'Undergraduate Student', 'Example Polytechnic'],
+hb: ['Hugo Brennerman', 'PhD Student', 'Example Institute of Technology'],
+sd: ['Sakura Delmont', 'MSc Student', 'Example University'],
+ka: ['Kofi Ashgrove', 'Speaker Care', 'Example Data Commons'],
+nh: ['Noor Halloran', 'Program Committee', 'Example Coastal Trust'],
+mv: ['Mireille Vos', 'Program Committee', 'Example University'],
+to: ['Tamsin Ocampo', 'Glaciologist', 'Example University', 'img/avatar-09.svg', 'Has lost more weather stations to crevasses than she likes to admit, and now designs instrument sleds that can be dug out and reused.'],
+of: ['Odile Farrow', 'Peatland Restoration Officer', 'Example Wetlands Trust', 'img/avatar-06.svg'],
+rq: ['Rafael Quist', 'Procurement Lead', 'Example Regional Water Board', 'img/avatar-03.svg'],
+iv: ['Ines Valderrama', 'Urban Climate Analyst', 'City of Example', 'img/avatar-14.svg'],
+kal: ['Kenji Albescu', 'Wind Turbine Technician & Trainer', 'Example Wind Cooperative', 'img/avatar-15.svg'],
+mo: ['Marguerite Osterhout', 'Open-Hardware Maintainer', 'Example Open Hardware Collective', 'img/avatar-16.svg'],
+hp: ['Henrik Paledo', 'Risk Engineer', 'Example Mutual', 'img/avatar-17.svg'],
+ys: ['Yewande Sorensen', 'Science Journalist & Moderator', 'Freelance', 'img/avatar-18.svg']
+};
+// Profile pages on the fictional site: id -> path after vert-robo-con.example/people/ (people with no page show no link)
+const LI = {
+rc: 'ruth-calloway', th: 'tobias-hartnell', at: 'amaya-thorne', cv: 'chidinma-varga',
+hw: 'hollis-wexford', ab: 'anais-brekke', ek: 'esme-kintyre', ms: 'mina-saarinen',
+dm: 'dagny-morrow', fg: 'femi-garrow',
+to: 'tamsin-ocampo', of: 'odile-farrow', rq: 'rafael-quist', iv: 'ines-valderrama',
+kal: 'kenji-albescu', mo: 'marguerite-osterhout', hp: 'henrik-paledo', ys: 'yewande-sorensen'
+};
+// Bios for people whose P record has none (people without one keep [BIO])
+const BIO = {
+rc: 'Walks gas mains with a handheld detector and helped trial a pipe-crawling robot on her part of the network.',
+th: 'Builds low-cost fixed methane sensors and the alert rules that decide when a crew is sent out.',
+at: 'Advises member farms on soil health and runs the cooperative’s trial of a soil-sampling robot.',
+ek: 'Trains volunteer pilots to fly damage surveys over flooded streets and hand the maps to emergency planners.',
+ms: 'Grows tomatoes under glass and tests which automation actually cuts the heating and water bills.',
+dm: 'Runs the apprenticeship that trains technicians to service field robots, from first day to certification.',
+fg: 'Studies how small ground robots can map standing water after heavy rain.',
+of: 'Plans ditch-blocking work on upland bogs and tests which survey tools can cross wet peat without damaging it.',
+rq: 'Writes the tenders that decide which inspection equipment a regional water board can buy.',
+iv: 'Turns street-level temperature readings into shade and tree-planting plans for a mid-sized city.',
+kal: 'Climbs turbines for a living and trains new technicians to work alongside blade-inspection robots.',
+mo: 'Keeps the drawings, parts lists and repair guides for a family of community-built sensor rovers up to date.',
+hp: 'Assesses what can go wrong before an insurer agrees to cover a field trial.',
+ys: 'Reports on environmental technology and moderated the wetlands panel and the first pitch round.'
+};
+const slug = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+// 2026: [id, day, startMin, endMin (UTC), kind, title, track, session no, speakers]
+const R26 = [
+['s1', 1, 900, 950, 'session', 'Panel: Finding methane leaks sooner', 'Emissions', 1, ['rc', 'th', 'sa', 'gp']],
+['s2', 1, 960, 1005, 'session', 'Panel: Measuring soil carbon without digging every field', 'Soil and farming', 2, ['at', 'lb', 'cv']],
+['s3', 1, 1005, 1050, 'remarks', 'Hallway hour', null, 0, ['ka']],
+['s4', 2, 900, 930, 'keynote', 'Keynote: Hollis Wexford', null, 0, ['hw']],
+['s5', 2, 930, 960, 'keynote', 'Keynote: Anaïs Brekke', null, 0, ['ab']],
+['s6', 2, 970, 1020, 'session', 'Panel: Robots after floods and storms', 'Disaster recovery', 3, ['po', 'ek', 'mf', 'nt']],
+['s7', 2, 1030, 1075, 'session', 'Panel: Greenhouses and indoor farms', 'Greenhouses', 4, ['ms', 'te', 'al', 'bc']],
+['s8', 3, 900, 945, 'session', 'Panel: Training the next robot technicians', 'Skills', 5, ['dm', 'ir', 'cn']],
+['s9', 3, 955, 1000, 'pitch', 'Student lightning round', null, 6, ['fg', 'lm', 'hb', 'sd']],
+['s10', 3, 1010, 1040, 'remarks', 'Open Q&A and topic wishlist', null, 0, ['nh', 'mv']]
+];
+// 2025: [id, day, kind, title, track, track label, speakers, video duration, summary, startMin, endMin (UTC)]
+// Times are the session times from SUMMIT_2025_PROGRAM; rows that share a block carry the block's range.
+const R25 = [
+['e1', 1, 'remarks', 'Welcome and how the three days work', null, 'Plenary', ['nh'], '6:20', 'Captions, chat etiquette and where to find the pitch voting form.', 780, 790],
+['e2', 1, 'session', 'Robots on soft ground: peat and marsh', 'Wetlands', 'Wetlands', ['of', 'ys'], '41:05', 'Why tracked robots sink, why drones miss the water table, and what restoration crews actually measure.', 790, 835],
+['e3', 1, 'session', 'Writing a robot into a public tender', 'Wetlands', 'Wetlands', ['rq'], '27:30', 'A water board buyer walks through the paperwork, line by line.', 845, 875],
+['e4', 1, 'pitch', 'Pitch round: water and wetland teams', null, 'Plenary', ['ys'], '44:10', 'Four start-ups get eight minutes each, then questions from a buyer.', 885, 930],
+['e5', 2, 'session', 'Sidewalk robots and the urban heat map', 'Ice and heat', 'Ice and heat', ['iv'], '24:55', 'Slow rovers that log surface temperature street by street through a summer.', 780, 810],
+['e6', 2, 'keynote', 'Keynote: Measuring a glacier that will not hold still', null, 'Plenary', ['to'], '33:40', 'Keeping instruments alive on ice that moves, melts and buries them.', 820, 855],
+['e7', 2, 'session', 'Batteries, sensors and minus twenty', 'Ice and heat', 'Ice and heat', ['to', 'kal'], '38:15', 'Field notes on what fails first when the temperature drops.', 865, 905],
+['e8', 2, 'pitch', 'Pitch round: city and cold-climate teams', null, 'Plenary', ['rq'], '42:00', 'Five teams, judged on what it would take to buy their robot.', 915, 960],
+['e9', 3, 'session', 'A technician’s wishlist for robot makers', 'Maintenance', 'Maintenance', ['kal'], '29:10', 'Access panels, labelled cables and manuals that survive the rain.', 780, 810],
+['e10', 3, 'session', 'Spare parts, open designs and long lives', 'Maintenance', 'Maintenance', ['mo'], '26:45', 'How published drawings keep a robot working after its maker moves on.', 820, 850],
+['e11', 3, 'session', 'Who pays when a field robot breaks?', 'Maintenance', 'Maintenance', ['hp'], '31:20', 'Liability, cover and the questions an insurer asks before a pilot starts.', 860, 895],
+['e12', 3, 'remarks', 'Audience vote and wrap-up', null, 'Plenary', ['nh'], '12:05', 'Pitch vote results and the topics attendees asked for next year.', 905, 920]
+];
+// Recording ids of the 2025 videos (SUMMIT_2025_VIDEOS), in R25 order e1..e12
+const YT25 = ['v25-welcome', 'v25-peat', 'v25-tender', 'v25-pitches-water', 'v25-heat', 'v25-keynote-ocampo', 'v25-cold', 'v25-pitches-city', 'v25-technicians', 'v25-open-hardware', 'v25-insurance', 'v25-wrap'];
+const DAYS = {
+'2026': [[1, 'MAY 19', 'Leaks, soil & carbon'], [2, 'MAY 20', 'Keynote double bill & recovery'], [3, 'MAY 21', 'Skills & new voices']],
+'2025': [[1, 'JUN 10', 'Wetlands & water agencies'], [2, 'JUN 11', 'Ice & heat'], [3, 'JUN 12', 'Keeping robots running']],
+'2027': [[1, 'APR 20'], [2, 'APR 21'], [3, 'APR 22']]
+};
+const R = R26.map((a) => ({ id: a[0], ed: '2026', day: a[1], s: a[2], e: a[3], kind: a[4], title: a[5], track: a[6], tl: a[6] || 'Plenary', no: a[7], sp: a[8] }))
+.concat(R25.map((a) => ({ id: a[0], ed: '2025', day: a[1], s: a[9], e: a[10], kind: a[2], title: a[3], track: a[4], tl: a[5], no: 0, sp: a[6], vdur: a[7], sum: a[8], yt: 'https://vert-robo-con.example/watch/' + YT25[+a[0].slice(1) - 1], blk: R25.filter((b) => b[1] === a[1] && b[9] === a[9]).length > 1 })));
+
+const live = st.ps === 'live', unp = st.ps === 'unpublished', prov = st.ps === 'provisional', conc = st.ps === 'concluded';
+const ed = unp ? '2027' : st.ed;
+const off = st.tz === 'local' ? 120 : 0;
+const pad = (n) => (n < 10 ? '0' : '') + n;
+const fm = (m, suf) => { const h = Math.floor(m / 60) % 24, mm = pad(m % 60); if (!st.h12) return pad(h) + ':' + mm; return (h % 12 || 12) + ':' + mm + (suf ? (h >= 12 ? ' PM' : ' AM') : ''); };
+const rng = (r, o) => { if (r.s == null) return '[TIME]'; const a = r.s + o, b = r.e + o; const same = (Math.floor(a / 60) >= 12) === (Math.floor(b / 60) >= 12); return fm(a, !same) + '–' + fm(b, true); };
+const ini = (n) => { const w = n.replace(/"[^"]*"/g, ' ').trim().split(/\s+/); return (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase(); };
+const avSt = (k, z, i) => { const base = 'width: ' + z + 'px; height: ' + z + 'px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; box-sizing: border-box; border: 2px solid #ffffff; ' + M + 'font-size: ' + Math.round(z * 0.32) + 'px; font-weight: 500; color: #0138AC; margin-left: ' + (i ? '-8px' : '0') + '; '; if (!k) return base + 'background: #E5E7EB'; const ph = P[k][3]; return base + (ph ? 'background: #EEF2FB url(' + B(ph) + ') center / cover no-repeat' : 'background: #EEF2FB'); };
+const avT = (k) => (k && !P[k][3]) ? ini(P[k][0]) : '';
+const sub = (k) => [P[k][1], P[k][2]].filter(Boolean).join(' · ');
+const toast = (t) => this.setState({ toast: t });
+const tog = (r) => { const on = !!st.star[r.id]; const star = Object.assign({}, st.star); if (on) delete star[r.id]; else star[r.id] = true; this.setState({ star, toast: on ? 'Removed from My agenda' : 'Added to My agenda' }); };
+const openDet = (id) => this.setState({ det: id, ag: false, cal: false, per: null, play: false, vtab: 'summary' });
+
+// canvas controls
+const setPS = (s) => { const n = { ps: s, det: null, ag: false, per: null }; if (s === 'provisional' || s === 'live') { if (st.ed !== '2026') n.day = 1; n.ed = '2026'; } if (s === 'live') n.day = 2; this.setState(n); };
+const setEd = (e) => this.setState({ ed: e, day: (e === '2026' && st.ps === 'live') ? 2 : 1, det: null, ag: false, per: null, ps: e === '2025' ? 'concluded' : (unp ? 'concluded' : st.ps) });
+const cvStates = [['unpublished', 'Not published'], ['provisional', 'Provisional'], ['live', 'Live'], ['concluded', 'Concluded']].map(([k, l]) => ({ label: l, pressed: st.ps === k ? 'true' : 'false', style: seg(st.ps === k, true), pick: () => setPS(k) }));
+const cvEds = ['2026', '2025'].map((k) => ({ label: k, pressed: (!unp && st.ed === k) ? 'true' : 'false', style: seg(!unp && st.ed === k, true), pick: () => setEd(k) }));
+const cvNote = unp ? 'Not published previews the 2027 edition.' : (st.ed === '2025' ? 'Past editions always show Concluded, with Watch on every row.' : (live ? 'Live demo uses Day 2 of 2026, with Session 3 happening now.' : ''));
+
+// header facts
+const META = { '2026': 'May 19–21, 2026 · Online · Last updated [DATE]', '2025': 'June 10–12, 2025 · Online · 12 sessions · 12 recordings', '2027': 'April 20–22, 2027 · Online · Program announced [DATE]' };
+const c = (t, tone) => ({ t, st: chip(tone), dot: dotSt(tone) });
+const stateChips = unp ? [c('NOT PUBLISHED YET', 'neutral')] : prov ? [c('DRAFT PROGRAM · SUBJECT TO CHANGE', 'blue')] : live ? [c('LIVE NOW · DAY 2', 'green')]
+: ed === '2025' ? [c('CONCLUDED', 'neutral'), c('RECORDINGS PUBLISHED', 'green')] : [c('CONCLUDED', 'neutral'), c('RECORDINGS IN EDITING', 'neutral')];
+
+// filters
+const q = st.q.trim().toLowerCase();
+const hay = (r) => (r.title + ' ' + r.tl + ' ' + r.sp.map((k) => P[k][0] + ' ' + P[k][2]).join(' ')).toLowerCase();
+const match = (r) => (st.kind === 'all' || r.kind === st.kind) && (st.track === 'all' || r.track === st.track) && (!q || hay(r).indexOf(q) > -1);
+const filtered = st.kind !== 'all' || st.track !== 'all' || !!q;
+const edRows = R.filter((r) => r.ed === ed);
+const dayList = DAYS[ed];
+const days = dayList.map((d) => {
+const on = d[0] === st.day; const n = edRows.filter((r) => r.day === d[0] && match(r)).length;
+return { label: 'DAY ' + d[0] + ' · ' + d[1], theme: d[2] || '', selected: on ? 'true' : 'false',
+count: filtered ? n + (n === 1 ? ' MATCH' : ' MATCHES') : n + (ed === '2025' ? (n === 1 ? ' RECORDING' : ' RECORDINGS') : ' SESSIONS'), countSt: 'opacity: 0.75',
+liveSt: (live && d[0] === 2) ? chip('green') + '; align-self: flex-start' : HIDE,
+style: 'display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #0A1222; border: 1px solid #E5E7EB'),
+pick: () => this.setState({ day: d[0] }) };
+});
+const kinds = [['all', 'All'], ['keynote', 'Keynotes'], ['session', 'Sessions'], ['pitch', 'Pitches'], ['remarks', 'Remarks']].map(([k, l]) => ({ label: l, pressed: st.kind === k ? 'true' : 'false', style: pill(st.kind === k), pick: () => this.setState({ kind: k }) }));
+const tzOpts = [['utc', 'UTC'], ['local', 'My time (Europe/Berlin, UTC+2)']].map(([k, l]) => ({ label: l, pressed: st.tz === k ? 'true' : 'false', style: seg(st.tz === k), pick: () => this.setState({ tz: k }) }));
+const hOpts = [[false, '24h'], [true, '12h']].map(([k, l]) => ({ label: l, pressed: st.h12 === k ? 'true' : 'false', style: seg(st.h12 === k), pick: () => this.setState({ h12: k }) }));
+
+// rows
+const STAR = 'width: 44px; height: 44px; border: 0; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; ';
+const WATCH = 'display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer';
+const curRows = edRows.filter((r) => r.day === st.day && match(r));
+const rows = curRows.map((r) => {
+const on = !!st.star[r.id]; const isNow = live && r.id === 's6';
+const o = { title: r.title, time: rng(r, off), dur: r.vdur ? (r.blk ? 'BLOCK · ' : '') + 'VIDEO ' + r.vdur : (r.e - r.s) + ' MIN', kindLabel: K[r.kind][0], badge: badge(r.kind),
+trackLine: r.tl + (r.no ? ' · Session ' + r.no : ''), names: r.sp.length ? r.sp.map((k) => P[k][0]).join(', ') : '[SPEAKERS]',
+li: 'display: flex; flex-wrap: wrap; align-items: center; border-radius: 16px; ' + (isNow ? 'border: 2px solid #1DB46C; box-shadow: 0 0 0 4px #E8F6EE; ' : 'border: 1px solid #E5E7EB; ') + 'background: ' + (r.kind === 'keynote' ? '#FAFBFE' : '#ffffff'),
+nowSt: isNow ? chip('green') : HIDE, updSt: (prov && (r.id === 's5' || r.id === 's10')) ? chip('blue') : HIDE,
+recSt: (conc && ed === '2026') ? chip('neutral') : HIDE, watchSt: ed === '2025' ? WATCH : HIDE, vdur: r.vdur || '', watchLabel: 'Watch recording: ' + r.title + (r.vdur ? ', ' + r.vdur : ''),
+starred: on ? 'true' : 'false', starFill: on ? 'currentColor' : 'none', starLabel: (on ? 'Remove from' : 'Add to') + ' My agenda: ' + r.title,
+starSt: STAR + (on ? 'background: #EEF2FB; color: #0138AC' : 'background: transparent; color: #646B7A'),
+toggleStar: () => tog(r), open: () => openDet(r.id) };
+for (let i = 0; i < 4; i++) { const k = r.sp[i]; const ph = !r.sp.length && i < 2; o['a' + i] = (k || ph) ? avSt(k || null, 32, i) : HIDE; o['t' + i] = k ? avT(k) : ''; }
+return o;
+});
+const dd = dayList.find((d) => d[0] === st.day) || dayList[0];
+const listLabel = 'DAY ' + dd[0] + ' · ' + dd[1] + ' · ' + rows.length + ' OF ' + edRows.filter((r) => r.day === dd[0]).length + (ed === '2025' ? ' RECORDINGS' : ' SESSIONS');
+const listNote = 'TIMES IN ' + (st.tz === 'utc' ? 'UTC' : 'EUROPE/BERLIN (UTC+2)') + ' · ' + (st.h12 ? '12H' : '24H') + (ed === '2025' ? ' · BLOCK TIMES · RECORDINGS PUBLISHED' : '');
+
+// session detail
+const d = st.det ? R.find((r) => r.id === st.det) : null;
+let dt = { spHead: '' }, dtSp = [], dtRel = [];
+if (d) {
+const on = !!st.star[d.id]; const isNow = live && d.id === 's6';
+const dday = DAYS[d.ed].find((x) => x[0] === d.day);
+const utc = rng(d, 0), loc = rng(d, 120);
+const both = d.s == null ? '[TIME] UTC · [TIME] your time' : (st.tz === 'utc' ? utc + ' UTC · ' + loc + ' your time' : loc + ' your time · ' + utc + ' UTC');
+const ph = d.sp[0] && P[d.sp[0]][3];
+dt = { path: '/summits/' + d.ed + '/program/' + slug(d.title),
+title: d.title, kindLabel: K[d.kind][0], badge: badge(d.kind), trackLabel: d.tl + (d.no ? ' · SESSION ' + d.no : ''), trackSt: chip('neutral'), nowSt: isNow ? chip('green') : HIDE,
+dayLine: 'SUMMIT ' + d.ed + ' · DAY ' + d.day + ' · ' + dday[1], timeBoth: both,
+starred: on ? 'true' : 'false', starFill: on ? '#0138AC' : 'none', starText: on ? 'In My agenda' : 'Add to My agenda', toggleStar: () => tog(d),
+showCal: d.ed === '2026' && (prov || live), joinInfo: d.ed === '2026' && prov, joinLive: d.ed === '2026' && live,
+recEditing: d.ed === '2026' && conc, recFuture: d.ed === '2026' && (prov || live), recPlayer: d.ed === '2025',
+poster: ph ? B(ph) : B('img/summit-grid.svg'), vtitle: d.title, vdur: d.vdur || '', playLabel: 'Play recording: ' + d.title, yt: d.yt || '#', summary: d.sum || '[SUMMARY]',
+spHead: d.sp.length ? 'SPEAKERS · ' + d.sp.length : 'SPEAKERS', hasMod: d.kind === 'session', noSp: !d.sp.length };
+dtSp = d.sp.map((k) => ({ name: P[k][0], sub: sub(k), av: avSt(k, 48, 0), t: avT(k), open: () => this.setState({ per: k, cal: false }) }));
+dtRel = R.filter((x) => x.ed === d.ed && x.id !== d.id && x.kind !== 'remarks' && (x.day === d.day || (d.track && x.track === d.track))).slice(0, 2)
+.map((x) => ({ time: x.s == null ? 'DAY ' + x.day : rng(x, off), title: x.title, kindLabel: K[x.kind][0], badge: badge(x.kind), open: () => openDet(x.id) }));
+}
+const calOpts = [['Apple / Outlook', '.ICS', 'Calendar file downloaded'], ['Google Calendar', 'GOOGLE', 'Opened in Google Calendar'], ['Outlook.com', 'WEB', 'Opened in Outlook.com']]
+.map(([l, m, t]) => ({ label: l, meta: m, pick: () => this.setState({ cal: false, toast: t }) }));
+const vtabs = [['summary', 'Summary'], ['transcript', 'Transcript'], ['chapters', 'Chapters']].map(([k, l]) => ({ label: l, selected: st.vtab === k ? 'true' : 'false', style: seg(st.vtab === k), pick: () => this.setState({ vtab: k }) }));
+
+// person drawer
+const pk = st.per; let ps = {}, psApp = [];
+if (pk) {
+const p = P[pk];
+ps = { name: p[0], sub: sub(pk), bio: p[4] || BIO[pk] || '[BIO]', t: avT(pk), hasLi: !!LI[pk], li: LI[pk] ? 'https://vert-robo-con.example/people/' + LI[pk] : '', path: '/people/' + slug(p[0]),
+av: avSt(pk, 96, 0).replace('border-radius: 50%', 'border-radius: 24px').replace('border: 2px solid #ffffff; ', '') };
+psApp = R.filter((r) => r.sp.some((k) => P[k][0] === p[0])).sort((a, b) => b.ed.localeCompare(a.ed)).map((r) => ({ label: r.ed + ' · DAY ' + r.day + ' · ' + K[r.kind][0].toUpperCase(), title: r.title, open: () => openDet(r.id) }));
+}
+
+// agenda
+const starredRows = edRows.filter((r) => st.star[r.id]);
+const agItems = [];
+dayList.forEach((x) => {
+const its = starredRows.filter((r) => r.day === x[0]); if (!its.length) return;
+agItems.push({ hs: M + 'display: block; font-size: 12px; letter-spacing: 0.06em; color: #646B7A; padding: 10px 0 2px', head: 'DAY ' + x[0] + ' · ' + x[1], rs: HIDE, time: '', title: '', rl: '', remove: () => {} });
+its.forEach((r) => agItems.push({ hs: HIDE, head: '', rs: 'display: flex; align-items: center; gap: 12px; padding: 8px 6px 8px 14px; border: 1px solid #E5E7EB; border-radius: 14px', time: rng(r, off), title: r.title, rl: 'Remove from My agenda: ' + r.title, remove: () => tog(r) }));
+});
+
+// notify-me
+const TOP = { ann: 'Summit announcements', prog: 'Program published', rec: 'Recordings', dig: 'Monthly digest', vid: 'New videos', job: 'Job alerts' };
+const INPUT = 'flex: 1 1 auto; min-width: 0; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 15px; background: #ffffff; ';
+const mkNf = (key, cta, keys) => {
+const n = st.nf[key];
+const set = (patch) => { const all = Object.assign({}, this.state.nf); all[key] = Object.assign({}, this.state.nf[key], patch); this.setState({ nf: all }); };
+const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n.email.trim());
+return { c: n.st === 'c', x: n.st === 'x', p: n.st === 'p', s: n.st === 's', cta, email: n.email, hasErr: n.err, invalid: n.err ? 'true' : 'false',
+inputStyle: INPUT + (n.err ? 'border-color: #B42318; background: #FEF3F2' : ''),
+open: () => set({ st: 'x' }), setEmail: (e) => set({ email: e.target.value, err: false }),
+submit: () => (ok ? set({ st: 'p', err: false }) : set({ err: true })), confirm: () => set({ st: 's' }),
+topics: keys.map((t) => { const on = n.tp.indexOf(t) > -1; return { label: TOP[t], pressed: on ? 'true' : 'false', style: topicSt(on), toggle: () => set({ tp: on ? n.tp.filter((x) => x !== t) : n.tp.concat(t) }) }; }) };
+};
+
+// footer (same groups, labels and targets as HomeV3; this board has no join sheet, so Join goes to HomeV3's join section)
+const footGroups = [
+['SUMMIT', 'Summit', [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']]],
+['LEARN', 'Learn', [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']]],
+['COMMUNITY', 'Community', [['Join', 'HomeV3.dc.html#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']]],
+['ABOUT', 'About', [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']]]
+].map((g) => ({ title: g[0], label: g[1], links: g[2].map((l) => ({ label: l[0], href: l[1], go: () => {} })) }));
+
+// header menus (as HomeV3)
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', 'HomeV3.dc.html#join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => {
+const on = st.menu === key;
+return { label: MENUS[key].label, id: 'menu-' + key, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => this.setState({ menu: on ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) this.setState({ menu: null }); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], go: () => this.setState({ menu: null }) })) };
+});
+
+return {
+cvStates, cvEds, cvNote,
+menus, menuOpen: !!st.menu, closeMenu: () => this.setState({ menu: null }),
+year: ed, meta: META[ed], stateChips, published: !unp, unp, isLive: live, isProv: prov,
+agCount: starredRows.length, openAg: () => this.setState({ ag: true, det: null, per: null, menu: null }), closeAg: () => this.setState({ ag: false }),
+skel: DAYS['2027'].map((x) => ({ label: 'DAY ' + x[0] + ' · ' + x[1] })),
+trackPreview: [['01', 'Leaks & emissions'], ['02', 'Floods & recovery'], ['03', 'Farms & soil'], ['04', 'Keeping robots running']].map(([n, t]) => ({ n: 'TRACK ' + n, t })),
+see2026: () => this.setState({ ps: 'concluded', ed: '2026', day: 1 }),
+days, kinds, tzOpts, hOpts, track: st.track, onTrack: (e) => this.setState({ track: e.target.value }), q: st.q, onQ: (e) => this.setState({ q: e.target.value }),
+rows, noRows: !unp && rows.length === 0, clearFilters: () => this.setState({ kind: 'all', track: 'all', q: '' }), listLabel, listNote,
+liveNow: { title: 'Panel: Robots after floods and storms', end: fm(1020 + off, true), open: () => openDet('s6') },
+liveNext: { title: 'Panel: Greenhouses and indoor farms', start: fm(1030 + off, true), open: () => openDet('s7') },
+hasDet: !!d, dt, dtSp, dtRel, closeDet: () => this.setState({ det: null, cal: false, play: false }),
+calOpen: st.cal, calExp: st.cal ? 'true' : 'false', toggleCal: () => this.setState({ cal: !st.cal }), calOpts,
+poster: !st.play, playing: st.play, play: () => this.setState({ play: true }), stop: () => this.setState({ play: false }),
+vtabs, vSum: st.vtab === 'summary', vTr: st.vtab === 'transcript', vCh: st.vtab === 'chapters',
+hasPer: !!pk, ps, psApp, closePer: () => this.setState({ per: null }),
+ag: st.ag, agEmpty: starredRows.length === 0, agItems,
+agSub: 'SUMMIT ' + ed + ' · ' + starredRows.length + (starredRows.length === 1 ? ' SESSION' : ' SESSIONS') + ' · ' + (st.tz === 'utc' ? 'UTC' : 'YOUR TIME'),
+agIcs: () => toast(starredRows.length ? 'Calendar file downloaded' : 'Star a session first'), agPrint: () => toast('Print view opened'), agShare: () => toast('Link copied'),
+nfPage: mkNf('page', 'Email me when the program is published', ['prog', 'ann', 'dig']),
+nfRec: mkNf('rec', 'Notify me when it is published', ['rec', 'vid', 'dig']),
+nfFoot: mkNf('foot', 'Get the monthly digest', ['dig', 'ann', 'vid', 'job']),
+footGroups,
+hasToast: !!st.toast, toast: st.toast, clearToast: () => this.setState({ toast: '' })
+};
+}
+}
+</script>
+</body>
+</html>

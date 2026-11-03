@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vert Robo Con — Phone (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.noscroll{scrollbar-width:none}.noscroll::-webkit-scrollbar{display:none}
+.mrow:hover{background:#F7F8F9}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 924px; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 16px; line-height: 1.55">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="height: 80px; box-sizing: border-box; background: #E9EBEE; border-bottom: 1px dashed #A7ADB8; padding: 8px 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<div style="display: flex; align-items: center; gap: 10px">
+<span id="cc-state" style="flex: 0 0 auto; font-size: 13px; color: #3D4556">Summit state</span>
+<div role="group" aria-labelledby="cc-state" style="flex: 1 1 auto; display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: #F3F4F2">
+<sc-for list="{{states}}" as="s" hint-placeholder-count="3"><button type="button" aria-pressed="{{s.pressed}}" onClick="{{s.pick}}" style="{{s.style}}">{{s.label}}</button></sc-for>
+</div>
+</div>
+</div>
+
+<!-- PHONE FRAME 390 x 844 -->
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #ffffff">
+
+<header style="position: absolute; top: 0; left: 0; right: 0; z-index: 10; height: 60px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: rgba(255,255,255,0.92); backdrop-filter: blur(14px); border-bottom: 1px solid #E5E7EB">
+<button type="button" onClick="{{goHome}}" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: transparent; color: #0A1222; font: inherit; cursor: pointer">
+<img src="img/logo.svg" alt="" style="width: 36px; height: 22px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px">Vert Robo Con</span></button>
+<button type="button" onClick="{{openJoin}}" style="min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Join</button>
+</header>
+
+<!-- ===== HOME TAB ===== -->
+<sc-if value="{{isHome}}" hint-placeholder-val="{{ true }}">
+<div style="{{ui.scroller}}">
+<section style="padding: 24px 16px 0; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<button type="button" onClick="{{goSummit}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 5px; border: 1px solid #E5E7EB; border-radius: 999px; background: #ffffff; color: #3D4556; font: inherit; font-size: 13px; cursor: pointer">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 11px"><span aria-hidden="true" style="{{ui.bdot}}"></span>NEW</span>Summit 2027 · Apr 20–22</button>
+<sc-for list="{{nHome}}" as="n" hint-placeholder-count="1">
+<sc-if value="{{n.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{n.expand}}" style="{{n.ghost}}"><sc-if value="{{n.icon}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></sc-if>{{n.label}}</button></sc-if>
+<sc-if value="{{n.open}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1 1 100%; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff">
+<label style="{{ui.col4}}"><span style="{{ui.label}}">Email</span><input type="email" autocomplete="email" value="{{n.email}}" onChange="{{n.setEmail}}" placeholder="you@example.org" aria-invalid="{{n.invalid}}" style="{{n.input}}"></label>
+<sc-if value="{{n.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{ui.err}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{n.topics}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<button type="button" onClick="{{n.submit}}" style="{{n.btn}}">Notify me</button>
+<span style="{{ui.help}}">We only email you about these topics. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{n.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="flex: 1 1 100%; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 16px; background: #F3F4F2"><span style="font-size: 15px; color: #3D4556"><strong style="font-weight: 600; color: #0A1222">Check your inbox to confirm.</strong> We sent a link to {{n.email}}.</span><button type="button" onClick="{{n.confirm}}" style="{{n.canvas}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{n.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; min-height: 44px"><span style="{{n.chip}}"><span aria-hidden="true" style="{{ui.gdot}}"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{ui.label}}">Manage</a></div>
+</sc-if>
+</sc-for>
+</div>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 60px; line-height: 0.92; letter-spacing: -0.045em">Robots for a<br><span style="color: #0138AC">cooler planet.</span></h1>
+<p style="margin: 0; font-size: 18px; color: #3D4556">A friendly community for people who build, fund, study and repair robots for climate work.</p>
+<div style="{{ui.col8}}">
+<button type="button" onClick="{{openJoin}}" style="{{ui.btnPfull}}">Join the network</button>
+<button type="button" onClick="{{goMap}}" style="{{ui.btnSfull}}">Explore the map</button>
+</div>
+<img src="img/hero.svg" alt="Illustration of a field robot in a green landscape" style="width: 100%; height: 260px; object-fit: cover; border-radius: 22px; display: block">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button type="button" onClick="{{goMap}}" style="border: 0; border-radius: 20px; background: #0138AC; color: #ffffff; padding: 18px; display: flex; flex-direction: column; gap: 6px; font: inherit; text-align: left; cursor: pointer">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #BFD0F5">MAPPED</span>
+<span style="{{ui.statNum}}">120</span>
+<span style="font-size: 13px; color: #E4EAF8">organizations · 18 countries · 70 deployed</span></button>
+<button type="button" onClick="{{openJoin}}" style="border: 0; border-radius: 20px; background: #E8F6EE; color: #0A1222; padding: 18px; display: flex; flex-direction: column; gap: 6px; font: inherit; text-align: left; cursor: pointer">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #0B7A47">MEMBERS</span>
+<span style="{{ui.statNum}}">120+</span>
+<span style="font-size: 13px; color: #3D4556">in 18 countries</span></button>
+</div>
+</section>
+
+<section style="padding: 64px 16px 0; display: flex; flex-direction: column; gap: 16px">
+<span style="{{ui.eyebrow}}">01 — THE FIELD</span>
+<h2 style="{{ui.h2}}">What do robots do for the climate?</h2>
+<p style="margin: 0; color: #3D4556">Robots already find leaks, map floods and measure soil. They only help if someone can fix them, pay for them and trust their data.</p>
+<div role="tablist" aria-label="Robot domains" style="{{ui.segWrap}}">
+<sc-for list="{{domains}}" as="t" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{t.selected}}" aria-controls="dom-panel" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<div id="dom-panel" role="tabpanel" style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 4px">
+<p style="margin: 0 0 8px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 500; font-size: 21px; line-height: 1.25; letter-spacing: -0.015em">{{panel.lede}}</p>
+<sc-for list="{{panel.orgs}}" as="o" hint-placeholder-count="3"><div style="padding: 12px 0; border-top: 1px solid #E5E7EB"><strong style="font-weight: 600">{{o.name}}</strong> <span style="{{ui.m11}}">{{o.meta}}</span><br><span style="font-size: 14px; color: #3D4556">{{o.desc}}</span></div></sc-for>
+<button type="button" onClick="{{panel.go}}" style="{{ui.btnT}}">{{panel.cta}} →</button>
+</div>
+</section>
+
+<section style="padding: 64px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">02 — WHAT WE DO</span>
+<h2 style="{{ui.h2mb}}">Ways in</h2>
+<button type="button" onClick="{{goSummit}}" style="border: 0; border-radius: 22px; background: #0A1222; color: #ffffff; padding: 20px; display: flex; flex-direction: column; gap: 14px; font: inherit; text-align: left; cursor: pointer">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #9AA3B5">SUMMIT 2027 · APRIL 20–22 · ONLINE · FREE</span>
+<span style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<img src="img/avatar-02.svg" alt="Hollis Wexford" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px">
+<img src="img/avatar-01.svg" alt="Anaïs Brekke" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px">
+<img src="img/avatar-04.svg" alt="Esme Kintyre" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px">
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.05; letter-spacing: -0.02em">Vert Robo Con Summit 2027</span>
+<span style="font-size: 14px; color: #C8CEDA">Last year: keynotes from Hollis Wexford and Anaïs Brekke, plus 22 more speakers such as Esme Kintyre.</span>
+</button>
+<button type="button" onClick="{{goWatch}}" style="display: flex; gap: 14px; align-items: center; padding: 14px; border: 0; border-radius: 20px; background: #F3F4F2; color: #0A1222; font: inherit; text-align: left; cursor: pointer">
+<img src="img/hero.svg" alt="" style="width: 72px; height: 72px; object-fit: cover; border-radius: 12px; flex: 0 0 auto">
+<span style="display: flex; flex-direction: column"><span style="{{ui.m11}}">WATCH</span><span style="font-weight: 600; line-height: 1.3">Robots in the Field, 4 episodes</span></span></button>
+<sc-for list="{{ways}}" as="w" hint-placeholder-count="3">
+<a href="{{w.href}}" style="{{w.style}}">
+<sc-if value="{{w.hasImg}}" hint-placeholder-val="{{ true }}"><img src="{{w.img}}" alt="" style="width: 72px; height: 72px; object-fit: cover; border-radius: 12px; flex: 0 0 auto"></sc-if>
+<sc-if value="{{w.noImg}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 72px; height: 72px; border-radius: 12px; flex: 0 0 auto; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16v11H4zM9 8V5h6v3M4 13h16"></path></svg></span></sc-if>
+<span style="display: flex; flex-direction: column"><span style="{{ui.m11}}">{{w.kick}}</span><span style="font-weight: 600; line-height: 1.3">{{w.title}}</span></span>
+</a>
+</sc-for>
+</section>
+
+<section style="padding: 64px 16px 0">
+<p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.02; letter-spacing: -0.03em">A robot is a tool, not a climate plan. <span style="color: #646B7A">We look hard at what it fixes and what it breaks.</span></p>
+</section>
+
+<section style="padding: 64px 16px 0">
+<div style="border-radius: 26px; background: #0A1222; color: #ffffff; padding: 28px 20px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #7FD6A8">● 120+ MEMBERS ON SLACK</span>
+<h2 style="{{ui.h2}}">Come say hello.</h2>
+<p style="margin: 0; font-size: 15px; color: #C8CEDA">Joining takes about a minute. An admin approves each Slack request by hand, typically within 24–48 hours. Then say hello in #welcome.</p>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 15px">
+<li style="padding: 12px 14px; border-radius: 12px; background: #141D30"><span style="font-family: 'Geist Mono', monospace; color: #7FD6A8">01 </span>Share what you know</li>
+<li style="padding: 12px 14px; border-radius: 12px; background: #141D30"><span style="font-family: 'Geist Mono', monospace; color: #7FD6A8">02 </span>Assume good faith</li>
+<li style="padding: 12px 14px; border-radius: 12px; background: #141D30"><span style="font-family: 'Geist Mono', monospace; color: #7FD6A8">03 </span><a href="ResearchV3.dc.html" style="color: #ffffff">Follow the code of conduct</a></li>
+</ol>
+<button type="button" onClick="{{openJoin}}" style="{{ui.btnW}}">Join the network</button>
+</div>
+<p style="margin: 32px 0 0; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</p>
+</section>
+<div aria-hidden="true" style="{{spacer}}"></div>
+</div>
+</sc-if>
+
+<!-- ===== SUMMIT TAB ===== -->
+<sc-if value="{{isSummit}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.scroller}}">
+<section style="padding: 20px 16px 0; display: flex; flex-direction: column; gap: 16px">
+<nav aria-label="Breadcrumb" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A"><a href="SummitV3.dc.html" style="color: #646B7A; text-decoration: none">SUMMITS</a> / <span style="color: #0A1222">2027</span></nav>
+<sc-if value="{{srH1}}" hint-placeholder-val="{{ false }}"><h1 style="position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0">Vert Robo Con Summit 2027</h1></sc-if>
+
+<sc-if value="{{showRegd}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="border-radius: 20px; background: #E8F6EE; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+<span style="{{ui.chipGreen}}"><span aria-hidden="true" style="{{ui.gdot}}"></span>REGISTERED · VRC-2027-0142</span>
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.1; letter-spacing: -0.02em">You’re in for April 20–22, 2027</strong>
+<span style="font-size: 15px; color: #3D4556">We’ll email you when the program is published on [DATE]. Join links arrive by email before each day.</span>
+<a href="MyVRCV3.dc.html" style="{{ui.label}}">Manage this</a>
+</div>
+</sc-if>
+
+<sc-if value="{{isLive}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 22px; background: #E8F6EE; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="{{ui.chipWhiteGreen}}"><span aria-hidden="true" style="{{ui.gdot}}"></span>NOW · DAY 1</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #0B7A47">{{live.ends}}</span></span>
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.08; letter-spacing: -0.02em">{{live.nowTitle}}</strong>
+<span style="font-size: 14px; color: #3D4556">{{live.nowMeta}}</span>
+<a href="MyVRCV3.dc.html" style="{{ui.btnPfull}}">Join session</a>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 14px 8px 14px 16px; display: flex; align-items: center; gap: 8px">
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{live.nextMeta}}</span><strong style="font-weight: 600; font-size: 17px">{{live.nextTitle}}</strong></span>
+<button type="button" aria-pressed="{{live.next.starred}}" aria-label="{{live.next.starLabel}}" onClick="{{live.next.toggle}}" style="{{live.next.starBtn}}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="{{live.next.fill}}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"></path></svg></button>
+</div>
+<button type="button" onClick="{{openAgenda}}" style="{{ui.btnSfull}}">Open my agenda ({{starCount}})</button>
+</sc-if>
+
+<sc-if value="{{showHero}}" hint-placeholder-val="{{ true }}">
+<div style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+<span style="{{ui.chipBlue}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>{{heroChip}}</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 44px; line-height: 0.96; letter-spacing: -0.04em">Vert Robo Con Summit <span style="color: #0138AC">2027</span></h1>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Three afternoons online about robots doing climate work. Free, with no cap on places.</p>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #E5E7EB; border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden">
+<div style="background: #ffffff; padding: 12px 14px"><dt style="{{ui.m11}}">DATES</dt><dd style="margin: 2px 0 0; font-weight: 600; font-size: 15px">April 20–22, 2027</dd></div>
+<div style="background: #ffffff; padding: 12px 14px"><dt style="{{ui.m11}}">WHERE</dt><dd style="margin: 2px 0 0; font-weight: 600; font-size: 15px">Online</dd></div>
+<div style="background: #ffffff; padding: 12px 14px"><dt style="{{ui.m11}}">DAILY</dt><dd style="margin: 2px 0 0; font-weight: 600; font-size: 15px">[HH:MM–HH:MM] UTC</dd></div>
+<div style="background: #ffffff; padding: 12px 14px"><dt style="{{ui.m11}}">PRICE</dt><dd style="margin: 2px 0 0; font-weight: 600; font-size: 15px">Free · open to everyone</dd></div>
+</dl>
+<sc-if value="{{isSoon}}" hint-placeholder-val="{{ true }}">
+<div style="{{ui.col10}}">
+<sc-for list="{{nSum}}" as="n" hint-placeholder-count="1">
+<sc-if value="{{n.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{n.expand}}" style="{{n.ghost}}"><sc-if value="{{n.icon}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></sc-if>{{n.label}}</button></sc-if>
+<sc-if value="{{n.open}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.nBox}}">
+<label style="{{ui.col4}}"><span style="{{ui.label}}">Email</span><input type="email" autocomplete="email" value="{{n.email}}" onChange="{{n.setEmail}}" placeholder="you@example.org" aria-invalid="{{n.invalid}}" style="{{n.input}}"></label>
+<sc-if value="{{n.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{ui.err}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{n.topics}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<button type="button" onClick="{{n.submit}}" style="{{n.btn}}">Notify me</button>
+<span style="{{ui.help}}">We only email you about these topics. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{n.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 16px; background: #F3F4F2"><span style="font-size: 15px; color: #3D4556"><strong style="font-weight: 600; color: #0A1222">Check your inbox to confirm.</strong> We sent a link to {{n.email}}.</span><button type="button" onClick="{{n.confirm}}" style="{{n.canvas}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{n.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; min-height: 44px"><span style="{{n.chip}}"><span aria-hidden="true" style="{{ui.gdot}}"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{ui.label}}">Manage</a></div>
+</sc-if>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{isOpen}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.col8}}">
+<button type="button" onClick="{{openRegister}}" style="{{ui.btnPfull}}">Register free</button>
+<span style="{{ui.help}}">Closes [DATE]. Takes about two minutes.</span>
+</div>
+</sc-if>
+<a href="GetInvolvedV3.dc.html" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 16px; background: #F3F4F2; color: #0A1222; text-decoration: none">
+<span style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 15px">Pitch your startup</span><span style="{{ui.help}}">Startup pitch applications open Dec 8.</span></span>
+<span style="{{ui.chipBlueC}}"><span aria-hidden="true" style="{{ui.bdot}}"></span>OPENS DEC 8</span></a>
+</div>
+</sc-if>
+</section>
+
+<!-- program -->
+<section id="program" style="padding: 36px 0 0">
+<div style="padding: 0 16px 12px; display: flex; flex-direction: column; gap: 10px">
+<span style="{{ui.eyebrow}}">{{prog.eyebrow}}</span>
+<h2 style="{{ui.h2}}">Program</h2>
+</div>
+<sc-if value="{{prog.unpub}}" hint-placeholder-val="{{ true }}">
+<div style="margin: 0 16px; padding: 20px; border: 1px solid #E5E7EB; border-radius: 20px; display: flex; flex-direction: column; gap: 14px">
+<span style="{{ui.chipNeutral}}"><span aria-hidden="true" style="{{ui.ndot}}"></span>NOT PUBLISHED YET</span>
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em">Program announced [DATE]</strong>
+<p style="margin: 0; font-size: 15px; color: #3D4556">All three days will appear here with times in UTC and your own time zone, so you can star sessions and build your agenda.</p>
+<ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{prog.days}}" as="d" hint-placeholder-count="3"><li style="padding: 10px 12px; border-radius: 12px; background: #F3F4F2; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">{{d.label}}</span><span style="{{ui.m11t}}">{{d.date}}</span></li></sc-for>
+</ul>
+<div style="{{ui.col10}}">
+<sc-for list="{{nProg}}" as="n" hint-placeholder-count="1">
+<sc-if value="{{n.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{n.expand}}" style="{{n.ghost}}"><sc-if value="{{n.icon}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></sc-if>{{n.label}}</button></sc-if>
+<sc-if value="{{n.open}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.nBox}}">
+<label style="{{ui.col4}}"><span style="{{ui.label}}">Email</span><input type="email" autocomplete="email" value="{{n.email}}" onChange="{{n.setEmail}}" placeholder="you@example.org" aria-invalid="{{n.invalid}}" style="{{n.input}}"></label>
+<sc-if value="{{n.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{ui.err}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{n.topics}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<button type="button" onClick="{{n.submit}}" style="{{n.btn}}">Notify me</button>
+<span style="{{ui.help}}">We only email you about these topics. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{n.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 16px; background: #F3F4F2"><span style="font-size: 15px; color: #3D4556"><strong style="font-weight: 600; color: #0A1222">Check your inbox to confirm.</strong> We sent a link to {{n.email}}.</span><button type="button" onClick="{{n.confirm}}" style="{{n.canvas}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{n.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; min-height: 44px"><span style="{{n.chip}}"><span aria-hidden="true" style="{{ui.gdot}}"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{ui.label}}">Manage</a></div>
+</sc-if>
+</sc-for>
+</div>
+<a href="ProgramV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 500; text-decoration: none">Past programs: 2026 and 2025 →</a>
+</div>
+</sc-if>
+<sc-if value="{{prog.pub}}" hint-placeholder-val="{{ false }}">
+<div style="position: sticky; top: 0; z-index: 4; padding: 10px 16px; background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB">
+<div role="tablist" aria-label="Summit days" style="{{ui.segWrap}}">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{d.selected}}" aria-controls="prog-rows" onClick="{{d.pick}}" style="{{d.style}}"><span style="font-size: 14px; font-weight: 600">{{d.label}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; opacity: 0.85">{{d.date}}</span></button></sc-for>
+</div>
+</div>
+<div style="padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<button type="button" onClick="{{openFilters}}" style="{{ui.btnSs}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg>Filters<sc-if value="{{hasFilt}}" hint-placeholder-val="{{ false }}"><span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 11px; display: inline-flex; align-items: center; justify-content: center">{{filtCount}}</span></sc-if></button>
+<button type="button" onClick="{{openAgenda}}" style="{{agendaPill}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"></path></svg>My agenda ({{starCount}})</button>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{tzShort}}</span>
+</div>
+<ol id="prog-rows" aria-label="{{progListLabel}}" style="margin: 0; padding: 0 16px; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<li style="{{r.card}}">
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{r.time}}</span><span style="{{r.badge}}">{{r.kindLabel}}</span><sc-if value="{{r.now}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="{{ui.gdot}}"></span>HAPPENING NOW</span></sc-if></span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; line-height: 1.2; letter-spacing: -0.015em">{{r.title}}</span>
+<sc-if value="{{r.hasSub}}" hint-placeholder-val="{{ true }}"><span style="{{ui.help}}">{{r.sub}}</span></sc-if>
+</span>
+<button type="button" aria-pressed="{{r.starred}}" aria-label="{{r.starLabel}}" onClick="{{r.toggle}}" style="{{r.starBtn}}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="{{r.fill}}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"></path></svg></button>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{noRows}}" hint-placeholder-val="{{ false }}">
+<div style="margin: 0 16px; padding: 28px 20px; border: 1px dashed #D5D8DE; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center">
+<strong style="font-weight: 600">No sessions match</strong>
+<span style="font-size: 14px; color: #646B7A">Try another day, or clear the filters.</span>
+<button type="button" onClick="{{clearFilters}}" style="{{ui.btnTc}}">Clear filters</button>
+</div>
+</sc-if>
+</sc-if>
+</section>
+<div aria-hidden="true" style="{{spacer}}"></div>
+</div>
+</sc-if>
+
+<!-- ===== WATCH TAB ===== -->
+<sc-if value="{{isWatch}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.scroller}}">
+<section style="padding: 24px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">WATCH · SERIES · SUMMIT TALKS</span>
+<h1 style="{{ui.h1m}}">Watch</h1>
+<p style="margin: 0; color: #3D4556">The Robots in the Field series and every summit recording, free to watch.</p>
+</section>
+<sc-for list="{{shelves}}" as="sh" hint-placeholder-count="2">
+<section style="padding: 32px 16px 0; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid #E5E7EB">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">{{sh.title}}</h2>
+<span style="{{ui.m11t}}">{{sh.count}}</span>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{sh.items}}" as="v" hint-placeholder-count="4">
+<li><a href="WatchV3.dc.html" class="mrow" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; color: #0A1222; text-decoration: none; border-radius: 12px">
+<span style="{{v.thumb}}">
+<sc-if value="{{v.hasImg}}" hint-placeholder-val="{{ true }}"><img src="{{v.img}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"></sc-if>
+<span aria-hidden="true" style="position: relative; width: 28px; height: 28px; border-radius: 50%; background: #ffffff; color: #0A1222; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(10,18,34,0.25)"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+</span>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px"><span style="{{ui.m11t}}">{{v.kick}}</span><sc-if value="{{v.isNew}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipBlueSm}}">NEW</span></sc-if></span>
+<span style="font-weight: 600; font-size: 15px; line-height: 1.3">{{v.title}}</span>
+</span>
+</a></li>
+</sc-for>
+</ol>
+<a href="WatchV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; font-size: 15px; text-decoration: none">{{sh.more}} →</a>
+</section>
+</sc-for>
+<div aria-hidden="true" style="{{spacer}}"></div>
+</div>
+</sc-if>
+
+<!-- ===== MAP TAB ===== -->
+<sc-if value="{{isMap}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.scroller}}">
+<section style="padding: 20px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1; letter-spacing: -0.035em">Global map</h1>
+<span style="{{ui.m11}}">120 ORGANIZATIONS · 18 COUNTRIES · 70 DEPLOYED</span>
+</div>
+<label style="position: relative; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 16px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{mq}}" onChange="{{onMq}}" placeholder="Search 120 organizations" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 16px; background: #ffffff">
+</label>
+<div style="display: flex; align-items: center; gap: 10px">
+<div role="group" aria-label="View" style="flex: 0 0 180px; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{views}}" as="v" hint-placeholder-count="2"><button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button></sc-for>
+</div>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{mCount}}</span>
+</div>
+</section>
+<div role="group" aria-label="Robot type" class="noscroll" style="display: flex; gap: 8px; overflow-x: auto; padding: 12px 16px">
+<sc-for list="{{mtypes}}" as="t" hint-placeholder-count="5"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}"><span aria-hidden="true" style="{{t.dot}}"></span>{{t.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; opacity: 0.85">{{t.count}}</span></button></sc-for>
+</div>
+<sc-if value="{{isMapView}}" hint-placeholder-val="{{ true }}">
+<div style="margin: 0 16px; border-radius: 20px; overflow: hidden; background: #EEF1F4; position: relative">
+<div class="noscroll" style="overflow-x: auto">
+<div style="position: relative; width: 720px; height: 355px">
+<img src="img/world-map.svg" alt="World map showing where the mapped organizations are headquartered" style="position: absolute; inset: 0; width: 100%; height: 100%; filter: grayscale(1) contrast(0.8) brightness(1.12); opacity: 0.7">
+<sc-for list="{{pins}}" as="p" hint-placeholder-count="18"><span style="{{p.style}}">{{p.n}}</span></sc-for>
+</div>
+</div>
+<span style="position: absolute; left: 12px; top: 12px; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.92); font-family: 'Geist Mono', monospace; font-size: 11px; color: #3D4556">SWIPE TO PAN</span>
+</div>
+<div style="margin: 12px 16px 0; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="{{ui.m11}}">BY ROBOT TYPE</span>
+<span aria-hidden="true" style="display: flex; height: 10px; border-radius: 999px; overflow: hidden; gap: 2px"><span style="flex: 36; background: #1F9D5C"></span><span style="flex: 31; background: #0B6FB8"></span><span style="flex: 37; background: #6D5BD0"></span><span style="flex: 7; background: #D9822B"></span><span style="flex: 9; background: #A7ADB8"></span></span>
+<span style="display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: #3D4556"><span>Aerial 37</span><span>Ground 36</span><span>Ocean 31</span><span>Robotic arm 9</span><span>Other 7</span></span>
+</div>
+</sc-if>
+<sc-if value="{{isListView}}" hint-placeholder-val="{{ false }}">
+<ul style="margin: 0; padding: 0; list-style: none; border-top: 1px solid #E5E7EB">
+<sc-for list="{{orgs}}" as="o" hint-placeholder-count="6">
+<li style="border-bottom: 1px solid #EEF0F3"><a href="MapV3.dc.html" class="mrow" style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; color: #0A1222; text-decoration: none">
+<span style="{{ui.between}}"><strong style="font-weight: 600">{{o.name}}</strong><span style="{{ui.m11}}">{{o.meta}}</span></span>
+<span style="font-size: 14px; color: #3D4556; line-height: 1.45">{{o.desc}}</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px"><span style="display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: #F3F4F2; font-size: 12px"><span aria-hidden="true" style="{{o.dot}}"></span>{{o.typeLabel}}</span><span style="padding: 2px 8px; border-radius: 999px; background: #F3F4F2; font-size: 12px; color: #3D4556">{{o.app}}</span><span style="{{o.depChip}}">{{o.depLabel}}</span></span>
+</a></li>
+</sc-for>
+</ul>
+<sc-if value="{{mEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center">
+<strong style="font-weight: 600">No organizations match</strong>
+<span style="font-size: 14px; color: #646B7A">Try a different robot type, or clear the search.</span>
+<button type="button" onClick="{{clearMap}}" style="{{ui.btnTc}}">Clear filters</button>
+</div>
+</sc-if>
+</sc-if>
+<p style="margin: 16px 16px 0; font-size: 13px; color: #646B7A"><a href="MapV3.dc.html">CSV · JSON</a> · updated [DATE] · generated from this map · Licence: CC BY 4.0</p>
+<div aria-hidden="true" style="{{spacer}}"></div>
+</div>
+<button type="button" onClick="{{openSuggest}}" style="position: absolute; right: 16px; bottom: 96px; z-index: 19; display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 20px; border: 0; border-radius: 999px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer; box-shadow: 0 12px 28px -10px rgba(1,56,172,0.55)">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Suggest</button>
+</sc-if>
+
+<!-- ===== MORE TAB ===== -->
+<sc-if value="{{isMore}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.scroller}}">
+<section style="padding: 24px 16px 0; display: flex; flex-direction: column; gap: 16px">
+<h1 style="{{ui.h1m}}">More</h1>
+<ul style="margin: 0; padding: 0; list-style: none; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden">
+<sc-for list="{{more}}" as="m" hint-placeholder-count="10">
+<li style="{{m.li}}"><a href="{{m.href}}" class="mrow" style="display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 12px 14px; color: #0A1222; text-decoration: none">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; background: #F3F4F2; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{m.icon}}"></path></svg></span>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600">{{m.label}}<sc-if value="{{m.hasChip}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipNeutralSm}}">{{m.chip}}</span></sc-if></span><span style="font-size: 13px; color: #646B7A; line-height: 1.4">{{m.desc}}</span></span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M9 6l6 6-6 6"></path></svg>
+</a></li>
+</sc-for>
+</ul>
+<div style="border-radius: 20px; background: #F3F4F2; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<span style="{{ui.eyebrow}}">MONTHLY DIGEST</span>
+<p style="margin: 0; font-size: 15px; color: #3D4556">One email a month: summit news, new videos, jobs and map additions.</p>
+<sc-for list="{{nMore}}" as="n" hint-placeholder-count="1">
+<sc-if value="{{n.idle}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{n.expand}}" style="{{n.ghost}}"><sc-if value="{{n.icon}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></sc-if>{{n.label}}</button></sc-if>
+<sc-if value="{{n.open}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.nBox}}">
+<label style="{{ui.col4}}"><span style="{{ui.label}}">Email</span><input type="email" autocomplete="email" value="{{n.email}}" onChange="{{n.setEmail}}" placeholder="you@example.org" aria-invalid="{{n.invalid}}" style="{{n.input}}"></label>
+<sc-if value="{{n.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{ui.err}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{n.topics}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<button type="button" onClick="{{n.submit}}" style="{{n.btn}}">Notify me</button>
+<span style="{{ui.help}}">We only email you about these topics. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{n.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 16px; background: #ffffff"><span style="font-size: 15px; color: #3D4556"><strong style="font-weight: 600; color: #0A1222">Check your inbox to confirm.</strong> We sent a link to {{n.email}}.</span><button type="button" onClick="{{n.confirm}}" style="{{n.canvas}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{n.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; min-height: 44px"><span style="{{n.chip}}"><span aria-hidden="true" style="{{ui.gdot}}"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{ui.label}}">Manage</a></div>
+</sc-if>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="{{ui.social}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="WatchV3.dc.html" aria-label="Videos" style="{{ui.social}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="mailto:hello@vert-robo-con.example" aria-label="Email hello@vert-robo-con.example" style="{{ui.social}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></a>
+<button type="button" aria-label="Slack: join the network" onClick="{{openJoin}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border: 0; border-radius: 10px; background: transparent; cursor: pointer"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2z"></path></svg></button>
+</div>
+<p style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">© 2026 VERT ROBO CON</p>
+</section>
+<div aria-hidden="true" style="{{spacer}}"></div>
+</div>
+</sc-if>
+
+<!-- sticky register bar (Summit tab, registration open) -->
+<sc-if value="{{showRegBar}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.regBar}}">
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; line-height: 1.3"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #9AA3B5">SUMMIT 2027 · FREE</span><span style="font-size: 15px; font-weight: 600">April 20–22 · Online</span></span>
+<button type="button" onClick="{{openRegister}}" style="{{ui.btnPs}}">Register</button>
+</div>
+</sc-if>
+<sc-if value="{{showRegdBar}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.regBar}}">
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; line-height: 1.3"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #7FD6A8">● REGISTERED</span><span style="font-size: 15px; font-weight: 600">VRC-2027-0142</span></span>
+<a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; background: #ffffff; color: #0A1222; font-size: 15px; font-weight: 500; text-decoration: none">My summit</a>
+</div>
+</sc-if>
+
+<!-- bottom tab bar -->
+<nav aria-label="Primary" style="position: absolute; left: 12px; right: 12px; bottom: 16px; z-index: 20; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 6px; border-radius: 20px; background: rgba(255,255,255,0.94); backdrop-filter: blur(14px); box-shadow: 0 10px 30px -10px rgba(10,18,34,0.3); border: 1px solid #E5E7EB">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button type="button" aria-current="{{t.current}}" onClick="{{t.pick}}" style="{{t.style}}"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{t.icon}}"></path></svg>{{t.label}}<span aria-hidden="true" style="{{t.ind}}"></span></button></sc-for>
+</nav>
+
+<!-- toast -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; left: 16px; right: 16px; top: 12px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; box-shadow: 0 16px 32px -12px rgba(10,18,34,0.5)">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>
+<span style="flex: 1 1 auto; font-size: 15px">{{toast}}</span>
+<button type="button" onClick="{{closeToast}}" aria-label="Dismiss" style="width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- ===== BOTTOM SHEETS (filters, my agenda) ===== -->
+<sc-if value="{{bsOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeBs}}" style="position: absolute; inset: 0; z-index: 40; background: rgba(10,18,34,0.48)"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="bs-title" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 41; max-height: 680px; display: flex; flex-direction: column; background: #ffffff; border-radius: 24px 24px 0 0; box-shadow: 0 -20px 40px -20px rgba(10,18,34,0.35)">
+<button type="button" onClick="{{closeBs}}" aria-label="Close sheet" style="flex: 0 0 auto; height: 28px; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><span aria-hidden="true" style="width: 40px; height: 5px; border-radius: 999px; background: #C9CDD5"></span></button>
+<div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0 16px 12px">
+<h2 id="bs-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">{{bsTitle}}</h2>
+<button type="button" onClick="{{closeBs}}" style="{{ui.btnTc}}">Done</button>
+</div>
+<div style="flex: 1 1 auto; overflow-y: auto; padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 20px">
+<sc-if value="{{isFilters}}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{fGroups}}" as="g" hint-placeholder-count="2">
+<div role="group" aria-label="{{g.label}}" style="{{ui.col10}}">
+<span style="{{ui.label}}">{{g.label}}</span>
+<div style="{{ui.wrap8}}"><sc-for list="{{g.items}}" as="c" hint-placeholder-count="4"><button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.toggle}}" style="{{c.style}}">{{c.label}}</button></sc-for></div>
+</div>
+</sc-for>
+<div style="{{ui.col10}}">
+<span id="tz-l" style="{{ui.label}}">Show times in</span>
+<div role="group" aria-labelledby="tz-l" style="{{ui.segWrap}}">
+<sc-for list="{{tzOpts}}" as="z" hint-placeholder-count="2"><button type="button" aria-pressed="{{z.pressed}}" onClick="{{z.pick}}" style="{{z.style}}">{{z.label}}</button></sc-for>
+</div>
+<span style="{{ui.help}}">Detected from your device: Europe/Berlin, UTC+2 during the summit.</span>
+<div role="group" aria-label="Clock format" style="{{ui.segWrap}}">
+<sc-for list="{{hourOpts}}" as="z" hint-placeholder-count="2"><button type="button" aria-pressed="{{z.pressed}}" onClick="{{z.pick}}" style="{{z.style}}">{{z.label}}</button></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{isAgenda}}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{agendaEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 24px 16px; border: 1px dashed #D5D8DE; border-radius: 16px; display: flex; flex-direction: column; gap: 4px; text-align: center">
+<strong style="font-weight: 600">No sessions saved yet</strong>
+<span style="font-size: 14px; color: #646B7A">Tap the star on any session to add it here.</span>
+</div>
+</sc-if>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{agenda}}" as="a" hint-placeholder-count="2">
+<li style="display: flex; align-items: center; gap: 8px; padding: 12px 6px 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px">
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="{{ui.m11t}}">{{a.meta}}</span><strong style="font-weight: 600; font-size: 15px">{{a.title}}</strong></span>
+<button type="button" aria-label="{{a.removeLabel}}" onClick="{{a.remove}}" style="flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 12px; background: transparent; color: #0138AC; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#0138AC" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"></path></svg></button>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{calAgenda}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="Add to calendar" style="{{ui.calMenu}}">
+<sc-for list="{{calOpts}}" as="c" hint-placeholder-count="3"><button type="button" role="menuitem" onClick="{{c.pick}}" style="{{ui.calItem}}">{{c.label}}<span style="{{ui.m11}}">{{c.meta}}</span></button></sc-for>
+</div>
+</sc-if>
+</sc-if>
+</div>
+<div style="flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 12px 16px 24px; border-top: 1px solid #E5E7EB">
+<sc-if value="{{isFilters}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{clearFilters}}" style="{{ui.btnTc}}">Clear all</button>
+<button type="button" onClick="{{closeBs}}" style="{{ui.btnPflex}}">{{showN}}</button>
+</sc-if>
+<sc-if value="{{isAgenda}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{toggleCalAgenda}}" aria-expanded="{{calAgendaExp}}" aria-disabled="{{agendaCalDis}}" style="{{agendaCalBtn}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"></path></svg>Add all to calendar</button>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== FULL-SCREEN SHEETS (register, join, suggest) ===== -->
+<sc-if value="{{fsOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-modal="true" aria-labelledby="fs-title" style="position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; background: #ffffff">
+<div style="flex: 0 0 auto; display: flex; align-items: center; min-height: 56px; padding: 0 6px; border-bottom: 1px solid #E5E7EB">
+<button type="button" onClick="{{closeFs}}" style="flex: 0 0 72px; min-height: 44px; padding: 0 10px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 16px; font-weight: 500; text-align: left; cursor: pointer">Close</button>
+<h2 id="fs-title" style="flex: 1 1 auto; margin: 0; text-align: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">{{fsTitle}}</h2>
+<span aria-hidden="true" style="flex: 0 0 72px"></span>
+</div>
+<div style="flex: 1 1 auto; overflow-y: auto; padding: 20px 16px 28px">
+
+<sc-if value="{{fsHasErrs}}" hint-placeholder-val="{{ false }}">
+<div id="fs-errors" role="alert" tabindex="-1" style="margin-bottom: 20px; border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 14px 16px; color: #B42318; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600; font-size: 16px">{{fsErrTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px; font-size: 15px"><sc-for list="{{fsErrs}}" as="e" hint-placeholder-count="3"><li><a href="{{e.href}}" style="color: #B42318">{{e.text}}</a></li></sc-for></ul>
+</div>
+</sc-if>
+
+<!-- REGISTER FORM -->
+<sc-if value="{{isRegForm}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.col22}}">
+<div style="{{ui.col4}}">
+<span style="{{ui.eyebrow}}">APRIL 20–22, 2027 · ONLINE · FREE</span>
+<p style="margin: 0; font-size: 15px; color: #3D4556">Takes about two minutes. Your answers are saved on this device as you go.</p>
+</div>
+<span style="{{ui.legend}}">01 · ABOUT YOU</span>
+<sc-for list="{{rText}}" as="f" hint-placeholder-count="3">
+<div style="{{ui.col6}}">
+<label for="{{f.id}}" style="{{ui.label}}">{{f.label}}<sc-if value="{{f.opt}}" hint-placeholder-val="{{ false }}"> <span style="{{ui.opt}}">(optional)</span></sc-if></label>
+<input id="{{f.id}}" type="{{f.type}}" autocomplete="{{f.ac}}" value="{{f.value}}" onChange="{{f.set}}" onBlur="{{f.blur}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.style}}">
+<sc-if value="{{f.hasHelp}}" hint-placeholder-val="{{ false }}"><span style="{{ui.help}}">{{f.help}}</span></sc-if>
+<sc-if value="{{f.hasErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{f.err}}</span></sc-if>
+</div>
+</sc-for>
+<div style="{{ui.col6}}">
+<label for="reg-role" style="{{ui.label}}">Role</label>
+<select id="reg-role" value="{{rf.role}}" onChange="{{rf.setRole}}" aria-invalid="{{rf.roleInv}}" style="{{rf.roleStyle}}">
+<option value="">Choose your role</option><option value="Researcher">Researcher</option><option value="Founder or startup">Founder or startup</option><option value="Investor">Investor</option><option value="Policy or government">Policy or government</option><option value="NGO">NGO</option><option value="Student">Student</option><option value="Other">Other</option>
+</select>
+<sc-if value="{{rf.roleErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{rf.roleErr}}</span></sc-if>
+</div>
+<div style="{{ui.col6}}">
+<label for="reg-country" style="{{ui.label}}">Country</label>
+<select id="reg-country" value="{{rf.country}}" onChange="{{rf.setCountry}}" aria-invalid="{{rf.countryInv}}" style="{{rf.countryStyle}}">
+<option value="">Choose your country</option><option value="Australia">Australia</option><option value="Brazil">Brazil</option><option value="Canada">Canada</option><option value="Chile">Chile</option><option value="France">France</option><option value="Germany">Germany</option><option value="India">India</option><option value="Japan">Japan</option><option value="Kenya">Kenya</option><option value="Netherlands">Netherlands</option><option value="New Zealand">New Zealand</option><option value="Nigeria">Nigeria</option><option value="Norway">Norway</option><option value="Singapore">Singapore</option><option value="South Africa">South Africa</option><option value="Spain">Spain</option><option value="United Kingdom">United Kingdom</option><option value="United States">United States</option><option value="Other">Other</option>
+</select>
+<sc-if value="{{rf.countryErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{rf.countryErr}}</span></sc-if>
+</div>
+<div style="{{ui.col6}}">
+<label for="reg-tz" style="{{ui.label}}">Time zone</label>
+<select id="reg-tz" value="{{rf.tz}}" onChange="{{rf.setTz}}" style="{{rf.tzStyle}}">
+<option value="UTC">UTC</option><option value="Europe/London">Europe/London</option><option value="Europe/Berlin">Europe/Berlin</option><option value="America/New_York">America/New_York</option><option value="America/Los_Angeles">America/Los_Angeles</option><option value="America/Sao_Paulo">America/Sao_Paulo</option><option value="Africa/Nairobi">Africa/Nairobi</option><option value="Asia/Kolkata">Asia/Kolkata</option><option value="Asia/Singapore">Asia/Singapore</option><option value="Australia/Sydney">Australia/Sydney</option>
+</select>
+<span style="{{ui.help}}">Detected from your device. Reminders use this zone.</span>
+</div>
+<span style="{{ui.legend}}">02 · YOUR SUMMIT</span>
+<div id="reg-days" role="group" aria-labelledby="reg-days-l" style="{{ui.col8}}">
+<span id="reg-days-l" style="{{ui.label}}">Days you plan to attend</span>
+<sc-for list="{{rf.days}}" as="d" hint-placeholder-count="3"><button type="button" role="checkbox" aria-checked="{{d.checked}}" onClick="{{d.toggle}}" style="{{d.style}}"><span style="{{d.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span><span style="display: flex; flex-direction: column; line-height: 1.3"><span style="font-weight: 600; font-size: 15px">{{d.label}}</span><span style="{{ui.help}}">[HH:MM–HH:MM] UTC</span></span></button></sc-for>
+<sc-if value="{{rf.daysErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{rf.daysErr}}</span></sc-if>
+<span style="{{ui.help}}">All three are ticked. Untick a day you’ll miss; you can change this later.</span>
+</div>
+<div role="group" aria-labelledby="reg-top-l" style="{{ui.col10}}">
+<span id="reg-top-l" style="{{ui.label}}">Topics you care about <span style="{{ui.opt}}">(optional)</span></span>
+<div style="{{ui.wrap8}}"><sc-for list="{{rf.topics}}" as="t" hint-placeholder-count="9"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</div>
+<div style="{{ui.col10}}">
+<button type="button" role="checkbox" aria-checked="{{rf.pitchChecked}}" onClick="{{rf.togglePitch}}" style="{{ui.cbRow}}"><span style="{{rf.pitchBox}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>I’d also like to pitch or speak</button>
+<sc-if value="{{rf.pitch}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 14px 16px; border-radius: 16px; background: #F3F4F2; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; color: #3D4556">Pitches and speaker ideas have their own short forms. Your registration stays as it is.</span>
+<a href="GetInvolvedV3.dc.html" style="{{ui.label}}">Go to Get involved →</a>
+</div>
+</sc-if>
+</div>
+<div style="{{ui.col6}}">
+<span style="{{ui.between}}"><label for="reg-a11y" style="{{ui.label}}">Accessibility or captioning needs <span style="{{ui.opt}}">(optional)</span></label><span aria-live="polite" style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{rf.a11yCount}}</span></span>
+<textarea id="reg-a11y" rows="3" maxlength="300" value="{{rf.a11y}}" onChange="{{rf.setA11y}}" style="{{ui.ta}}"></textarea>
+<span style="{{ui.help}}">Only the summit team sees this.</span>
+</div>
+<div style="{{ui.col6}}">
+<label for="reg-heard" style="{{ui.label}}">How did you hear about us? <span style="{{ui.opt}}">(optional)</span></label>
+<select id="reg-heard" value="{{rf.heard}}" onChange="{{rf.setHeard}}" style="{{rf.tzStyle}}">
+<option value="">Choose one</option><option value="linkedin">LinkedIn</option><option value="slack">Slack community</option><option value="digest">Monthly digest</option><option value="colleague">A colleague or friend</option><option value="past">A past summit</option><option value="search">Search</option><option value="other">Other</option>
+</select>
+</div>
+<span style="{{ui.legend}}">03 · CONSENT</span>
+<div id="reg-c1" style="{{ui.col4}}">
+<button type="button" role="checkbox" aria-checked="{{rf.c1Checked}}" aria-invalid="{{rf.c1Inv}}" onClick="{{rf.toggleC1}}" style="{{ui.cbRow}}"><span style="{{rf.c1Box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>Send me summit emails: confirmation, join links and changes</button>
+<sc-if value="{{rf.c1Err}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 34px; font-size: 13px; font-weight: 500; color: #B42318">{{rf.c1Err}}</span></sc-if>
+</div>
+<button type="button" role="checkbox" aria-checked="{{rf.c2Checked}}" onClick="{{rf.toggleC2}}" style="{{ui.cbRow}}"><span style="{{rf.c2Box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span><span>Also send me the monthly digest <span style="color: #646B7A">(optional)</span></span></button>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We use your answers only to run the summit and never sell them. <a href="PrivacyV3.dc.html" style="font-weight: 500">How we use this →</a></p>
+<span style="{{ui.spamCheck}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</sc-if>
+
+<!-- REGISTER CONFIRMATION -->
+<sc-if value="{{isRegDone}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.col22}}">
+<span aria-hidden="true" style="{{ui.checkDisc}}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<div style="{{ui.col8}}">
+<h3 style="{{ui.confH}}">You’re registered</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Vert Robo Con Summit 2027 · April 20–22, 2027 · Online</p>
+<span style="{{ui.refBox}}">REFERENCE · VRC-2027-0142</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">WHAT HAPPENS NEXT</span>
+<ol style="{{ui.stepList}}"><sc-for list="{{regSteps}}" as="st" hint-placeholder-count="4"><li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">{{st.n}}</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">{{st.t}}</strong><span style="{{st.wStyle}}">{{st.w}}</span></span></li></sc-for></ol>
+</div>
+<div style="{{ui.col8}}">
+<button type="button" onClick="{{toggleCalConf}}" aria-expanded="{{calConfExp}}" style="{{ui.btnSfull}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"></path></svg>Add to calendar</button>
+<sc-if value="{{calConf}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="Add to calendar" style="{{ui.calMenu}}">
+<sc-for list="{{calOpts}}" as="c" hint-placeholder-count="3"><button type="button" role="menuitem" onClick="{{c.pick}}" style="{{ui.calItem}}">{{c.label}}<span style="{{ui.m11}}">{{c.meta}}</span></button></sc-for>
+</div>
+</sc-if>
+<a href="#program" onClick="{{buildAgenda}}" style="{{ui.btnPfull}}">{{regNextLabel}}</a>
+</div>
+<p style="margin: 0; font-size: 14px; color: #646B7A">We’ve emailed a receipt and a link to manage this to <strong style="font-weight: 600; color: #0A1222">{{regEmail}}</strong>. <a href="MyVRCV3.dc.html">Manage this</a></p>
+</div>
+</sc-if>
+
+<!-- JOIN FORM -->
+<sc-if value="{{isJoinForm}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.col22}}">
+<p style="margin: 0; font-size: 15px; color: #3D4556">Takes about a minute. Free, and open to everyone working on or curious about robots for climate work.</p>
+<sc-for list="{{jText}}" as="f" hint-placeholder-count="3">
+<div style="{{ui.col6}}">
+<label for="{{f.id}}" style="{{ui.label}}">{{f.label}}<sc-if value="{{f.opt}}" hint-placeholder-val="{{ false }}"> <span style="{{ui.opt}}">(optional)</span></sc-if></label>
+<input id="{{f.id}}" type="{{f.type}}" autocomplete="{{f.ac}}" value="{{f.value}}" onChange="{{f.set}}" onBlur="{{f.blur}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.style}}">
+<sc-if value="{{f.hasHelp}}" hint-placeholder-val="{{ false }}"><span style="{{ui.help}}">{{f.help}}</span></sc-if>
+<sc-if value="{{f.hasErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{f.err}}</span></sc-if>
+</div>
+</sc-for>
+<div style="{{ui.col6}}">
+<label for="join-role" style="{{ui.label}}">Role <span style="{{ui.opt}}">(optional)</span></label>
+<select id="join-role" value="{{jf.role}}" onChange="{{jf.setRole}}" style="{{rf.tzStyle}}">
+<option value="">Choose one</option><option value="Researcher">Researcher</option><option value="Founder or startup">Founder or startup</option><option value="Investor or funder">Investor or funder</option><option value="Policy or government">Policy or government</option><option value="NGO">NGO</option><option value="Student">Student</option><option value="Other">Other</option>
+</select>
+</div>
+<div style="{{ui.col6}}">
+<label for="join-country" style="{{ui.label}}">Country <span style="{{ui.opt}}">(optional)</span></label>
+<input id="join-country" type="text" role="combobox" aria-autocomplete="list" aria-expanded="{{jf.countryExpanded}}" aria-controls="join-country-list" autocomplete="off" value="{{jf.country}}" onChange="{{jf.setCountry}}" placeholder="Start typing, e.g. Kenya" style="{{jf.countryStyle}}">
+<sc-if value="{{jf.hasSugg}}" hint-placeholder-val="{{ false }}">
+<ul id="join-country-list" role="listbox" aria-label="Countries" style="margin: 0; padding: 6px; list-style: none; border: 1px solid #E5E7EB; border-radius: 12px; background: #ffffff; box-shadow: 0 16px 32px -16px rgba(10,18,34,0.3); display: flex; flex-direction: column">
+<sc-for list="{{jf.sugg}}" as="c" hint-placeholder-count="4"><li role="none"><button type="button" role="option" aria-selected="false" onClick="{{c.pick}}" style="width: 100%; min-height: 44px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 15px; text-align: left; cursor: pointer; color: #0A1222">{{c.label}}</button></li></sc-for>
+</ul>
+</sc-if>
+</div>
+<div role="group" aria-labelledby="join-int-l" style="{{ui.col10}}">
+<span id="join-int-l" style="{{ui.label}}">Interests <span style="{{ui.opt}}">(optional)</span></span>
+<div style="{{ui.wrap8}}"><sc-for list="{{jf.interests}}" as="t" hint-placeholder-count="7"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</div>
+<div style="{{ui.col8}}">
+<span id="join-path-l" style="{{ui.label}}">How would you like to take part?</span>
+<div role="radiogroup" aria-labelledby="join-path-l" style="{{ui.col8}}">
+<sc-for list="{{jf.paths}}" as="r" hint-placeholder-count="2">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.card}}">
+<span aria-hidden="true" style="{{r.ring}}"><span style="{{r.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; font-size: 16px">{{r.title}}<sc-if value="{{r.rec}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipGreenSm}}">RECOMMENDED</span></sc-if></span><span style="font-size: 14px; color: #3D4556">{{r.desc}}</span></span>
+</button>
+</sc-for>
+</div>
+</div>
+<div id="join-coc" style="{{ui.col4}}">
+<button type="button" role="checkbox" aria-checked="{{jf.cocChecked}}" aria-invalid="{{jf.cocInv}}" onClick="{{jf.toggleCoc}}" style="{{ui.cbRow}}"><span style="{{jf.cocBox}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>I’ve read the code of conduct</button>
+<a href="ResearchV3.dc.html" style="margin-left: 34px; font-size: 14px; font-weight: 500">Read the code of conduct</a>
+<sc-if value="{{jf.cocErr}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 34px; font-size: 13px; font-weight: 500; color: #B42318">{{jf.cocErr}}</span></sc-if>
+</div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We use your name and email to send your invite or digest, and nothing else. <a href="PrivacyV3.dc.html">How we use this →</a></p>
+<div style="{{ui.col8}}">
+<span style="{{ui.help}}">Slack requests are approved by an admin.</span>
+<span style="{{ui.spamCheck}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</div>
+</sc-if>
+
+<!-- JOIN WELCOME -->
+<sc-if value="{{isJoinDone}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.col22}}">
+<sc-if value="{{jd.slack}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="{{ui.clockDisc}}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A4B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span></sc-if>
+<sc-if value="{{jd.mail}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="{{ui.checkDisc}}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span></sc-if>
+<div style="{{ui.col8}}">
+<h3 style="{{ui.confH}}">{{jd.head}}</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{jd.lead}} <strong style="color: #0A1222">{{jd.email}}</strong>{{jd.leadEnd}}</p>
+<sc-if value="{{jd.slack}}" hint-placeholder-val="{{ true }}"><span style="{{ui.chipAmber}}"><span aria-hidden="true" style="{{ui.adot}}"></span>PENDING APPROVAL</span></sc-if>
+<span style="{{ui.refBox}}">REFERENCE · MBR-2026-0312</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">WHAT HAPPENS NEXT</span>
+<ol style="{{ui.stepList}}"><sc-for list="{{jd.steps}}" as="st" hint-placeholder-count="3"><li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">{{st.n}}</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">{{st.t}}</strong><span style="{{st.wStyle}}">{{st.w}}</span></span></li></sc-for></ol>
+<sc-if value="{{jd.slack}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 8px; margin-left: 42px">
+<span style="padding: 14px 16px; border-radius: 12px; background: #F3F4F2; font-size: 15px">{{jd.intro}}</span>
+<span style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{jd.copy}}" style="{{ui.btnSs}}">Copy intro</button><span aria-live="polite" style="font-size: 14px; font-weight: 500; color: #0B7A47">{{jd.copied}}</span></span>
+</div>
+</sc-if>
+</div>
+<div style="{{ui.col8}}">
+<button type="button" onClick="{{joinToMap}}" style="{{ui.btnPfull}}">Explore the map</button>
+<button type="button" onClick="{{closeFs}}" style="{{ui.btnSfull}}">Close</button>
+</div>
+<p style="margin: 0; font-size: 14px; color: #646B7A">{{jd.receipt}} {{jd.email}}. <a href="MyVRCV3.dc.html">{{jd.manage}}</a></p>
+</div>
+</sc-if>
+
+<!-- SUGGEST: stepper -->
+<sc-if value="{{isSgForm}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px">
+<span style="display: flex; justify-content: space-between; gap: 8px"><span style="{{ui.eyebrow}}">{{sg.stepLabel}}</span><sc-if value="{{sg.saved}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #0B7A47">● SAVED JUST NOW</span></sc-if></span>
+<span aria-hidden="true" style="display: flex; gap: 4px"><sc-for list="{{sg.segs}}" as="s" hint-placeholder-count="2"><span style="{{s.style}}"></span></sc-for></span>
+</div>
+</sc-if>
+
+<!-- SUGGEST STEP 1 -->
+<sc-if value="{{isSg1}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.col22}}">
+<p style="margin: 0; font-size: 15px; color: #3D4556">Know an organization we’ve missed? An admin reviews every suggestion before it goes on the map.</p>
+<sc-for list="{{g1Text}}" as="f" hint-placeholder-count="3">
+<div style="{{ui.col6}}">
+<label for="{{f.id}}" style="{{ui.label}}">{{f.label}}<sc-if value="{{f.opt}}" hint-placeholder-val="{{ false }}"> <span style="{{ui.opt}}">(optional)</span></sc-if></label>
+<input id="{{f.id}}" type="{{f.type}}" autocomplete="{{f.ac}}" value="{{f.value}}" onChange="{{f.set}}" onBlur="{{f.blur}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.style}}">
+<sc-if value="{{f.hasHelp}}" hint-placeholder-val="{{ false }}"><span style="{{ui.help}}">{{f.help}}</span></sc-if>
+<sc-if value="{{f.hasErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{f.err}}</span></sc-if>
+</div>
+</sc-for>
+<sc-if value="{{sg.hasDupes}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 14px 16px; border-radius: 16px; background: #FFF4E5; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600; color: #8A4B00">Is it one of these?</strong>
+<sc-for list="{{sg.dupes}}" as="d" hint-placeholder-count="2"><button type="button" onClick="{{d.pick}}" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border: 1px solid #F1D3A8; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer"><span><strong style="font-weight: 600">{{d.name}}</strong> <span style="{{ui.m11}}">{{d.meta}}</span></span><span style="font-size: 14px; color: #0138AC; font-weight: 500">View</span></button></sc-for>
+</div>
+</sc-if>
+<sc-for list="{{g1Radios}}" as="grp" hint-placeholder-count="1">
+<div id="{{grp.id}}" role="radiogroup" aria-labelledby="{{grp.lid}}" style="{{ui.col10}}">
+<span id="{{grp.lid}}" style="{{ui.label}}">{{grp.label}}</span>
+<div style="{{ui.wrap8}}"><sc-for list="{{grp.opts}}" as="o" hint-placeholder-count="4"><button type="button" role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="{{o.style}}"><span aria-hidden="true" style="{{o.dot}}"></span>{{o.label}}</button></sc-for></div>
+<sc-if value="{{grp.hasErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{grp.err}}</span></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- SUGGEST STEP 2 -->
+<sc-if value="{{isSg2}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.col22}}">
+<div id="sg-app" style="{{ui.col6}}">
+<label for="sg-app-s" style="{{ui.label}}">Application</label>
+<select id="sg-app-s" value="{{sg.app}}" onChange="{{sg.setApp}}" aria-invalid="{{sg.appInv}}" style="{{sg.appStyle}}">
+<option value="">Choose one</option><option value="Agriculture">Agriculture</option><option value="Biodiversity Monitoring">Biodiversity Monitoring</option><option value="Building Retrofit">Building Retrofit</option><option value="Ocean Monitoring">Ocean Monitoring</option><option value="Offshore Energy Inspection">Offshore Energy Inspection</option><option value="Plastic Collection">Plastic Collection</option><option value="Reef Restoration">Reef Restoration</option><option value="Reforestation">Reforestation</option><option value="Soil Carbon Measurement">Soil Carbon Measurement</option><option value="Solar Maintenance">Solar Maintenance</option><option value="Waste Sorting">Waste Sorting</option><option value="Water Management">Water Management</option><option value="Wildfire Response">Wildfire Response</option><option value="Wind Turbine Inspection">Wind Turbine Inspection</option><option value="Other">Other</option>
+</select>
+<sc-if value="{{sg.appErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{sg.appErr}}</span></sc-if>
+</div>
+<sc-for list="{{g2Radios}}" as="grp" hint-placeholder-count="2">
+<div id="{{grp.id}}" role="radiogroup" aria-labelledby="{{grp.lid}}" style="{{ui.col10}}">
+<span id="{{grp.lid}}" style="{{ui.label}}">{{grp.label}}</span>
+<div style="{{ui.wrap8}}"><sc-for list="{{grp.opts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="{{o.style}}"><span aria-hidden="true" style="{{o.dot}}"></span>{{o.label}}</button></sc-for></div>
+<sc-if value="{{grp.hasErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{grp.err}}</span></sc-if>
+</div>
+</sc-for>
+<div style="{{ui.col6}}">
+<span style="{{ui.between}}"><label for="sg-desc" style="{{ui.label}}">One-line description</label><span aria-live="polite" style="{{sg.descCountStyle}}">{{sg.descCount}}</span></span>
+<textarea id="sg-desc" rows="2" maxlength="140" value="{{sg.desc}}" onChange="{{sg.setDesc}}" aria-invalid="{{sg.descInv}}" style="{{sg.descStyle}}"></textarea>
+<span style="{{ui.help}}">What the robots do, in plain words.</span>
+<sc-if value="{{sg.descErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{sg.descErr}}</span></sc-if>
+</div>
+<sc-for list="{{g3Radios}}" as="grp" hint-placeholder-count="1">
+<div id="{{grp.id}}" role="radiogroup" aria-labelledby="{{grp.lid}}" style="{{ui.col10}}">
+<span id="{{grp.lid}}" style="{{ui.label}}">{{grp.label}}</span>
+<div style="{{ui.wrap8}}"><sc-for list="{{grp.opts}}" as="o" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="{{o.style}}"><span aria-hidden="true" style="{{o.dot}}"></span>{{o.label}}</button></sc-for></div>
+<sc-if value="{{grp.hasErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{grp.err}}</span></sc-if>
+</div>
+</sc-for>
+<sc-for list="{{g2Text}}" as="f" hint-placeholder-count="1">
+<div style="{{ui.col6}}">
+<label for="{{f.id}}" style="{{ui.label}}">{{f.label}}</label>
+<input id="{{f.id}}" type="{{f.type}}" autocomplete="{{f.ac}}" value="{{f.value}}" onChange="{{f.set}}" onBlur="{{f.blur}}" placeholder="{{f.ph}}" aria-invalid="{{f.invalid}}" style="{{f.style}}">
+<sc-if value="{{f.hasHelp}}" hint-placeholder-val="{{ false }}"><span style="{{ui.help}}">{{f.help}}</span></sc-if>
+<sc-if value="{{f.hasErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{f.err}}</span></sc-if>
+</div>
+</sc-for>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We use your email only to update you about this suggestion. <a href="PrivacyV3.dc.html">How we use this →</a></p>
+<button type="button" onClick="{{sg.later}}" style="{{ui.btnT}}">Save and finish later</button>
+<span style="{{ui.spamCheck}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</sc-if>
+
+<!-- SUGGEST CONFIRMATION -->
+<sc-if value="{{isSgDone}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.col22}}">
+<span aria-hidden="true" style="{{ui.checkDisc}}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<div style="{{ui.col8}}">
+<h3 style="{{ui.confH}}">Thanks, we’ve got it</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{sg.doneLead}}</p>
+<span style="{{ui.refBox}}">REFERENCE · MAP-0457</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">WHAT HAPPENS NEXT</span>
+<ol style="{{ui.stepList}}"><sc-for list="{{sgSteps}}" as="st" hint-placeholder-count="3"><li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">{{st.n}}</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">{{st.t}}</strong><span style="{{st.wStyle}}">{{st.w}}</span></span></li></sc-for></ol>
+</div>
+<div style="{{ui.col8}}">
+<button type="button" onClick="{{closeFs}}" style="{{ui.btnPfull}}">Back to the map</button>
+<button type="button" onClick="{{sgAnother}}" style="{{ui.btnSfull}}">Suggest another</button>
+</div>
+<p style="margin: 0; font-size: 14px; color: #646B7A">We’ve emailed a receipt and a link to track this to {{sg.email}}. <a href="MyVRCV3.dc.html">Manage this</a></p>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{fsHasFooter}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 0 0 auto; padding: 12px 16px 20px; border-top: 1px solid #E5E7EB; background: #ffffff; display: flex; flex-direction: column; gap: 8px">
+<sc-if value="{{fsHasErrs}}" hint-placeholder-val="{{ false }}"><a href="#fs-errors" style="font-size: 14px; font-weight: 500; color: #B42318">{{fsFootErr}}</a></sc-if>
+<div style="display: flex; gap: 8px">
+<sc-if value="{{fsBack}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{sgBack}}" style="{{ui.btnSback}}">Back</button></sc-if>
+<button type="button" onClick="{{fsSubmit}}" style="{{ui.btnPflex}}">{{fsSubmitLabel}}</button>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":924}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const n = (topics) => ({ st: 'idle', email: '', err: false, topics: topics });
+this.state = Object.assign({
+sum: 'soon', tab: 'home', domain: 'land', sheet: null, bs: null,
+day: 1, kinds: [], tz: 'utc', h12: false, stars: [], cal: null, toast: '',
+registered: false, mview: 'map', mq: '', mtype: 'all',
+n_home: n(['Summit announcements']), n_sum: n(['Summit announcements', 'Program published']), n_more: n(['Monthly digest']), n_prog: n(['Program published'])
+}, this.reg0(), this.join0(), this.sg0());
+}
+reg0() { return { r: { name: '', email: '', org: '', role: '', country: '', tz: 'Europe/Berlin', days: [1, 2, 3], topics: [], pitch: false, a11y: '', heard: '', c1: false, c2: false }, rTried: false, rBlur: {}, rDone: false }; }
+join0() { return { j: { name: '', email: '', country: '', role: '', interests: [], path: 'slack', dir: false, coc: false }, jTried: false, jBlur: {}, jDone: false, jCopied: false, jCountryOpen: false }; }
+sg0() { return { g: { name: '', web: '', country: '', type: '', app: '', dep: '', role: '', desc: '', rel: '', email: '' }, gStep: 1, gTried1: false, gTried2: false, gBlur: {}, gDone: false }; }
+renderVals() {
+const S = this.state;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const DISP = "font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; ";
+const okEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim());
+const btn = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; ';
+const btnSm = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; ';
+const chip = (bg, fg) => 'align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + bg + '; color: ' + fg + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap';
+const ui = {
+btnP: btn + 'border: 0; background: #0138AC; color: #ffffff',
+btnPs: btnSm + 'border: 0; background: #0138AC; color: #ffffff',
+btnPfull: btn + 'width: 100%; min-height: 52px; border: 0; border-radius: 14px; background: #0138AC; color: #ffffff',
+btnPflex: btn + 'flex: 1 1 auto; min-height: 52px; border: 0; border-radius: 14px; background: #0138AC; color: #ffffff',
+btnS: btn + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnSs: btnSm + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnSfull: btn + 'width: 100%; min-height: 52px; border: 1px solid #D5D8DE; border-radius: 14px; background: #ffffff; color: #0A1222',
+btnW: btn + 'width: 100%; min-height: 52px; border: 0; border-radius: 14px; background: #ffffff; color: #0A1222',
+btnT: 'align-self: flex-start; min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-align: left',
+eyebrow: MONO + 'font-size: 11px; letter-spacing: 0.06em; color: #646B7A',
+legend: 'display: block; padding-bottom: 10px; border-bottom: 1px solid #E5E7EB; ' + MONO + 'font-size: 12px; letter-spacing: 0.06em; color: #646B7A',
+h2: 'margin: 0; ' + DISP + 'font-size: 40px; line-height: 0.98; letter-spacing: -0.035em',
+confH: 'margin: 0; ' + DISP + 'font-size: 34px; line-height: 1.05; letter-spacing: -0.025em',
+chipBlue: chip('#EEF2FB', '#0138AC'),
+chipBlueSm: chip('#EEF2FB', '#0138AC') + '; padding: 1px 8px',
+chipGreen: chip('#E8F6EE', '#0B7A47'),
+chipGreenSm: chip('#E8F6EE', '#0B7A47') + '; padding: 2px 8px',
+chipWhiteGreen: chip('#ffffff', '#0B7A47'),
+chipNeutral: chip('#F3F4F2', '#3D4556'),
+chipNeutralSm: chip('#F3F4F2', '#3D4556') + '; padding: 1px 8px',
+ndot: "width: 6px; height: 6px; border-radius: 50%; background: #646B7A",
+chipAmber: chip('#FFF4E5', '#8A4B00'),
+adot: "width: 6px; height: 6px; border-radius: 50%; background: #D9822B",
+stepNum: 'flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 13px; font-weight: 500',
+checkDisc: 'width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; display: flex; align-items: center; justify-content: center',
+clockDisc: 'width: 56px; height: 56px; border-radius: 50%; background: #FFF4E5; display: flex; align-items: center; justify-content: center',
+refBox: 'align-self: flex-start; padding: 8px 12px; border-radius: 10px; background: #F3F4F2; ' + MONO + 'font-size: 12px; letter-spacing: 0.06em; color: #0A1222',
+cbRow: 'display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer',
+spamCheck: 'display: flex; align-items: flex-start; gap: 6px; font-size: 13px; line-height: 1.45; color: #646B7A',
+label: "font-size: 15px; font-weight: 500",
+m11: "font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A",
+m11t: "font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A",
+err: "font-size: 13px; font-weight: 500; color: #B42318",
+col4: "display: flex; flex-direction: column; gap: 4px",
+col6: "display: flex; flex-direction: column; gap: 6px",
+col8: "display: flex; flex-direction: column; gap: 8px",
+col10: "display: flex; flex-direction: column; gap: 10px",
+col22: "display: flex; flex-direction: column; gap: 22px",
+gdot: "width: 6px; height: 6px; border-radius: 50%; background: #1DB46C",
+bdot: "width: 6px; height: 6px; border-radius: 50%; background: #0138AC",
+help: "font-size: 13px; color: #646B7A",
+opt: "font-weight: 400; color: #646B7A",
+scroller: "position: absolute; top: 60px; left: 0; right: 0; bottom: 0; overflow-y: auto",
+stepList: "margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px",
+between: "display: flex; justify-content: space-between; align-items: baseline; gap: 12px",
+wrap8: "display: flex; flex-wrap: wrap; gap: 8px",
+segWrap: "display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2",
+calItem: "display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer",
+calMenu: "display: flex; flex-direction: column; padding: 6px; border: 1px solid #E5E7EB; border-radius: 14px; box-shadow: 0 16px 32px -16px rgba(10,18,34,0.3)",
+regBar: "position: absolute; left: 12px; right: 12px; bottom: 92px; z-index: 19; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 18px; background: #0A1222; color: #ffffff; box-shadow: 0 10px 30px -10px rgba(10,18,34,0.45)",
+nBox: "width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff",
+h1m: "margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 52px; line-height: 0.95; letter-spacing: -0.04em",
+social: "width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px",
+statNum: "font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 44px; line-height: 0.9; letter-spacing: -0.04em",
+ta: 'width: 100%; box-sizing: border-box; min-height: 80px; padding: 12px 14px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 16px; line-height: 1.45; color: #0A1222; resize: vertical'
+};
+ui.h2mb = ui.h2 + '; margin-bottom: 8px'; ui.chipBlueC = ui.chipBlue + '; align-self: center'; ui.btnTc = ui.btnT.replace('align-self: flex-start', 'align-self: center'); ui.btnSback = btn + 'min-height: 52px; padding: 0 12px; border: 0; background: transparent; color: #0138AC';
+const input = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 16px; color: #0A1222';
+const selectS = (bad) => input(bad) + '; appearance: auto';
+const pill = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const seg = (on) => 'flex: 1 1 0; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-height: 40px; padding: 0 8px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; line-height: 1.25; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const box = (on, bad) => 'flex: 0 0 auto; width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: flex; align-items: center; justify-content: center; ' + (on ? 'background: #0138AC; color: #ffffff; border: 2px solid #0138AC' : 'background: #ffffff; color: transparent; border: 2px solid ' + (bad ? '#B42318' : '#A7ADB8'));
+const dotS = (c) => 'width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: ' + c;
+const toggleIn = (arr, v) => (arr.indexOf(v) > -1 ? arr.filter((x) => x !== v) : arr.concat([v]));
+const steps = (list, mono) => list.map((s, i) => ({ n: String(i + 1), t: s[0], w: s[1], wStyle: mono ? MONO + 'font-size: 11px; letter-spacing: 0.04em; color: #646B7A' : 'font-size: 15px; color: #3D4556' }));
+const tf = (id, label, val, set, blur, err, o) => ({ id: id, label: label, value: val, set: set, blur: blur, err: err || '', hasErr: !!err, invalid: err ? 'true' : 'false',
+style: input(!!err), type: o.type || 'text', ac: o.ac || 'off', ph: o.ph || '', opt: !!o.opt, help: o.help || '', hasHelp: !!o.help });
+const go = (tab, extra) => () => this.setState(Object.assign({ tab: tab, bs: null, cal: null }, extra || {}));
+
+/* canvas control + tabs */
+const states = [['soon', 'Opens soon'], ['open', 'Open'], ['live', 'Live']].map((s) => {
+const on = S.sum === s[0];
+return { label: s[1], pressed: on ? 'true' : 'false', style: seg(on) + '; min-height: 32px; font-size: 13px', pick: () => this.setState({ sum: s[0], day: 1, bs: null, cal: null }) };
+});
+const TABS = [['home', 'Home', 'M4 11l8-7 8 7v9H4z'], ['summit', 'Summit', 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4'], ['watch', 'Watch', 'M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM10 9l5 3-5 3z'], ['map', 'Map', 'M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'], ['more', 'More', 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z']];
+const tabs = TABS.map((t) => {
+const on = S.tab === t[0];
+return { label: t[1], icon: t[2], current: on ? 'page' : 'false', pick: go(t[0]),
+style: 'position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; padding: 0; border: 0; border-radius: 14px; background: transparent; font: inherit; font-size: 11px; font-weight: 500; cursor: pointer; color: ' + (on ? '#0A1222' : '#646B7A'),
+ind: on ? 'position: absolute; bottom: 2px; left: 50%; width: 20px; height: 2px; margin-left: -10px; border-radius: 999px; background: #0138AC' : 'display: none' };
+});
+
+/* notify-me */
+const nm = (key, label, all, icon) => {
+const k = 'n_' + key; const s = S[k];
+const set = (p) => this.setState({ [k]: Object.assign({}, this.state[k], p) });
+return [{
+idle: s.st === 'idle', open: s.st === 'open', pending: s.st === 'pending', done: s.st === 'done',
+label: label, icon: icon, email: s.email, err: s.err, invalid: s.err ? 'true' : 'false', input: input(s.err),
+ghost: (icon ? btnSm : btnSm.replace('padding: 0 16px', 'padding: 0 14px')) + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; align-self: flex-start',
+btn: btnSm + 'border: 0; background: #0138AC; color: #ffffff', chip: chip('#E8F6EE', '#0B7A47'),
+canvas: 'align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 8px; background: #F3F4F2; color: #3D4556; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em; cursor: pointer',
+expand: () => set({ st: 'open' }),
+setEmail: (e) => set({ email: e.target.value, err: false }),
+submit: () => (okEmail(this.state[k].email) ? set({ st: 'pending', err: false }) : set({ err: true })),
+confirm: () => set({ st: 'done' }),
+topics: all.map((t) => { const on = s.topics.indexOf(t) > -1; return { label: t, pressed: on ? 'true' : 'false', style: pill(on), toggle: () => set({ topics: toggleIn(this.state[k].topics, t) }) }; })
+}];
+};
+
+/* home: explorer + ways */
+const DOMS = {
+air: { label: 'Sky', type: 'Aerial', count: 37, lede: 'Drones scatter seed over cleared slopes, watch dry woodland for new fires and check turbine blades for cracks.', orgs: [['Ploverridge Instruments', 'CANADA · 2009', 'A drone fleet that scatters seed pods over cleared slopes.'], ['Puffinlark Systems', 'FRANCE · 2018', 'Drones that patrol dry woodland at night and flag new hot spots.'], ['Sorrelmere Robotics', 'UNITED KINGDOM · 2013', 'A quadcopter that finds cracks in turbine blades before they spread.']] },
+land: { label: 'Field', type: 'Ground', count: 36, lede: 'Ground robots weed crops row by row, map soil carbon and keep solar farms clean without fresh water.', orgs: [['Rowanburrow Instruments', 'UNITED STATES · 2017', 'A compact electric robot that weeds and thins crops.'], ['Shoallark Works', 'GERMANY · 2008', 'A field robot that maps how much carbon the soil holds.'], ['Nettlelark Collective', 'KENYA · 2018', 'A tracked rover that cleans panel rows on large solar farms.']] },
+sea: { label: 'Water', type: 'Ocean', count: 31, lede: 'Underwater and surface robots replant damaged reef, skim litter from harbours and log coastal water for months.', orgs: [['Heathmere Dynamics', 'CHILE · 2021', 'A diving robot that plants coral fragments on damaged reef.'], ['Nettleburrow Works', 'CANADA · 2020', 'An uncrewed catamaran that skims floating litter from harbours.'], ['Kelpcombe Robotics', 'SINGAPORE · 2014', 'A solar-powered vessel that logs coastal water quality.']] },
+materials: { label: 'Factory', type: 'Arm', count: 9, lede: 'Robotic arm cells pick recyclables off fast belts and insulate the walls of older homes.', orgs: [['Tidelark Machines', 'NORWAY · 2010', 'A robotic arm cell that picks recyclables off conveyor belts.'], ['Brackford Systems', 'CHILE · 2018', 'A modular robot kit for small sorting plants.'], ['Puffinhollow Labs', 'AUSTRALIA · 2023', 'A robotic arm cell that insulates the walls of older homes.']] }
+};
+const domains = Object.keys(DOMS).map((k) => {
+const on = S.domain === k;
+return { label: DOMS[k].label, selected: on ? 'true' : 'false', style: seg(on), pick: () => this.setState({ domain: k }) };
+});
+const D = DOMS[S.domain];
+const panel = { lede: D.lede, cta: 'See all ' + D.count + ' on the map', orgs: D.orgs.map((o) => ({ name: o[0], meta: o[1], desc: o[2] })), go: go('map', { mtype: D.type, mview: 'list', mq: '' }) };
+const rowLink = 'display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 20px; color: #0A1222; text-decoration: none; ';
+const ways = [
+['RESEARCH', 'The 2025 white paper', 'img/white-paper.svg', 'ResearchV3.dc.html', 'background: #F3F4F2'],
+['JOBS & INTERNSHIPS', 'Open roles from across the network', '', 'JobsV3.dc.html', 'border: 1px solid #E5E7EB'],
+['CONSULTING', 'Expert advice from the network', 'img/consulting.svg', 'ContactV3.dc.html', 'border: 1px solid #E5E7EB']
+].map((w) => ({ kick: w[0], title: w[1], img: w[2], hasImg: !!w[2], noImg: !w[2], href: w[3], style: rowLink + w[4] }));
+
+/* summit: program */
+const KIND = { keynote: ['Keynote', 'background: #EEF2FB; color: #0138AC'], session: ['Session', 'background: #F3F4F2; color: #3D4556'], pitch: ['Pitches', 'background: #ffffff; color: #0138AC; box-shadow: inset 0 0 0 1px #BFD0F5'], remarks: ['Remarks', 'background: #ffffff; color: #3D4556; box-shadow: inset 0 0 0 1px #D5D8DE'] };
+/* 2027 program is not published until [DATE]: the Live state shows slot placeholders only, never the 2026 program */
+const PROG = [
+{ day: 1, date: 'APR 20', slots: ['remarks', 'keynote', 'session', 'session', 'pitch', 'session'] },
+{ day: 2, date: 'APR 21', slots: ['remarks', 'keynote', 'session', 'session', 'session'] },
+{ day: 3, date: 'APR 22', slots: ['remarks', 'keynote', 'session', 'pitch', 'session', 'remarks'] }
+];
+const SUB = { keynote: '[SPEAKER NAME] · [AFFILIATION]', session: '[TRACK]', pitch: '[TRACK]', remarks: '' };
+const utc = S.tz === 'utc';
+const tzU = utc ? 'UTC' : 'BERLIN';
+const HM = S.h12 ? '[H:MM AM]' : '[HH:MM]';
+const span = HM + '–' + HM;
+const ALLS = [];
+PROG.forEach((d) => d.slots.forEach((k, i) => ALLS.push({ id: 'd' + d.day + '-' + i, day: d.day, date: d.date, slot: i + 1, title: '[SESSION TITLE]', kind: k, who: SUB[k] })));
+const isLive = S.sum === 'live';
+const match = (x) => !S.kinds.length || S.kinds.indexOf(x.kind) > -1;
+const star = (x) => {
+const on = S.stars.indexOf(x.id) > -1;
+return { starred: on ? 'true' : 'false', fill: on ? '#0138AC' : 'none', starLabel: 'Save day ' + x.day + ', slot ' + x.slot + ' to my agenda',
+toggle: () => this.setState({ stars: toggleIn(this.state.stars, x.id) }),
+starBtn: 'flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 12px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: ' + (on ? '#0138AC' : '#646B7A') };
+};
+const rows = ALLS.filter((x) => x.day === S.day && match(x)).map((x) => {
+const now = isLive && x.id === 'd1-3';
+return Object.assign({ time: span, title: x.title, now: now, sub: x.who, hasSub: !!x.who, kindLabel: KIND[x.kind][0],
+badge: 'display: inline-flex; padding: 2px 8px; border-radius: 999px; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em; ' + KIND[x.kind][1],
+card: 'display: flex; align-items: flex-start; gap: 6px; padding: 14px 6px 14px 16px; border-radius: 16px; border: 1px solid ' + (now ? '#1DB46C; box-shadow: 0 0 0 1px #1DB46C' : '#E5E7EB') + '; background: ' + (x.kind === 'keynote' ? '#FAFBFE' : '#ffffff') }, star(x));
+});
+const days = PROG.map((d) => { const on = S.day === d.day; return { label: 'Day ' + d.day, date: d.date, selected: on ? 'true' : 'false', style: seg(on) + '; min-height: 48px', pick: () => this.setState({ day: d.day }) }; });
+const nowS = ALLS.find((x) => x.id === 'd1-3'); const nextS = ALLS.find((x) => x.id === 'd1-4');
+const live = { nowTitle: nowS.title, nowMeta: 'Session · [TRACK] · ' + span + ' ' + (utc ? 'UTC' : 'Berlin time'), ends: 'ENDS ' + HM + ' ' + tzU,
+nextTitle: nextS.title, nextMeta: 'NEXT · ' + KIND[nextS.kind][0].toUpperCase() + ' · ' + HM + ' ' + tzU, next: star(nextS) };
+const filtCount = S.kinds.length;
+const fGroups = [
+{ label: 'Type', items: [['keynote', 'Keynotes'], ['session', 'Sessions'], ['pitch', 'Pitches'], ['remarks', 'Remarks']].map((k) => { const on = S.kinds.indexOf(k[0]) > -1; return { label: k[1], pressed: on ? 'true' : 'false', style: pill(on), toggle: () => this.setState({ kinds: toggleIn(this.state.kinds, k[0]) }) }; }) }
+];
+const tzOpts = [['utc', 'UTC'], ['my', 'My time (Berlin)']].map((z) => { const on = S.tz === z[0]; return { label: z[1], pressed: on ? 'true' : 'false', style: seg(on), pick: () => this.setState({ tz: z[0] }) }; });
+const hourOpts = [[false, '24-hour'], [true, '12-hour']].map((z) => { const on = S.h12 === z[0]; return { label: z[1], pressed: on ? 'true' : 'false', style: seg(on), pick: () => this.setState({ h12: z[0] }) }; });
+const nMatch = ALLS.filter(match).length;
+const agendaList = ALLS.filter((x) => S.stars.indexOf(x.id) > -1).map((x) => ({ title: x.title, meta: 'DAY ' + x.day + ' · ' + x.date + ' · ' + KIND[x.kind][0].toUpperCase() + ' · ' + span + ' ' + tzU,
+removeLabel: 'Remove day ' + x.day + ', slot ' + x.slot + ' from my agenda', remove: () => this.setState({ stars: this.state.stars.filter((y) => y !== x.id) }) }));
+const calOpts = [['Apple or Outlook (.ics)', '.ICS', 'Calendar file downloaded'], ['Google Calendar', 'OPENS GOOGLE', 'Opening Google Calendar'], ['Outlook.com', 'OPENS OUTLOOK.COM', 'Opening Outlook.com']]
+.map((c) => ({ label: c[0], meta: c[1], pick: () => this.setState({ cal: null, toast: c[2] }) }));
+
+/* watch */
+const IMG = { hand: 'img/hero.svg', forest: 'img/forest.svg', balloon: 'img/leaf.svg', brandvold: 'img/avatar-03.svg', ocampo: 'img/avatar-09.svg', farrow: 'img/avatar-05.svg', valderrama: 'img/avatar-06.svg' };
+const vid = (kick, title, img, bg, isNew) => ({ kick: kick, title: title, img: img || '', hasImg: !!img, isNew: !!isNew,
+thumb: 'position: relative; flex: 0 0 112px; height: 63px; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: ' + (bg || '#0A1222') });
+const shelves = [
+{ title: 'Robots in the Field', count: '4 EPISODES', more: 'Open the series', items: [
+vid('EPISODE 1 · [DURATION]', 'Why robots belong in climate work', IMG.hand), vid('EPISODE 2 · [DURATION]', 'Replanting reefs with diving robots', IMG.forest),
+vid('EPISODE 3 · [DURATION]', 'Can drones reseed a burned hillside?', IMG.balloon), vid('EPISODE 4 · [DURATION]', 'Who checks the wind turbines?', '', '#EEF2FB', true)] },
+{ title: 'Summit 2025', count: 'JUNE 10–12, 2025 · 12 SESSIONS', more: 'See all 12 recordings', items: [
+vid('OPENING · 6:20', 'Welcome and how the three days work', IMG.brandvold), vid('KEYNOTE · 33:40', 'Tamsin Ocampo: Measuring a Glacier That Will Not Hold Still', IMG.ocampo), vid('PANEL · 41:05', 'Robots on soft ground: peat and marsh', IMG.farrow), vid('TALK · 24:55', 'Sidewalk robots and the urban heat map', IMG.valderrama),
+vid('TALK · 27:30', 'Writing a robot into a public tender', '', '#F3F4F2'), vid('PITCHES · 44:10', 'Pitch round: water and wetland teams', '', '#E8F6EE'), vid('PANEL · 38:15', 'Batteries, sensors and minus twenty', '', '#EEF2FB'),
+vid('PITCHES · 42:00', 'Pitch round: city and cold-climate teams', '', '#E8F6EE'), vid('TALK · 29:10', 'A technician’s wishlist for robot makers', '', '#EEF2FB'), vid('TALK · 31:20', 'Who pays when a field robot breaks?', '', '#F3F4F2')] }
+];
+
+/* map */
+const T = { Aerial: ['Aerial', '#6D5BD0', 37], Ground: ['Ground', '#1F9D5C', 36], Ocean: ['Ocean', '#0B6FB8', 31], Arm: ['Robotic arm', '#D9822B', 9] };
+const ORGS = [
+['Heathmere Dynamics', 'Chile', 2021, 'Ocean', 'Reef restoration', true, 'A small diving robot that plants coral fragments on damaged reef and returns to measure their growth.'],
+['Nettleburrow Works', 'Canada', 2020, 'Ocean', 'Plastic collection', true, 'An uncrewed catamaran that skims floating litter from harbours and river mouths.'],
+['Kelpcombe Robotics', 'Singapore', 2014, 'Ocean', 'Ocean monitoring', true, 'A solar-powered surface vessel that records temperature, oxygen and acidity along the coast.'],
+['Osierfen Robotics', 'Brazil', 2013, 'Ocean', 'Offshore energy inspection', true, 'A small diving robot that inspects cables, foundations and moorings at offshore energy sites.'],
+['Bramblestead Works', 'India', 2010, 'Ocean', 'Water management', true, 'A solar-powered vessel that samples rivers and reservoirs and warns operators about rising pollution.'],
+['Ploverridge Instruments', 'Canada', 2009, 'Aerial', 'Reforestation', true, 'A drone fleet that scatters seed pods over cleared slopes and logs which ones take root.'],
+['Puffinlark Systems', 'France', 2018, 'Aerial', 'Wildfire response', false, 'Drones that patrol dry woodland at night and flag new hot spots for local crews.'],
+['Sorrelmere Robotics', 'United Kingdom', 2013, 'Aerial', 'Wind turbine inspection', false, 'A small quadcopter that circles turbine blades to find cracks before they spread.'],
+['Junipercombe Labs', 'France', 2009, 'Aerial', 'Biodiversity monitoring', false, 'A drone fleet that counts birds, insects and grazing animals along repeat survey routes.'],
+['Rowanburrow Instruments', 'United States', 2017, 'Ground', 'Agriculture', true, 'A compact electric robot that weeds and thins crops so farms can cut fertiliser and diesel.'],
+['Shoallark Works', 'Germany', 2008, 'Ground', 'Soil carbon', true, 'A wheeled field robot that drills shallow cores to map how much carbon the soil holds.'],
+['Nettlelark Collective', 'Kenya', 2018, 'Ground', 'Solar maintenance', true, 'A tracked rover that cleans and checks panel rows on large solar farms without fresh water.'],
+['Quillhollow Labs', 'United States', 2020, 'Ground', 'Waste sorting', true, 'A wheeled robot that picks recyclable material off fast conveyor belts at sorting plants.'],
+['Tidelark Machines', 'Norway', 2010, 'Arm', 'Waste sorting', false, 'A robotic arm cell that picks recyclable material off fast conveyor belts, in pilot trials.'],
+['Brackford Systems', 'Chile', 2018, 'Arm', 'Waste sorting', true, 'A modular robot kit that small sorting plants can add to an existing line.'],
+['Puffinhollow Labs', 'Australia', 2023, 'Arm', 'Building retrofit', true, 'A robotic arm cell that sprays insulation into the wall cavities of older homes.']
+];
+const mq = S.mq.trim().toLowerCase();
+const orgs = ORGS.filter((o) => (S.mtype === 'all' || o[3] === S.mtype) && (!mq || (o[0] + ' ' + o[1] + ' ' + o[4]).toLowerCase().indexOf(mq) > -1)).map((o) => ({
+name: o[0], meta: o[1].toUpperCase() + ' · ' + o[2], desc: o[6], app: o[4], typeLabel: T[o[3]][0], dot: dotS(T[o[3]][1]),
+depLabel: o[5] ? 'Deployed' : 'In development', depChip: 'padding: 2px 8px; border-radius: 999px; font-size: 12px; ' + (o[5] ? 'background: #E8F6EE; color: #0B7A47' : 'background: #FFF4E5; color: #8A4B00') }));
+const mtypes = [['all', 'All', 120, '']].concat(Object.keys(T).map((k) => [k, T[k][0], T[k][2], T[k][1]])).map((t) => {
+const on = S.mtype === t[0];
+return { label: t[1], count: t[2], pressed: on ? 'true' : 'false', dot: t[3] ? dotS(t[3]) : 'display: none', style: pill(on) + '; flex: 0 0 auto', pick: () => this.setState({ mtype: t[0] }) };
+});
+const views = [['list', 'List'], ['map', 'Map']].map((v) => { const on = S.mview === v[0]; return { label: v[1], pressed: on ? 'true' : 'false', style: seg(on) + '; min-height: 36px', pick: () => this.setState({ mview: v[0] }) }; });
+const P = [[11.1, 36.5, 14], [13.7, 30.8, 8], [43.0, 28.8, 9], [47.3, 31.6, 8], [45.3, 29.4, 7], [44.7, 34.7, 6], [46.3, 23.0, 6], [43.3, 37.1, 6], [29.2, 76.7, 7], [22.2, 82.3, 5], [67.1, 51.9, 7], [75.8, 61.0, 4], [86.4, 38.0, 6], [82.7, 80.5, 7], [94.5, 88.4, 4], [52.1, 80.9, 6], [55.8, 63.7, 6], [44.9, 57.8, 4]];
+const pins = P.map((p) => { const z = p[2] >= 50 ? 40 : p[2] >= 10 ? 32 : p[2] >= 4 ? 26 : 22;
+return { n: p[2], style: 'position: absolute; left: ' + p[0] + '%; top: ' + p[1] + '%; width: ' + z + 'px; height: ' + z + 'px; margin: -' + (z / 2) + 'px 0 0 -' + (z / 2) + 'px; border-radius: 50%; background: #0A1222; color: #ffffff; border: 2px solid #ffffff; box-shadow: 0 3px 8px rgba(10,18,34,0.3); display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: ' + (p[2] >= 10 ? 12 : 10) + 'px; box-sizing: border-box' }; });
+
+/* more */
+const MORE = [
+['Research', 'The white paper and how to write the next edition', 'ResearchV3.dc.html', 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5'],
+['White paper reader', 'Read the 2025 edition, sized for your phone', 'ResearchV3.dc.html', 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7'],
+['Get involved', 'Pitch, sponsor, volunteer or recommend a speaker', 'GetInvolvedV3.dc.html', 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11h6M19 8v6'],
+['Jobs & internships', 'Open roles from across the network', 'JobsV3.dc.html', 'M4 8h16v11H4zM9 8V5h6v3M4 13h16'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html', 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 11a3 3 0 1 0 0-6M21 20c0-2.6-1.6-4.8-4-5.6'],
+['Code of conduct', 'How we treat each other in the network and at the summit', 'ResearchV3.dc.html', 'M9 12l2 2 4-4M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z'],
+['News', 'Essays and updates from the network', 'NewsV3.dc.html', 'M5 4h12v16H5zM17 8h2v10a2 2 0 0 1-2 2M8 8h6M8 12h6M8 16h4'],
+['Contact', 'Pick a topic and write to us. We respond within 24–48 hours.', 'ContactV3.dc.html', 'M3 6h18v12H3zM3 7l9 6 9-6'],
+['My VRC', 'Registrations, agenda, submissions and your Slack request status, from the link in your email. No password.', 'MyVRCV3.dc.html', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.6-6 8-6s8 2 8 6', 'MAGIC LINK'],
+['Privacy', 'Cookieless analytics. Download or delete your data from My VRC.', 'PrivacyV3.dc.html', 'M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4']
+];
+const more = MORE.map((m, i) => ({ label: m[0], desc: m[1], href: m[2], icon: m[3], chip: m[4] || '', hasChip: !!m[4], li: i ? 'border-top: 1px solid #E5E7EB' : '' }));
+
+/* register form */
+const r = S.r;
+const setR = (k) => (e) => this.setState({ r: Object.assign({}, this.state.r, { [k]: e.target.value }) });
+const flipR = (k) => () => this.setState({ r: Object.assign({}, this.state.r, { [k]: !this.state.r[k] }) });
+const blurR = (k) => () => this.setState({ rBlur: Object.assign({}, this.state.rBlur, { [k]: true }) });
+const rE = {};
+if (!r.name.trim()) rE.name = 'Enter your full name.';
+if (!r.email.trim()) rE.email = 'Enter your email address.'; else if (!okEmail(r.email)) rE.email = 'Enter an email address like name@example.org.';
+if (!r.role) rE.role = 'Choose your role.';
+if (!r.country) rE.country = 'Choose your country.';
+if (!r.days.length) rE.days = 'Choose at least one day.';
+if (!r.c1) rE.c1 = 'Tick this so we can send your join links.';
+const rv = (k) => ((S.rTried || S.rBlur[k]) ? (rE[k] || '') : '');
+const rText = [
+tf('reg-name', 'Full name', r.name, setR('name'), blurR('name'), rv('name'), { ac: 'name' }),
+tf('reg-email', 'Email', r.email, setR('email'), blurR('email'), rv('email'), { type: 'email', ac: 'email', help: 'We send your confirmation and join links here.' }),
+tf('reg-org', 'Organization', r.org, setR('org'), () => {}, '', { ac: 'organization', opt: true })
+];
+const RTOP = ['Methane leaks', 'Soil carbon', 'Floods and storms', 'Greenhouses', 'Technician training', 'Start-ups', 'Funding', 'Research', 'Water'];
+const rf = {
+role: r.role, setRole: setR('role'), roleErr: rv('role'), roleInv: rv('role') ? 'true' : 'false', roleStyle: selectS(!!rv('role')),
+country: r.country, setCountry: setR('country'), countryErr: rv('country'), countryInv: rv('country') ? 'true' : 'false', countryStyle: selectS(!!rv('country')),
+tz: r.tz, setTz: setR('tz'), tzStyle: selectS(false), heard: r.heard, setHeard: setR('heard'),
+days: [[1, 'Day 1 · April 20'], [2, 'Day 2 · April 21'], [3, 'Day 3 · April 22']].map((d) => { const on = r.days.indexOf(d[0]) > -1; return { label: d[1], checked: on ? 'true' : 'false', box: box(on, !!rv('days')),
+style: 'display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 14px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ' + (on ? 'background: #EEF2FB; border: 1px solid #0138AC' : 'background: #ffffff; border: 1px solid ' + (rv('days') ? '#B42318' : '#D5D8DE')),
+toggle: () => this.setState({ r: Object.assign({}, this.state.r, { days: toggleIn(this.state.r.days, d[0]) }) }) }; }),
+daysErr: rv('days'),
+topics: RTOP.map((t) => { const on = r.topics.indexOf(t) > -1; return { label: t, pressed: on ? 'true' : 'false', style: pill(on), toggle: () => this.setState({ r: Object.assign({}, this.state.r, { topics: toggleIn(this.state.r.topics, t) }) }) }; }),
+pitch: r.pitch, pitchChecked: r.pitch ? 'true' : 'false', pitchBox: box(r.pitch), togglePitch: flipR('pitch'),
+a11y: r.a11y, setA11y: setR('a11y'), a11yCount: r.a11y.length + ' / 300',
+c1Checked: r.c1 ? 'true' : 'false', c1Box: box(r.c1, !!rv('c1')), toggleC1: flipR('c1'), c1Err: rv('c1'), c1Inv: rv('c1') ? 'true' : 'false',
+c2Checked: r.c2 ? 'true' : 'false', c2Box: box(r.c2), toggleC2: flipR('c2')
+};
+const RHREF = { name: '#reg-name', email: '#reg-email', role: '#reg-role', country: '#reg-country', days: '#reg-days', c1: '#reg-c1' };
+const RLAB = { name: 'Full name', email: 'Email', role: 'Role', country: 'Country', days: 'Days', c1: 'Summit emails' };
+
+/* join form */
+const j = S.j;
+const setJ = (k) => (e) => this.setState({ j: Object.assign({}, this.state.j, { [k]: e.target.value }) });
+const flipJ = (k) => () => this.setState({ j: Object.assign({}, this.state.j, { [k]: !this.state.j[k] }) });
+const blurJ = (k) => () => this.setState({ jBlur: Object.assign({}, this.state.jBlur, { [k]: true }) });
+const jE = {};
+if (!j.name.trim()) jE.name = 'Enter your full name.';
+if (!j.email.trim()) jE.email = 'Enter your email address.'; else if (!okEmail(j.email)) jE.email = 'Enter an email address like name@example.org.';
+if (!j.coc) jE.coc = 'Confirm you’ve read the code of conduct.';
+const jv = (k) => ((S.jTried || S.jBlur[k]) ? (jE[k] || '') : '');
+const jText = [
+tf('join-name', 'Full name', j.name, setJ('name'), blurJ('name'), jv('name'), { ac: 'name' }),
+tf('join-email', 'Email', j.email, setJ('email'), blurJ('email'), jv('email'), { type: 'email', ac: 'email', help: 'We send your invite or the digest here. Nothing else without asking.' })
+];
+const JCOUNTRIES = ['Australia', 'Brazil', 'Canada', 'Chile', 'France', 'Germany', 'India', 'Japan', 'Kenya', 'Netherlands', 'New Zealand', 'Nigeria', 'Norway', 'Singapore', 'South Africa', 'Spain', 'United Kingdom', 'United States'];
+const jcq = j.country.trim().toLowerCase();
+const jSugg = S.jCountryOpen && jcq ? JCOUNTRIES.filter((c) => c.toLowerCase().indexOf(jcq) > -1 && c.toLowerCase() !== jcq).slice(0, 5) : [];
+const jf = {
+role: j.role, setRole: setJ('role'),
+country: j.country, countryStyle: input(false),
+setCountry: (e) => this.setState({ j: Object.assign({}, this.state.j, { country: e.target.value }), jCountryOpen: true }),
+countryExpanded: jSugg.length ? 'true' : 'false', hasSugg: jSugg.length > 0,
+sugg: jSugg.map((c) => ({ label: c, pick: () => this.setState({ j: Object.assign({}, this.state.j, { country: c }), jCountryOpen: false }) })),
+interests: ['Sky', 'Field', 'Water', 'Factory', 'Policy', 'Funding', 'Jobs'].map((t) => { const on = j.interests.indexOf(t) > -1; return { label: t, pressed: on ? 'true' : 'false', style: pill(on), toggle: () => this.setState({ j: Object.assign({}, this.state.j, { interests: toggleIn(this.state.j.interests, t) }) }) }; }),
+paths: [['slack', 'Slack community', true, 'An admin approves each request by hand, then we email your invite, typically within 24–48 hours.'], ['email', 'Email updates only', false, 'The monthly digest. No Slack account needed.']].map((p) => {
+const on = j.path === p[0];
+return { title: p[1], rec: p[2], desc: p[3], checked: on ? 'true' : 'false',
+card: 'display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 16px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ' + (on ? 'background: #EEF2FB; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid #E5E7EB'),
+ring: 'flex: 0 0 auto; margin-top: 3px; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; border: 2px solid ' + (on ? '#0138AC' : '#A7ADB8') + '; display: flex; align-items: center; justify-content: center; background: #ffffff',
+dot: 'width: 10px; height: 10px; border-radius: 50%; background: ' + (on ? '#0138AC' : 'transparent'),
+pick: () => this.setState({ j: Object.assign({}, this.state.j, { path: p[0] }) }) };
+}),
+dirChecked: j.dir ? 'true' : 'false', dirBox: box(j.dir), toggleDir: flipJ('dir'),
+cocChecked: j.coc ? 'true' : 'false', cocBox: box(j.coc, !!jv('coc')), toggleCoc: flipJ('coc'), cocErr: jv('coc'), cocInv: jv('coc') ? 'true' : 'false'
+};
+const first = j.name.trim().split(/\s+/)[0] || '[first name]';
+const jSlack = j.path === 'slack';
+const topic = j.interests.length ? j.interests.map((x) => x.toLowerCase()).join(' and ') + ' robotics' : '[topic]';
+const jd = { first: first, email: j.email.trim() || '[email]', slack: jSlack, mail: !jSlack,
+head: jSlack ? 'Request received, ' + first + '.' : 'Welcome, ' + first + '.',
+lead: jSlack ? 'We’ve received your request to join Slack. An admin reviews every request by hand, and your invite is emailed to' : 'You’re subscribed to the monthly digest. Confirm your address from the email we sent to',
+leadEnd: jSlack ? ' once approved, typically within 24–48 hours.' : '.',
+receipt: jSlack ? 'We’ve emailed a receipt and a link to track your request to' : 'We’ve emailed a receipt and a link to manage this to',
+manage: jSlack ? 'Track it in My VRC' : 'Manage this',
+steps: steps(jSlack ? [['An admin reviews your request', 'Typically within 24–48 hours. Follow the status in My VRC.'], ['Accept the invite', 'Slack emails it once your request is approved. Check spam if it isn’t there. Then try #jobs and #[CHANNEL].'], ['Say hello in #welcome', 'Here’s an intro you can paste:']]
+: [['Confirm your email', 'One click on the link we just sent.'], ['Your first digest arrives on [DATE]', 'One email a month. Unsubscribe in one click.'], ['Ask to join Slack any time', 'From the Manage link in every email. An admin approves Slack requests by hand.']], false),
+intro: 'Hi, I’m ' + (j.name.trim() || '[name]') + ', I work on ' + topic + ' in ' + (j.country.trim() || '[country]') + '…',
+copy: () => this.setState({ jCopied: true }), copied: S.jCopied ? 'Copied' : '' };
+const JHREF = { name: '#join-name', email: '#join-email', coc: '#join-coc' };
+const JLAB = { name: 'Full name', email: 'Email', coc: 'Code of conduct' };
+
+/* suggest form */
+const g = S.g;
+const setG = (k) => (e) => this.setState({ g: Object.assign({}, this.state.g, { [k]: e.target.value }) });
+const blurG = (k) => () => this.setState({ gBlur: Object.assign({}, this.state.gBlur, { [k]: true }) });
+const E1 = {}, E2 = {};
+if (!g.name.trim()) E1.name = 'Enter the organization’s name.';
+if (!/\.[a-z]{2,}/i.test(g.web)) E1.web = 'Enter the website, like example.org.';
+if (!g.country.trim()) E1.country = 'Enter the HQ country.';
+if (!g.type) E1.type = 'Choose a robot type.';
+if (!g.app) E2.app = 'Choose an application.';
+if (!g.dep) E2.dep = 'Tell us if it’s deployed in the field.';
+if (!g.role) E2.role = 'Choose a climate role.';
+if (!g.desc.trim()) E2.desc = 'Add a one-line description.';
+if (!g.rel) E2.rel = 'Tell us your relationship to it.';
+if (!okEmail(g.email)) E2.email = 'Enter an email address like name@example.org.';
+const gv1 = (k) => ((S.gTried1 || S.gBlur[k]) ? (E1[k] || '') : '');
+const gv2 = (k) => ((S.gTried2 || S.gBlur[k]) ? (E2[k] || '') : '');
+const g1Text = [
+tf('sg-name', 'Organization name', g.name, setG('name'), blurG('name'), gv1('name'), { ac: 'organization' }),
+tf('sg-web', 'Website', g.web, setG('web'), blurG('web'), gv1('web'), { type: 'url', ac: 'url', ph: 'https://' }),
+tf('sg-country', 'HQ country', g.country, setG('country'), blurG('country'), gv1('country'), { ac: 'country-name', ph: 'Start typing' })
+];
+const g2Text = [tf('sg-email', 'Your email', g.email, setG('email'), blurG('email'), gv2('email'), { type: 'email', ac: 'email', help: 'So we can tell you when it’s live.' })];
+const radios = (id, label, k, opts, err) => ({ id: id, lid: id + '-l', label: label, err: err, hasErr: !!err, opts: opts.map((o) => {
+const on = g[k] === o[0];
+return { label: o[1], checked: on ? 'true' : 'false', dot: o[2] ? dotS(o[2]) : 'display: none',
+style: pill(on) + (err && !on ? '; border-color: #B42318' : ''), pick: () => this.setState({ g: Object.assign({}, this.state.g, { [k]: o[0] }) }) };
+}) });
+const g1Radios = [radios('sg-type', 'Robot type', 'type', [['Aerial', 'Aerial', '#6D5BD0'], ['Ground', 'Ground', '#1F9D5C'], ['Ocean', 'Ocean', '#0B6FB8'], ['Arm', 'Robotic arm', '#D9822B'], ['Other', 'Other', '#A7ADB8']], gv1('type'))];
+const g2Radios = [radios('sg-dep', 'Deployed in the field?', 'dep', [['Yes', 'Yes'], ['Pilot', 'Pilot'], ['Not yet', 'Not yet']], gv2('dep')), radios('sg-role', 'Climate role', 'role', [['Mitigation', 'Mitigation'], ['Adaptation', 'Adaptation'], ['Both', 'Both']], gv2('role'))];
+const g3Radios = [radios('sg-rel', 'Your relationship', 'rel', [['work', 'I work there'], ['know', 'I know of it']], gv2('rel'))];
+const nq = g.name.trim().toLowerCase();
+const dupes = nq.length >= 3 ? ORGS.filter((o) => o[0].toLowerCase().indexOf(nq) > -1).slice(0, 3).map((o) => ({ name: o[0], meta: o[1].toUpperCase() + ' · ' + T[o[3]][0].toUpperCase(),
+pick: () => this.setState({ sheet: null, tab: 'map', mq: o[0], mview: 'list', mtype: 'all' }) })) : [];
+const dl = g.desc.length;
+const sg = {
+stepLabel: S.gStep === 1 ? 'STEP 1 OF 2 · THE ORGANIZATION' : 'STEP 2 OF 2 · DETAILS AND YOU', saved: S.gStep === 2,
+segs: [1, 2].map((i) => ({ style: 'flex: 1; height: 4px; border-radius: 999px; background: ' + (i <= S.gStep ? '#0138AC' : '#E5E7EB') })),
+hasDupes: dupes.length > 0, dupes: dupes,
+app: g.app, setApp: setG('app'), appErr: gv2('app'), appInv: gv2('app') ? 'true' : 'false', appStyle: selectS(!!gv2('app')),
+desc: g.desc, setDesc: setG('desc'), descErr: gv2('desc'), descInv: gv2('desc') ? 'true' : 'false', descStyle: ui.ta + (gv2('desc') ? '; border-color: #B42318' : ''),
+descCount: dl + ' / 140', descCountStyle: MONO + 'font-size: 12px; color: ' + (dl > 120 ? '#8A4B00' : '#646B7A'),
+email: g.email.trim() || '[email]',
+doneLead: (g.name.trim() || 'Your suggestion') + ' is in the moderation queue. An admin reviews it before it goes on the map.',
+later: () => (okEmail(this.state.g.email) ? this.setState({ toast: 'Saved. We’ve emailed you a link to finish later.' }) : this.setState({ gBlur: Object.assign({}, this.state.gBlur, { email: true }) }))
+};
+const GHREF = { name: '#sg-name', web: '#sg-web', country: '#sg-country', type: '#sg-type', app: '#sg-app', dep: '#sg-dep', role: '#sg-role', desc: '#sg-desc', rel: '#sg-rel', email: '#sg-email' };
+const GLAB = { name: 'Organization name', web: 'Website', country: 'HQ country', type: 'Robot type', app: 'Application', dep: 'Deployed', role: 'Climate role', desc: 'Description', rel: 'Relationship', email: 'Your email' };
+
+/* full-screen sheet wiring */
+const sh = S.sheet;
+const sumErr = (E, H, L) => Object.keys(E).map((k) => ({ text: L[k] + ': ' + E[k], href: H[k] }));
+let fsErrs = [];
+if (sh === 'register' && !S.rDone && S.rTried) fsErrs = sumErr(rE, RHREF, RLAB);
+if (sh === 'join' && !S.jDone && S.jTried) fsErrs = sumErr(jE, JHREF, JLAB);
+if (sh === 'suggest' && !S.gDone && S.gStep === 1 && S.gTried1) fsErrs = sumErr(E1, GHREF, GLAB);
+if (sh === 'suggest' && !S.gDone && S.gStep === 2 && S.gTried2) fsErrs = sumErr(E2, GHREF, GLAB);
+const ne = fsErrs.length;
+const isRegForm = sh === 'register' && !S.rDone, isJoinForm = sh === 'join' && !S.jDone, isSgForm = sh === 'suggest' && !S.gDone;
+const fsSubmit = () => {
+const s = this.state;
+if (s.sheet === 'register') { if (Object.keys(rE).length) this.setState({ rTried: true }); else this.setState({ rDone: true, rTried: false }); }
+else if (s.sheet === 'join') { if (Object.keys(jE).length) this.setState({ jTried: true }); else this.setState({ jDone: true, jTried: false }); }
+else if (s.gStep === 1) { if (Object.keys(E1).length) this.setState({ gTried1: true }); else this.setState({ gStep: 2 }); }
+else { if (Object.keys(E2).length) this.setState({ gTried2: true }); else this.setState({ gDone: true }); }
+};
+const showRegBar = S.tab === 'summit' && S.sum === 'open' && !S.registered;
+const showRegdBar = S.tab === 'summit' && S.sum === 'open' && S.registered;
+
+return {
+states: states, tabs: tabs, ui: ui,
+isHome: S.tab === 'home', isSummit: S.tab === 'summit', isWatch: S.tab === 'watch', isMap: S.tab === 'map', isMore: S.tab === 'more',
+spacer: 'height: ' + (showRegBar || showRegdBar ? 190 : S.tab === 'map' ? 170 : 110) + 'px',
+goHome: go('home'), goSummit: go('summit'), goWatch: go('watch'), goMap: go('map'),
+openJoin: () => this.setState(Object.assign({ sheet: 'join', bs: null }, this.state.jDone ? this.join0() : {})),
+openRegister: () => this.setState({ sheet: 'register', bs: null }),
+openSuggest: () => this.setState(Object.assign({ sheet: 'suggest', bs: null }, this.state.gDone ? this.sg0() : {})),
+nHome: nm('home', 'Notify me', ['Summit announcements', 'Program published'], false),
+nSum: nm('sum', 'Email me when it opens', ['Summit announcements', 'Program published', 'Recordings'], true),
+nMore: nm('more', 'Get the monthly digest', ['Monthly digest', 'Summit announcements', 'New videos', 'Job alerts'], true),
+nProg: nm('prog', 'Email me when the program is published', ['Program published', 'Summit announcements', 'Recordings'], true),
+domains: domains, panel: panel, ways: ways,
+/* summit */
+isLive: isLive, isSoon: S.sum === 'soon', isOpen: S.sum === 'open',
+showHero: !isLive && !(S.sum === 'open' && S.registered), showRegd: S.sum === 'open' && S.registered,
+srH1: isLive || (S.sum === 'open' && S.registered),
+heroChip: S.sum === 'soon' ? 'REGISTRATION OPENS DEC 7, 2026 · FREE' : 'REGISTRATION OPEN · FREE',
+progListLabel: 'Day ' + S.day + ' sessions',
+live: live,
+prog: { eyebrow: isLive ? 'PROGRAM · ALL TIMES ' + (utc ? 'UTC' : 'BERLIN (UTC+2)') : 'SUMMIT 2027 · PROGRAM', pub: isLive, unpub: !isLive,
+days: PROG.map((d) => ({ label: 'Day ' + d.day, date: d.date + ', 2027' })) },
+days: days, rows: rows, noRows: rows.length === 0,
+hasFilt: filtCount > 0, filtCount: filtCount, starCount: S.stars.length, tzShort: utc ? 'UTC' : 'MY TIME · BERLIN',
+agendaPill: btnSm + (S.stars.length ? 'border: 1px solid #0138AC; background: #EEF2FB; color: #0138AC' : 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222'),
+openFilters: () => this.setState({ bs: 'filters', cal: null }), openAgenda: () => this.setState({ bs: 'agenda', cal: null }),
+clearFilters: () => this.setState({ kinds: [] }),
+showRegBar: showRegBar, showRegdBar: showRegdBar,
+/* bottom sheets */
+bsOpen: !!S.bs, isFilters: S.bs === 'filters', isAgenda: S.bs === 'agenda', bsTitle: S.bs === 'filters' ? 'Filters' : 'My agenda (' + S.stars.length + ')',
+closeBs: () => this.setState({ bs: null, cal: null }),
+fGroups: fGroups, tzOpts: tzOpts, hourOpts: hourOpts, showN: 'Show ' + nMatch + ' session' + (nMatch === 1 ? '' : 's'),
+agenda: agendaList, agendaEmpty: agendaList.length === 0,
+calOpts: calOpts, calAgenda: S.cal === 'agenda', calAgendaExp: S.cal === 'agenda' ? 'true' : 'false',
+toggleCalAgenda: () => (this.state.stars.length ? this.setState({ cal: this.state.cal === 'agenda' ? null : 'agenda' }) : null),
+agendaCalDis: S.stars.length ? 'false' : 'true',
+agendaCalBtn: btn + 'flex: 1 1 auto; min-height: 52px; border: 0; border-radius: 14px; ' + (S.stars.length ? 'background: #0138AC; color: #ffffff' : 'background: #E5E7EB; color: #646B7A; cursor: not-allowed'),
+calConf: S.cal === 'conf', calConfExp: S.cal === 'conf' ? 'true' : 'false',
+toggleCalConf: () => this.setState({ cal: this.state.cal === 'conf' ? null : 'conf' }),
+hasToast: !!S.toast, toast: S.toast, closeToast: () => this.setState({ toast: '' }),
+/* watch + map + more */
+shelves: shelves,
+mq: S.mq, onMq: (e) => this.setState({ mq: e.target.value }), views: views, mtypes: mtypes, pins: pins, orgs: orgs, mEmpty: orgs.length === 0,
+isMapView: S.mview === 'map', isListView: S.mview === 'list',
+mCount: S.mview === 'list' ? 'SHOWING ' + orgs.length + ' OF 120' : 'GROUPED BY AREA',
+clearMap: () => this.setState({ mq: '', mtype: 'all' }),
+more: more,
+/* full-screen sheets */
+fsOpen: !!sh, fsTitle: sh === 'register' ? 'Register · Summit 2027' : sh === 'join' ? 'Join the network' : 'Suggest an organization',
+closeFs: () => this.setState({ sheet: null, cal: null, registered: this.state.registered || (this.state.sheet === 'register' && this.state.rDone) }),
+fsHasErrs: ne > 0, fsErrs: fsErrs, fsErrTitle: ne === 1 ? 'There is 1 problem to fix' : 'There are ' + ne + ' problems to fix',
+fsFootErr: ne === 1 ? '1 problem to fix. Go to the list' : ne + ' problems to fix. Go to the list',
+fsHasFooter: isRegForm || isJoinForm || isSgForm, fsBack: isSgForm && S.gStep === 2,
+fsSubmitLabel: sh === 'register' ? 'Register' : sh === 'join' ? (jSlack ? 'Request to join' : 'Join') : S.gStep === 1 ? 'Continue' : 'Send suggestion',
+fsSubmit: fsSubmit, sgBack: () => this.setState({ gStep: 1 }),
+isRegForm: isRegForm, isRegDone: sh === 'register' && S.rDone, rText: rText, rf: rf,
+regSteps: steps([['Confirmation email', 'NOW'], ['Program published', '[DATE]'], ['Join links by email', '[N] DAYS BEFORE'], ['Recordings', 'AFTER THE EVENT']], true),
+regEmail: r.email.trim() || '[email]', regNextLabel: isLive ? 'Build my agenda' : 'Back to the summit',
+buildAgenda: () => this.setState({ sheet: null, cal: null, tab: 'summit', registered: true, bs: null }),
+isJoinForm: isJoinForm, isJoinDone: sh === 'join' && S.jDone, jText: jText, jf: jf, jd: jd,
+joinToMap: () => this.setState({ sheet: null, tab: 'map' }),
+isSgForm: isSgForm, isSg1: isSgForm && S.gStep === 1, isSg2: isSgForm && S.gStep === 2, isSgDone: sh === 'suggest' && S.gDone,
+g1Text: g1Text, g2Text: g2Text, g1Radios: g1Radios, g2Radios: g2Radios, g3Radios: g3Radios, sg: sg,
+sgSteps: steps([['Suggestion received', 'Today. It’s in the moderation queue.'], ['Admin review', 'Typically within 24–48 hours. An admin checks the website and any sources you gave.'], ['Live on the map', 'We email you a link to the entry once it’s approved.']], false),
+sgAnother: () => this.setState(this.sg0())
+};
+}
+}
+</script>
+</body>
+</html>

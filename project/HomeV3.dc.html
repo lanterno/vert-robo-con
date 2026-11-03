@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vert Robo Con — Home (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.r2{grid-row:span 2}
+@media (max-width: 900px){.bento>*{grid-column:1/-1 !important;grid-row:auto !important}}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.orow:hover{background:#F7F8F9}
+.flink{color:#0A1222;text-decoration:none}
+.flink:hover{color:#0138AC;text-decoration:underline}
+</style>
+</helmet>
+<div style="position: relative; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EBEE; border-bottom: 1px dashed #A7ADB8; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="font-size: 13px; color: #3D4556">Sheet preview</span>
+<div role="group" aria-label="Sheet preview" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 10px; background: #F3F4F2">
+<sc-for list="{{presets}}" as="p" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<button type="button" onClick="{{openJoinTop}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Join the network</button>
+</div>
+</header>
+
+<!-- ANNOUNCEMENT BAR -->
+<div style="border-bottom: 1px solid #E5E7EB; background: #ffffff">
+<div style="max-width: 1280px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px">
+<a href="SummitV3.dc.html" style="display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; color: #3D4556; font-size: 15px; text-decoration: none">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>SUMMIT 2027</span>
+<span><strong style="font-weight: 600; color: #0A1222">April 20–22, 2027</strong> · Online · Free · Registration opens Mon Dec 7, 2026</span>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+<div style="{{nBar.wrap}}">
+<sc-if value="{{nBar.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nBar.expand}}" style="{{nBar.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>{{nBar.label}}</button>
+</sc-if>
+<sc-if value="{{nBar.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 4px"><span style="{{nBar.lab}}">Email</span><input type="email" id="notify-bar" autocomplete="email" value="{{nBar.email}}" onChange="{{nBar.setEmail}}" placeholder="you@example.org" aria-invalid="{{nBar.invalid}}" style="{{nBar.input}}"></label>
+<button type="button" onClick="{{nBar.submit}}" style="{{ui.btnPs}}">Notify me</button>
+</div>
+<sc-if value="{{nBar.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nBar.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nBar.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{nBar.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px"><span style="{{nBar.text}}"><strong style="{{nBar.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nBar.email}}.</span><button type="button" onClick="{{nBar.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nBar.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nBar.manage}}">Manage</a></div>
+</sc-if>
+</div>
+</div>
+</div>
+
+<!-- HERO -->
+<section style="padding: 56px 32px 0">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 32px 64px">
+<h1 style="margin: 0; flex: 1.5 1 560px; font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 108px; line-height: 0.92; letter-spacing: -0.045em">Robots for a<br><span style="color: #0138AC">cooler planet.</span></h1>
+<div style="flex: 1 1 360px; max-width: 440px; display: flex; flex-direction: column; gap: 24px; padding-bottom: 8px">
+<p style="margin: 0; font-size: 20px; line-height: 1.5; color: #3D4556">A friendly community for people who build, fund, study and repair robots for climate work, and who say plainly what robots can’t do.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<button type="button" onClick="{{openJoinTop}}" style="{{ui.btnP}}">Join 120+ members
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+<a href="MapV3.dc.html" style="{{ui.btnS}}">Explore the map</a>
+<a href="WatchV3.dc.html" style="font-size: 16px; font-weight: 500; text-decoration: none">Latest videos →</a>
+</div>
+</div>
+</div>
+
+<!-- hero bento -->
+<div class="bento" style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-rows: minmax(220px, auto); gap: 16px">
+<div class="s5 r2" style="position: relative; border-radius: 24px; overflow: hidden; background: #DDE6F5; min-height: 460px">
+<img src="img/hero.svg" alt="Illustration of a field robot in a green landscape" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+<span style="position: absolute; left: 20px; bottom: 20px; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,0.88); backdrop-filter: blur(8px); font-family: 'Geist Mono', monospace; font-size: 12px; color: #0A1222">SKY · FIELD · WATER · FACTORY</span>
+</div>
+<div class="s7" style="border-radius: 24px; background: #0138AC; color: #ffffff; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px">
+<a href="MapV3.dc.html" style="display: flex; flex-direction: column; gap: 24px; color: #ffffff; text-decoration: none">
+<span style="display: flex; justify-content: space-between; align-items: center; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #BFD0F5">GLOBAL MAP
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></span>
+<span style="display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 88px; line-height: 0.85; letter-spacing: -0.04em">120</span>
+<span style="font-size: 16px; line-height: 1.45; color: #E4EAF8; max-width: 300px">organizations building climate robots in 18 countries, 70 already deployed in the field.</span>
+</span>
+</a>
+<span style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.22); font-size: 14px">
+<span style="display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 14px">
+<a href="MapV3.dc.html" style="display: inline-flex; align-items: center; gap: 8px; color: #ffffff; font-weight: 500">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg>Download the data (CSV · JSON)</a>
+<span style="font-size: 13px; color: #BFD0F5">Licence: CC BY 4.0</span>
+</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #BFD0F5">GENERATED FROM THE MAP · UPDATED [DATE]</span>
+</span>
+</div>
+<button type="button" onClick="{{openJoinTop}}" class="s3 lift" style="border: 0; border-radius: 24px; background: #E8F6EE; color: #0A1222; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; font: inherit; text-align: left; cursor: pointer">
+<span style="width: 100%; display: flex; justify-content: space-between; align-items: center; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #0B7A47">COMMUNITY
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></span>
+<span style="display: flex; align-items: center">
+<sc-for list="{{faces}}" as="f" hint-placeholder-count="5"><img src="{{f.src}}" alt="" style="{{f.style}}"></sc-for>
+<span style="margin-left: 10px; font-family: 'Geist Mono', monospace; font-size: 13px; color: #0B7A47">+120</span>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em">Researchers, founders, funders, technicians and public buyers in 18 countries.</span>
+</button>
+<div class="s4" style="border-radius: 24px; border: 1px solid #E5E7EB; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; justify-content: space-between; align-items: center; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SUMMIT 2027 · ONLINE
+<a href="SummitV3.dc.html" aria-label="Open Summit 2027" style="display: inline-flex; color: #0A1222"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a></span>
+<span style="{{ui.chipBlue}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>REGISTRATION OPENS DEC 7, 2026</span>
+<a href="SummitV3.dc.html" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em; color: #0A1222; text-decoration: none">April 20–22, 2027</a>
+<span style="font-size: 15px; color: #3D4556">Free · open to everyone, no cap on places. Startup pitches open Dec 8.</span>
+<div style="{{nHero.wrap}}">
+<sc-if value="{{nHero.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nHero.expand}}" style="{{nHero.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>{{nHero.label}}</button>
+</sc-if>
+<sc-if value="{{nHero.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="{{nHero.lab}}">Email</span><input type="email" id="notify-hero" autocomplete="email" value="{{nHero.email}}" onChange="{{nHero.setEmail}}" placeholder="you@example.org" aria-invalid="{{nHero.invalid}}" style="{{nHero.input}}"></label>
+<sc-if value="{{nHero.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nHero.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nHero.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<button type="button" onClick="{{nHero.submit}}" style="{{ui.btnPs}}">Notify me</button>
+</div>
+</sc-if>
+<sc-if value="{{nHero.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px"><span style="{{nHero.text}}"><strong style="{{nHero.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nHero.email}}.</span><button type="button" onClick="{{nHero.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nHero.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nHero.manage}}">Manage</a></div>
+</sc-if>
+</div>
+</div>
+</div>
+
+<!-- partners -->
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 40px; padding: 28px 0; border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">SUMMITS ORGANIZED WITH</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 12px 40px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; color: #646B7A">
+<li>Example University</li><li>Example Polytechnic</li><li>Example Climate Fund</li><li>Example Data Commons</li><li>Example Field Tools Co.</li><li>Example Coastal Trust</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- 01 THE FIELD -->
+<section id="field" style="padding: 128px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 48px 80px; align-items: flex-start">
+<div style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 20px">
+<span style="{{ui.eyebrow}}">01 — THE FIELD</span>
+<h2 style="{{ui.h2}}">What do robots do for the climate?</h2>
+<p style="margin: 0; font-size: 18px; color: #3D4556">Robots already inspect turbines, map reefs and sort recycling. They only help if someone can fix them, pay for them and trust their data, so we look at the whole life of a robot, not just the demo.</p>
+<a href="ResearchV3.dc.html" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none">Read the white paper
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+<div style="flex: 1.7 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div role="tablist" aria-label="Robot domains" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: #F3F4F2; align-self: flex-start">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; opacity: 0.7">{{t.count}}</span></button>
+</sc-for>
+</div>
+<div role="tabpanel" aria-label="{{panel.label}}" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 500; font-size: 28px; line-height: 1.25; letter-spacing: -0.02em">{{panel.lede}}</p>
+<sc-for list="{{panel.orgs}}" as="o" hint-placeholder-count="3">
+<a href="MapV3.dc.html" class="orow" aria-label="{{o.aria}}" style="display: flex; flex-wrap: wrap; gap: 6px 24px; padding: 18px 12px; margin: 0 -12px; border-top: 1px solid #E5E7EB; border-radius: 12px; align-items: baseline; color: #0A1222; text-decoration: none">
+<span style="flex: 0 0 200px; display: flex; flex-direction: column">
+<strong style="font-weight: 600; font-size: 17px">{{o.name}}</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{o.meta}}</span>
+</span>
+<span style="flex: 1 1 240px; font-size: 16px; color: #3D4556">{{o.desc}}</span>
+<span style="{{o.tagStyle}}">{{o.tag}}</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; align-self: center"><path d="M7 17L17 7M9 7h8v8"></path></svg>
+</a>
+</sc-for>
+<a href="MapV3.dc.html" style="margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none">{{panel.cta}}
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 02 WAYS IN -->
+<section id="ways" style="padding: 0 32px 128px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="{{ui.eyebrow}}">02 — WHAT WE DO</span>
+<h2 style="{{ui.h2}}">Ways into the network</h2>
+</div>
+<p style="margin: 0; max-width: 420px; font-size: 18px; color: #3D4556">Whether you build robots, fund them, study them or regulate them.</p>
+</div>
+<div class="bento" style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px">
+
+<div class="s7 r2" style="border-radius: 24px; background: #0A1222; color: #ffffff; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; min-height: 560px">
+<span style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #9AA3B5">SUMMIT 2027 · ANNUAL · ONLINE
+<span style="{{ui.chipBlue}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>OPENS DEC 7, 2026</span></span>
+<img src="img/summit-grid.svg" alt="Summit participants in a video-call grid" style="width: 100%; aspect-ratio: 16 / 7; object-fit: cover; border-radius: 14px; display: block">
+<span style="display: flex; flex-direction: column; gap: 10px">
+<a href="SummitV3.dc.html" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 40px; line-height: 1.02; letter-spacing: -0.03em; color: #ffffff; text-decoration: none">Vert Robo Con Summit 2027</a>
+<span style="font-size: 16px; color: #C8CEDA">April 20–22, 2027 · 3 days online · keynotes, panels and pitches · Free · no cap on places</span>
+</span>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px">
+<div style="{{nWays.wrap}}">
+<sc-if value="{{nWays.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nWays.expand}}" style="{{nWays.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>{{nWays.label}}</button>
+</sc-if>
+<sc-if value="{{nWays.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px"><span style="{{nWays.lab}}">Email</span><input type="email" id="notify-ways" autocomplete="email" value="{{nWays.email}}" onChange="{{nWays.setEmail}}" placeholder="you@example.org" aria-invalid="{{nWays.invalid}}" style="{{nWays.input}}"></label>
+<button type="button" onClick="{{nWays.submit}}" style="{{ui.btnW}}">Notify me</button>
+</div>
+<sc-if value="{{nWays.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nWays.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nWays.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{nWays.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px"><span style="{{nWays.text}}"><strong style="{{nWays.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nWays.email}}.</span><button type="button" onClick="{{nWays.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nWays.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; min-height: 44px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nWays.manage}}">Manage</a></div>
+</sc-if>
+</div>
+<a href="GetInvolvedV3.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #2E3850; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Pitch your startup · opens Dec 8</a>
+</div>
+<a href="ProgramV3.dc.html" style="align-self: flex-start; color: #ffffff; font-size: 15px; font-weight: 500">Last year’s program →</a>
+</div>
+</div>
+
+<div class="s5" style="border-radius: 24px; background: #F3F4F2; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+<span style="{{ui.eyebrow}}">RESEARCH · 2025 EDITION</span>
+<a href="ResearchV3.dc.html" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em; color: #0A1222; text-decoration: none">Working Notes on Climate Robots: when a robot helps, and when it doesn’t</a>
+<img src="img/white-paper.svg" alt="" style="width: 100%; aspect-ratio: 16 / 6; object-fit: cover; border-radius: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto">
+<a href="ResearchV3.dc.html" style="{{ui.btnPs}}">Read online</a>
+<a href="ResearchV3.dc.html" style="{{ui.btnSs}}">Write the next edition</a>
+</div>
+</div>
+
+<div class="s5" style="border-radius: 24px; border: 1px solid #E5E7EB; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+<span style="{{ui.eyebrow}}">CONSULTING</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.12; letter-spacing: -0.02em">Practical advice on policy, research, partners and getting to market, from members who have done the work</span>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto">
+<a href="ContactV3.dc.html#topics" style="display: flex; align-items: center; gap: 12px; color: #0A1222; text-decoration: none">
+<span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 50%; flex: 0 0 auto; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 14px; font-weight: 500">IC</span>
+<span style="display: flex; flex-direction: column; line-height: 1.3"><strong style="font-weight: 600; font-size: 15px; text-decoration: underline; text-decoration-color: #D5D8DE; text-underline-offset: 3px">Imogen Calder</strong><span style="font-size: 14px; color: #646B7A">Consulting coordinator</span></span>
+</a>
+<a href="ContactV3.dc.html#topics" style="{{ui.btnPs}}">Start an enquiry</a>
+</div>
+</div>
+
+<a href="WatchV3.dc.html" class="s7 lift" style="border-radius: 24px; border: 1px solid #E5E7EB; padding: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; color: #0A1222; text-decoration: none">
+<span style="position: relative; flex: 1 1 280px; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #0A1222">
+<img src="img/forest.svg" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.88">
+<span aria-hidden="true" style="position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; color: #0A1222"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+</span>
+<span style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 10px; padding: 8px 8px 8px 0">
+<span style="{{ui.eyebrow}}">WATCH · SERIES</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">Robots in the Field</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">4 EPISODES</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; color: #0138AC; font-weight: 500">Watch the series
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+</span>
+</a>
+
+<a href="JobsV3.dc.html" class="s5 lift" style="border-radius: 24px; background: #EEF2FB; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; color: #0A1222; text-decoration: none">
+<span style="display: flex; justify-content: space-between; align-items: center; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #0138AC">JOBS &amp; INTERNSHIPS
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">Jobs building climate robots</span>
+<span style="{{ui.chipBlueW}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>[N] OPEN</span>
+<span style="font-size: 16px; color: #3D4556">Roles and internships shared by members and partners.</span>
+</span>
+</a>
+
+</div>
+</div>
+</section>
+
+<!-- 03 PRINCIPLES -->
+<section style="background: #F3F4F2; padding: 128px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-direction: column; gap: 20px; max-width: 980px">
+<span style="{{ui.eyebrow}}">03 — HOW WE WORK</span>
+<p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 64px; line-height: 1; letter-spacing: -0.035em">A robot is a tool, not a climate plan. <span style="color: #646B7A">We look hard at what each one fixes, what it breaks and who keeps it running.</span></p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<div style="background: #ffffff; border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 12px">
+<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Count the upkeep</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">A pilot is only half the story. We ask who charges, repairs and pays for a robot in its third season, not just its first week.</p>
+</div>
+<div style="background: #ffffff; border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 12px">
+<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"></path></svg>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Publish the failures</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Robots that stalled, sank or sat in a shed get written up too, so nobody pays twice for the same lesson.</p>
+</div>
+<div style="background: #ffffff; border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 12px">
+<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0A1222" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"></path></svg>
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Share the tools</h3>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Checklists, test plans and parts lists from one project are posted where the next project can reuse them.</p>
+</div>
+</div>
+<a href="ResearchV3.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none">Read how we work
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+</section>
+
+<!-- 04 FROM THE NETWORK -->
+<section style="padding: 128px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="{{ui.eyebrow}}">04 — WATCH &amp; READ</span>
+<h2 style="{{ui.h2}}">From the network</h2>
+</div>
+<a href="NewsV3.dc.html" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none">All news
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{news}}" as="n" hint-placeholder-count="3">
+<a href="{{n.href}}" class="lift" style="display: flex; flex-direction: column; gap: 14px; color: #0A1222; text-decoration: none; border-radius: 20px">
+<sc-if value="{{n.hasImg}}" hint-placeholder-val="{{ true }}">
+<span style="position: relative; display: block; aspect-ratio: 4 / 3; border-radius: 20px; overflow: hidden; background: #0A1222">
+<img src="{{n.img}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9">
+<sc-if value="{{n.isVideo}}" hint-placeholder-val="{{ false }}">
+<span aria-hidden="true" style="position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; color: #0A1222"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+<span style="position: absolute; left: 14px; bottom: 14px; padding: 6px 10px; border-radius: 999px; background: rgba(10,18,34,0.78); color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px">EPISODE 2 OF 4</span>
+</sc-if>
+</span>
+</sc-if>
+<sc-if value="{{n.isText}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: flex-end; aspect-ratio: 4 / 3; border-radius: 20px; background: #E8F6EE; padding: 24px; box-sizing: border-box; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em; color: #0B7A47">{{n.cover}}</span>
+</sc-if>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px">
+<span style="{{ui.chipNeutral}}">{{n.type}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{n.meta}}</span>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2; letter-spacing: -0.015em">{{n.title}}</span>
+</a>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- JOIN -->
+<section id="join" style="padding: 0 32px 128px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<div style="flex: 2 1 640px; border-radius: 32px; background: #0A1222; color: #ffffff; padding: 64px 56px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #7FD6A8"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>120+ MEMBERS ON SLACK</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 64px; line-height: 0.98; letter-spacing: -0.035em">Come say hello.</h2>
+<p style="margin: 0; font-size: 18px; color: #C8CEDA; max-width: 560px">People from 18 countries who build, fund, study and fix robots for climate work. The form takes about a minute, and an admin approves each Slack request by hand, typically within 24–48 hours. Then say hello in #welcome and tell us what you work on.</p>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<li style="display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: 16px; background: #141D30"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #7FD6A8">01</span><strong style="font-weight: 600">Share what you know</strong><span style="font-size: 15px; color: #9AA3B5">Answer questions, post what failed, introduce people to each other.</span></li>
+<li style="display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: 16px; background: #141D30"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #7FD6A8">02</span><strong style="font-weight: 600">Assume good faith</strong><span style="font-size: 15px; color: #9AA3B5">Members come from labs, farms, start-ups and agencies. Ask before you judge.</span></li>
+<li style="display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: 16px; background: #141D30"><span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #7FD6A8">03</span><strong style="font-weight: 600">Follow the code of conduct</strong><span style="font-size: 15px; color: #9AA3B5">Read <a href="ResearchV3.dc.html" style="color: #ffffff">our code of conduct</a> before you post.</span></li>
+</ol>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px">
+<button type="button" onClick="{{openJoinSection}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Join the network
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+<span style="font-size: 15px; color: #9AA3B5">Slack, or email updates only. Your choice.</span>
+</div>
+</div>
+<div style="flex: 1 1 340px; display: flex; flex-direction: column; gap: 16px">
+<div style="flex: 1 1 auto; border-radius: 28px; background: #F3F4F2; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<span style="{{ui.eyebrow}}">PREFER EMAIL?</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em">The monthly digest</span>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Network news, new videos, jobs and summit dates in one email a month. No Slack account needed.</p>
+<div style="{{nPrefer.wrap}}">
+<sc-if value="{{nPrefer.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nPrefer.expand}}" style="{{nPrefer.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>{{nPrefer.label}}</button>
+</sc-if>
+<sc-if value="{{nPrefer.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="{{nPrefer.lab}}">Email</span><input type="email" id="notify-prefer" autocomplete="email" value="{{nPrefer.email}}" onChange="{{nPrefer.setEmail}}" placeholder="you@example.org" aria-invalid="{{nPrefer.invalid}}" style="{{nPrefer.input}}"></label>
+<sc-if value="{{nPrefer.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nPrefer.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nPrefer.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<button type="button" onClick="{{nPrefer.submit}}" style="{{ui.btnPs}}">Notify me</button>
+</div>
+</sc-if>
+<sc-if value="{{nPrefer.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px"><span style="{{nPrefer.text}}"><strong style="{{nPrefer.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nPrefer.email}}.</span><button type="button" onClick="{{nPrefer.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nPrefer.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nPrefer.manage}}">Manage</a></div>
+</sc-if>
+</div>
+</div>
+<a href="ContactV3.dc.html" class="lift" style="border-radius: 28px; border: 1px solid #E5E7EB; padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; color: #0A1222; text-decoration: none">
+<span style="display: flex; flex-direction: column; gap: 4px">
+<span style="{{ui.eyebrow}}">CONTACT US</span>
+<span style="font-weight: 600; font-size: 17px">Questions, press, partnerships</span>
+</span>
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px; max-width: 420px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; font-size: 15px; color: #646B7A">A friendly community for people who build, fund and repair robots for climate work.</p>
+<span style="margin-top: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">THE MONTHLY DIGEST</span>
+<div style="{{nFoot.wrap}}">
+<sc-if value="{{nFoot.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nFoot.expand}}" style="{{nFoot.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>{{nFoot.label}}</button>
+</sc-if>
+<sc-if value="{{nFoot.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 4px"><span style="{{nFoot.lab}}">Email</span><input type="email" id="notify-foot" autocomplete="email" value="{{nFoot.email}}" onChange="{{nFoot.setEmail}}" placeholder="you@example.org" aria-invalid="{{nFoot.invalid}}" style="{{nFoot.input}}"></label>
+<button type="button" onClick="{{nFoot.submit}}" style="{{ui.btnPs}}">Notify me</button>
+</div>
+<sc-if value="{{nFoot.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nFoot.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nFoot.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{nFoot.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px"><span style="{{nFoot.text}}"><strong style="{{nFoot.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nFoot.email}}.</span><button type="button" onClick="{{nFoot.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nFoot.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nFoot.manage}}">Manage</a></div>
+</sc-if>
+</div>
+</div>
+<sc-for list="{{footer}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="5"><a class="flink" href="{{l.href}}" onClick="{{l.go}}">{{l.label}}</a></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<div style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="WatchV3.dc.html" aria-label="Videos" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="#join" aria-label="Slack: join the network" onClick="{{openJoinFoot}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2zM13 3v6h2a2 2 0 0 0 0-4M11 21v-6H9a2 2 0 0 0 0 4"></path></svg></a>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- SIDE SHEET (join) -->
+<sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeSheet}}" style="position: absolute; inset: 0; z-index: 40; background: rgba(10,18,34,0.48)"></div>
+<aside role="dialog" aria-modal="true" aria-labelledby="sheet-title" onKeyDown="{{sheetKey}}" style="position: absolute; top: 0; right: 0; bottom: 0; z-index: 41; width: 480px; max-width: 100%; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35)">
+<div style="{{sheetInner}}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px">
+<h2 id="sheet-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">{{sheetTitle}}</h2>
+<button type="button" onClick="{{closeSheet}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: #F3F4F2; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>Close</button>
+</div>
+
+<!-- JOIN FORM -->
+<sc-if value="{{showJoinForm}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 22px">
+<p style="margin: 0; font-size: 16px; color: #3D4556">Takes about a minute.</p>
+<sc-if value="{{jf.hasSummary}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600; font-size: 16px">{{jf.summaryTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px; font-size: 15px"><sc-for list="{{jf.summary}}" as="e" hint-placeholder-count="3"><li><a href="{{e.href}}" style="color: #B42318">{{e.text}}</a></li></sc-for></ul>
+</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="join-name" style="{{ui.label}}">Full name</label>
+<input id="join-name" type="text" autocomplete="name" value="{{jf.name}}" onChange="{{jf.setName}}" onBlur="{{jf.blurName}}" aria-invalid="{{jf.nameInvalid}}" style="{{jf.nameInput}}">
+<sc-if value="{{jf.nameErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{jf.nameErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="join-email" style="{{ui.label}}">Email</label>
+<input id="join-email" type="email" autocomplete="email" value="{{jf.email}}" onChange="{{jf.setEmail}}" onBlur="{{jf.blurEmail}}" aria-invalid="{{jf.emailInvalid}}" style="{{jf.emailInput}}">
+<span style="{{ui.help}}">We send your invite or the digest here. Nothing else without asking.</span>
+<sc-if value="{{jf.emailErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{jf.emailErr}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="join-role" style="{{ui.label}}">Role <span style="{{ui.opt}}">(optional)</span></label>
+<select id="join-role" value="{{jf.role}}" onChange="{{jf.setRole}}" style="{{jf.selectStyle}}">
+<option value="">Choose one</option>
+<option value="Researcher">Researcher</option>
+<option value="Founder or startup">Founder or startup</option>
+<option value="Investor or funder">Investor or funder</option>
+<option value="Policy or government">Policy or government</option>
+<option value="NGO">NGO</option>
+<option value="Student">Student</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div style="position: relative; display: flex; flex-direction: column; gap: 6px">
+<label for="join-country" style="{{ui.label}}">Country <span style="{{ui.opt}}">(optional)</span></label>
+<input id="join-country" type="text" role="combobox" aria-autocomplete="list" aria-expanded="{{jf.countryExpanded}}" aria-controls="join-country-list" autocomplete="off" value="{{jf.country}}" onChange="{{jf.setCountry}}" placeholder="Start typing, e.g. Kenya" style="{{jf.countryInput}}">
+<sc-if value="{{jf.hasSugg}}" hint-placeholder-val="{{ false }}">
+<ul id="join-country-list" role="listbox" aria-label="Countries" style="margin: 0; padding: 6px; list-style: none; border: 1px solid #E5E7EB; border-radius: 12px; background: #ffffff; box-shadow: 0 16px 32px -16px rgba(10,18,34,0.3); display: flex; flex-direction: column">
+<sc-for list="{{jf.sugg}}" as="c" hint-placeholder-count="4"><li role="none"><button type="button" role="option" aria-selected="false" onClick="{{c.pick}}" style="width: 100%; min-height: 40px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 15px; text-align: left; cursor: pointer; color: #0A1222">{{c.label}}</button></li></sc-for>
+</ul>
+</sc-if>
+</div>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="{{ui.legend}}">Interests <span style="{{ui.opt}}">(optional)</span></legend>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{jf.interests}}" as="t" hint-placeholder-count="7"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+</fieldset>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span id="join-path-label" style="{{ui.label}}">How would you like to take part?</span>
+<div role="radiogroup" aria-labelledby="join-path-label" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{jf.paths}}" as="r" hint-placeholder-count="2">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.card}}">
+<span aria-hidden="true" style="{{r.ring}}"><span style="{{r.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; font-size: 16px">{{r.title}}<sc-if value="{{r.rec}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipGreenSm}}">RECOMMENDED</span></sc-if></span>
+<span style="font-size: 14px; color: #3D4556">{{r.desc}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div id="join-coc" style="display: flex; align-items: flex-start; gap: 6px">
+<button type="button" role="checkbox" aria-checked="{{jf.cocChecked}}" aria-labelledby="join-coc-label" aria-invalid="{{jf.cocInvalid}}" onClick="{{jf.toggleCoc}}" style="{{ui.cbBtn}}"><span aria-hidden="true" style="{{jf.cocBox}}"><sc-if value="{{jf.coc}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></sc-if></span></button>
+<span style="padding-top: 10px; display: flex; flex-direction: column; gap: 4px"><span id="join-coc-label" style="font-size: 15px; font-weight: 500">I’ve read the <a href="ResearchV3.dc.html">code of conduct</a></span>
+<sc-if value="{{jf.cocErr}}" hint-placeholder-val="{{ false }}"><span style="{{ui.err}}">{{jf.cocErr}}</span></sc-if></span>
+</div>
+</div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We use your name and email to send your invite or digest, and nothing else. <a href="PrivacyV3.dc.html">How we use this →</a></p>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<button type="button" onClick="{{jf.submit}}" style="{{ui.btnPfull}}">Join</button>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
+<span style="{{ui.help}}">Slack requests are approved by an admin.</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- JOIN CONFIRMATION -->
+<sc-if value="{{showJoinDone}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 22px">
+<sc-if value="{{jd.slack}}" hint-placeholder-val="{{ true }}">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #FFF4E5; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A4B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+</sc-if>
+<sc-if value="{{jd.mail}}" hint-placeholder-val="{{ false }}">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.025em">{{jd.headline}}</h3>
+<sc-if value="{{jd.slack}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 17px; color: #3D4556">We’ve received your request to join Slack. An admin reviews every request by hand, and your invite is emailed to <strong style="color: #0A1222">{{jd.email}}</strong> once approved, typically within 24–48 hours.</p></sc-if>
+<sc-if value="{{jd.mail}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 17px; color: #3D4556">You’re subscribed to the monthly digest. Confirm your address from the email we sent to <strong style="color: #0A1222">{{jd.email}}</strong>.</p></sc-if>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<sc-if value="{{jd.slack}}" hint-placeholder-val="{{ true }}"><span style="{{ui.chipAmber}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>PENDING APPROVAL</span></sc-if>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">REFERENCE · <span style="color: #0A1222">{{jd.ref}}</span></span>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">WHAT HAPPENS NEXT</span>
+<sc-if value="{{jd.slack}}" hint-placeholder-val="{{ true }}">
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">An admin reviews your request</strong><span style="font-size: 15px; color: #3D4556">Typically within 24–48 hours. Follow the status in <a href="MyVRCV3.dc.html">My VRC</a>.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Accept the invite</strong><span style="font-size: 15px; color: #3D4556">Slack emails it once your request is approved. Check spam if it isn’t there.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">3</span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px"><strong style="font-weight: 600">Say hello in #welcome</strong>
+<span style="padding: 14px 16px; border-radius: 12px; background: #F3F4F2; font-size: 15px; color: #0A1222">{{jd.intro}}</span>
+<span style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{jd.copy}}" style="{{ui.btnSs}}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>Copy intro</button><span aria-live="polite" style="font-size: 14px; font-weight: 500; color: #0B7A47">{{jd.copied}}</span></span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">4</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Try #jobs and #[CHANNEL]</strong><span style="font-size: 15px; color: #3D4556">Open roles, plus the people working on your topic.</span></span></li>
+</ol>
+</sc-if>
+<sc-if value="{{jd.mail}}" hint-placeholder-val="{{ false }}">
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Confirm your email</strong><span style="font-size: 15px; color: #3D4556">One click on the link we just sent.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Your first digest arrives on [DATE]</strong><span style="font-size: 15px; color: #3D4556">One email a month. Unsubscribe in one click.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{ui.stepNum}}">3</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600">Switch to Slack any time</strong><span style="font-size: 15px; color: #3D4556">From the Manage link in every email.</span></span></li>
+</ol>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 12px">
+<sc-if value="{{jd.resendWait}}" hint-placeholder-val="{{ true }}">
+<button type="button" disabled="disabled" aria-disabled="true" style="min-height: 44px; padding: 0 4px; border: 0; background: transparent; font: inherit; font-size: 15px; color: #646B7A; cursor: not-allowed">Didn’t get our email? Resend in <span style="font-family: 'Geist Mono', monospace">0:59</span></button>
+<button type="button" onClick="{{jd.tick}}" style="{{ui.canvasLink}}">CANVAS · Simulate: a minute passes</button>
+</sc-if>
+<sc-if value="{{jd.resendReady}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{jd.resend}}" style="{{ui.btnT}}">Didn’t get our email? Resend</button>
+</sc-if>
+<sc-if value="{{jd.resent}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; color: #0B7A47; font-weight: 500"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>Sent again to {{jd.email}}.</span>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="MapV3.dc.html" style="{{ui.btnP}}">Explore the map</a>
+<button type="button" onClick="{{closeSheet}}" style="{{ui.btnS}}">Close</button>
+</div>
+<p style="margin: 0; font-size: 14px; color: #646B7A">We’ve emailed a receipt and a link to manage this to {{jd.email}}. <a href="MyVRCV3.dc.html">{{jd.manageLabel}}</a></p>
+</div>
+</sc-if>
+
+</div>
+</aside>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6230}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const n = (topics) => ({ st: 'idle', email: '', err: false, topics: topics });
+this.state = Object.assign({
+preset: 'closed', menu: null, sheet: null, sheetTop: 0, tab: 'land',
+n_bar: n(['Summit announcements']), n_hero: n(['Summit announcements']), n_ways: n(['Summit announcements']),
+n_prefer: n(['Monthly digest']), n_foot: n(['Monthly digest'])
+}, this.join0());
+}
+join0() {
+return { jName: '', jEmail: '', jRole: '', jCountry: '', jCountryOpen: false, jInterests: [], jPath: 'slack', jDir: false, jCoc: false,
+jTried: false, jBlurName: false, jBlurEmail: false, jDone: false, jCopied: false, jResendReady: false, jResent: false };
+}
+renderVals() {
+const st = this.state;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const okEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim());
+const btn = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; ';
+const btnSm = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; ';
+const chip = (bg, fg) => 'align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + bg + '; color: ' + fg + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap';
+const ui = {
+btnP: btn + 'border: 0; background: #0138AC; color: #ffffff',
+btnPs: btnSm + 'border: 0; background: #0138AC; color: #ffffff',
+btnPfull: btn + 'width: 100%; border: 0; background: #0138AC; color: #ffffff',
+btnW: btnSm + 'border: 0; background: #ffffff; color: #0A1222',
+btnS: btn + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnSs: btnSm + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnT: 'min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer',
+eyebrow: MONO + 'font-size: 12px; letter-spacing: 0.06em; color: #646B7A',
+h2: "margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 60px; line-height: 0.98; letter-spacing: -0.035em",
+label: 'font-size: 15px; font-weight: 500; color: #0A1222',
+legend: 'font-size: 15px; font-weight: 500; color: #0A1222; padding: 0; margin-bottom: 8px',
+opt: 'font-weight: 400; color: #646B7A',
+help: 'font-size: 13px; color: #646B7A',
+err: 'display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #B42318',
+chipBlue: chip('#EEF2FB', '#0138AC'),
+chipBlueW: chip('#ffffff', '#0138AC'),
+chipGreen: chip('#E8F6EE', '#0B7A47'),
+chipAmber: chip('#FFF4E5', '#8A4B00'),
+chipGreenSm: chip('#E8F6EE', '#0B7A47') + '; padding: 2px 8px',
+chipNeutral: chip('#F3F4F2', '#3D4556'),
+canvasLink: 'align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 8px; background: #F3F4F2; color: #3D4556; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em; cursor: pointer',
+cbBtn: 'flex: 0 0 auto; width: 44px; height: 44px; margin-left: -10px; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; padding: 0',
+stepNum: 'flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 13px; font-weight: 500'
+};
+const input = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 16px; color: #0A1222';
+const pill = (on, dark) => 'display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on
+? (dark ? 'background: #ffffff; color: #0A1222; border: 1px solid #ffffff' : 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222')
+: (dark ? 'background: transparent; color: #C8CEDA; border: 1px solid #2E3850' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE'));
+const srOnly = 'position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap';
+
+// notify-me component
+const TOP_S = ['Summit announcements', 'Program published', 'Recordings', 'Monthly digest'];
+const TOP_D = ['Monthly digest', 'Summit announcements', 'New videos', 'Job alerts'];
+const nm = (key, label, all, o) => {
+const k = 'n_' + key;
+const s = st[k];
+const dark = !!o.dark;
+const set = (p) => this.setState({ [k]: Object.assign({}, this.state[k], p) });
+return {
+idle: s.st === 'idle', open: s.st === 'open', pending: s.st === 'pending', done: s.st === 'done',
+label: label, email: s.email, err: s.err, invalid: s.err ? 'true' : 'false',
+expand: () => set({ st: 'open' }),
+setEmail: (e) => set({ email: e.target.value, err: false }),
+submit: () => (okEmail(this.state[k].email) ? set({ st: 'pending', err: false }) : set({ err: true })),
+confirm: () => set({ st: 'done' }),
+topics: all.map((t) => {
+const on = s.topics.indexOf(t) > -1;
+return { label: t, pressed: on ? 'true' : 'false', style: pill(on, dark),
+toggle: () => { const cur = this.state[k].topics; set({ topics: on ? cur.filter((x) => x !== t) : cur.concat([t]) }); } };
+}),
+wrap: 'display: flex; flex-direction: column; gap: 8px; ' + (o.wrap || ''),
+ghost: btnSm + 'background: transparent; ' + (dark ? 'color: #ffffff; border: 1px solid #2E3850' : 'color: #0A1222; border: 1px solid #D5D8DE'),
+lab: o.compact ? srOnly : 'font-size: 14px; font-weight: 500; color: ' + (dark ? '#ffffff' : '#0A1222'),
+input: input(s.err) + (o.compact ? '; min-height: 44px' : ''),
+text: 'font-size: 15px; color: ' + (dark ? '#C8CEDA' : '#3D4556'),
+strong: 'font-weight: 600; color: ' + (dark ? '#ffffff' : '#0A1222'),
+errStyle: 'font-size: 13px; font-weight: 500; color: ' + (dark ? '#FDA29B' : '#B42318'),
+manage: 'font-size: 15px; font-weight: 500; color: ' + (dark ? '#ffffff' : '#0138AC')
+};
+};
+
+// sheet open/close
+const openJoin = (top) => () => this.setState(Object.assign(this.state.jDone ? this.join0() : {}, { sheet: 'join', sheetTop: top, menu: null, preset: 'form' }));
+const closeSheet = () => this.setState({ sheet: null, preset: 'closed' });
+
+// canvas presets
+const fill = { jName: 'Alex Morgan', jEmail: 'alex@example.com', jRole: 'Researcher', jCountry: 'Canada', jInterests: ['Water', 'Policy'], jCoc: true };
+const P = [
+['closed', 'Closed', { sheet: null }],
+['form', 'Join · form', Object.assign(this.join0(), { sheet: 'join' })],
+['errors', 'Join · errors', Object.assign(this.join0(), { sheet: 'join', jTried: true })],
+['slack', 'Join · pending approval (Slack)', Object.assign(this.join0(), fill, { sheet: 'join', jPath: 'slack', jDone: true })],
+['email', 'Join · welcome (email)', Object.assign(this.join0(), fill, { sheet: 'join', jPath: 'email', jDone: true })]
+];
+const presets = P.map((p) => {
+const on = st.preset === p[0];
+return { label: p[1], pressed: on ? 'true' : 'false',
+style: 'min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556'),
+pick: () => this.setState(Object.assign({}, p[2], { preset: p[0], sheetTop: 0, menu: null })) };
+});
+
+// header menus
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', '#join', 'join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice from members who have done the work', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => {
+const on = st.menu === key;
+return { label: MENUS[key].label, id: 'menu-' + key, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => this.setState({ menu: on ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) this.setState({ menu: null }); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], go: i[3] === 'join' ? openJoin(4750) : () => this.setState({ menu: null }) })) };
+});
+
+// explorer (from v2)
+const TAG = { Mitigation: ['#EEF2FB', '#0138AC'], Adaptation: ['#E8F6EE', '#0B7A47'], Both: ['#F3F4F2', '#3D4556'] };
+const data = {
+air: { label: 'Sky', count: 37, lede: 'Drones scatter seed over cleared slopes, watch dry woodland for new fires and check turbine blades for cracks.', orgs: [
+{ name: 'Ploverridge Instruments', meta: 'CANADA · 2009', desc: 'A drone fleet that scatters seed pods over cleared slopes and logs which ones take root.', tag: 'Mitigation' },
+{ name: 'Puffinlark Systems', meta: 'FRANCE · 2018', desc: 'Drones that patrol dry woodland at night and flag new hot spots for local crews.', tag: 'Adaptation' },
+{ name: 'Sorrelmere Robotics', meta: 'UNITED KINGDOM · 2013', desc: 'A small quadcopter that circles turbine blades to find cracks before they spread.', tag: 'Mitigation' }] },
+land: { label: 'Field', count: 36, lede: 'Ground robots weed crops row by row, map the carbon in the soil and keep solar farms clean without fresh water.', orgs: [
+{ name: 'Rowanburrow Instruments', meta: 'UNITED STATES · 2017', desc: 'A compact electric robot that weeds and thins crops so farms can cut fertiliser and diesel.', tag: 'Both' },
+{ name: 'Shoallark Works', meta: 'GERMANY · 2008', desc: 'A wheeled field robot that drills shallow cores to map how much carbon the soil holds.', tag: 'Mitigation' },
+{ name: 'Nettlelark Collective', meta: 'KENYA · 2018', desc: 'A tracked rover that cleans and checks panel rows on large solar farms.', tag: 'Mitigation' }] },
+sea: { label: 'Water', count: 31, lede: 'Underwater and surface robots replant damaged reef, skim litter from harbours and log coastal water for months at a time.', orgs: [
+{ name: 'Heathmere Dynamics', meta: 'CHILE · 2021', desc: 'A small diving robot that plants coral fragments on damaged reef and returns to measure their growth.', tag: 'Adaptation' },
+{ name: 'Nettleburrow Works', meta: 'CANADA · 2020', desc: 'An uncrewed catamaran that skims floating litter from harbours and river mouths.', tag: 'Both' },
+{ name: 'Kelpcombe Robotics', meta: 'SINGAPORE · 2014', desc: 'A solar-powered surface vessel that records temperature, oxygen and acidity along the coast.', tag: 'Adaptation' }] },
+materials: { label: 'Factory', count: 9, lede: 'Robotic arm cells pick recyclables off fast belts and insulate the walls of older homes.', orgs: [
+{ name: 'Tidelark Machines', meta: 'NORWAY · 2010', desc: 'A robotic arm cell that picks recyclable material off fast conveyor belts at sorting plants.', tag: 'Mitigation' },
+{ name: 'Brackford Systems', meta: 'CHILE · 2018', desc: 'A modular robot kit that small sorting plants can add to an existing line.', tag: 'Mitigation' },
+{ name: 'Puffinhollow Labs', meta: 'AUSTRALIA · 2023', desc: 'A robotic arm cell that sprays insulation into the wall cavities of older homes.', tag: 'Mitigation' }] }
+};
+const tabBase = 'min-height: 44px; padding: 0 18px; border: 0; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; ';
+const tabs = ['air', 'land', 'sea', 'materials'].map((k) => {
+const on = st.tab === k;
+return { label: data[k].label, count: data[k].count, selected: on ? 'true' : 'false',
+style: tabBase + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556'),
+pick: () => this.setState({ tab: k }) };
+});
+const d = data[st.tab];
+const panel = { label: d.label + ' organizations', lede: d.lede, cta: 'See all ' + d.count + ' on the map', orgs: d.orgs.map((o) => ({ ...o, aria: o.name + ': open on the map',
+tagStyle: 'flex: 0 0 auto; padding: 3px 10px; border-radius: 999px; background: ' + TAG[o.tag][0] + '; color: ' + TAG[o.tag][1] + '; ' + MONO + 'font-size: 12px' })) };
+
+// community faces
+const faces = ['img/avatar-02.svg', 'img/avatar-01.svg', 'img/avatar-06.svg', 'img/avatar-08.svg', 'img/avatar-07.svg'].map((id, i) => ({
+src: id, style: 'width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 3px solid #E8F6EE' + (i ? '; margin-left: -12px' : '') }));
+
+// news
+const news = [
+{ hasImg: true, isVideo: true, isText: false, img: 'img/forest.svg', cover: '', type: 'VIDEO', meta: '[DATE] · [N] MIN', title: 'Robots in the Field #2: replanting reefs with diving robots', href: 'WatchV3.dc.html' },
+{ hasImg: false, isVideo: false, isText: true, img: '', cover: 'Year three?', type: 'ESSAY', meta: 'MAR 12, 2026 · 6 MIN READ', title: 'Who repairs the robot after the pilot ends?', href: 'NewsV3.dc.html' },
+{ hasImg: true, isVideo: false, isText: false, img: 'img/white-paper.svg', cover: '', type: 'ANNOUNCEMENT', meta: '[DATE] · [N] MIN READ', title: 'Working Notes on Climate Robots is out', href: 'NewsV3.dc.html' }
+];
+
+// footer
+const footer = [
+['SUMMIT', 'Summit', [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']]],
+['LEARN', 'Learn', [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']]],
+['COMMUNITY', 'Community', [['Join', '#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']]],
+['ABOUT', 'About', [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']]]
+].map((g) => ({ title: g[0], label: g[1], links: g[2].map((l) => ({ label: l[0], href: l[1], go: l[1] === '#join' ? openJoin(4750) : () => {} })) }));
+
+// join form
+const name = st.jName, email = st.jEmail;
+const showName = st.jTried || st.jBlurName, showEmail = st.jTried || st.jBlurEmail;
+const nameErr = showName && !name.trim() ? 'Enter your full name.' : '';
+const emailErr = showEmail ? (!email.trim() ? 'Enter your email address.' : (!okEmail(email) ? 'Enter an email address like name@example.org.' : '')) : '';
+const cocErr = st.jTried && !st.jCoc ? 'Confirm you’ve read the code of conduct.' : '';
+const summary = [];
+if (st.jTried) {
+if (nameErr) summary.push({ text: 'Full name: ' + nameErr, href: '#join-name' });
+if (emailErr) summary.push({ text: 'Email: ' + emailErr, href: '#join-email' });
+if (cocErr) summary.push({ text: 'Code of conduct: confirm you’ve read it.', href: '#join-coc' });
+}
+const COUNTRIES = ['Australia', 'Brazil', 'Canada', 'Chile', 'France', 'Germany', 'India', 'Japan', 'Kenya', 'Netherlands', 'New Zealand', 'Nigeria', 'Norway', 'Singapore', 'South Africa', 'Spain', 'United Kingdom', 'United States'];
+const cq = st.jCountry.trim().toLowerCase();
+const sugg = st.jCountryOpen && cq ? COUNTRIES.filter((c) => c.toLowerCase().indexOf(cq) > -1 && c.toLowerCase() !== cq).slice(0, 5) : [];
+const INTERESTS = ['Sky', 'Field', 'Water', 'Factory', 'Policy', 'Funding', 'Jobs'];
+const box = (on) => 'width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: flex; align-items: center; justify-content: center; ' + (on ? 'background: #0138AC; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid #A7ADB8');
+const cocBox = box(st.jCoc) + (cocErr ? '; border-color: #B42318' : '');
+const jf = {
+name: name, email: email, role: st.jRole, country: st.jCountry,
+nameErr: nameErr, emailErr: emailErr, cocErr: cocErr,
+nameInvalid: nameErr ? 'true' : 'false', emailInvalid: emailErr ? 'true' : 'false', cocInvalid: cocErr ? 'true' : 'false',
+nameInput: input(!!nameErr), emailInput: input(!!emailErr), countryInput: input(false), selectStyle: input(false) + '; appearance: auto',
+setName: (e) => this.setState({ jName: e.target.value }),
+setEmail: (e) => this.setState({ jEmail: e.target.value }),
+blurName: () => this.setState({ jBlurName: true }),
+blurEmail: () => this.setState({ jBlurEmail: true }),
+setRole: (e) => this.setState({ jRole: e.target.value }),
+setCountry: (e) => this.setState({ jCountry: e.target.value, jCountryOpen: true }),
+countryExpanded: sugg.length ? 'true' : 'false', hasSugg: sugg.length > 0,
+sugg: sugg.map((c) => ({ label: c, pick: () => this.setState({ jCountry: c, jCountryOpen: false }) })),
+interests: INTERESTS.map((t) => {
+const on = st.jInterests.indexOf(t) > -1;
+return { label: t, pressed: on ? 'true' : 'false', style: pill(on, false),
+toggle: () => { const cur = this.state.jInterests; this.setState({ jInterests: on ? cur.filter((x) => x !== t) : cur.concat([t]) }); } };
+}),
+paths: [
+{ key: 'slack', title: 'Slack community', rec: true, desc: 'An admin approves each request by hand, then we email you an invite, typically within 24–48 hours.' },
+{ key: 'email', title: 'Email updates only', rec: false, desc: 'The monthly digest. No Slack account needed.' }
+].map((r) => {
+const on = st.jPath === r.key;
+return { title: r.title, rec: r.rec, desc: r.desc, checked: on ? 'true' : 'false',
+card: 'display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 16px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ' + (on ? 'background: #EEF2FB; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid #E5E7EB'),
+ring: 'flex: 0 0 auto; margin-top: 3px; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; border: 2px solid ' + (on ? '#0138AC' : '#A7ADB8') + '; display: flex; align-items: center; justify-content: center; background: #ffffff',
+dot: 'width: 10px; height: 10px; border-radius: 50%; background: ' + (on ? '#0138AC' : 'transparent'),
+pick: () => this.setState({ jPath: r.key }) };
+}),
+dir: st.jDir, dirChecked: st.jDir ? 'true' : 'false', dirBox: box(st.jDir), toggleDir: () => this.setState({ jDir: !this.state.jDir }),
+coc: st.jCoc, cocChecked: st.jCoc ? 'true' : 'false', cocBox: cocBox, toggleCoc: () => this.setState({ jCoc: !this.state.jCoc }),
+hasSummary: summary.length > 0, summary: summary,
+summaryTitle: summary.length === 1 ? 'There is 1 problem to fix' : 'There are ' + summary.length + ' problems to fix',
+submit: () => {
+const s = this.state;
+const ok = s.jName.trim() && okEmail(s.jEmail) && s.jCoc;
+this.setState(ok ? { jTried: true, jDone: true, preset: s.jPath === 'email' ? 'email' : 'slack' } : { jTried: true, preset: 'errors' });
+}
+};
+const first = name.trim().split(/\s+/)[0] || '[first name]';
+const topic = st.jInterests.length ? st.jInterests.map((x) => x.toLowerCase()).join(' and ') + ' robotics' : '[topic]';
+const jd = {
+first: first, email: email.trim() || '[email]', slack: st.jPath === 'slack', mail: st.jPath === 'email',
+headline: st.jPath === 'slack' ? 'Request received, ' + first + '.' : 'Welcome, ' + first + '.',
+manageLabel: st.jPath === 'slack' ? 'Track your request' : 'Manage this',
+ref: 'MBR-2026-0312',
+intro: 'Hi, I’m ' + (name.trim() || '[name]') + ', I work on ' + topic + ' in ' + (st.jCountry.trim() || '[country]') + '…',
+copy: () => this.setState({ jCopied: true }), copied: st.jCopied ? 'Copied' : '',
+resendWait: !st.jResendReady, resendReady: st.jResendReady && !st.jResent, resent: st.jResent,
+tick: () => this.setState({ jResendReady: true }),
+resend: () => this.setState({ jResent: true })
+};
+
+return {
+ui: ui, presets: presets, menus: menus,
+menuOpen: !!st.menu, closeMenu: () => this.setState({ menu: null }),
+nBar: nm('bar', 'Email me when it opens', TOP_S, { compact: true, wrap: 'flex: 0 1 560px; align-items: flex-end' }),
+nHero: nm('hero', 'Get notified', TOP_S, {}),
+nWays: nm('ways', 'Get notified', TOP_S, { dark: true }),
+nPrefer: nm('prefer', 'Get the digest', TOP_D, {}),
+nFoot: nm('foot', 'Get the monthly digest', TOP_D, { compact: true }),
+openJoinTop: openJoin(0), openJoinSection: openJoin(4750), openJoinFoot: openJoin(4750),
+closeSheet: closeSheet,
+sheetKey: (e) => { if (e && e.key === 'Escape') closeSheet(); },
+sheetOpen: !!st.sheet,
+sheetInner: 'margin-top: ' + st.sheetTop + 'px; padding: 28px; display: flex; flex-direction: column; gap: 24px; box-sizing: border-box',
+sheetTitle: 'Join the network',
+showJoinForm: st.sheet === 'join' && !st.jDone, showJoinDone: st.sheet === 'join' && st.jDone,
+jf: jf, jd: jd,
+tabs: tabs, panel: panel, faces: faces, news: news, footer: footer
+};
+}
+}
+</script>
+</body>
+</html>

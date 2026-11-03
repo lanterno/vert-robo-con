@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Edition settings (Summit 2027)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.sitem{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px;font-weight:500}
+.sitem:hover{background:#E8EAE7;color:#0A1222}
+.ssub{display:flex;align-items:center;min-height:32px;padding:0 10px 0 38px;border-radius:10px;color:#3D4556;text-decoration:none;font-size:14px}
+.ssub:hover{background:#E8EAE7;color:#0A1222}
+.row:hover{background:#F7F8F9}
+.tlink{color:#0138AC;text-decoration:none;font-weight:500}
+.tlink:hover{text-decoration:underline}
+.ghost:hover{background:#F3F4F2}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; min-height: 2100px; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 15px; line-height: 1.5">
+
+<!-- CANVAS NOTE (not part of the product) -->
+<div style="background: #E9EAEC; padding: 9px 24px; font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.5; color: #3D4556">Canvas note · Powered by: Edit view over the editions table in the app, with versions and drafts, a state timeline preview and a time-zone-aware date picker. Saves go live at once; there is no site rebuild.</div>
+
+<!-- APP FRAME -->
+<div style="position: relative; display: flex; min-height: 2063px; background: #ffffff">
+
+<!-- SIDEBAR (same markup as every Admin*V3 board; only the active item differs) -->
+<aside style="flex: 0 0 240px; width: 240px; box-sizing: border-box; background: #F3F4F2; border-right: 1px solid #E5E7EB; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+<a href="AdminDashboardV3.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 38px; height: 24px; object-fit: contain">
+<span style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.01em">VRC</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">BACKOFFICE</span>
+</span>
+</a>
+
+<nav aria-label="Backoffice" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminDashboardV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Dashboard</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SUMMIT</span>
+<a class="ssub" href="AdminEditionV3.dc.html" aria-current="page" style="background: #ffffff; color: #0A1222; font-weight: 500; box-shadow: 0 1px 3px rgba(10,18,34,0.14)">Editions</a>
+<a class="ssub" href="AdminRegistrationsV3.dc.html">Registrations</a>
+<a class="ssub" href="AdminPitchesV3.dc.html">Calls &amp; pitches</a>
+<a class="ssub" href="AdminProgramV3.dc.html">Program &amp; people</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<a class="sitem" href="AdminQueueV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5.5 5h13L20 13v6H4v-6z"></path></svg><span style="flex: 1">Moderation queue</span><span aria-label="{{queueAria}}" style="min-width: 22px; padding: 1px 7px; box-sizing: border-box; border-radius: 999px; background: #0138AC; color: #ffffff; font-family: 'Geist Mono', monospace; font-size: 12px; text-align: center">{{totalOpen}}</span></a>
+<a class="sitem" href="AdminMapV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Map · Organizations</a>
+<a class="sitem" href="AdminContentV3.dc.html">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h7M9 8h3"></path></svg>Content</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SETTINGS</span>
+<a class="ssub" href="AdminSettingsV3.dc.html">Site settings</a>
+<a class="ssub" href="AdminUsersV3.dc.html">Admins</a>
+<a class="ssub" href="AdminSystemV3.dc.html">Jobs, email &amp; backups</a>
+</div>
+</nav>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px 10px 0; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">admin.vert-robo-con.example</span>
+</div>
+</aside>
+
+<!-- MAIN COLUMN -->
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+
+<!-- TOP BAR -->
+<header style="height: 64px; box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px; background: #ffffff">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 12px; background: #F3F4F2; font-size: 14px; font-weight: 600; color: #0A1222; white-space: nowrap"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; color: #646B7A">EDITION</span>2027</span>
+<label style="position: relative; flex: 0 1 420px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search people, registrations and organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Search people, registrations, organizations" style="width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 14px; background: #ffffff">
+</label>
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; white-space: nowrap"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #8A909C"></span>PRODUCTION</span>
+<button type="button" aria-label="Account menu for Sample Admin 01" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 4px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #0A1222">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 500">S1</span>Sample Admin 01
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</header>
+
+<!-- CONTENT -->
+<main style="padding: 22px 32px 48px; display: flex; flex-direction: column; gap: 18px">
+
+<!-- page header -->
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A"><a class="tlink" href="AdminDashboardV3.dc.html" style="font-weight: 400">ADMIN</a> / SUMMIT / EDITIONS / {{year}}</span>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 36px; line-height: 1.05; letter-spacing: -0.02em">{{hd.title}}</h1>
+<span style="{{hd.state.chip}}" title="Computed from dates and the registration window"><span aria-hidden="true" style="{{hd.state.dot}}"></span>{{hd.state.label}}</span>
+<sc-if value="{{hd.hasOv}}" hint-placeholder-val="{{ false }}"><span style="{{hd.ov.chip}}"><span aria-hidden="true" style="{{hd.ov.dot}}"></span>{{hd.ov.label}}</span></sc-if>
+</div>
+<span style="font-size: 14px; color: #3D4556">{{hd.range}} · {{hd.win}} · {{hd.format}} · {{hd.price}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500; color: #3D4556">Edition
+<select value="{{year}}" onChange="{{onYear}}" style="min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222"><option value="2027">Summit 2027</option><option value="2026">Summit 2026</option><option value="2025">Summit 2025</option><option value="2024">Summit 2024</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500; color: #3D4556">Override state
+<select value="{{f.override}}" onChange="{{f.setOverride}}" aria-readonly="{{roAttr}}" style="{{ui.selectHd}}"><option value="auto">Auto (from dates)</option><option value="open">Force open</option><option value="closed">Force closed</option></select></label>
+<button type="button" onClick="{{saveDraft}}" style="{{ui.btnS}}">Save draft</button>
+<button type="button" onClick="{{publish}}" style="{{ui.btnP}}">Publish changes</button>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #3D4556"><span aria-hidden="true" style="{{hd.lineDot}}"></span>{{hd.line}}</span>
+</div>
+</div>
+
+<sc-if value="{{warnClosed}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; background: #FFF4E5; color: #8A4B00; font-size: 14px; font-weight: 500">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17h-19zM12 10v4M12 17h.01"></path></svg>
+Registration closed manually · public form shows Closed<span style="font-weight: 400">Set the override back to Auto to follow regOpensAt and regClosesAt again.</span></div>
+</sc-if>
+<sc-if value="{{warnOpen}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; background: #EEF2FB; color: #0138AC; font-size: 14px; font-weight: 500">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+Registration forced open · public form accepts registrations whatever the dates say</div>
+</sc-if>
+<sc-if value="{{locked}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: 12px; background: #F3F4F2; font-size: 14px; color: #3D4556">
+<span style="display: inline-flex; align-items: center; gap: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong style="color: #0A1222; font-weight: 600">This edition has concluded.</strong> Fields are read-only so the archive does not change by accident.</span></span>
+<button type="button" onClick="{{unlock}}" style="{{ui.btnSs}}">Unlock editing</button>
+</div>
+</sc-if>
+<sc-if value="{{unlockedOld}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 12px 16px; border-radius: 12px; background: #FFF4E5; color: #8A4B00; font-size: 14px; font-weight: 500">Editing a concluded edition · publishing goes live at once</div>
+</sc-if>
+
+<!-- tabs -->
+<div role="tablist" aria-label="Edition sections" style="display: flex; gap: 4px; border-bottom: 1px solid #E5E7EB">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="6">
+<button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}<sc-if value="{{t.hasCount}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{t.count}}</span></sc-if></button>
+</sc-for>
+</div>
+
+<!-- body grid -->
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 316px; gap: 28px; align-items: start">
+<div role="tabpanel" aria-label="{{tabLabel}}" style="display: flex; flex-direction: column; gap: 20px; min-width: 0">
+
+<!-- ===== DATES & STATE ===== -->
+<sc-if value="{{tabDates}}" hint-placeholder-val="{{ true }}">
+<section style="{{ui.card}}">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px"><h2 style="{{ui.h2}}">Edition</h2><span style="{{ui.mono}}">COLLECTION · EDITIONS</span></div>
+<div style="display: grid; grid-template-columns: 120px 1fr 1.4fr; gap: 14px">
+<label style="{{ui.label}}">Year<input type="text" value="{{year}}" readonly style="{{ui.inputRoMono}}"></label>
+<label style="{{ui.label}}">Format<select value="{{f.format}}" onChange="{{f.setFormat}}" aria-readonly="{{roAttr}}" style="{{ui.input}}"><option value="Online">Online</option><option value="In person">In person</option><option value="Hybrid">Hybrid</option><option value="[FORMAT]">[FORMAT] (not recorded)</option></select></label>
+<label style="{{ui.label}}">Price display<input type="text" value="{{f.price}}" onChange="{{f.setPrice}}" aria-readonly="{{roAttr}}" style="{{ui.input}}"><span style="{{ui.help}}">Shown where a price would be. Free, no cap: no capacity field exists.</span></label>
+</div>
+
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="{{ui.legend}}">Dates <span style="font-weight: 400; color: #646B7A">· array, one row per summit day</span></legend>
+<div style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden">
+<div style="{{ui.thRow5}}"><span>#</span><span>DATE</span><span>DAY</span><span>DAY LABEL</span><span></span></div>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 44px 190px 64px 1fr 44px; gap: 10px; align-items: center; padding: 6px 12px; min-height: 52px; box-sizing: border-box; border-bottom: 1px solid #EEF0F3">
+<span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #646B7A">{{d.n}}</span>
+<label style="display: block"><span style="{{ui.sr}}">Date for {{d.label}}</span><input type="date" value="{{d.date}}" onChange="{{d.setDate}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"></label>
+<span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{d.wd}}</span>
+<label style="display: block"><span style="{{ui.sr}}">Label for row {{d.n}}</span><input type="text" value="{{d.label}}" onChange="{{d.setLabel}}" aria-readonly="{{roAttr}}" style="{{ui.input}}"></label>
+<button type="button" class="ghost" aria-label="{{d.removeLabel}}" onClick="{{d.remove}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: #646B7A; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+<div style="padding: 8px 12px"><button type="button" onClick="{{addDay}}" style="{{ui.btnT}}">+ Add day</button></div>
+</div>
+</fieldset>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="{{ui.legend}}">Daily window</legend>
+<div style="display: flex; align-items: center; gap: 8px">
+<label style="flex: 1; display: block"><span style="{{ui.sr}}">Start time (UTC)</span><input type="time" value="{{f.winStart}}" onChange="{{f.setWinStart}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"></label>
+<span aria-hidden="true" style="color: #646B7A">–</span>
+<label style="flex: 1; display: block"><span style="{{ui.sr}}">End time (UTC)</span><input type="time" value="{{f.winEnd}}" onChange="{{f.setWinEnd}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"></label>
+<span style="{{ui.chipNeutral}}">UTC</span>
+</div>
+<span style="{{ui.help}}">Same window every day. Sessions in the program builder snap to it.</span>
+</fieldset>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="{{ui.legend}}">Time zone</legend>
+<select value="UTC" aria-readonly="true" style="{{ui.input}}"><option value="UTC">UTC (stored and shown first)</option></select>
+<span style="{{ui.help}}">Dates are stored in UTC. The picker converts what you type.</span>
+</fieldset>
+</div>
+
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
+<legend style="{{ui.legend}}">Also show <span style="font-weight: 400; color: #646B7A">· converted times on public pages</span></legend>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<sc-for list="{{also}}" as="z" hint-placeholder-count="2">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 6px 0 12px; border-radius: 999px; background: #F3F4F2; font-size: 14px">{{z.name}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{z.conv}}</span>
+<button type="button" aria-label="{{z.removeLabel}}" onClick="{{z.remove}}" style="width: 26px; height: 26px; border: 0; border-radius: 50%; background: #ffffff; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+</sc-for>
+<label style="display: inline-flex"><span style="{{ui.sr}}">Add a time zone</span><select value="" onChange="{{addTz}}" style="min-height: 36px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 999px; background: #ffffff; font: inherit; font-size: 14px; color: #3D4556"><option value="">+ Add time zone</option><option value="US Eastern">US Eastern</option><option value="US Pacific">US Pacific</option><option value="UK">UK</option><option value="Central European">Central European</option><option value="India">India</option><option value="Japan">Japan</option></select></label>
+</div>
+</fieldset>
+</section>
+</sc-if>
+
+<!-- ===== REGISTRATION (window) ===== -->
+<sc-if value="{{tabReg}}" hint-placeholder-val="{{ false }}">
+<section style="{{ui.card}}">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px"><h2 style="{{ui.h2}}">Registration window</h2><span style="{{ui.mono}}">TIME-ZONE-AWARE PICKER · UTC</span></div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 6px">
+<legend style="{{ui.legend}}">regOpensAt</legend>
+<div style="display: flex; gap: 8px"><label style="flex: 1.4; display: block"><span style="{{ui.sr}}">Opens date</span><input type="date" value="{{reg.opens}}" onChange="{{reg.setOpens}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"></label><label style="flex: 1; display: block"><span style="{{ui.sr}}">Opens time (UTC)</span><input type="time" value="{{reg.opensTime}}" onChange="{{reg.setOpensTime}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"></label><span style="{{ui.chipNeutralC}}">UTC</span></div>
+<span style="{{ui.help}}">{{reg.opensHelp}}</span>
+</fieldset>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 6px">
+<legend style="{{ui.legend}}">regClosesAt</legend>
+<div style="display: flex; gap: 8px"><label style="flex: 1.4; display: block"><span style="{{ui.sr}}">Closes date</span><input type="date" value="{{reg.closes}}" onChange="{{reg.setCloses}}" aria-readonly="{{roAttr}}" style="{{reg.closesStyle}}"></label><label style="flex: 1; display: block"><span style="{{ui.sr}}">Closes time (UTC)</span><input type="time" value="{{reg.closesTime}}" onChange="{{reg.setClosesTime}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"></label><span style="{{ui.chipNeutralC}}">UTC</span></div>
+<span style="{{reg.closesHelpStyle}}">{{reg.closesHelp}}</span>
+</fieldset>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: end">
+<label style="{{ui.label}}">"Closing soon" threshold
+<span style="display: flex; align-items: center; gap: 8px"><input type="number" min="0" max="30" value="{{reg.soonDays}}" onChange="{{reg.setSoon}}" aria-readonly="{{roAttr}}" style="{{ui.inputNum}}"><span style="font-size: 14px; color: #3D4556">days before regClosesAt</span></span></label>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #F3F4F2; font-size: 14px; color: #3D4556">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+<span><strong style="color: #0A1222; font-weight: 600">Free, no cap: capacity is not tracked.</strong> Every valid registration is accepted.</span></div>
+</div>
+</section>
+</sc-if>
+
+<!-- ===== STATE TIMELINE (custom field component; Dates & Registration tabs) ===== -->
+<sc-if value="{{showTL}}" hint-placeholder-val="{{ true }}">
+<section style="{{ui.card}}" aria-label="State timeline preview">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 2px"><h2 style="{{ui.h2}}">State timeline</h2><span style="{{ui.help}}">Live preview · redraws as you edit dates, regOpensAt and regClosesAt</span></div>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #3D4556">Today computes to <span style="{{hd.state.chip}}"><span aria-hidden="true" style="{{hd.state.dot}}"></span>{{hd.state.label}}</span></span>
+</div>
+<sc-if value="{{tl.ok}}" hint-placeholder-val="{{ true }}">
+<div style="position: relative; padding-top: 30px">
+<span style="{{tl.todayLabel}}">TODAY · {{tl.todayText}}</span>
+<div style="display: flex; gap: 2px; height: 34px; border-radius: 10px; overflow: hidden">
+<sc-for list="{{tl.segs}}" as="s" hint-placeholder-count="5"><span title="{{s.title}}" style="{{s.style}}">{{s.text}}</span></sc-for>
+</div>
+<span aria-hidden="true" style="{{tl.todayLine}}"></span>
+<div aria-hidden="true" style="position: relative; height: 22px; margin-top: 6px">
+<sc-for list="{{tl.ticks}}" as="k" hint-placeholder-count="8"><span style="{{k.style}}">{{k.label}}</span></sc-for>
+</div>
+</div>
+<ul aria-label="States in order" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px">
+<sc-for list="{{tl.legend}}" as="g" hint-placeholder-count="5">
+<li style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #3D4556"><span aria-hidden="true" style="{{g.swatch}}"></span><span style="{{g.nameStyle}}">{{g.name}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{g.span}}</span></li>
+</sc-for>
+</ul>
+<div style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden">
+<sc-for list="{{tl.miles}}" as="m" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 12px; align-items: center; min-height: 44px; padding: 6px 14px; box-sizing: border-box; border-bottom: 1px solid #EEF0F3; font-size: 14px">
+<span style="{{m.chip}}"><span aria-hidden="true" style="{{m.dot}}"></span>{{m.label}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222">{{m.when}}</span>
+<span style="color: #646B7A; font-size: 13px">{{m.rule}}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{tl.bad}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 20px; border-radius: 12px; background: #F3F4F2; color: #3D4556; font-size: 14px">Add at least one date to draw the timeline. Unknown dates show as [DATE] on the site.</div>
+</sc-if>
+</section>
+</sc-if>
+
+<!-- ===== REGISTRATION (questions, consent) ===== -->
+<sc-if value="{{tabReg}}" hint-placeholder-val="{{ false }}">
+<section style="{{ui.card}}">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px"><h2 style="{{ui.h2}}">Questions on the register form</h2><span style="{{ui.mono}}">{{qCount}}</span></div>
+<div style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden">
+<div style="{{ui.thRow4}}"><span>QUESTION</span><span>FIELD</span><span>TYPE</span><span>REQUIRED</span></div>
+<sc-for list="{{questions}}" as="q" hint-placeholder-count="10">
+<div class="row" style="display: grid; grid-template-columns: 1.3fr 1fr 1.2fr 150px; gap: 12px; align-items: center; min-height: 46px; padding: 4px 14px; box-sizing: border-box; border-bottom: 1px solid #EEF0F3; font-size: 14px">
+<span style="font-weight: 500">{{q.label}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{q.k}}</span>
+<span style="color: #3D4556">{{q.type}}</span>
+<sc-if value="{{q.locked}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">ALWAYS REQUIRED</span></sc-if>
+<sc-if value="{{q.free}}" hint-placeholder-val="{{ true }}"><button type="button" role="switch" aria-checked="{{q.checked}}" aria-label="{{q.aria}}" onClick="{{q.toggle}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 13px; color: #3D4556; cursor: pointer"><span aria-hidden="true" style="{{q.track}}"><span style="{{q.knob}}"></span></span>{{q.word}}</button></sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+<section style="{{ui.card}}">
+<h2 style="{{ui.h2}}">Consent and emails</h2>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<span style="font-size: 14px; font-weight: 500">Consent wording</span>
+<span style="{{ui.chipBlue}}">{{consent.ver}}</span>
+<sc-if value="{{consent.isDraft}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipAmber}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>DRAFT · PUBLISH TO USE</span></sc-if>
+<span style="flex: 1"></span>
+<button type="button" onClick="{{consent.newVersion}}" style="{{ui.btnSs}}">New version</button>
+</div>
+<label style="{{ui.label}}"><span style="{{ui.sr}}">Consent wording</span><textarea rows="3" aria-readonly="{{roAttr}}" value="{{consent.text}}" onChange="{{consent.noop}}" style="{{ui.textarea}}"></textarea><span style="{{ui.help}}">{{consent.help}}</span></label>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid #EEF0F3">
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 500">Confirmation email</span><span style="{{ui.help}}">Sent through the jobs queue with the /me magic link and .ics files</span></span>
+<a class="tlink" href="AdminSystemV3.dc.html" style="font-size: 14px">Email templates · registration-confirmation →</a>
+</div>
+</section>
+</sc-if>
+
+<!-- ===== CALLS ===== -->
+<sc-if value="{{tabCalls}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><span style="{{ui.mono}}">CALLS[] · {{callsCount}}</span><span style="{{ui.help}}">Submissions land in Calls and pitches or in the Moderation queue</span></div>
+<sc-for list="{{calls}}" as="c" hint-placeholder-count="4">
+<section style="{{ui.card}}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<h2 style="{{ui.h2}}">{{c.name}}</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">track: {{c.track}}</span>
+<span style="{{c.chip.chip}}"><span aria-hidden="true" style="{{c.chip.dot}}"></span>{{c.chip.label}}</span>
+<span style="flex: 1"></span>
+<a class="tlink" href="{{c.qHref}}" style="font-size: 14px">Track questions →</a>
+<sc-if value="{{c.dated}}" hint-placeholder-val="{{ true }}"><a class="tlink" href="AdminPitchesV3.dc.html" style="font-size: 14px">Score rubric →</a></sc-if>
+</div>
+<sc-if value="{{c.dated}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) 1.1fr; gap: 14px">
+<label style="{{ui.label}}">Opens<input type="date" value="{{c.opens}}" onChange="{{c.setOpens}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"><span style="{{ui.help}}">{{c.opensHelp}}</span></label>
+<label style="{{ui.label}}">Closes<input type="date" value="{{c.closes}}" onChange="{{c.setCloses}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"><span style="{{ui.help}}">{{c.closesHelp}}</span></label>
+<label style="{{ui.label}}">Decisions released<input type="date" value="{{c.decisions}}" onChange="{{c.setDecisions}}" aria-readonly="{{roAttr}}" style="{{ui.inputMono}}"><span style="{{ui.help}}">{{c.decisionsHelp}}</span></label>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Scoring
+<span style="display: flex; align-items: center; gap: 8px; min-height: 42px; font-family: 'Geist Mono', monospace; font-size: 13px; color: #3D4556">{{c.scoreLabel}}</span>
+<span style="{{ui.help}}">Any admin can score. Each score shows the admin's name.</span></div>
+</div>
+</sc-if>
+<sc-if value="{{c.always}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<button type="button" role="switch" aria-checked="{{c.checked}}" aria-label="{{c.switchLabel}}" onClick="{{c.toggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer"><span aria-hidden="true" style="{{c.track2}}"><span style="{{c.knob}}"></span></span>Always open</button>
+<span style="{{ui.help}}">{{c.note}}</span>
+</div>
+</sc-if>
+</section>
+</sc-for>
+<button type="button" onClick="{{addCall}}" style="{{ui.btnSsStart}}">+ Add call</button>
+</sc-if>
+
+<!-- ===== PROGRAM & RECORDINGS ===== -->
+<sc-if value="{{tabProg}}" hint-placeholder-val="{{ false }}">
+<section style="{{ui.card}}">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px"><h2 style="{{ui.h2}}">Program and recordings</h2><a class="tlink" href="AdminProgramV3.dc.html" style="font-size: 15px">Open program builder →</a></div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+<label style="{{ui.label}}">programState
+<select value="{{prog.program}}" onChange="{{prog.setProgram}}" aria-readonly="{{roAttr}}" style="{{ui.input}}"><option value="Not started">Not started</option><option value="Draft program">Draft program</option><option value="Published">Published</option></select>
+<span style="{{ui.help}}">{{prog.programHelp}}</span></label>
+<label style="{{ui.label}}">recordingsState
+<select value="{{prog.rec}}" onChange="{{prog.setRec}}" aria-readonly="{{roAttr}}" style="{{ui.input}}"><option value="Not applicable">Not applicable</option><option value="In editing">In editing</option><option value="Partially published">Partially published</option><option value="Published">Published</option></select>
+<span style="{{ui.help}}">{{prog.recHelp}}</span></label>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; padding-top: 14px; border-top: 1px solid #EEF0F3">
+<span style="font-size: 14px; color: #3D4556">Public chips:</span>
+<span style="{{prog.pChip.chip}}"><span aria-hidden="true" style="{{prog.pChip.dot}}"></span>{{prog.pChip.label}}</span>
+<span style="{{prog.rChip.chip}}"><span aria-hidden="true" style="{{prog.rChip.dot}}"></span>{{prog.rChip.label}}</span>
+<span style="flex: 1"></span>
+<a class="tlink" href="ProgramV3.dc.html" style="font-size: 14px">Public program page</a>
+<a class="tlink" href="WatchV3.dc.html" style="font-size: 14px">Watch page</a>
+</div>
+</section>
+</sc-if>
+
+<!-- ===== BANNER ===== -->
+<sc-if value="{{tabBanner}}" hint-placeholder-val="{{ false }}">
+<section style="{{ui.card}}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><h2 style="{{ui.h2}}">Edition banner</h2>
+<button type="button" role="switch" aria-checked="{{ban.checked}}" onClick="{{ban.toggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer"><span aria-hidden="true" style="{{ban.track}}"><span style="{{ban.knob}}"></span></span>Show on summit pages</button></div>
+<div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px">
+<label style="{{ui.label}}">Text<input type="text" value="{{ban.text}}" onChange="{{ban.setText}}" aria-readonly="{{roAttr}}" style="{{ui.input}}"></label>
+<label style="{{ui.label}}">Link label<input type="text" value="{{ban.cta}}" onChange="{{ban.setCta}}" aria-readonly="{{roAttr}}" style="{{ui.input}}"><span style="{{ui.help}}">{{ban.help}}</span></label>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="{{ui.mono}}">PREVIEW · SUMMIT PAGES</span>
+<div style="border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; background: #ffffff">
+<sc-if value="{{ban.on}}" hint-placeholder-val="{{ true }}"><div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 14px; padding: 10px 16px; background: #EEF2FB; font-size: 14px; color: #0A1222"><span>{{ban.text}}</span><span title="{{ban.path}}" style="color: #0138AC; font-weight: 500; text-decoration: underline">{{ban.cta}} →</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{ban.path}}</span></div></sc-if>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #EEF0F3"><img src="img/logo.svg" alt="" style="width: 28px; height: 18px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px">Vert Robo Con</span></div>
+<div style="padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 6px"><span style="{{ui.mono}}">{{hd.rangeUpper}}</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.02em">Vert Robo Con Summit {{year}}</span><span aria-hidden="true" style="display: block; width: 60%; height: 10px; border-radius: 6px; background: #F3F4F2"></span></div>
+</div>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid #EEF0F3; font-size: 14px; color: #3D4556"><span>This banner shows on summit pages only. The site-wide banner is a separate setting.</span><a class="tlink" href="AdminSettingsV3.dc.html">Site settings · site-wide banner →</a></div>
+</section>
+</sc-if>
+
+<!-- ===== HISTORY ===== -->
+<sc-if value="{{tabHist}}" hint-placeholder-val="{{ false }}">
+<section style="{{ui.cardFlush}}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #E5E7EB">
+<h2 style="{{ui.h2}}">Versions</h2><span style="{{ui.mono}}">{{hist.count}}</span>
+<span style="flex: 1"></span>
+<sc-if value="{{hist.anySel}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #3D4556">{{hist.selLabel}}</span><button type="button" onClick="{{hist.compareSel}}" aria-disabled="{{hist.cmpDisabled}}" style="{{hist.cmpStyle}}">Compare selected</button><button type="button" onClick="{{hist.clearSel}}" style="{{ui.btnT}}">Clear</button></sc-if>
+</div>
+<div role="table" aria-label="Versions of this edition" style="max-height: 640px; overflow-y: auto; position: relative; font-size: 14px">
+<div role="rowgroup" style="position: sticky; top: 0; z-index: 1">
+<div role="row" style="{{ui.hRowHead}}">
+<span role="columnheader" style="{{ui.thCell}}"><span style="{{ui.sr}}">Select</span></span>
+<span role="columnheader" style="{{ui.thCell}}">VERSION</span><span role="columnheader" style="{{ui.thCell}}">STATUS</span><span role="columnheader" style="{{ui.thCell}}">WHO</span><span role="columnheader" style="{{ui.thCell}}">WHEN (UTC)</span><span role="columnheader" style="{{ui.thCell}}">FIELDS CHANGED</span><span role="columnheader" style="{{ui.thCell}}"><span style="{{ui.sr}}">Actions</span></span>
+</div>
+</div>
+<div role="rowgroup">
+<sc-for list="{{hist.rows}}" as="h" hint-placeholder-count="5">
+<div role="row" class="row" style="{{ui.hRow}}">
+<span role="cell" style="padding: 0 0 0 16px; display: flex; align-items: center"><input type="checkbox" checked="{{h.checked}}" onChange="{{h.toggle}}" aria-label="{{h.cbLabel}}" style="width: 16px; height: 16px; margin: 0; accent-color: #0138AC"></span>
+<span role="cell" style="padding: 0 10px; font-family: 'Geist Mono', monospace; font-size: 13px">{{h.v}}</span>
+<span role="cell" style="padding: 0 10px; display: flex"><span style="{{h.chip.chip}}"><span aria-hidden="true" style="{{h.chip.dot}}"></span>{{h.chip.label}}</span></span>
+<span role="cell" style="padding: 0 10px">{{h.who}}</span>
+<span role="cell" style="padding: 0 10px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{h.when}}</span>
+<span role="cell" style="padding: 0 10px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556; overflow-wrap: anywhere">{{h.fields}}</span>
+<span role="cell" style="padding: 0 12px 0 4px; white-space: nowrap; display: flex; justify-content: flex-end; align-items: center"><button type="button" onClick="{{h.compare}}" aria-label="{{h.compareLabel}}" style="{{ui.btnXs}}">Compare</button><sc-if value="{{h.canRestore}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{h.restore}}" aria-label="{{h.restoreLabel}}" style="{{ui.btnXs2}}">Restore</button></sc-if><sc-if value="{{h.isCurrent}}" hint-placeholder-val="{{ false }}"><span style="display: inline-block; width: 78px; margin-left: 6px; text-align: center; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">CURRENT</span></sc-if></span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</sc-if>
+</div>
+
+<!-- RIGHT RAIL -->
+<aside aria-label="Edition preview and details" style="display: flex; flex-direction: column; gap: 16px">
+<section style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 15px; font-weight: 600">Public register page</span><span style="{{ui.mono}}">PREVIEW</span></span>
+<div style="border: 1px dashed #A7ADB8; border-radius: 12px; background: #F3F4F2; padding: 8px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.06em; color: #3D4556">CANVAS ONLY · PREVIEW STATE</span>
+<div role="group" aria-label="Preview state" style="display: flex; flex-wrap: wrap; gap: 3px">
+<sc-for list="{{pv}}" as="p" hint-placeholder-count="6"><button type="button" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.style}}">{{p.label}}</button></sc-for>
+</div>
+</div>
+<div aria-label="Thumbnail of the public register page" style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; background: #ffffff; box-shadow: 0 10px 24px -16px rgba(10,18,34,0.35)">
+<div style="display: flex; align-items: center; gap: 6px; padding: 7px 10px; border-bottom: 1px solid #EEF0F3"><img src="img/logo.svg" alt="" style="width: 20px; height: 13px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 11px">Vert Robo Con</span><span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 9px; color: #646B7A">/summits/{{year}}/register</span></div>
+<div style="padding: 14px 12px 16px; display: flex; flex-direction: column; gap: 8px">
+<span style="{{th.chipSm}}"><span aria-hidden="true" style="{{th.chip.dot}}"></span>{{th.chip.label}}</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 19px; line-height: 1.05; letter-spacing: -0.02em">{{th.title}}</span>
+<span style="font-size: 11px; color: #3D4556; line-height: 1.4">{{hd.range}} · {{hd.format}} · {{hd.price}}</span>
+<span aria-hidden="true" style="{{th.fields}}"><span style="display: block; height: 18px; border-radius: 5px; border: 1px solid #D5D8DE"></span><span style="display: block; height: 18px; border-radius: 5px; border: 1px solid #D5D8DE"></span></span>
+<span style="{{th.btn}}">{{th.btnLabel}}</span>
+<span style="font-size: 10px; color: #646B7A; line-height: 1.4">{{th.note}}</span>
+</div>
+</div>
+<a class="tlink" href="RegisterV3.dc.html" style="font-size: 13px">Open the register page artboard →</a>
+</section>
+
+<section style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px">
+<span style="font-size: 15px; font-weight: 600">Document</span>
+<dl style="margin: 0; display: grid; grid-template-columns: 104px 1fr; gap: 8px 10px; align-items: center">
+<dt style="{{ui.dt}}">STATUS</dt><dd style="margin: 0"><span style="{{doc.chip.chip}}"><span aria-hidden="true" style="{{doc.chip.dot}}"></span>{{doc.chip.label}}</span></dd>
+<dt style="{{ui.dt}}">VERSION</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 13px">{{doc.v}}</dd>
+<dt style="{{ui.dt}}">LAST SAVED</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px">{{doc.when}}</dd>
+<dt style="{{ui.dt}}">BY</dt><dd style="margin: 0">{{doc.who}}</dd>
+<dt style="{{ui.dt}}">ID</dt><dd style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 12px">editions/{{year}}</dd>
+</dl>
+<button type="button" onClick="{{goHistory}}" style="{{ui.btnTStart}}">View all versions</button>
+</section>
+
+<section style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 14px">
+<span style="font-size: 15px; font-weight: 600">Related</span>
+<a class="tlink" href="AdminRegistrationsV3.dc.html">Registrations for {{year}} →</a>
+<a class="tlink" href="AdminProgramV3.dc.html">Program builder →</a>
+<a class="tlink" href="AdminPitchesV3.dc.html">Calls and pitches →</a>
+<a class="tlink" href="AdminSettingsV3.dc.html">Site settings →</a>
+<a class="tlink" href="SummitV3.dc.html">Public summit page →</a>
+</section>
+</aside>
+</div>
+
+</main>
+</div>
+
+<!-- TOAST -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; top: 76px; right: 28px; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border-radius: 14px; background: #0A1222; color: #ffffff; font-size: 14px; box-shadow: 0 18px 40px -16px rgba(10,18,34,0.5)">
+<span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #7FD6A8"></span>{{toast}}
+<sc-if value="{{hasUndo}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{undoDay}}" style="min-height: 30px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #BFD0F5; font: inherit; font-size: 14px; font-weight: 600; text-decoration: underline; cursor: pointer">Undo</button></sc-if>
+<button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="width: 30px; height: 30px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+
+<!-- REMOVE DAY CONFIRMATION -->
+<sc-if value="{{dayDlg.on}}" hint-placeholder-val="{{ false }}">
+<button type="button" tabindex="-1" aria-label="Keep day" onClick="{{dayDlg.cancel}}" style="position: absolute; top: 37px; left: 0; right: 0; bottom: 0; z-index: 60; border: 0; padding: 0; background: rgba(10,18,34,0.32); cursor: default"></button>
+<div role="alertdialog" aria-modal="true" aria-labelledby="rd-h" aria-describedby="rd-d" onKeyDown="{{dayDlg.key}}" style="position: absolute; z-index: 61; top: 300px; left: 50%; margin-left: -250px; width: 500px; box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.45); display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">EDITIONS/{{year}} · DATES</span>
+<h2 id="rd-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{dayDlg.title}}</h2>
+<span id="rd-d" style="font-size: 15px; color: #3D4556">{{dayDlg.body}}</span>
+<span style="font-size: 13px; color: #646B7A">{{dayDlg.note}}</span>
+<div style="display: flex; justify-content: flex-end; gap: 8px">
+<button type="button" class="ghost" onClick="{{dayDlg.cancel}}" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #3D4556; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Keep day</button>
+<button type="button" onClick="{{dayDlg.confirm}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0A1222; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Remove day</button>
+</div>
+</div>
+</sc-if>
+
+<!-- COMPARE DRAWER -->
+<sc-if value="{{hasDrawer}}" hint-placeholder-val="{{ false }}">
+<button type="button" tabindex="-1" aria-label="Close compare drawer" onClick="{{closeDrawer}}" style="position: absolute; inset: 0; z-index: 40; border: 0; padding: 0; background: rgba(10,18,34,0.28); cursor: default"></button>
+<div role="dialog" aria-modal="true" aria-label="{{dr.title}}" style="position: absolute; top: 0; right: 0; bottom: 0; z-index: 41; width: 520px; box-sizing: border-box; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<div style="padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="{{ui.mono}}">EDITIONS/{{year}} · VERSIONS</span><h2 style="{{ui.h2lg}}">{{dr.title}}</h2><span style="font-size: 14px; color: #3D4556">{{dr.meta}}</span></div>
+<button type="button" aria-label="Close" onClick="{{closeDrawer}}" style="width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="flex: 1; overflow-y: auto; padding: 16px 24px; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{dr.diffs}}" as="x" hint-placeholder-count="2">
+<div style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden">
+<div style="padding: 8px 12px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #0A1222">{{x.f}}</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr">
+<div style="padding: 10px 12px; border-right: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 4px"><span style="{{ui.dt}}">BEFORE</span><span style="font-size: 14px; color: #3D4556">{{x.a}}</span></div>
+<div style="padding: 10px 12px; background: #E8F6EE; display: flex; flex-direction: column; gap: 4px"><span style="{{ui.dtGreen}}">AFTER</span><span style="font-size: 14px; color: #0A1222">{{x.b}}</span></div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="padding: 16px 24px; border-top: 1px solid #E5E7EB; display: flex; justify-content: flex-end; gap: 10px">
+<button type="button" onClick="{{closeDrawer}}" style="{{ui.btnSs}}">Close</button>
+<button type="button" onClick="{{dr.restore}}" style="{{ui.btnPs}}">{{dr.restoreLabel}}</button>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+const q = { role: true, org: false, country: true, tz: true, days: true, topics: false, accessibility: false, heardAbout: false };
+const bannerOff = { on: false, text: '', cta: 'Watch recordings' };
+this.state = {
+year: '2027', tab: 'dates', preview: 'auto', toast: '', drawer: null, build: 'live', q: '', unlocked: {}, sel: {}, dirty: {}, confirmDay: null, undo: null,
+// registrants per summit day (2027 matches AdminRegistrationsV3 sample counts; past editions unknown)
+picked: { '2027-04-20': 1102, '2027-04-21': 987, '2027-04-22': 1015 },
+ed: {
+'2027': { days: [{ date: '2027-04-20', label: 'Day 1' }, { date: '2027-04-21', label: 'Day 2' }, { date: '2027-04-22', label: 'Day 3' }], winStart: '14:00', winEnd: '17:30', also: ['US Eastern', 'Central European'], format: 'Online', price: 'Free · open to everyone', opens: '', opensTime: '', closes: '', closesTime: '', soonDays: '7', override: 'auto', program: 'Not started', rec: 'Not applicable', q: q, consent: 'v2027-01', consentDraft: false, banner: { on: true, text: 'Summit 2027 · April 20–22 · Online · Free · open to everyone', cta: 'Get notified' },
+calls: [
+{ id: 'startup', name: 'Startup pitch', track: 'startup', opens: '2026-12-08', closes: '', decisions: '' },
+{ id: 'research', name: 'Research pitch', track: 'research', opens: '', closes: '', decisions: '', draft: true },
+{ id: 'speaker', name: 'Recommend a speaker', track: 'nominations', always: true, note: 'Form on Get involved · entries go to Moderation queue › Nominations' },
+{ id: 'sponsor', name: 'Sponsor interest', track: 'sponsors', always: true, note: 'Form on Get involved · entries go to Moderation queue › Messages' }
+] },
+'2026': { days: [{ date: '2026-05-19', label: 'Day 1' }, { date: '2026-05-20', label: 'Day 2' }, { date: '2026-05-21', label: 'Day 3' }], winStart: '15:00', winEnd: '18:00', also: ['US Eastern', 'Central European'], format: 'Online', price: 'Free · open to everyone', opens: '', opensTime: '', closes: '', closesTime: '', soonDays: '7', override: 'auto', program: 'Published', rec: 'In editing', q: q, consent: 'v2026-01', consentDraft: false, banner: { on: true, text: 'Summit 2026 recordings are in editing', cta: 'Get notified' }, past: true,
+calls: [{ id: 'startup', name: 'Startup pitch', track: 'startup', opens: '', closes: '', decisions: '' }, { id: 'research', name: 'Research pitch', track: 'research', opens: '', closes: '', decisions: '' }] },
+'2025': { days: [{ date: '2025-06-10', label: 'Day 1' }, { date: '2025-06-11', label: 'Day 2' }, { date: '2025-06-12', label: 'Day 3' }], winStart: '', winEnd: '', also: [], format: 'Online', price: 'Free · open to everyone', opens: '', opensTime: '', closes: '', closesTime: '', soonDays: '7', override: 'auto', program: 'Published', rec: 'Published', q: q, consent: '[VERSION]', consentDraft: false, banner: bannerOff, past: true, calls: [] },
+'2024': { days: [{ date: '', label: 'Day 1' }], winStart: '', winEnd: '', also: [], format: '[FORMAT]', price: '[PRICE]', opens: '', opensTime: '', closes: '', closesTime: '', soonDays: '7', override: 'auto', program: 'Published', rec: 'Published', q: q, consent: '[VERSION]', consentDraft: false, banner: bannerOff, past: true, calls: [] }
+},
+history: {
+'2027': [
+{ v: 'v6', status: 'Published', who: 'Sample Admin 01', when: '2026-10-14 09:12', fields: 'banner.text, priceDisplay', diffs: [{ f: 'banner.text', a: 'Summit 2027 dates announced', b: 'Summit 2027 · April 20–22 · Online · Free · open to everyone' }, { f: 'priceDisplay', a: '[PRICE]', b: 'Free · open to everyone' }] },
+{ v: 'v5', status: 'Draft', who: 'Sample Admin 02', when: '2026-10-09 16:40', fields: 'calls[0].opensAt', diffs: [{ f: 'calls[0].opensAt', a: 'empty', b: '2026-12-08' }] },
+{ v: 'v4', status: 'Published', who: 'Sample Admin 01', when: '2026-09-22 11:05', fields: 'dates, dailyWindow, timeZone', diffs: [{ f: 'dates', a: 'empty', b: '2027-04-20, 2027-04-21, 2027-04-22' }, { f: 'dailyWindow', a: 'empty', b: '14:00–17:30' }, { f: 'timeZone', a: 'empty', b: 'UTC · also US Eastern, Central European' }] },
+{ v: 'v3', status: 'Published', who: 'Sample Admin 01', when: '2026-07-02 14:30', fields: 'format, stateOverride', diffs: [{ f: 'format', a: 'empty', b: 'Online' }, { f: 'stateOverride', a: 'empty', b: 'Auto' }] },
+{ v: 'v2', status: 'Draft', who: 'Sample Admin 02', when: '2026-06-18 10:02', fields: 'calls', diffs: [{ f: 'calls', a: 'empty', b: 'Startup pitch, Research pitch, Recommend a speaker, Sponsor interest' }] },
+{ v: 'v1', status: 'Published', who: 'Sample Admin 01', when: '2026-06-15 08:45', fields: 'created', diffs: [{ f: 'year', a: 'none', b: '2027' }] }
+],
+'2026': [
+{ v: 'v12', status: 'Published', who: 'Sample Admin 02', when: '2026-06-04 12:20', fields: 'recordingsState', diffs: [{ f: 'recordingsState', a: 'Not applicable', b: 'In editing' }] },
+{ v: 'v11', status: 'Published', who: 'Sample Admin 01', when: '2026-04-10 09:00', fields: 'programState', diffs: [{ f: 'programState', a: 'Draft program', b: 'Published' }] }
+],
+'2025': [{ v: 'v1', status: 'Published', who: 'Import script', when: '[DATE]', fields: 'imported from summits-data.ts', diffs: [{ f: 'all fields', a: 'none', b: 'Imported from the Astro site data' }] }],
+'2024': [{ v: 'v1', status: 'Published', who: 'Import script', when: '[DATE]', fields: 'imported (dates unknown)', diffs: [{ f: 'all fields', a: 'none', b: 'Imported · dates [DATE]' }] }]
+}
+};
+}
+renderVals() {
+const st = this.state;
+const yr = st.year;
+const e = st.ed[yr];
+const locked = !!e.past && !st.unlocked[yr];
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const DAY = 864e5;
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const D = (s) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) / DAY : null; };
+const dt = (d) => new Date(d * DAY);
+const fmt = (d) => MON[dt(d).getUTCMonth()] + ' ' + dt(d).getUTCDate() + ', ' + dt(d).getUTCFullYear();
+const TODAY = D('2026-10-16');
+
+// ---------- shared styles ----------
+const chipBase = (bg, fg) => 'align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + bg + '; color: ' + fg + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap';
+const TONE = { blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'], amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#A7ADB8'] };
+const mk = (tone, label) => ({ chip: chipBase(TONE[tone][0], TONE[tone][1]), dot: 'width: 6px; height: 6px; border-radius: 50%; display: inline-block; background: ' + TONE[tone][2], label: label.toUpperCase() });
+const STATE = { upcoming: ['neutral', 'Upcoming'], open: ['blue', 'Open'], closing: ['amber', 'Closing soon'], closed: ['neutral', 'Closed'], live: ['green', 'Live'], concluded: ['neutral', 'Concluded'] };
+const sChip = (k) => mk(STATE[k][0], STATE[k][1]);
+const btn = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; white-space: nowrap; ';
+const btnSm = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; white-space: nowrap; ';
+const inputBase = 'width: 100%; box-sizing: border-box; min-height: 42px; padding: 0 12px; border-radius: 12px; font: inherit; font-size: 14px; ';
+const inp = locked ? inputBase + 'border: 1px solid #E5E7EB; background: #F3F4F2; color: #3D4556' : inputBase + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222';
+const ui = {
+btnP: btn + 'border: 0; background: #0138AC; color: #ffffff',
+btnPs: btnSm + 'border: 0; background: #0138AC; color: #ffffff',
+btnS: btn + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnSs: btnSm + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnXs: 'display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 10px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer',
+btnT: 'min-height: 36px; padding: 0 4px; border: 0; background: transparent; color: #0138AC; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer',
+card: 'border: 1px solid #E5E7EB; border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; background: #ffffff',
+h2: "margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.2; letter-spacing: -0.02em",
+mono: MONO + 'font-size: 11px; letter-spacing: 0.06em; color: #646B7A',
+monoInline: MONO + 'font-size: 11px; letter-spacing: 0.06em; color: #646B7A',
+dt: MONO + 'font-size: 11px; letter-spacing: 0.06em; color: #646B7A',
+label: 'display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500; color: #0A1222',
+legend: 'font-size: 14px; font-weight: 500; color: #0A1222; padding: 0; margin-bottom: 8px',
+help: 'font-size: 13px; font-weight: 400; color: #646B7A',
+sr: 'position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap',
+input: inp,
+inputMono: inp + '; ' + MONO + 'font-size: 13px',
+inputRoMono: inputBase + 'border: 1px solid #E5E7EB; background: #F3F4F2; color: #3D4556; ' + MONO + 'font-size: 13px',
+textarea: inp + '; padding: 10px 12px; min-height: 76px; resize: vertical; ' + MONO + 'font-size: 13px; line-height: 1.5',
+selectHd: 'min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; background: ' + (locked ? '#F3F4F2' : '#ffffff') + '; font: inherit; font-size: 14px; color: #0A1222',
+th: 'position: sticky; top: 0; z-index: 1; height: 40px; padding: 0 12px; text-align: left; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A',
+chipNeutral: chipBase('#F3F4F2', '#3D4556'),
+chipBlue: chipBase('#EEF2FB', '#0138AC'),
+chipAmber: chipBase('#FFF4E5', '#8A4B00')
+};
+const thRowBase = 'display: grid; gap: 12px; align-items: center; background: #F7F8F9; border-bottom: 1px solid #E5E7EB; ' + MONO + 'font-size: 11px; letter-spacing: 0.06em; color: #646B7A; ';
+ui.thRow5 = thRowBase + 'grid-template-columns: 44px 190px 64px 1fr 44px; gap: 10px; padding: 8px 12px';
+ui.thRow4 = thRowBase + 'grid-template-columns: 1.3fr 1fr 1.2fr 150px; padding: 9px 14px';
+ui.chipNeutralC = ui.chipNeutral + '; align-self: center';
+ui.inputNum = ui.inputMono + '; width: 96px';
+ui.btnSsStart = ui.btnSs + '; align-self: flex-start';
+ui.cardFlush = ui.card + '; padding: 0; gap: 0; overflow: hidden';
+ui.thCb = ui.th + '; width: 44px';
+const hCols = 'display: grid; grid-template-columns: 44px 52px 120px 130px 136px minmax(0, 1fr) 184px; align-items: center; box-sizing: border-box; ';
+ui.hRowHead = hCols + 'height: 40px; background: #F7F8F9; border-bottom: 1px solid #E5E7EB';
+ui.hRow = hCols + 'min-height: 50px; padding: 6px 0; border-bottom: 1px solid #EEF0F3';
+ui.thCell = 'padding: 0 10px; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: #646B7A';
+ui.btnXs2 = ui.btnXs + '; margin-left: 6px';
+ui.h2lg = ui.h2 + '; font-size: 24px';
+ui.dtGreen = ui.dt + '; color: #0B7A47';
+ui.btnTStart = ui.btnT + '; align-self: flex-start; min-height: 32px';
+const sw = (on) => ({
+track: 'position: relative; flex: 0 0 auto; width: 34px; height: 20px; border-radius: 999px; background: ' + (on ? '#0138AC' : '#C9CDD5') + '; display: inline-block',
+knob: 'position: absolute; top: 2px; left: ' + (on ? '16px' : '2px') + '; width: 16px; height: 16px; border-radius: 50%; background: #ffffff'
+});
+
+// ---------- updates ----------
+const toastRO = () => this.setState({ toast: 'Read-only · unlock editing to change this edition' });
+const upd = (patch, key) => {
+if (locked) { toastRO(); return; }
+const ed = Object.assign({}, st.ed); ed[yr] = Object.assign({}, e, patch);
+const cur = st.dirty[yr] || [];
+const dirty = Object.assign({}, st.dirty); dirty[yr] = cur.indexOf(key) >= 0 ? cur : cur.concat(key);
+this.setState({ ed: ed, dirty: dirty });
+};
+const dirtyList = st.dirty[yr] || [];
+
+// ---------- dates ----------
+const ds = e.days.map((x) => D(x.date)).filter((x) => x !== null).sort((a, b) => a - b);
+const first = ds[0];
+const last = ds[ds.length - 1];
+let range = '[DATE]';
+if (ds.length) {
+const a = dt(first), b = dt(last);
+range = (a.getUTCMonth() === b.getUTCMonth() && a.getUTCFullYear() === b.getUTCFullYear())
+? MONL[a.getUTCMonth()] + ' ' + a.getUTCDate() + (ds.length > 1 ? '–' + b.getUTCDate() : '') + ', ' + a.getUTCFullYear()
+: fmt(first) + ' – ' + fmt(last);
+}
+const win = e.winStart && e.winEnd ? e.winStart + '–' + e.winEnd + ' UTC' : '[TIME] UTC';
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const days = e.days.map((x, i) => {
+const d = D(x.date);
+return {
+n: (i < 9 ? '0' : '') + (i + 1), date: x.date, label: x.label, wd: d !== null ? WD[dt(d).getUTCDay()].toUpperCase() : '[DATE]',
+removeLabel: 'Remove ' + x.label,
+setDate: (ev) => { const v = ev.target.value; upd({ days: e.days.map((y, j) => j === i ? Object.assign({}, y, { date: v }) : y) }, 'dates'); },
+setLabel: (ev) => { const v = ev.target.value; upd({ days: e.days.map((y, j) => j === i ? Object.assign({}, y, { label: v }) : y) }, 'dates'); },
+remove: () => {
+if (locked) { toastRO(); return; }
+if (e.days.length <= 1) { this.setState({ toast: 'An edition needs at least one day' }); return; }
+this.setState({ confirmDay: { yr: yr, i: i } });
+}
+};
+});
+const hasUndo = !!st.undo && st.undo.yr === yr && st.undo.toast === st.toast && !!st.toast;
+const undoDay = () => {
+if (!hasUndo) return;
+upd({ days: st.undo.days }, 'dates');
+this.setState({ undo: null, toast: 'Day restored' });
+};
+const addDay = () => {
+const lastD = D(e.days[e.days.length - 1].date);
+let nd = '';
+if (lastD !== null) { const x = dt(lastD + 1); nd = x.getUTCFullYear() + '-' + String(x.getUTCMonth() + 1).padStart(2, '0') + '-' + String(x.getUTCDate()).padStart(2, '0'); }
+upd({ days: e.days.concat({ date: nd, label: 'Day ' + (e.days.length + 1) }) }, 'dates');
+};
+
+// ---------- time zones ----------
+const TZ = { 'US Eastern': [-240, 'EDT'], 'US Pacific': [-420, 'PDT'], 'UK': [60, 'BST'], 'Central European': [120, 'CEST'], 'India': [330, 'IST'], 'Japan': [540, 'JST'] };
+const shift = (hm, off) => { const m = /^(\d{2}):(\d{2})$/.exec(hm || ''); if (!m) return '[TIME]'; let t = (+m[1]) * 60 + (+m[2]) + off; t = ((t % 1440) + 1440) % 1440; return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+const also = e.also.map((z) => ({
+name: z, conv: shift(e.winStart, TZ[z][0]) + '–' + shift(e.winEnd, TZ[z][0]) + ' ' + TZ[z][1], removeLabel: 'Remove ' + z,
+remove: () => upd({ also: e.also.filter((y) => y !== z) }, 'alsoShow')
+}));
+const tzOpts = Object.keys(TZ).filter((z) => e.also.indexOf(z) < 0).map((z) => ({ name: z }));
+const addTz = (ev) => { const v = ev.target.value; if (v && e.also.indexOf(v) < 0) upd({ also: e.also.concat(v) }, 'alsoShow'); };
+
+// ---------- timeline ----------
+const oD = D(e.opens), cD = D(e.closes);
+const soonN = Math.max(0, parseInt(e.soonDays, 10) || 0);
+let computed = 'concluded';
+let tl = { ok: false, bad: true, segs: [], ticks: [], miles: [], legend: [], todayText: '', todayLabel: 'display: none', todayLine: 'display: none' };
+let closesShown = '[DATE]';
+if (ds.length) {
+const liveS = first, liveE = last + 1;
+const opensD = oD !== null ? oD : (yr === '2027' ? D('2026-12-07') : first - 120);
+// unset regClosesAt: registration stays open through the live days (no "Closed" gap)
+const closesD = cD !== null ? cD : liveE;
+closesShown = cD !== null ? fmt(cD) : fmt(last) + ', the last summit day';
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const upEnd = Math.min(opensD, liveS);
+const openEnd = clamp(closesD - soonN, upEnd, liveS);
+const closingEnd = clamp(closesD, openEnd, liveS);
+const a0 = Math.min(TODAY, opensD) - 14;
+const a1 = Math.max(TODAY + 14, liveE + 21);
+const span = a1 - a0;
+const pct = (d) => ((d - a0) / span * 100);
+const t = TODAY;
+computed = t < upEnd ? 'upcoming' : t < openEnd ? 'open' : t < closingEnd ? 'closing' : t < liveS ? 'closed' : t < liveE ? 'live' : 'concluded';
+const SEG = { upcoming: ['#E5E7EB', '#3D4556'], open: ['#DCE5F8', '#0138AC'], closing: ['#FBE3C2', '#8A4B00'], closed: ['#ECEDEF', '#3D4556'], live: ['#CDEBDB', '#0B7A47'], concluded: ['#D5D8DE', '#3D4556'] };
+const raw = [['upcoming', a0, upEnd], ['open', upEnd, openEnd], ['closing', openEnd, closingEnd], ['closed', closingEnd, liveS], ['live', liveS, liveE], ['concluded', liveE, a1]];
+const present = raw.filter((r) => r[2] > r[1]);
+const legend = present.map((r) => {
+const on = r[0] === computed;
+// dates drawn from an unset regOpensAt stay placeholders in the legend
+const md = (d) => (oD === null && d === opensD ? (yr === '2027' ? 'Dec 7' : '[DATE]') : MON[dt(d).getUTCMonth()] + ' ' + dt(d).getUTCDate());
+const endD = r[2] - 1;
+return {
+name: STATE[r[0]][1] + (on ? ' · today' : ''),
+nameStyle: on ? 'color: #0A1222; font-weight: 600' : 'color: #3D4556; font-weight: 500',
+span: r[0] === 'concluded' ? 'from ' + md(r[1]) : r[0] === 'upcoming' ? 'until ' + md(r[2]) : endD > r[1] ? md(r[1]) + '–' + md(endD) : md(r[1]),
+swatch: 'width: 14px; height: 14px; border-radius: 4px; flex: 0 0 auto; background: ' + SEG[r[0]][0] + '; box-shadow: inset 0 0 0 1px ' + SEG[r[0]][1]
+};
+});
+const segs = present.map((r) => {
+const w = pct(r[2]) - pct(r[1]);
+const on = r[0] === computed;
+return {
+title: STATE[r[0]][1] + ' · ' + fmt(r[1]) + ' to ' + fmt(r[2] - 1),
+text: w > 9 ? STATE[r[0]][1] : '',
+style: 'flex: 0 0 auto; width: calc(' + w.toFixed(3) + '% - 2px); min-width: 4px; background: ' + SEG[r[0]][0] + '; color: ' + SEG[r[0]][1] + '; display: flex; align-items: center; padding: 0 8px; box-sizing: border-box; overflow: hidden; white-space: nowrap; font-size: 12px; font-weight: 600' + (on ? '; box-shadow: inset 0 0 0 2px ' + SEG[r[0]][1] : '')
+};
+});
+const ticks = [];
+const s0 = dt(a0);
+let y = s0.getUTCFullYear(), m = s0.getUTCMonth() + 1;
+const months = [];
+for (let guard = 0; guard < 40; guard++) { const d = Date.UTC(y, m, 1) / DAY; if (d >= a1) break; months.push(d); m++; }
+const step = months.length > 12 ? 3 : 1;
+months.forEach((d, i) => {
+if (i % step) return;
+const x = dt(d);
+ticks.push({ label: MON[x.getUTCMonth()].toUpperCase() + (x.getUTCMonth() === 0 || i === 0 ? ' ' + x.getUTCFullYear() : ''), style: 'position: absolute; top: 0; left: ' + pct(d).toFixed(2) + '%; padding-left: 4px; border-left: 1px solid #C9CDD5; ' + MONO + 'font-size: 10px; letter-spacing: 0.04em; color: #646B7A; white-space: nowrap; line-height: 16px' });
+});
+const tp = clamp(pct(TODAY), 0, 100);
+const opensLabel = oD !== null ? fmt(oD) + (e.opensTime ? ' ' + e.opensTime : '') + ' UTC' : (yr === '2027' ? 'Dec 7, 2026 (planned)' : '[DATE]');
+const closesLabel = cD !== null ? fmt(cD) + (e.closesTime ? ' ' + e.closesTime : '') + ' UTC' : '[DATE]';
+const miles = [
+Object.assign(sChip('upcoming'), { when: 'Until ' + opensLabel, rule: 'Before regOpensAt' + (oD === null ? (yr === '2027' ? ' · drawn at the planned date until set' : ' · not recorded, drawn 120 days before day 1') : '') }),
+Object.assign(sChip('open'), { when: 'From ' + opensLabel, rule: 'regOpensAt' }),
+Object.assign(sChip('closing'), { when: closingEnd > openEnd ? 'From ' + fmt(openEnd) : 'Falls in the live days · Live shows instead', rule: soonN + ' days before regClosesAt' + (cD === null ? ' (unset: end of the last summit day)' : '') })
+];
+if (closingEnd < liveS) miles.push(Object.assign(sChip('closed'), { when: 'From ' + closesLabel, rule: 'regClosesAt is before day 1 · form shows Closed' }));
+miles.push(
+Object.assign(sChip('live'), { when: fmt(first) + ' ' + (e.winStart || '[TIME]') + ' UTC', rule: 'First date in Dates' + (closesD >= liveE ? ' · registration stays open' : '') }),
+Object.assign(sChip('concluded'), { when: 'After ' + fmt(last) + ' ' + (e.winEnd || '[TIME]') + ' UTC', rule: 'Recordings: ' + e.rec })
+);
+tl = {
+ok: true, bad: false, segs: segs, ticks: ticks, miles: miles, legend: legend,
+todayText: 'OCT 16',
+todayLabel: 'position: absolute; top: 0; left: ' + tp.toFixed(2) + '%; transform: translateX(' + (tp > 85 ? '-100%' : tp < 8 ? '0' : '-50%') + '); ' + MONO + 'font-size: 11px; letter-spacing: 0.06em; color: #0A1222; font-weight: 500; white-space: nowrap; background: #ffffff; padding: 0 4px',
+todayLine: 'position: absolute; top: 22px; height: 46px; left: ' + tp.toFixed(2) + '%; width: 2px; margin-left: -1px; background: #0A1222; border-radius: 2px'
+};
+}
+const ov = e.override;
+const effective = ov === 'open' ? 'open' : ov === 'closed' ? 'closed' : computed;
+// remove-day confirmation (registrations store the days each registrant picked)
+const cdI = st.confirmDay && st.confirmDay.yr === yr && e.days[st.confirmDay.i] ? st.confirmDay.i : -1;
+let dayDlg = { on: false, title: '', body: '', note: '', cancel: () => {}, confirm: () => {}, key: () => {} };
+if (cdI >= 0) {
+const cx = e.days[cdI];
+const cdD = D(cx.date);
+const when = cdD !== null ? WD[dt(cdD).getUTCDay()] + ' ' + fmt(cdD) : '[DATE]';
+// before registration opens nobody can have picked a day; afterwards the count comes from Registrations
+const notOpenYet = !e.past && effective === 'upcoming';
+const nPick = notOpenYet ? 0 : st.picked[cx.date];
+const nTxt = nPick !== undefined ? nPick.toLocaleString('en-US') + (nPick === 1 ? ' registrant' : ' registrants') : (e.past ? '[N] registrants' : '0 registrants');
+const cancel = () => this.setState({ confirmDay: null });
+dayDlg = {
+on: true, title: 'Remove ' + (cx.label || 'Day ' + (cdI + 1)) + ' · ' + when + '?',
+body: notOpenYet ? 'Registration has not opened yet, so no one has picked this day. The change is not public until you publish.' : nTxt + ' picked this day. They keep their other days and get no email. The change is not public until you publish.',
+note: notOpenYet ? 'Once registration opens, this shows how many registrants picked the day (from Registrations).' : st.picked[cx.date] !== undefined ? 'Count from Registrations (sample data). The day stays on each registration as a record.' : 'Count from Registrations for Summit ' + yr + '.',
+cancel: cancel,
+key: (ev) => { if (ev && ev.key === 'Escape') cancel(); },
+confirm: () => {
+const prev = e.days;
+const label = cx.label || 'Day ' + (cdI + 1);
+upd({ days: e.days.filter((y, j) => j !== cdI) }, 'dates');
+const msg = label + ' removed · not public until you publish';
+this.setState({ confirmDay: null, toast: msg, undo: { yr: yr, days: prev, toast: msg } });
+}
+};
+}
+
+// ---------- header ----------
+const dirtyN = dirtyList.length;
+const hd = {
+title: 'Summit ' + yr, range: range, rangeUpper: range.toUpperCase() + ' · ' + e.format.toUpperCase(), win: win, format: e.format, price: e.price,
+state: sChip(computed), hasOv: ov !== 'auto', ov: ov === 'closed' ? mk('neutral', 'Override · force closed') : mk('blue', 'Override · force open'),
+line: dirtyN ? 'Unpublished changes in ' + dirtyN + ' field' + (dirtyN > 1 ? 's' : '') + ' (' + dirtyList.join(', ') + ') · Publish goes live at once' : 'Published · goes live at once',
+lineDot: 'width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: ' + (dirtyN ? '#D9822B' : '#1DB46C')
+};
+
+// ---------- registration ----------
+const closesBad = oD !== null && cD !== null && cD < oD;
+const reg = {
+opens: e.opens, opensTime: e.opensTime, closes: e.closes, closesTime: e.closesTime, soonDays: e.soonDays,
+setOpens: (ev) => upd({ opens: ev.target.value }, 'regOpensAt'),
+setOpensTime: (ev) => upd({ opensTime: ev.target.value }, 'regOpensAt'),
+setCloses: (ev) => upd({ closes: ev.target.value }, 'regClosesAt'),
+setClosesTime: (ev) => upd({ closesTime: ev.target.value }, 'regClosesAt'),
+setSoon: (ev) => upd({ soonDays: ev.target.value }, 'closingSoonDays'),
+opensHelp: oD !== null ? 'Opens ' + fmt(oD) + (e.opensTime ? ' at ' + e.opensTime : '') + ' UTC' : (yr === '2027' ? 'Planned for Dec 7, 2026 · shown as [DATE] until set' : 'Not recorded · shown as [DATE]'),
+closesHelp: closesBad ? 'regClosesAt is before regOpensAt' : (cD !== null ? 'Closes ' + fmt(cD) + (e.closesTime ? ' at ' + e.closesTime : '') + ' UTC' : 'Not set · registration stays open through the last summit day'),
+closesHelpStyle: closesBad ? 'font-size: 13px; font-weight: 500; color: #B42318' : ui.help,
+closesStyle: closesBad ? ui.inputMono + '; border-color: #B42318' : ui.inputMono
+};
+const QS = [
+{ k: 'name', label: 'Full name', type: 'Text', locked: true }, { k: 'email', label: 'Email', type: 'Email · dedupe key with edition', locked: true },
+{ k: 'role', label: 'Role', type: 'Select' }, { k: 'org', label: 'Organization', type: 'Text' }, { k: 'country', label: 'Country', type: 'Select' },
+{ k: 'tz', label: 'Time zone', type: 'Select · auto-detected' }, { k: 'days', label: 'Days attending', type: 'Checkboxes · from Dates' },
+{ k: 'topics', label: 'Topics', type: 'Chips' }, { k: 'accessibility', label: 'Accessibility needs', type: 'Long text' }, { k: 'heardAbout', label: 'How did you hear about us', type: 'Select' }
+];
+let reqN = 0;
+const questions = QS.map((q) => {
+const on = q.locked || !!e.q[q.k];
+if (on) reqN++;
+const s = sw(on);
+return { k: q.k, label: q.label, type: q.type, locked: !!q.locked, free: !q.locked, checked: on ? 'true' : 'false', aria: q.label + ' required', word: on ? 'Required' : 'Optional', track: s.track, knob: s.knob,
+toggle: () => { const nq = Object.assign({}, e.q); nq[q.k] = !e.q[q.k]; upd({ q: nq }, 'questions'); } };
+});
+const consent = {
+ver: e.consent, isDraft: !!e.consentDraft, text: '[CONSENT TEXT ' + e.consent + ']', noop: () => {},
+help: e.consentDraft ? 'New wording applies to registrations after you publish. Earlier registrations keep their consentVersion.' : 'Every registration stores consentVersion and consentAt.',
+newVersion: () => {
+if (locked) { toastRO(); return; }
+const mm = /^v(\d{4})-(\d+)$/.exec(e.consent);
+const nv = mm ? 'v' + mm[1] + '-' + String((+mm[2]) + 1).padStart(2, '0') : 'v' + yr + '-01';
+upd({ consent: nv, consentDraft: true }, 'consentVersion');
+}
+};
+
+// ---------- calls ----------
+const calls = e.calls.map((c, i) => {
+const setC = (patch) => upd({ calls: e.calls.map((y, j) => j === i ? Object.assign({}, y, patch) : y) }, 'calls');
+if (c.always !== undefined) {
+const s = sw(c.always);
+return { opens: '', closes: '', decisions: '', scoreLabel: '', opensHelp: '', closesHelp: '', decisionsHelp: '', setOpens: () => {}, setCloses: () => {}, setDecisions: () => {},
+name: c.name, track: c.track, dated: false, always: true, qHref: 'AdminSettingsV3.dc.html', chip: c.always ? mk('green', 'Always open') : mk('neutral', 'Closed'),
+checked: c.always ? 'true' : 'false', switchLabel: c.name + ' · always open', track2: s.track, knob: s.knob, note: c.note, toggle: () => setC({ always: !c.always }) };
+}
+const o = D(c.opens), cl = D(c.closes);
+const chip = e.past ? mk('neutral', 'Closed') : c.draft && o === null ? mk('neutral', 'Draft') : o === null ? mk('neutral', 'Draft') : TODAY < o ? mk('blue', 'Opens soon') : (cl !== null && TODAY > cl) ? mk('neutral', 'Closed') : mk('green', 'Open');
+return {
+checked: 'false', switchLabel: '', track2: '', knob: '', note: '', toggle: () => {},
+name: c.name, track: c.track, dated: true, always: false, qHref: 'AdminPitchesV3.dc.html', chip: chip, opens: c.opens, closes: c.closes, decisions: c.decisions,
+scoreLabel: 'All admins',
+opensHelp: o !== null ? fmt(o) : 'Shown as [DATE]', closesHelp: cl !== null ? fmt(cl) : 'Shown as [DATE]', decisionsHelp: D(c.decisions) !== null ? 'Released together, templated emails' : 'Shown as [DATE] · released together',
+setOpens: (ev) => setC({ opens: ev.target.value, draft: false }), setCloses: (ev) => setC({ closes: ev.target.value }), setDecisions: (ev) => setC({ decisions: ev.target.value })
+};
+});
+const addCall = () => upd({ calls: e.calls.concat({ id: 'new' + e.calls.length, name: 'New call', track: 'new-track', opens: '', closes: '', decisions: '', draft: true }) }, 'calls');
+
+// ---------- program ----------
+const PH = { 'Not started': 'Public program page shows a "Program coming soon" placeholder.', 'Draft program': 'Builder drafts stay private. The public page still shows the placeholder.', 'Published': 'Public program, .ics files and speaker pages update from published sessions.' };
+const RH = { 'Not applicable': 'No recordings yet. The Watch page hides this edition.', 'In editing': 'Summit and Watch pages show "Recordings in editing".', 'Partially published': 'Published sessions show video; the rest show "In editing".', 'Published': 'All recordings are live on the Watch page.' };
+const PT = { 'Not started': 'neutral', 'Draft program': 'amber', 'Published': 'green' };
+const RT = { 'Not applicable': 'neutral', 'In editing': 'neutral', 'Partially published': 'amber', 'Published': 'green' };
+const prog = {
+program: e.program, rec: e.rec, programHelp: PH[e.program], recHelp: RH[e.rec],
+pChip: mk(PT[e.program], 'Program · ' + e.program), rChip: mk(RT[e.rec], 'Recordings · ' + e.rec),
+setProgram: (ev) => upd({ program: ev.target.value }, 'programState'), setRec: (ev) => upd({ rec: ev.target.value }, 'recordingsState')
+};
+
+// ---------- banner ----------
+const bs = sw(e.banner.on);
+// the banner link follows the edition state (or the canvas preview state)
+const bState = st.preview === 'auto' ? effective : st.preview;
+const BL = {
+upcoming: ['/summits/' + yr, 'Links to /summits/' + yr + ' (Notify me) until registration opens'],
+open: ['/summits/' + yr + '/register', 'Links to /summits/' + yr + '/register'],
+closing: ['/summits/' + yr + '/register', 'Links to /summits/' + yr + '/register'],
+closed: ['/summits/' + yr, 'Links to /summits/' + yr + ' · registration is closed'],
+live: ['/summits/' + yr, 'Links to /summits/' + yr + ' (Now and next) during the live days'],
+concluded: ['/watch', 'Links to /watch']
+};
+const ban = {
+path: BL[bState][0], help: BL[bState][1] + (st.preview === 'auto' ? '' : ' · preview state: ' + STATE[bState][1]),
+on: e.banner.on, text: e.banner.text, cta: e.banner.cta, checked: e.banner.on ? 'true' : 'false', track: bs.track, knob: bs.knob,
+toggle: () => upd({ banner: Object.assign({}, e.banner, { on: !e.banner.on }) }, 'banner'),
+setText: (ev) => upd({ banner: Object.assign({}, e.banner, { text: ev.target.value }) }, 'banner'),
+setCta: (ev) => upd({ banner: Object.assign({}, e.banner, { cta: ev.target.value }) }, 'banner')
+};
+
+// ---------- history ----------
+const H = st.history[yr];
+const selY = st.sel[yr] || [];
+const valOf = (k) => {
+if (k === 'dates') return e.days.map((x) => x.date || '[DATE]').join(', ');
+if (k === 'dailyWindow') return win;
+if (k === 'alsoShow') return e.also.join(', ') || 'none';
+if (k === 'regOpensAt') return e.opens ? e.opens + ' ' + (e.opensTime || '') : '[DATE]';
+if (k === 'regClosesAt') return e.closes ? e.closes + ' ' + (e.closesTime || '') : '[DATE]';
+if (k === 'closingSoonDays') return e.soonDays + ' days';
+if (k === 'stateOverride') return ov;
+if (k === 'questions') return reqN + ' required';
+if (k === 'consentVersion') return e.consent;
+if (k === 'calls') return e.calls.map((c) => c.name).join(', ');
+if (k === 'programState') return e.program;
+if (k === 'recordingsState') return e.rec;
+if (k === 'banner') return e.banner.on ? e.banner.text : 'hidden';
+if (k === 'format') return e.format;
+if (k === 'priceDisplay') return e.price;
+return 'updated';
+};
+const nextV = () => 'v' + (parseInt(H[0].v.slice(1), 10) + 1);
+const addRow = (status, fields, diffs, toast, extra) => {
+const hist = Object.assign({}, st.history); hist[yr] = [{ v: nextV(), status: status, who: 'Sample Admin 01', when: '2026-10-16 · just now', fields: fields, diffs: diffs }].concat(H);
+const dirty = Object.assign({}, st.dirty); dirty[yr] = [];
+this.setState(Object.assign({ history: hist, dirty: dirty, toast: toast, drawer: null }, extra || {}));
+};
+const changeDiffs = () => dirtyList.length ? dirtyList.map((k) => ({ f: k, a: 'previous version', b: valOf(k) })) : [{ f: 'no field changes', a: '–', b: 'Republished as is' }];
+const publish = () => {
+if (locked) { toastRO(); return; }
+const ed = Object.assign({}, st.ed); ed[yr] = Object.assign({}, e, { consentDraft: false });
+addRow('Published', dirtyList.length ? dirtyList.join(', ') : 'republish, no field changes', changeDiffs(), 'Published · live at once', { ed: ed });
+};
+const saveDraft = () => {
+if (locked) { toastRO(); return; }
+addRow('Draft', dirtyList.length ? dirtyList.join(', ') : 'no field changes', changeDiffs(), 'Draft saved · not public until you publish');
+};
+const restore = (row) => {
+if (locked) { toastRO(); return; }
+addRow('Draft', 'restored from ' + row.v, [{ f: 'restore', a: 'current version', b: 'Fields from ' + row.v + ' (' + row.when + ')' }], row.v + ' restored as a draft · review, then publish');
+};
+const setSel = (arr) => { const s = Object.assign({}, st.sel); s[yr] = arr; this.setState({ sel: s }); };
+const rows = H.map((h, i) => ({
+v: h.v, who: h.who, when: h.when, fields: h.fields, chip: h.status === 'Published' ? mk('green', 'Published') : mk('neutral', 'Draft'),
+checked: selY.indexOf(h.v) >= 0, cbLabel: 'Select ' + h.v, compareLabel: 'Compare ' + h.v + ' changes', restoreLabel: 'Restore ' + h.v + ' as a draft',
+toggle: () => setSel(selY.indexOf(h.v) >= 0 ? selY.filter((x) => x !== h.v) : selY.concat(h.v)),
+compare: () => this.setState({ drawer: { idx: i } }),
+restore: () => restore(h), canRestore: i > 0, isCurrent: i === 0
+}));
+const cmpOk = selY.length === 2;
+const hist = {
+rows: rows, count: H.length + ' VERSIONS · VERSIONS AND DRAFTS', anySel: selY.length > 0, selLabel: selY.length + ' selected',
+cmpDisabled: cmpOk ? 'false' : 'true',
+cmpStyle: btnSm + 'min-height: 36px; border: 0; ' + (cmpOk ? 'background: #0138AC; color: #ffffff' : 'background: #E5E7EB; color: #646B7A; cursor: not-allowed'),
+compareSel: () => { if (!cmpOk) return; const idx = Math.min(H.findIndex((h) => h.v === selY[0]), H.findIndex((h) => h.v === selY[1])); this.setState({ drawer: { idx: idx, pair: true } }); },
+clearSel: () => setSel([])
+};
+let dr = { title: '', meta: '', diffs: [], restore: () => {}, restoreLabel: '' };
+if (st.drawer && H[st.drawer.idx]) {
+const h = H[st.drawer.idx];
+const prev = H[st.drawer.idx + 1];
+let older = prev;
+if (st.drawer.pair) { const other = selY.map((v) => H.find((x) => x.v === v)).filter((x) => x && x.v !== h.v)[0]; if (other) older = other; }
+dr = {
+title: older ? 'Compare ' + older.v + ' → ' + h.v : h.v + ' · first version',
+meta: h.who + ' · ' + h.when + ' UTC · ' + h.status,
+diffs: h.diffs,
+restoreLabel: older ? 'Restore ' + older.v + ' as draft' : 'Restore ' + h.v + ' as draft',
+restore: () => restore(older || h)
+};
+}
+
+// ---------- preview thumbnail ----------
+const PV = [['auto', 'Follow form'], ['upcoming', 'Upcoming'], ['open', 'Open'], ['closing', 'Closing soon'], ['live', 'Live'], ['concluded', 'Concluded']];
+const pv = PV.map((p) => {
+const on = st.preview === p[0];
+return { label: p[1], pressed: on ? 'true' : 'false', pick: () => this.setState({ preview: p[0] }),
+style: 'min-height: 28px; padding: 0 8px; border: 0; border-radius: 7px; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556') };
+});
+const ps = st.preview === 'auto' ? effective : st.preview;
+const tb = 'display: flex; align-items: center; justify-content: center; min-height: 28px; border-radius: 7px; font-size: 11px; font-weight: 500; ';
+const tP = tb + 'background: #0138AC; color: #ffffff';
+const tS = tb + 'border: 1px solid #D5D8DE; color: #0A1222';
+const tD = tb + 'background: #E5E7EB; color: #646B7A';
+const fieldsOn = 'display: flex; flex-direction: column; gap: 5px';
+const fieldsOff = 'display: none';
+const oLbl = oD !== null ? fmt(oD) : (yr === '2027' ? 'Dec 7, 2026' : '[DATE]');
+const TH = {
+upcoming: { chip: mk('blue', 'Opens ' + oLbl), title: 'Registration opens soon', fields: fieldsOff, btn: tS, btnLabel: 'Notify me when it opens', note: 'Free · open to everyone. We email you once when registration opens.' },
+open: { chip: mk('blue', 'Registration open'), title: 'Register for Summit ' + yr, fields: fieldsOn, btn: tP, btnLabel: 'Register free', note: 'Confirmation with your /me link and calendar files.' },
+closing: { chip: mk('amber', 'Closes in ' + soonN + ' days'), title: 'Register for Summit ' + yr, fields: fieldsOn, btn: tP, btnLabel: 'Register free', note: 'Registration closes ' + closesShown + '.' },
+closed: { chip: mk('neutral', 'Registration closed'), title: 'Registration is closed', fields: fieldsOff, btn: tD, btnLabel: 'Registration closed', note: 'Recordings follow after the summit.' },
+live: { chip: mk('green', 'Live now'), title: 'Summit ' + yr + ' is live', fields: fieldsOff, btn: tP, btnLabel: 'Join the live stream', note: 'Not registered yet? Register free and join straight away.' },
+concluded: { chip: mk('neutral', 'Concluded'), title: 'Summit ' + yr + ' has ended', fields: fieldsOff, btn: e.rec === 'Published' ? tP : tS, btnLabel: e.rec === 'Published' ? 'Watch recordings' : e.rec === 'Not applicable' ? 'Notify me about recordings' : 'Recordings in editing · notify me', note: 'Recordings: ' + e.rec + '.' }
+};
+const th = Object.assign({}, TH[ps]);
+th.chipSm = th.chip.chip + '; font-size: 9px; padding: 3px 8px';
+
+// ---------- doc meta ----------
+const top = H[0];
+const doc = { chip: dirtyN ? mk('amber', 'Changed') : (top.status === 'Published' ? mk('green', 'Published') : mk('neutral', 'Draft')), v: top.v, when: top.when + ' UTC', who: top.who };
+
+// ---------- tabs ----------
+const TABS = [['dates', 'Dates & state'], ['reg', 'Registration'], ['calls', 'Calls'], ['prog', 'Program & recordings'], ['banner', 'Banner'], ['hist', 'History']];
+const tabs = TABS.map((t) => {
+const on = st.tab === t[0];
+const cnt = t[0] === 'calls' ? String(e.calls.length) : t[0] === 'hist' ? String(H.length) : '';
+return { label: t[1], selected: on ? 'true' : 'false', hasCount: !!cnt, count: cnt, pick: () => this.setState({ tab: t[0] }),
+style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; margin-bottom: -1px; ' + (on ? 'color: #0138AC; box-shadow: inset 0 -2px 0 #0138AC' : 'color: #3D4556') };
+});
+
+
+return {
+ui: ui, year: yr,
+// shared top bar + sidebar (same markup as AdminQueueV3; badge = AdminQueueV3 open items: 3 join requests + 3 map + 2 jobs + 4 messages + 1 nomination + 1 internship)
+totalOpen: 16, queueAria: '16 items need action',
+q: st.q, setQ: (e) => this.setState({ q: e.target.value }),
+onYear: (ev) => this.setState({ year: ev.target.value, drawer: null, preview: 'auto', confirmDay: null }),
+dayDlg: dayDlg, hasUndo: hasUndo, undoDay: undoDay,
+hd: hd, locked: locked, unlockedOld: !!e.past && !!st.unlocked[yr], roAttr: locked ? 'true' : 'false',
+unlock: () => { const u = Object.assign({}, st.unlocked); u[yr] = true; this.setState({ unlocked: u, toast: 'Editing unlocked for Summit ' + yr }); },
+warnClosed: ov === 'closed', warnOpen: ov === 'open',
+f: {
+override: ov, setOverride: (ev) => upd({ override: ev.target.value }, 'stateOverride'),
+format: e.format, setFormat: (ev) => upd({ format: ev.target.value }, 'format'),
+price: e.price, setPrice: (ev) => upd({ price: ev.target.value }, 'priceDisplay'),
+winStart: e.winStart, winEnd: e.winEnd,
+setWinStart: (ev) => upd({ winStart: ev.target.value }, 'dailyWindow'), setWinEnd: (ev) => upd({ winEnd: ev.target.value }, 'dailyWindow')
+},
+tabs: tabs, tabLabel: TABS.find((t) => t[0] === st.tab)[1],
+tabDates: st.tab === 'dates', tabReg: st.tab === 'reg', tabCalls: st.tab === 'calls', tabProg: st.tab === 'prog', tabBanner: st.tab === 'banner', tabHist: st.tab === 'hist',
+showTL: st.tab === 'dates' || st.tab === 'reg',
+days: days, addDay: addDay, also: also, tzOpts: tzOpts, addTz: addTz, tl: tl,
+reg: reg, questions: questions, qCount: reqN + ' OF ' + QS.length + ' REQUIRED', consent: consent,
+calls: calls, callsCount: e.calls.length + (e.calls.length === 1 ? ' CALL' : ' CALLS'), addCall: addCall,
+prog: prog, ban: ban, hist: hist,
+pv: pv, th: th, doc: doc,
+goHistory: () => this.setState({ tab: 'hist' }),
+saveDraft: saveDraft, publish: publish,
+hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '', undo: null }),
+hasDrawer: !!st.drawer, dr: dr, closeDrawer: () => this.setState({ drawer: null })
+};
+}
+}
+</script>
+</body>
+</html>

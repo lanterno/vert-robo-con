@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>People (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.lift{transition:transform .2s ease, box-shadow .2s ease}
+.lift:hover{transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(10,18,34,.28)}
+@media (prefers-reduced-motion: reduce){.lift{transition:none}.lift:hover{transform:none}}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.flink{color:#0A1222;text-decoration:none}
+.flink:hover{color:#0138AC;text-decoration:underline}
+.pcard:hover{border-color:#BFD0F5}
+.aprow:hover{background:#F7F8F9}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none}
+</style>
+</helmet>
+<div style="position: relative; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EBEE; border-bottom: 1px dashed #A7ADB8; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="font-size: 13px; color: #3D4556">Preview</span>
+<div role="group" aria-label="Preview state" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 10px; background: #F3F4F2">
+<sc-for list="{{presets}}" as="p" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">PUBLIC MEMBER DIRECTORY: NOT PLANNED</span>
+</div>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" aria-current="{{i.current}}" onClick="{{i.go}}" style="{{i.style}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</header>
+
+<!-- HERO -->
+<section style="padding: 72px 32px 56px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 32px 64px">
+<div style="flex: 1.4 1 560px; display: flex; flex-direction: column; gap: 20px">
+<span style="{{ui.eyebrow}}">COMMUNITY · PEOPLE</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 72px; line-height: 0.94; letter-spacing: -0.04em">The people behind<br><span style="color: #0138AC">the network</span></h1>
+<p style="margin: 0; max-width: 640px; font-size: 20px; line-height: 1.5; color: #3D4556">The team that runs the network and the summit, the speakers who brought their work to it, and the authors of the white paper.</p>
+</div>
+<div style="flex: 1 1 340px; max-width: 400px; display: flex; flex-direction: column; gap: 24px">
+<span style="display: flex; align-items: center">
+<sc-for list="{{faces}}" as="f" hint-placeholder-count="7"><img src="{{f.src}}" alt="" style="{{f.style}}"></sc-for>
+</span>
+<div role="group" aria-label="Jump to a group" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #E5E7EB">
+<sc-for list="{{stats}}" as="s" hint-placeholder-count="3">
+<button type="button" onClick="{{s.pick}}" aria-controls="people-panel" style="{{s.style}}"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 40px; line-height: 1; letter-spacing: -0.03em; color: #0A1222">{{s.n}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{s.label}}</span></button>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<!-- DIRECTORY -->
+<section id="people" style="padding: 0 32px 112px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
+<h2 class="sr" style="margin: 0">People directory</h2>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px">
+<div role="tablist" aria-label="People groups" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: #F3F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" role="tab" id="{{t.tabId}}" aria-selected="{{t.selected}}" aria-controls="people-panel" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 400">{{t.count}}</span></button>
+</sc-for>
+</div>
+<div style="flex: 0 1 380px; position: relative; display: flex; align-items: center">
+<label style="flex: 1 1 auto; display: flex; align-items: center">
+<span class="sr">Search people by name</span>
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; pointer-events: none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" autocomplete="off" value="{{q}}" onChange="{{onQ}}" onKeyDown="{{qKey}}" placeholder="Search by name" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 48px 0 42px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 16px; color: #0A1222">
+</label>
+<sc-if value="{{hasQ}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-label="Clear search" onClick="{{clearQ}}" style="position: absolute; right: 2px; width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</sc-if>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; min-height: 44px">
+<sc-if value="{{isTeam}}" hint-placeholder-val="{{ true }}">
+<span style="font-size: 16px; color: #3D4556">The summit is made possible by an international team that gives its time year-round.</span>
+<a href="GetInvolvedV3.dc.html#network" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 16px; font-weight: 500; text-decoration: none">Join the team
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</sc-if>
+<sc-if value="{{isSpk}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<div role="group" aria-label="Summit edition" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{years}}" as="y" hint-placeholder-count="2"><button type="button" aria-pressed="{{y.pressed}}" onClick="{{y.pick}}" style="{{y.style}}">{{y.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; opacity: 0.75">{{y.count}}</span></button></sc-for>
+</div>
+<span aria-hidden="true" style="width: 1px; height: 24px; background: #E5E7EB; margin: 0 6px"></span>
+<button type="button" aria-pressed="{{kn.pressed}}" onClick="{{kn.toggle}}" style="{{kn.style}}">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"></path></svg>Keynotes only</button>
+</div>
+<a href="GetInvolvedV3.dc.html#calls" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 16px; font-weight: 500; text-decoration: none">Recommend a speaker for 2027
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</sc-if>
+<sc-if value="{{isWp}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 16px; color: #3D4556">They wrote the 2025 edition of the white paper together.</span>
+<a href="ResearchV3.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 16px; font-weight: 500; text-decoration: none">Read the white paper
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</sc-if>
+</div>
+
+<div id="people-panel" role="tabpanel" aria-labelledby="{{panelTab}}" style="display: flex; flex-direction: column; gap: 16px; margin-top: 12px">
+<span role="status" aria-live="polite" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{countLabel}}</span>
+
+<!-- team: portrait cards -->
+<sc-if value="{{teamView}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="7">
+<button type="button" class="lift pcard" aria-haspopup="dialog" onClick="{{c.open}}" style="display: flex; flex-direction: column; padding: 0; border: 1px solid #E5E7EB; border-radius: 20px; background: #ffffff; overflow: hidden; font: inherit; color: #0A1222; text-align: left; cursor: pointer">
+<sc-if value="{{c.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{c.photo}}" alt="" style="display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #EEF2FB"></sc-if>
+<sc-if value="{{c.noPhoto}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 100%; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 44px">{{c.initials}}</span></sc-if>
+<span style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px 18px">
+<span style="font-size: 17px; font-weight: 600; line-height: 1.3">{{c.name}}</span>
+<span style="font-size: 14px; line-height: 1.45; color: #3D4556">{{c.roleLine}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- speakers and authors: compact cards -->
+<sc-if value="{{listView}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="8">
+<button type="button" class="lift pcard" aria-haspopup="dialog" onClick="{{c.open}}" style="display: flex; align-items: center; gap: 14px; min-height: 96px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 16px; background: #ffffff; font: inherit; color: #0A1222; text-align: left; cursor: pointer; box-sizing: border-box">
+<sc-if value="{{c.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{c.photo}}" alt="" style="flex: 0 0 auto; width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: #EEF2FB"></sc-if>
+<sc-if value="{{c.noPhoto}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="flex: 0 0 auto; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 17px">{{c.initials}}</span></sc-if>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 16px; font-weight: 600; line-height: 1.3">{{c.name}}</span>
+<span style="font-size: 14px; line-height: 1.4; color: #3D4556; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{c.roleLine}}</span>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 2px">
+<sc-if value="{{c.isKey}}" hint-placeholder-val="{{ false }}"><span style="{{ui.chipDark}}">KEYNOTE</span></sc-if>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{c.meta}}</span>
+</span>
+</span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{showMore}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{toggleMore}}" aria-controls="people-panel" style="{{moreStyle}}">{{moreLabel}}</button>
+</sc-if>
+</sc-if>
+
+<!-- empty state -->
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px dashed #D5D8DE; border-radius: 20px; padding: 40px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px">
+<span style="{{ui.eyebrow}}">NO MATCHES</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.15; letter-spacing: -0.02em">{{emptyTitle}}</h2>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{emptyHint}}</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{elsewhere}}" as="e" hint-placeholder-count="1"><button type="button" onClick="{{e.go}}" aria-controls="people-panel" style="{{ui.btnPs}}">{{e.label}}</button></sc-for>
+<button type="button" onClick="{{clearQ}}" style="{{ui.btnSs}}">Clear search</button>
+</div>
+</div>
+</sc-if>
+</div>
+
+</div>
+</section>
+
+<!-- JOIN THE TEAM / CONTACT -->
+<section style="padding: 0 32px 112px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<div style="flex: 1.4 1 560px; border-radius: 32px; background: #0A1222; color: #ffffff; padding: 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #7FD6A8"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>VOLUNTEER</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 52px; line-height: 0.98; letter-spacing: -0.035em">Join the team</h2>
+<p style="margin: 0; max-width: 560px; font-size: 18px; color: #C8CEDA">The summit and the network run on volunteers who give their time year-round. Help with summit organizing, the research team or video production.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin-top: 8px">
+<a href="GetInvolvedV3.dc.html#network" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #ffffff; color: #0A1222; font-size: 16px; font-weight: 500; text-decoration: none">Volunteer with us
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+<a href="GetInvolvedV3.dc.html" style="color: #ffffff; font-size: 15px; font-weight: 500">All ways to get involved</a>
+</div>
+</div>
+<div style="flex: 1 1 380px; border-radius: 32px; background: #F3F4F2; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<span style="{{ui.eyebrow}}">CONTACT US</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em">Questions about someone on this page?</h2>
+<p style="margin: 0; font-size: 16px; color: #3D4556">Ask about a speaker or an organizer, request a correction to your profile, or reach the team for press. We respond within 24–48 hours.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: auto; padding-top: 8px">
+<a href="ContactV3.dc.html" style="{{ui.btnPs}}">Contact us</a>
+<a href="mailto:hello@vert-robo-con.example" style="font-size: 15px; font-weight: 500">hello@vert-robo-con.example</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px; max-width: 420px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; font-size: 15px; color: #646B7A">A friendly community for people who build, fund and repair robots for climate work.</p>
+<span style="margin-top: 8px; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">THE MONTHLY DIGEST</span>
+<div style="{{nFoot.wrap}}">
+<sc-if value="{{nFoot.idle}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nFoot.expand}}" style="{{nFoot.ghost}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>{{nFoot.label}}</button>
+</sc-if>
+<sc-if value="{{nFoot.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end">
+<label style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 4px"><span style="{{nFoot.lab}}">Email</span><input type="email" id="notify-foot" autocomplete="email" value="{{nFoot.email}}" onChange="{{nFoot.setEmail}}" placeholder="you@example.org" aria-invalid="{{nFoot.invalid}}" style="{{nFoot.input}}"></label>
+<button type="button" onClick="{{nFoot.submit}}" style="{{ui.btnPs}}">Notify me</button>
+</div>
+<sc-if value="{{nFoot.err}}" hint-placeholder-val="{{ false }}"><span role="alert" style="{{nFoot.errStyle}}">Enter an email address like name@example.org.</span></sc-if>
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{nFoot.topics}}" as="t" hint-placeholder-count="4"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.toggle}}" style="{{t.style}}">{{t.label}}</button></sc-for></div>
+<span style="font-size: 13px; color: #646B7A">No spam. Unsubscribe in one click. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{nFoot.pending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 8px"><span style="{{nFoot.text}}"><strong style="{{nFoot.strong}}">Check your inbox to confirm.</strong> We sent a link to {{nFoot.email}}.</span><button type="button" onClick="{{nFoot.confirm}}" style="{{ui.canvasLink}}">CANVAS · Simulate: confirm email</button></div>
+</sc-if>
+<sc-if value="{{nFoot.done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px"><span style="{{ui.chipGreen}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span><a href="MyVRCV3.dc.html" style="{{nFoot.manage}}">Manage</a></div>
+</sc-if>
+</div>
+</div>
+<sc-for list="{{footer}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="5"><a class="flink" href="{{l.href}}" aria-current="{{l.current}}">{{l.label}}</a></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<div style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="WatchV3.dc.html" aria-label="Videos" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="HomeV3.dc.html#join" aria-label="Slack: join the network" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2zM13 3v6h2a2 2 0 0 0 0-4M11 21v-6H9a2 2 0 0 0 0 4"></path></svg></a>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- PERSON DRAWER -->
+<sc-if value="{{drawerOpen}}" hint-placeholder-val="{{ false }}">
+<div onKeyDown="{{drawerKey}}" style="position: absolute; inset: 0; z-index: 50">
+<div aria-hidden="true" onClick="{{closeDrawer}}" style="position: absolute; inset: 0; background: rgba(10,18,34,0.45)"></div>
+<aside role="dialog" aria-modal="true" aria-labelledby="person-name" style="position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35)">
+<div style="{{drawerInner}}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{pd.pos}}</span>
+<div style="display: flex; gap: 4px">
+<button type="button" aria-label="{{pd.prevLabel}}" aria-disabled="{{pd.prevDis}}" onClick="{{pd.prev}}" style="{{pd.prevStyle}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<button type="button" aria-label="{{pd.nextLabel}}" aria-disabled="{{pd.nextDis}}" onClick="{{pd.next}}" style="{{pd.nextStyle}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+<button type="button" aria-label="Close" onClick="{{closeDrawer}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F3F4F2; color: #3D4556; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 16px">
+<sc-if value="{{pd.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{pd.photo}}" alt="{{pd.alt}}" style="flex: 0 0 auto; width: 88px; height: 88px; border-radius: 20px; object-fit: cover; background: #EEF2FB"></sc-if>
+<sc-if value="{{pd.noPhoto}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="flex: 0 0 auto; width: 88px; height: 88px; border-radius: 20px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 26px">{{pd.initials}}</span></sc-if>
+<div style="min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<h2 id="person-name" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em">{{pd.name}}</h2>
+<span style="font-size: 15px; line-height: 1.45; color: #3D4556">{{pd.roleLine}}</span>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{pd.tags}}" as="t" hint-placeholder-count="2"><span style="{{ui.chipNeutral}}">{{t.label}}</span></sc-for>
+</div>
+
+<p style="{{pd.bioStyle}}">{{pd.bio}}</p>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">APPEARS IN</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{pd.appears}}" as="ap" hint-placeholder-count="2">
+<li><a href="{{ap.href}}" class="aprow" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px; color: #0A1222; text-decoration: none">
+<span aria-hidden="true" style="flex: 0 0 auto; width: 36px; height: 36px; border-radius: 10px; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center">
+<sc-if value="{{ap.isPlay}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></sc-if>
+<sc-if value="{{ap.isSess}}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg></sc-if>
+<sc-if value="{{ap.isDoc}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg></sc-if>
+<sc-if value="{{ap.isPost}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M7 8h10M7 12h10M7 16h6"></path></svg></sc-if>
+<sc-if value="{{ap.isTeam}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.8 6 5.5"></path></svg></sc-if>
+</span>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; line-height: 1.35"><strong style="font-weight: 500; font-size: 15px">{{ap.t}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.02em; color: #646B7A">{{ap.m}}</span></span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0138AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M9 6l6 6-6 6"></path></svg>
+</a></li>
+</sc-for>
+</ul>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; font-size: 15px; font-weight: 500">
+<sc-for list="{{pd.links}}" as="l" hint-placeholder-count="1"><a href="{{l.href}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px">{{l.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a></sc-for>
+<sc-if value="{{pd.noLinks}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; min-height: 44px; font-weight: 400; color: #646B7A">No public links yet</span></sc-if>
+<button type="button" onClick="{{pd.copy}}" style="{{pd.copyStyle}}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>{{pd.copyLabel}}</button>
+</div>
+<span aria-live="polite" style="margin-top: -12px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{pd.url}}</span>
+
+<p style="margin: 0; padding-top: 16px; border-top: 1px solid #E5E7EB; font-size: 14px; color: #646B7A">Something wrong or missing in this profile? <a href="ContactV3.dc.html">Ask for a correction</a></p>
+</div>
+</aside>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2390}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = {
+preset: 'default', menu: null, tab: 'team', year: '2026', kn: false, q: '', more: false,
+sel: null, ctx: 'team', top: 0, copied: false,
+n_foot: { st: 'idle', email: '', err: false, topics: ['Monthly digest'] }
+};
+}
+renderVals() {
+const st = this.state;
+const set = (o) => this.setState(o);
+const go = (o) => this.setState(Object.assign({ preset: '' }, o));
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const okEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim());
+const btnSm = 'display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; box-sizing: border-box; ';
+const chip = (bg, fg) => 'align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + bg + '; color: ' + fg + '; ' + MONO + 'font-size: 11px; font-weight: 500; letter-spacing: 0.06em; white-space: nowrap';
+const ui = {
+btnPs: btnSm + 'border: 0; background: #0138AC; color: #ffffff',
+btnSs: btnSm + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+eyebrow: MONO + 'font-size: 12px; letter-spacing: 0.06em; color: #646B7A',
+chipGreen: chip('#E8F6EE', '#0B7A47'),
+chipNeutral: chip('#F3F4F2', '#3D4556'),
+chipDark: chip('#0A1222', '#ffffff') + '; padding: 2px 8px',
+canvasLink: 'align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 8px; background: #F3F4F2; color: #3D4556; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em; cursor: pointer'
+};
+const input = (bad) => 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid ' + (bad ? '#B42318' : '#D5D8DE') + '; border-radius: 12px; background: #ffffff; font: inherit; font-size: 16px; color: #0A1222';
+const pill = (on) => 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE');
+const srOnly = 'position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap';
+
+/* ---------- person records (fictional; from src/lib/summits-data.ts: ORGANIZERS, SPEAKERS_2026, SPEAKERS_2025) ---------- */
+/* PEOPLE: slug -> [name, photo, profile link, bio] */
+const PEOPLE = {
+  "elif-brandvold": ["Elif Brandvold", "img/avatar-03.svg", "https://vert-robo-con.example/social/linkedin/elif-brandvold", "Elif started Vert Robo Con as a mailing list for people who repair field robots. She still keeps the books."],
+  "imogen-calder": ["Imogen Calder", "", "https://vert-robo-con.example/social/linkedin/imogen-calder", "Imogen reads every consulting enquiry first and matches it with members who have done that kind of work."],
+  "saskia-overmeer": ["Saskia Overmeer", "img/avatar-14.svg", "https://vert-robo-con.example/social/linkedin/saskia-overmeer", ""],
+  "dario-fenwick": ["Dario Fenwick", "img/avatar-11.svg", "", ""],
+  "kofi-ashgrove": ["Kofi Ashgrove", "img/avatar-17.svg", "https://vert-robo-con.example/social/linkedin/kofi-ashgrove", ""],
+  "noor-halloran": ["Noor Halloran", "img/avatar-18.svg", "", ""],
+  "mireille-vos": ["Mireille Vos", "img/avatar-15.svg", "https://vert-robo-con.example/social/linkedin/mireille-vos", ""],
+  "ruth-calloway": ["Ruth Calloway", "img/avatar-16.svg", "", ""],
+  "tobias-hartnell": ["Tobias Hartnell", "", "", ""],
+  "selin-aydemir": ["Selin Aydemir", "", "", ""],
+  "gregor-pazdera": ["Gregor Pazdera", "", "", ""],
+  "amaya-thorne": ["Amaya Thorne", "img/avatar-12.svg", "", ""],
+  "lorcan-beddoes": ["Lorcan Beddoes", "", "", ""],
+  "chidinma-varga": ["Chidinma Varga", "", "https://vert-robo-con.example/social/linkedin/chidinma-varga", ""],
+  "hollis-wexford": ["Hollis Wexford", "img/avatar-02.svg", "https://vert-robo-con.example/social/linkedin/hollis-wexford", "Hollis coordinated the clean-up after two river floods in one year and now writes the city’s rules for when drones and ground robots go in before people do."],
+  "anais-brekke": ["Anaïs Brekke", "img/avatar-01.svg", "https://vert-robo-con.example/social/linkedin/anais-brekke", "Anaïs reads the final reports of grant-funded robot pilots and follows up a year later to see which machines are still in use, and why the others stopped."],
+  "pieter-oduro": ["Pieter Oduro", "", "", ""],
+  "esme-kintyre": ["Esme Kintyre", "img/avatar-04.svg", "", ""],
+  "matias-ferland": ["Matías Ferland", "", "", ""],
+  "ngozi-tremaine": ["Ngozi Tremaine", "", "", ""],
+  "mina-saarinen": ["Mina Saarinen", "img/avatar-13.svg", "", ""],
+  "taro-ellingsen": ["Taro Ellingsen", "", "", ""],
+  "adaeze-lindholm": ["Adaeze Lindholm", "", "", ""],
+  "bruno-castellane": ["Bruno Castellane", "", "", ""],
+  "dagny-morrow": ["Dagny Morrow", "img/avatar-07.svg", "", ""],
+  "ishaan-reval": ["Ishaan Reval", "", "", ""],
+  "colette-nyquist": ["Colette Nyquist", "", "", ""],
+  "femi-garrow": ["Femi Garrow", "img/avatar-10.svg", "", ""],
+  "lena-moravec": ["Lena Moravec", "", "", ""],
+  "hugo-brennerman": ["Hugo Brennerman", "", "", ""],
+  "sakura-delmont": ["Sakura Delmont", "", "", ""],
+  "tamsin-ocampo": ["Tamsin Ocampo", "img/avatar-09.svg", "https://vert-robo-con.example/social/linkedin/tamsin-ocampo", "Tamsin has lost more weather stations to crevasses than she likes to admit, and now designs instrument sleds that can be dug out and reused."],
+  "odile-farrow": ["Odile Farrow", "img/avatar-05.svg", "", "Odile plans ditch-blocking work on upland bogs and tests which survey tools can cross wet peat without damaging it."],
+  "rafael-quist": ["Rafael Quist", "", "", "Rafael writes the tenders that decide which inspection equipment a regional water board can buy."],
+  "ines-valderrama": ["Ines Valderrama", "img/avatar-06.svg", "", "Ines turns street-level temperature readings into shade and tree-planting plans for a mid-sized city."],
+  "kenji-albescu": ["Kenji Albescu", "img/avatar-08.svg", "", "Kenji climbs turbines for a living and trains new technicians to work alongside blade-inspection robots."],
+  "marguerite-osterhout": ["Marguerite Osterhout", "", "", "Marguerite keeps the drawings, parts lists and repair guides for a family of community-built sensor rovers up to date."],
+  "henrik-paledo": ["Henrik Paledo", "", "", "Henrik assesses what can go wrong before an insurer agrees to cover a field trial."],
+  "yewande-sorensen": ["Yewande Sorensen", "", "", "Yewande reports on environmental technology and moderated the wetlands panel and the first pitch round."]
+};
+/* SUMMIT_2026_PROGRAM sessions: key -> [title, day, start UTC] */
+const SESS = {
+  k0: ["Session 1: Finding Methane Leaks Sooner", 1, "15:00"], k1: ["Session 2: Measuring Soil Carbon Without Digging Every Field", 1, "16:00"], k2: ["Hallway Hour", 1, "16:45"],
+  k3: ["Keynote: Hollis Wexford", 2, "15:00"], k4: ["Keynote: Anaïs Brekke", 2, "15:30"], k5: ["Session 3: Robots After Floods and Storms", 2, "16:10"],
+  k6: ["Session 4: Greenhouses and Indoor Farms", 2, "17:10"],
+  k7: ["Session 5: Training the Next Robot Technicians", 3, "15:00"], k8: ["Session 6: Student Lightning Round", 3, "15:55"], k9: ["Closing Q&A and Topic Wishlist", 3, "16:50"]
+};
+/* ORGANIZERS: [slug, role, affiliation] */
+const TEAM = [
+  ["elif-brandvold", "Founder & Treasurer", "Vert Robo Con"],
+  ["imogen-calder", "Consulting Coordinator", "Vert Robo Con"],
+  ["saskia-overmeer", "Captions & Accessibility", "Example Polytechnic"],
+  ["dario-fenwick", "Livestream Producer", "Example Makerspace"],
+  ["kofi-ashgrove", "Speaker Care", "Example Data Commons"],
+  ["noor-halloran", "Program Committee", "Example Coastal Trust"],
+  ["mireille-vos", "Program Committee", "Example University"]
+];
+/* SPEAKERS_2026: [slug, title, organization, keynote, sessions] */
+const S26 = [
+  ["hollis-wexford", "City Resilience Officer", "City of Example", 1, ["k3"]],
+  ["anais-brekke", "Programme Evaluator", "Example Climate Fund", 1, ["k4"]],
+  ["ruth-calloway", "Leak Survey Technician", "Example Gas Utility", 0, ["k0"]],
+  ["tobias-hartnell", "Founder", "Example Leak Sensing", 0, ["k0"]],
+  ["selin-aydemir", "PhD Researcher", "Example University", 0, ["k0"]],
+  ["gregor-pazdera", "Environmental Inspector", "Example Regional Environment Agency", 0, ["k0"]],
+  ["amaya-thorne", "Agronomist", "Example Farmers’ Cooperative", 0, ["k1"]],
+  ["lorcan-beddoes", "Sensor Engineer", "Example Field Tools Co.", 0, ["k1"]],
+  ["chidinma-varga", "Data Scientist", "Example Data Commons", 0, ["k1"]],
+  ["pieter-oduro", "Emergency Planner", "Example County Civil Protection", 0, ["k5"]],
+  ["esme-kintyre", "Drone Pilot & Trainer", "Example Search and Rescue Volunteers", 0, ["k5"]],
+  ["matias-ferland", "Structural Engineer", "Example Polytechnic", 0, ["k5"]],
+  ["ngozi-tremaine", "Claims Analyst", "Example Mutual", 0, ["k5"]],
+  ["mina-saarinen", "Grower", "Example Greenhouse Cooperative", 0, ["k6"]],
+  ["taro-ellingsen", "Automation Engineer", "Example Vertical Farms", 0, ["k6"]],
+  ["adaeze-lindholm", "Plant Scientist", "Example University", 0, ["k6"]],
+  ["bruno-castellane", "Energy Manager", "Example Greenhouse Cooperative", 0, ["k6"]],
+  ["dagny-morrow", "Apprenticeship Coordinator", "Example Polytechnic", 0, ["k7"]],
+  ["ishaan-reval", "Field Service Manager", "Example Field Tools Co.", 0, ["k7"]],
+  ["colette-nyquist", "Maintenance Lead", "Example Wind Cooperative", 0, ["k7"]],
+  ["femi-garrow", "MSc Student", "Example University", 0, ["k8"]],
+  ["lena-moravec", "Undergraduate Student", "Example Polytechnic", 0, ["k8"]],
+  ["hugo-brennerman", "PhD Student", "Example Institute of Technology", 0, ["k8"]],
+  ["sakura-delmont", "MSc Student", "Example University", 0, ["k8"]]
+];
+/* SPEAKERS_2025: [slug, title, organization, keynote] */
+const S25 = [
+  ["tamsin-ocampo", "Glaciologist", "Example University", 1],
+  ["odile-farrow", "Peatland Restoration Officer", "Example Wetlands Trust", 0],
+  ["rafael-quist", "Procurement Lead", "Example Regional Water Board", 0],
+  ["ines-valderrama", "Urban Climate Analyst", "City of Example", 0],
+  ["kenji-albescu", "Wind Turbine Technician & Trainer", "Example Wind Cooperative", 0],
+  ["marguerite-osterhout", "Open-Hardware Maintainer", "Example Open Hardware Collective", 0],
+  ["henrik-paledo", "Risk Engineer", "Example Mutual", 0],
+  ["yewande-sorensen", "Science Journalist & Moderator", "Freelance", 0]
+];
+/* SUMMIT_2025_VIDEOS with a named speaker: slug -> [title, duration] */
+const V25 = {
+  "tamsin-ocampo": ["Keynote: Measuring a Glacier That Will Not Hold Still", "33:40"],
+  "odile-farrow": ["Robots on Soft Ground: Peat and Marsh", "41:05"],
+  "rafael-quist": ["Writing a Robot Into a Public Tender", "27:30"],
+  "ines-valderrama": ["Sidewalk Robots and the Urban Heat Map", "24:55"],
+  "kenji-albescu": ["A Technician’s Wishlist for Robot Makers", "29:10"],
+  "marguerite-osterhout": ["Spare Parts, Open Designs and Long Lives", "26:45"],
+  "henrik-paledo": ["Who Pays When a Field Robot Breaks?", "31:20"],
+  "yewande-sorensen": ["Pitch Round: Water and Wetland Teams", "44:10"]
+};
+/* White paper 2025 authors: [slug, credited name, credited affiliation]. Invented credits. */
+const WP = [
+  ["elif-brandvold", "Elif Brandvold", "Vert Robo Con"],
+  ["mireille-vos", "Dr. Mireille Vos", "Example University"],
+  ["noor-halloran", "Noor Halloran", "Example Coastal Trust"],
+  ["chidinma-varga", "Chidinma Varga", "Example Data Commons"],
+  ["kenji-albescu", "Kenji Albescu", "Example Wind Cooperative"],
+  ["marguerite-osterhout", "Marguerite Osterhout", "Example Open Hardware Collective"]
+];
+
+/* ---------- helpers ---------- */
+const ini = (n) => { const w = n.replace(/"[^"]*"|\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean); return ((w[0] || '').charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : '')).toUpperCase(); };
+const norm = (x) => String(x || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i').toLowerCase();
+const shortOf = (k) => { const t = SESS[k][0]; return (/^Session/.test(t) ? t.split(':')[0] : (/^Keynote/.test(t) ? 'Keynote' : (/Closing/.test(t) ? 'Closing remarks' : (/Sponsor/.test(t) ? 'Sponsor welcome' : 'Opening remarks')))).toUpperCase(); };
+const sessMeta = (ks) => 'DAY ' + SESS[ks[0]][1] + ' · ' + shortOf(ks[0]) + (ks.length > 1 ? ' · +' + (ks.length - 1) + ' MORE' : '');
+const SC = {
+team: { name: 'Team & organizers', pos: 'ORGANIZING TEAM', rows: TEAM.map((r) => ({ id: r[0], role: r[1], aff: r[2], kn: false, sess: [], meta: '' })) },
+s2026: { name: 'Summit speakers · 2026', pos: 'SPEAKERS · SUMMIT 2026', rows: S26.map((r) => ({ id: r[0], role: r[1], aff: r[2], kn: !!r[3], sess: r[4], meta: sessMeta(r[4]) })) },
+s2025: { name: 'Summit speakers · 2025', pos: 'SPEAKERS · SUMMIT 2025', rows: S25.map((r) => ({ id: r[0], role: r[1], aff: r[2], kn: !!r[3], sess: [], meta: V25[r[0]] ? 'VIDEO · ' + V25[r[0]][1] : 'SUMMIT 2025' })) },
+wp: { name: 'White paper authors', pos: 'WHITE PAPER AUTHORS', rows: WP.map((r) => ({ id: r[0], nm: r[1], role: 'Author', aff: r[2], kn: false, sess: [], meta: 'WHITE PAPER · 2025 EDITION' })) }
+};
+const ORDER = ['team', 's2026', 's2025', 'wp'];
+const key = st.tab === 'speakers' ? 's' + st.year : st.tab;
+const isSpkKey = (k) => k === 's2026' || k === 's2025';
+const qRaw = st.q.trim();
+const qn = norm(qRaw);
+const hit = (r) => !qn || norm(PEOPLE[r.id][0]).indexOf(qn) > -1 || norm(r.nm).indexOf(qn) > -1;
+const rowsOf = (k, useKn) => SC[k].rows.filter((r) => hit(r) && (!(useKn && st.kn && isSpkKey(k)) || r.kn));
+const uniq = (rows) => { const o = {}; rows.forEach((r) => { o[r.id] = 1; }); return Object.keys(o).length; };
+const filtered = rowsOf(key, true);
+
+/* ---------- canvas presets ---------- */
+const GRID_Y = 680;
+const PRE = [
+['default', 'Default', { tab: 'team', q: '', kn: false }],
+['drawer', 'Drawer · organizer', { tab: 'team', q: '', kn: false, sel: 'elif-brandvold', ctx: 'team', top: GRID_Y - 60 }],
+['speakers', 'Speakers · 2026', { tab: 'speakers', year: '2026', q: '', kn: false }],
+['sdrawer', 'Drawer · keynote', { tab: 'speakers', year: '2026', q: '', kn: false, sel: 'hollis-wexford', ctx: 's2026', top: GRID_Y - 60 + 108 }],
+['empty', 'Search · no match here', { tab: 'speakers', year: '2026', q: 'Halloran', kn: false }]
+];
+const presets = PRE.map((p) => {
+const on = st.preset === p[0];
+return { label: p[1], pressed: on ? 'true' : 'false',
+style: 'min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556'),
+pick: () => set(Object.assign({ menu: null, sel: null, top: 0, copied: false, more: false }, p[2], { preset: p[0] })) };
+});
+
+/* ---------- header menus (same items as HomeV3; People is the current page) ---------- */
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', 'HomeV3.dc.html#join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((k) => {
+const on = st.menu === k;
+const parent = k === 'community';
+return { label: MENUS[k].label, id: 'menu-' + k, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #E9EBEE; color: #0A1222' : (parent ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent')),
+toggle: () => set({ menu: on ? null : k }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) set({ menu: null }); },
+items: MENUS[k].items.map((i) => { const cur = i[2] === 'PeopleV3.dc.html'; return { label: i[0], desc: i[1], href: i[2], current: cur ? 'page' : 'false', style: cur ? 'background: #EEF2FB' : '', go: () => set({ menu: null }) }; }) };
+});
+
+/* ---------- hero ---------- */
+const faces = TEAM.filter((r) => PEOPLE[r[0]][1]).map((r, i) => ({ src: PEOPLE[r[0]][1], style: 'width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; background: #EEF2FB' + (i ? '; margin-left: -12px' : '') }));
+const spkTotal = uniq(SC.s2026.rows.concat(SC.s2025.rows));
+const stats = [['team', TEAM.length, 'ORGANIZERS'], ['speakers', spkTotal, 'SUMMIT SPEAKERS'], ['wp', WP.length, 'AUTHORS']].map((s, i) => ({
+n: String(s[1]), label: s[2], pick: () => go({ tab: s[0], more: false }),
+style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-height: 44px; padding: 16px 12px 4px ' + (i ? '16px' : '0') + '; border: 0; ' + (i ? 'box-shadow: inset 1px 0 0 #E5E7EB; ' : '') + 'background: transparent; font: inherit; text-align: left; cursor: pointer' }));
+
+/* ---------- tabs, filters ---------- */
+const tabBase = 'min-height: 44px; padding: 0 18px; border: 0; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; ';
+const tabs = [['team', 'Team & organizers', rowsOf('team', false).length], ['speakers', 'Summit speakers', uniq(rowsOf('s2026', false).concat(rowsOf('s2025', false)))], ['wp', 'White paper authors', rowsOf('wp', false).length]].map((t) => {
+const on = st.tab === t[0];
+return { label: t[1], count: String(t[2]), tabId: 'tab-' + t[0], selected: on ? 'true' : 'false',
+style: tabBase + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556'),
+pick: () => go({ tab: t[0], more: false }) };
+});
+const years = ['2026', '2025'].map((y) => {
+const on = st.year === y;
+return { label: 'Summit ' + y, count: String(rowsOf('s' + y, true).length), pressed: on ? 'true' : 'false', style: pill(on), pick: () => go({ year: y, more: false }) };
+});
+const kn = { pressed: st.kn ? 'true' : 'false', style: pill(st.kn), toggle: () => go({ kn: !st.kn, more: false }) };
+
+/* ---------- cards ---------- */
+const teamView = key === 'team';
+const LIMIT = 12;
+const cols = teamView ? 5 : 4;
+const rowH = teamView ? 346 : 108;
+const limited = !teamView && !qn && !st.more && filtered.length > LIMIT;
+const shown = limited ? filtered.slice(0, LIMIT) : filtered;
+const topFor = (i) => Math.max(0, GRID_Y - 60 + Math.floor(i / cols) * rowH);
+const cards = shown.map((r, i) => {
+const p = PEOPLE[r.id];
+return { name: r.nm || p[0], roleLine: r.role + ' · ' + r.aff, hasPhoto: !!p[1], noPhoto: !p[1], photo: p[1] ? p[1] : '', initials: ini(p[0]),
+meta: r.meta, isKey: r.kn, open: () => go({ sel: r.id, ctx: key, top: topFor(i), copied: false, menu: null }) };
+});
+const empty = filtered.length === 0;
+const showMore = !teamView && !qn && filtered.length > LIMIT;
+const noun = key === 'team' ? 'PEOPLE' : (key === 'wp' ? 'AUTHORS' : 'SPEAKERS');
+const scopeTag = isSpkKey(key) ? ' · SUMMIT ' + st.year + (st.kn ? ' · KEYNOTES' : '') : '';
+const countLabel = qn
+? filtered.length + (filtered.length === 1 ? ' MATCH' : ' MATCHES') + ' FOR “' + qRaw.toUpperCase() + '”' + scopeTag
+: (limited ? 'SHOWING ' + LIMIT + ' OF ' + filtered.length + ' ' + noun : filtered.length + ' ' + noun) + scopeTag;
+
+/* empty state: point to matches elsewhere */
+const elsewhere = [];
+if (empty && st.kn && isSpkKey(key) && rowsOf(key, false).length) elsewhere.push({ label: 'Show all speakers · ' + rowsOf(key, false).length, go: () => go({ kn: false }) });
+ORDER.filter((k) => k !== key).forEach((k) => {
+const n = rowsOf(k, false).length;
+if (empty && qn && n) elsewhere.push({ label: SC[k].name + ' · ' + n, go: () => go(isSpkKey(k) ? { tab: 'speakers', year: k.slice(1), kn: false, more: false } : { tab: k, more: false }) });
+});
+const emptyTitle = qn ? 'No one called “' + qRaw + '” in ' + SC[key].name.toLowerCase() : 'No keynotes match';
+const emptyHint = elsewhere.length ? 'Found elsewhere on this page:' : 'Check the spelling, or try a first or last name only.';
+
+/* ---------- person drawer ---------- */
+const rowIn = (k, id) => SC[k].rows.find((r) => r.id === id) || null;
+const navBtn = (dis) => 'width: 44px; height: 44px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center; ' + (dis ? 'color: #A7ADB8; cursor: default' : 'color: #0A1222; cursor: pointer');
+const noop = () => {};
+const closeDrawer = () => go({ sel: null, copied: false });
+let pd = { name: '', roleLine: '', hasPhoto: false, noPhoto: false, photo: '', alt: '', initials: '', tags: [], bio: '', bioStyle: '', appears: [], links: [], noLinks: false,
+url: '', copy: noop, copyLabel: '', copyStyle: '', pos: '', prev: noop, next: noop, prevLabel: '', nextLabel: '', prevDis: 'true', nextDis: 'true', prevStyle: '', nextStyle: '' };
+let drawerKey = noop;
+if (st.sel && PEOPLE[st.sel]) {
+const id = st.sel;
+const p = PEOPLE[id];
+const list = rowsOf(st.ctx, true);
+const idx = list.findIndex((r) => r.id === id);
+const prevR = idx > 0 ? list[idx - 1] : null;
+const nextR = idx > -1 && idx < list.length - 1 ? list[idx + 1] : null;
+const toPrev = () => { if (prevR) go({ sel: prevR.id, copied: false }); };
+const toNext = () => { if (nextR) go({ sel: nextR.id, copied: false }); };
+const rT = rowIn('team', id), r26 = rowIn('s2026', id), r25 = rowIn('s2025', id), rW = rowIn('wp', id);
+const ctxRow = rowIn(st.ctx, id) || rT || r26 || r25 || rW;
+const tags = [];
+if (rT) tags.push('ORGANIZING TEAM');
+if (r26) tags.push((r26.kn ? 'KEYNOTE' : 'SPEAKER') + ' · SUMMIT 2026');
+if (r25) tags.push((r25.kn ? 'KEYNOTE' : 'SPEAKER') + ' · SUMMIT 2025');
+if (rW) tags.push('WHITE PAPER AUTHOR');
+const A = (kind, t, m, href) => ({ t: t, m: m, href: href, isPlay: kind === 'play', isSess: kind === 'sess', isDoc: kind === 'doc', isPost: kind === 'post', isTeam: kind === 'team' });
+const appears = [];
+if (r26) r26.sess.forEach((k) => appears.push(A('sess', SESS[k][0], 'SUMMIT 2026 · DAY ' + SESS[k][1] + ' · ' + SESS[k][2] + ' UTC · RECORDING IN EDITING', 'ProgramV3.dc.html')));
+if (r25) appears.push(V25[id] ? A('play', V25[id][0], 'SUMMIT 2025 · VIDEO · ' + V25[id][1], 'WatchV3.dc.html') : A('sess', 'Vert Robo Con Summit 2025', 'SPEAKER · [SESSION]', 'ProgramV3.dc.html'));
+if (rW) appears.push(A('doc', 'Working Notes on Climate Robots', '2025 EDITION · [CHAPTER]', 'ResearchV3.dc.html'));
+if (id === 'elif-brandvold') appears.push(A('post', '[NEWS POST TITLE]', 'NEWS · [DATE]', 'NewsV3.dc.html'));
+if (rT) appears.push(A('team', 'Vert Robo Con Summit', 'ORGANIZERS & VOLUNTEERS · YEAR-ROUND', 'SummitV3.dc.html'));
+const bioFull = p[3];
+const first = bioFull.match(/^.*?\.(?=\s|$)/);
+const bio = bioFull ? (bioFull.length > 170 && first ? first[0] : bioFull) : '[BIO]';
+const links = p[2] ? [{ label: 'LinkedIn', href: p[2] }] : [];
+pd = { name: (ctxRow && ctxRow.nm) || p[0], roleLine: ctxRow ? ctxRow.role + ' · ' + ctxRow.aff : '', hasPhoto: !!p[1], noPhoto: !p[1], photo: p[1] ? p[1] : '', alt: 'Portrait of ' + p[0], initials: ini(p[0]),
+tags: tags.map((t) => ({ label: t })), bio: bio,
+bioStyle: 'margin: 0; font-size: 16px; line-height: 1.55; color: ' + (bioFull ? '#3D4556' : '#646B7A'),
+appears: appears, links: links, noLinks: links.length === 0,
+url: (st.copied ? 'Link copied · ' : '') + 'vert-robo-con.example/people/' + id,
+copy: () => set({ copied: true }), copyLabel: st.copied ? 'Copied' : 'Copy profile link',
+copyStyle: 'display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 10px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (st.copied ? 'border: 1px solid #E8F6EE; background: #E8F6EE; color: #0B7A47' : 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222'),
+pos: SC[st.ctx].pos + (idx > -1 ? ' · ' + (idx + 1) + ' OF ' + list.length : ''),
+prev: toPrev, next: toNext,
+prevLabel: prevR ? 'Previous: ' + PEOPLE[prevR.id][0] : 'Previous person (none)', nextLabel: nextR ? 'Next: ' + PEOPLE[nextR.id][0] : 'Next person (none)',
+prevDis: prevR ? 'false' : 'true', nextDis: nextR ? 'false' : 'true', prevStyle: navBtn(!prevR), nextStyle: navBtn(!nextR) };
+drawerKey = (e) => { if (!e) return; if (e.key === 'Escape') closeDrawer(); else if (e.key === 'ArrowLeft') toPrev(); else if (e.key === 'ArrowRight') toNext(); };
+}
+
+/* ---------- footer notify (same component as HomeV3) ---------- */
+const TOP_D = ['Monthly digest', 'Summit announcements', 'New videos', 'Job alerts'];
+const nfs = st.n_foot;
+const nset = (o) => this.setState({ n_foot: Object.assign({}, this.state.n_foot, o) });
+const nFoot = {
+idle: nfs.st === 'idle', open: nfs.st === 'open', pending: nfs.st === 'pending', done: nfs.st === 'done',
+label: 'Get the monthly digest', email: nfs.email, err: nfs.err, invalid: nfs.err ? 'true' : 'false',
+expand: () => nset({ st: 'open' }),
+setEmail: (e) => nset({ email: e.target.value, err: false }),
+submit: () => (okEmail(this.state.n_foot.email) ? nset({ st: 'pending', err: false }) : nset({ err: true })),
+confirm: () => nset({ st: 'done' }),
+topics: TOP_D.map((t) => { const on = nfs.topics.indexOf(t) > -1; return { label: t, pressed: on ? 'true' : 'false', style: pill(on) + '; min-height: 36px', toggle: () => { const cur = this.state.n_foot.topics; nset({ topics: on ? cur.filter((x) => x !== t) : cur.concat([t]) }); } }; }),
+wrap: 'display: flex; flex-direction: column; gap: 8px',
+ghost: btnSm + 'background: transparent; color: #0A1222; border: 1px solid #D5D8DE',
+lab: srOnly, input: input(nfs.err) + '; min-height: 44px',
+text: 'font-size: 15px; color: #3D4556', strong: 'font-weight: 600; color: #0A1222',
+errStyle: 'font-size: 13px; font-weight: 500; color: #B42318', manage: 'font-size: 15px; font-weight: 500; color: #0138AC'
+};
+
+const footer = [
+['SUMMIT', 'Summit', [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']]],
+['LEARN', 'Learn', [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']]],
+['COMMUNITY', 'Community', [['Join', 'HomeV3.dc.html#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']]],
+['ABOUT', 'About', [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']]]
+].map((g) => ({ title: g[0], label: g[1], links: g[2].map((l) => ({ label: l[0], href: l[1], current: l[1] === 'PeopleV3.dc.html' ? 'page' : 'false' })) }));
+
+return {
+ui: ui, presets: presets, menus: menus,
+menuOpen: !!st.menu, closeMenu: () => set({ menu: null }),
+faces: faces, stats: stats, tabs: tabs, years: years, kn: kn,
+isTeam: st.tab === 'team', isSpk: st.tab === 'speakers', isWp: st.tab === 'wp',
+panelTab: 'tab-' + st.tab,
+q: st.q, hasQ: st.q.length > 0,
+onQ: (e) => go({ q: e.target.value }),
+qKey: (e) => { if (e && e.key === 'Escape') go({ q: '' }); },
+clearQ: () => go({ q: '' }),
+countLabel: countLabel,
+teamView: teamView && !empty, listView: !teamView && !empty, cards: cards,
+showMore: showMore, moreLabel: st.more ? 'Show fewer' : 'Show all ' + filtered.length + ' speakers', toggleMore: () => go({ more: !st.more }), moreStyle: ui.btnSs + '; align-self: center; margin-top: 8px',
+empty: empty, emptyTitle: emptyTitle, emptyHint: emptyHint, elsewhere: elsewhere,
+drawerOpen: !!(st.sel && PEOPLE[st.sel]), closeDrawer: closeDrawer, drawerKey: drawerKey,
+drawerInner: 'padding: ' + (st.top + 28) + 'px 32px 40px; display: flex; flex-direction: column; gap: 22px; box-sizing: border-box',
+pd: pd,
+nFoot: nFoot, footer: footer
+};
+}
+}
+</script>
+</body>
+</html>

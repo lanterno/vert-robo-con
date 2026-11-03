@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My Vert Robo Con (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.mi:hover{background:#F3F4F2}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.toc:hover{background:#F3F4F2;color:#0A1222}
+.flink{color:#0A1222;text-decoration:none}.flink:hover{color:#0138AC;text-decoration:underline}
+.s3{grid-column:span 3}.s9{grid-column:span 9}
+@media (max-width: 900px){.s3,.s9{grid-column:1/-1 !important}.stick{position:static !important}}
+</style>
+</helmet>
+<div style="position: relative; font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 17px; line-height: 1.6">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E4E6EA; border-bottom: 1px solid #D5D8DE; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 14px; color: #0A1222">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #3D4556">CANVAS CONTROL · NOT PART OF THE PAGE</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">
+<span id="cc-view" style="font-weight: 500">View</span>
+<span role="group" aria-labelledby="cc-view" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: #F3F4F2; border: 1px solid #D5D8DE">
+<sc-for list="{{cc.views}}" as="v" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button>
+</sc-for>
+</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">
+<span id="cc-live" style="font-weight: 500">Summit state</span>
+<span role="group" aria-labelledby="cc-live" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: #F3F4F2; border: 1px solid #D5D8DE">
+<sc-for list="{{cc.lives}}" as="v" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button>
+</sc-for>
+</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 8px">
+<span id="cc-slack" style="font-weight: 500">Slack request</span>
+<span role="group" aria-labelledby="cc-slack" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: #F3F4F2; border: 1px solid #D5D8DE">
+<sc-for list="{{cc.slacks}}" as="v" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.label}}</button>
+</sc-for>
+</span>
+</span>
+<sc-if value="{{cc.showOpenLink}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{cc.openLink}}" style="min-height: 34px; padding: 0 12px; border: 1px dashed #3D4556; border-radius: 9px; background: transparent; font: inherit; font-size: 14px; cursor: pointer">Simulate: open the new link</button>
+</sc-if>
+<sc-if value="{{cc.showConfirmDigest}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{cc.confirmDigest}}" style="min-height: 34px; padding: 0 12px; border: 1px dashed #3D4556; border-radius: 9px; background: transparent; font: inherit; font-size: 14px; cursor: pointer">Simulate: confirm digest email</button>
+</sc-if>
+<button type="button" onClick="{{cc.reset}}" style="min-height: 34px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 9px; background: #ffffff; font: inherit; font-size: 14px; cursor: pointer">Reset</button>
+</div>
+
+<!-- HEADER -->
+<header style="background: #ffffff; border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<div style="display: flex; align-items: center; gap: 8px">
+<sc-if value="{{showMySummit}}" hint-placeholder-val="{{ true }}">
+<a href="MyVRCV3.dc.html" aria-current="page" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-size: 15px; font-weight: 500; text-decoration: none"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>My summit</a>
+</sc-if>
+<a href="HomeV3.dc.html#join" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 15px; font-weight: 500; text-decoration: none">Join the network</a>
+</div>
+</div>
+</header>
+
+<!-- ===================== ACTIVE HUB ===================== -->
+<sc-if value="{{isActive}}" hint-placeholder-val="{{ true }}">
+<main style="padding: 48px 32px 112px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+
+<!-- intro -->
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 48px">
+<div style="flex: 1 1 560px; display: flex; flex-direction: column; gap: 16px">
+<span style="{{ui.eyebrow}}">MY VRC</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 72px; line-height: 0.95; letter-spacing: -0.045em">Your Vert Robo Con</h1>
+<p style="margin: 0; font-family: 'Geist Mono', monospace; font-size: 13px; letter-spacing: 0.04em; color: #646B7A">[EMAIL] · OPENED FROM YOUR EMAIL LINK · EXPIRES IN 7 DAYS</p>
+</div>
+<div style="flex: 0 1 380px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px">
+<p style="margin: 0; font-size: 15px; color: #3D4556">No password, no account. Everything here is tied to your email, and every email we send carries a fresh link.</p>
+<button type="button" onClick="{{signOut}}" style="{{ui.btnT}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"></path></svg>Sign out of this device</button>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px 40px; align-items: start">
+
+<!-- LEFT: on this page -->
+<nav class="s3 stick" aria-label="On this page" style="position: sticky; top: 24px; display: flex; flex-direction: column; gap: 16px">
+<span style="{{ui.eyebrow}}">ON THIS PAGE</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{toc}}" as="t" hint-placeholder-count="7">
+<li><a class="toc" href="{{t.href}}" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4556; font-size: 15px; font-weight: 500; text-decoration: none">{{t.label}}<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #646B7A">{{t.meta}}</span></a></li>
+</sc-for>
+</ul>
+<div style="padding: 20px; border-radius: 20px; background: #F3F4F2; display: flex; flex-direction: column; gap: 8px">
+<strong style="font-weight: 600; font-size: 15px">Something wrong here?</strong>
+<span style="font-size: 14px; color: #3D4556">Tell us and quote a reference code from the page. We reply within 24–48 hours.</span>
+<a href="mailto:hello@vert-robo-con.example" style="font-size: 15px; font-weight: 500; text-decoration: none; overflow-wrap: anywhere">hello@vert-robo-con.example</a>
+<a href="ContactV3.dc.html" style="font-size: 14px; font-weight: 500; text-decoration: none">Other ways to reach us</a>
+</div>
+</nav>
+
+<!-- RIGHT: cards -->
+<div class="s9" style="display: flex; flex-direction: column; gap: 24px; min-width: 0">
+
+<!-- SUMMIT 2027 -->
+<section id="summit" aria-labelledby="summit-title" style="{{ui.card}}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px 32px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">SUMMIT 2027 · ONLINE · FREE · OPEN TO EVERYONE</span>
+<h2 id="summit-title" style="{{ui.h2}}">Vert Robo Con Summit 2027</h2>
+<span style="font-size: 16px; color: #3D4556">April 20–22, 2027 · [HH:MM–HH:MM] UTC each day</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+<span style="{{regChip.style}}"><span aria-hidden="true" style="{{regChip.dot}}"></span>{{regChip.label}}</span>
+<span style="{{ui.ref}}">VRC-2027-0142</span>
+</div>
+</div>
+
+<sc-if value="{{liveBanner}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 18px; border-radius: 16px; background: #E8F6EE; color: #0B7A47">
+<span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #1DB46C"></span>
+<span style="flex: 1 1 280px; font-size: 15px; font-weight: 500">The summit is live. Day 1 is happening now.</span>
+<a href="ProgramV3.dc.html" style="color: #0B7A47; font-size: 15px; font-weight: 500">Open the live program</a>
+</div>
+</sc-if>
+
+<sc-if value="{{isRegistered}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="{{ui.eyebrow}}">DAYS ATTENDING</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<sc-for list="{{tiles}}" as="d" hint-placeholder-count="3">
+<div style="{{d.tile}}">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{d.label}}</span>
+<span style="{{d.stChip}}"><span aria-hidden="true" style="{{d.stDot}}"></span>{{d.status}}</span>
+</span>
+<strong style="font-weight: 600; font-size: 17px; line-height: 1.3">{{d.date}}</strong>
+<span style="font-size: 13px; color: #646B7A">[HH:MM–HH:MM] UTC</span>
+<sc-if value="{{d.live}}" hint-placeholder-val="{{ false }}">
+<a href="#" style="{{d.joinStyle}}">Join session
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+<span style="font-size: 13px; color: #646B7A">{{d.joinMeta}}</span>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- edit details (inline) -->
+<sc-if value="{{editOpen}}" hint-placeholder-val="{{ false }}">
+<div id="edit-panel" style="border-radius: 20px; background: #F3F4F2; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">Edit your details</h3>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">VRC-2027-0142</span>
+</div>
+<sc-if value="{{ef.showSummary}}" hint-placeholder-val="{{ false }}">
+<div role="alert" aria-labelledby="ef-err-title" style="padding: 16px 18px; border-radius: 16px; background: #FEF3F2; border: 1px solid #F4C7C3; display: flex; flex-direction: column; gap: 6px">
+<strong id="ef-err-title" style="font-weight: 600; font-size: 16px; color: #B42318">{{ef.errTitle}}</strong>
+<ul style="margin: 0; padding: 0 0 0 18px; color: #B42318">
+<sc-for list="{{ef.errList}}" as="x" hint-placeholder-count="2">
+<li><a href="{{x.href}}" style="color: #B42318; font-size: 15px; font-weight: 500">{{x.msg}}</a></li>
+</sc-for>
+</ul>
+</div>
+</sc-if>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="me-name" style="font-size: 15px; font-weight: 500">Full name</label>
+<input id="me-name" type="text" autocomplete="name" value="{{ef.name}}" onChange="{{ef.setName}}" onBlur="{{ef.blurName}}" aria-invalid="{{ef.nameInv}}" aria-describedby="me-name-err" style="{{ef.nameStyle}}">
+<sc-if value="{{ef.nameErr}}" hint-placeholder-val="{{ false }}"><span id="me-name-err" style="font-size: 14px; color: #B42318">Enter your name</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="me-org" style="font-size: 15px; font-weight: 500">Organization <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<input id="me-org" type="text" autocomplete="organization" value="{{ef.org}}" onChange="{{ef.setOrg}}" style="{{ef.orgStyle}}">
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 15px; font-weight: 500">Email</span>
+<span style="font-size: 16px">[EMAIL]</span>
+<span style="font-size: 13px; color: #646B7A">To use a different email, cancel and register again with it.</span>
+</div>
+<div role="group" aria-labelledby="me-days-l" style="display: flex; flex-direction: column; gap: 8px">
+<span id="me-days-l" style="font-size: 15px; font-weight: 500">Days you plan to attend</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px">
+<sc-for list="{{ef.days}}" as="d" hint-placeholder-count="3">
+<button id="{{d.id}}" type="button" role="checkbox" aria-checked="{{d.checked}}" onClick="{{d.toggle}}" style="{{d.style}}">
+<span style="{{d.box}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.3"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{d.label}}</span><span style="font-weight: 600; font-size: 15px">{{d.date}}</span></span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{ef.daysErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">Choose at least one day</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="me-access" style="font-size: 15px; font-weight: 500">Accessibility needs <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<textarea id="me-access" rows="3" maxlength="200" value="{{ef.access}}" onChange="{{ef.setAccess}}" aria-describedby="me-access-help" style="{{ef.accessStyle}}"></textarea>
+<span id="me-access-help" style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span>For example captioning, or anything else that helps you take part.</span><span style="font-family: 'Geist Mono', monospace">{{ef.count}}/200</span></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{ef.save}}" style="{{ui.btnP}}">Save changes</button>
+<button type="button" onClick="{{ef.cancel}}" style="{{ui.btnT}}">Cancel</button>
+</div>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" aria-expanded="{{editExpanded}}" aria-controls="edit-panel" onClick="{{toggleEdit}}" style="{{ui.btnS}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Edit details</button>
+<div style="position: relative">
+<button type="button" aria-haspopup="menu" aria-expanded="{{cal.summitExpanded}}" onClick="{{cal.toggleSummit}}" style="{{ui.btnS}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Add to calendar
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{cal.summitOpen}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.menu}}">
+<div role="menu" aria-label="Add to calendar" aria-describedby="cal-summit-note">
+<sc-for list="{{cal.summitItems}}" as="c" hint-placeholder-count="3">
+<button type="button" role="menuitem" class="mi" onClick="{{c.pick}}" style="{{ui.menuItem}}">{{c.label}}<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{c.meta}}</span></button>
+</sc-for>
+</div>
+<p id="cal-summit-note" style="margin: 6px 0 0; padding: 10px 12px 6px; border-top: 1px solid #E5E7EB; font-size: 13px; color: #646B7A">One event per day you attend.</p>
+</div>
+</sc-if>
+</div>
+<button type="button" onClick="{{openCancel}}" style="{{ui.btnRed}}">Cancel registration</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isCancelled}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; padding: 20px 24px; border-radius: 20px; background: #F3F4F2">
+<span style="flex: 1 1 320px; font-size: 16px; color: #3D4556">You cancelled your place. Registration is open until [DATE], so you can come back any time.</span>
+<button type="button" onClick="{{registerAgain}}" style="{{ui.btnP}}">Register again</button>
+</div>
+</sc-if>
+
+<sc-if value="{{tOn.summit}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.toast}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}<sc-if value="{{toastHasUndo}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{undo}}" style="{{ui.undo}}">Undo</button></sc-if><button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="{{ui.x}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-if>
+
+<!-- cancel dialog -->
+<sc-if value="{{dlgOn.cancel}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-modal="true" aria-labelledby="dlg-cancel-t" aria-describedby="dlg-cancel-d" onKeyDown="{{dlgKey}}" style="{{ui.dlg}}">
+<h3 id="dlg-cancel-t" style="{{ui.dlgTitle}}">Cancel your place?</h3>
+<p id="dlg-cancel-d" style="margin: 0; font-size: 16px; color: #3D4556">You can register again while registration is open. Your starred sessions stay saved.</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 8px">
+<button type="button" onClick="{{closeDlg}}" style="{{ui.btnS}}">Keep my place</button>
+<button type="button" onClick="{{confirmCancel}}" style="{{ui.btnDanger}}">Cancel registration</button>
+</div>
+</div>
+</sc-if>
+</section>
+
+<!-- MY AGENDA -->
+<section id="agenda" aria-labelledby="agenda-title" style="{{ui.card}}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px 32px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">{{agenda.eyebrow}}</span>
+<h2 id="agenda-title" style="{{ui.h2}}">My agenda</h2>
+<span style="font-size: 16px; color: #3D4556">{{agenda.countLabel}}</span>
+</div>
+<a href="ProgramV3.dc.html" style="{{ui.btnS}}">Open in program
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; border-top: 1px solid #E5E7EB">
+<sc-for list="{{agenda.rows}}" as="r" hint-placeholder-count="4">
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 16px 0; border-bottom: 1px solid #E5E7EB">
+<button type="button" aria-pressed="{{r.pressed}}" aria-label="{{r.starLabel}}" onClick="{{r.toggle}}" style="width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 10px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="{{r.fill}}" stroke="{{r.stroke}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"></path></svg></button>
+<span style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{r.when}}</span>
+<span style="{{r.titleStyle}}">{{r.title}}</span>
+</span>
+<sc-if value="{{r.now}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>HAPPENING NOW</span>
+</sc-if>
+<span style="{{r.kindStyle}}">{{r.kind}}</span>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{agenda.none}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; padding: 20px; border: 1px dashed #D5D8DE; border-radius: 16px; text-align: center; font-size: 15px; color: #646B7A">Nothing starred yet. Star a session above or in the <a href="ProgramV3.dc.html">program</a> to build your agenda.</p>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 24px">
+<div style="position: relative">
+<button type="button" aria-haspopup="menu" aria-expanded="{{cal.agendaExpanded}}" onClick="{{cal.toggleAgenda}}" style="{{ui.btnS}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Add all to calendar
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{cal.agendaOpen}}" hint-placeholder-val="{{ false }}">
+<div style="{{ui.menu}}">
+<div role="menu" aria-label="Add all starred sessions to calendar" aria-describedby="cal-agenda-note">
+<sc-for list="{{cal.agendaItems}}" as="c" hint-placeholder-count="3">
+<button type="button" role="menuitem" class="mi" onClick="{{c.pick}}" style="{{ui.menuItem}}">{{c.label}}<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">{{c.meta}}</span></button>
+</sc-for>
+</div>
+<p id="cal-agenda-note" style="margin: 6px 0 0; padding: 10px 12px 6px; border-top: 1px solid #E5E7EB; font-size: 13px; color: #646B7A">{{agenda.calNote}}</p>
+</div>
+</sc-if>
+</div>
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<label for="me-feed" style="font-size: 15px; font-weight: 500">Personal calendar feed</label>
+<div style="display: flex; gap: 8px">
+<input id="me-feed" type="text" readonly value="webcal://vert-robo-con.example/me/feed/[TOKEN].ics" aria-describedby="me-feed-help" style="{{feed.inputStyle}}">
+<button type="button" aria-disabled="{{feed.disabled}}" onClick="{{feed.copy}}" style="{{feed.btnStyle}}">
+<sc-if value="{{feed.copied}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></sc-if>{{feed.label}}</button>
+</div>
+<span id="me-feed-help" style="font-size: 13px; color: #646B7A">{{feed.help}}</span>
+</div>
+</div>
+<sc-if value="{{tOn.agenda}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.toast}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}<button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="{{ui.x}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-if>
+</section>
+
+<!-- APPLICATIONS -->
+<section id="applications" aria-labelledby="apps-title" style="{{ui.card}}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">PITCHES · INTERNSHIPS</span>
+<h2 id="apps-title" style="{{ui.h2}}">Applications</h2>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 24px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">Startup pitch · Summit 2027</strong>
+<span style="{{ui.refStart}}">PIT-2027-018</span>
+</div>
+<span style="{{pitchChip.style}}"><span aria-hidden="true" style="{{pitchChip.dot}}"></span>{{pitchChip.label}}</span>
+</div>
+<sc-if value="{{pitchActive}}" hint-placeholder-val="{{ true }}">
+<ol aria-label="Application status" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="4">
+<li aria-current="{{st.current}}" style="display: flex; flex-direction: column; gap: 8px">
+<span style="{{st.labelStyle}}"><sc-if value="{{st.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></sc-if>{{st.label}}</span>
+<span aria-hidden="true" style="{{st.bar}}"></span>
+<span style="font-size: 13px; color: #646B7A">{{st.note}}</span>
+</li>
+</sc-for>
+</ol>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<span style="flex: 1 1 260px; font-size: 15px; color: #3D4556">You can edit until [DATE]. Decisions go out by email by [DATE].</span>
+<a href="GetInvolvedV3.dc.html" style="{{ui.btnS}}">Edit application</a>
+<button type="button" onClick="{{openWithdraw}}" style="{{ui.btnRed}}">Withdraw</button>
+</div>
+</sc-if>
+<sc-if value="{{pitchWithdrawn}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<span style="flex: 1 1 260px; font-size: 15px; color: #3D4556">You withdrew this pitch. You can submit a new one until [DATE].</span>
+<a href="GetInvolvedV3.dc.html" style="{{ui.btnS}}">Submit a new pitch</a>
+</div>
+</sc-if>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 24px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">Internship · Research track</strong>
+<span style="{{ui.refStart}}">INT-0088</span>
+</div>
+<span style="{{intChip.style}}"><span aria-hidden="true" style="{{intChip.dot}}"></span>{{intChip.label}}</span>
+</div>
+<ol aria-label="Internship application status" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{intSteps}}" as="st" hint-placeholder-count="4">
+<li aria-current="{{st.current}}" style="display: flex; flex-direction: column; gap: 8px">
+<span style="{{st.labelStyle}}"><sc-if value="{{st.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></sc-if>{{st.label}}</span>
+<span aria-hidden="true" style="{{st.bar}}"></span>
+<span style="font-size: 13px; color: #646B7A">{{st.note}}</span>
+</li>
+</sc-for>
+</ol>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<span style="flex: 1 1 260px; font-size: 15px; color: #3D4556">An admin is reading your application. We’ll email you about an interview or a decision.</span>
+<a href="JobsV3.dc.html" style="{{ui.btnS}}">View listing</a>
+</div>
+</div>
+<sc-if value="{{tOn.apps}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.toast}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}<button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="{{ui.x}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-if>
+<sc-if value="{{dlgOn.withdraw}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-modal="true" aria-labelledby="dlg-wd-t" aria-describedby="dlg-wd-d" onKeyDown="{{dlgKey}}" style="{{ui.dlg}}">
+<h3 id="dlg-wd-t" style="{{ui.dlgTitle}}">Withdraw your pitch?</h3>
+<p id="dlg-wd-d" style="margin: 0; font-size: 16px; color: #3D4556">PIT-2027-018 leaves the review straight away. You can submit a new pitch until [DATE].</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 8px">
+<button type="button" onClick="{{closeDlg}}" style="{{ui.btnS}}">Keep my application</button>
+<button type="button" onClick="{{confirmWithdraw}}" style="{{ui.btnDanger}}">Withdraw</button>
+</div>
+</div>
+</sc-if>
+</section>
+
+<!-- SLACK COMMUNITY (join request, approved by hand) -->
+<section id="community" aria-labelledby="community-title" style="{{ui.card}}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">COMMUNITY · SLACK</span>
+<h2 id="community-title" style="{{ui.h2}}">Slack community</h2>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 24px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">Request to join the Slack workspace</strong>
+<span style="{{ui.refStart}}">MBR-2026-0312</span>
+</div>
+<span style="{{slack.chip.style}}"><span aria-hidden="true" style="{{slack.chip.dot}}"></span>{{slack.chip.label}}</span>
+</div>
+<ol aria-label="Join request status" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{slack.steps}}" as="st" hint-placeholder-count="3">
+<li aria-current="{{st.current}}" style="display: flex; flex-direction: column; gap: 8px">
+<span style="{{st.labelStyle}}"><sc-if value="{{st.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></sc-if>{{st.label}}</span>
+<span aria-hidden="true" style="{{st.bar}}"></span>
+<span style="font-size: 13px; color: #646B7A">{{st.note}}</span>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{slack.pending}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 15px; color: #3D4556">An admin reviews every request by hand. Once it’s approved, we email your Slack invite to [EMAIL], typically within 24–48 hours. Your monthly digest doesn’t wait for this.</p>
+</sc-if>
+<sc-if value="{{slack.approved}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<span style="flex: 1 1 260px; font-size: 15px; color: #3D4556">Approved. Your invite went to [EMAIL]. It comes from Slack, so check spam if it isn’t there. Then say hello in #welcome.</span>
+<a href="#" style="{{ui.btnS}}">Open Slack</a>
+</div>
+</sc-if>
+</div>
+</section>
+
+<!-- MAP SUBMISSIONS -->
+<section id="map" aria-labelledby="map-title" style="{{ui.card}}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 32px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">GLOBAL MAP</span>
+<h2 id="map-title" style="{{ui.h2}}">Map submissions</h2>
+</div>
+<a href="MapV3.dc.html" style="font-size: 15px; font-weight: 500; text-decoration: none">Suggest an organization</a>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; border-top: 1px solid #E5E7EB">
+<sc-for list="{{mapRows}}" as="m" hint-placeholder-count="2">
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 18px 0; border-bottom: 1px solid #E5E7EB">
+<span style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 2px">
+<strong style="font-weight: 600; font-size: 17px">{{m.name}}</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">{{m.meta}}</span>
+</span>
+<span style="{{m.chip}}"><span aria-hidden="true" style="{{m.dot}}"></span>{{m.status}}</span>
+<a href="MapV3.dc.html" aria-label="{{m.actionLabel}}" style="min-width: 110px; font-size: 15px; font-weight: 500; text-decoration: none; text-align: right">{{m.action}}</a>
+</li>
+</sc-for>
+</ul>
+<p style="margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; color: #646B7A"><span>An admin reviews every suggestion and edit before it appears on the map.</span><span>Map data: <a href="MapV3.dc.html" style="font-weight: 500">CSV</a> · <a href="MapV3.dc.html" style="font-weight: 500">JSON</a> · Licence: CC BY 4.0</span></p>
+</section>
+
+<!-- JOB LISTINGS -->
+<section id="jobs" aria-labelledby="jobs-title" style="{{ui.card}}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 32px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">JOBS BOARD</span>
+<h2 id="jobs-title" style="{{ui.h2}}">Job listings</h2>
+</div>
+<a href="JobsV3.dc.html" style="font-size: 15px; font-weight: 500; text-decoration: none">Post another job</a>
+</div>
+<div style="border: 1px solid #E5E7EB; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 24px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<strong style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">[JOB TITLE] at [EMPLOYER]</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #646B7A">JOB-0219 · {{job.meta}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{job.chips}}" as="c" hint-placeholder-count="2">
+<span style="{{c.style}}"><span aria-hidden="true" style="{{c.dot}}"></span>{{c.label}}</span>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{job.open}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" aria-disabled="{{job.renewDisabled}}" onClick="{{job.renew}}" style="{{job.renewStyle}}">{{job.renewLabel}}</button>
+<a href="JobsV3.dc.html" style="{{ui.btnS}}">Edit</a>
+<button type="button" onClick="{{job.close}}" style="{{ui.btnRed}}">Close listing</button>
+</div>
+</sc-if>
+<sc-if value="{{job.closed}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 15px; color: #3D4556">It no longer shows on the jobs board. Applicants who already wrote to you are not notified.</p>
+</sc-if>
+</div>
+<sc-if value="{{tOn.jobs}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.toast}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}<sc-if value="{{toastHasUndo}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{undo}}" style="{{ui.undo}}">Undo</button></sc-if><button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="{{ui.x}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-if>
+</section>
+
+<!-- EMAIL PREFERENCES -->
+<section id="email" aria-labelledby="email-title" style="{{ui.card}}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 32px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">SENT TO [EMAIL]</span>
+<h2 id="email-title" style="{{ui.h2}}">Email preferences</h2>
+</div>
+<sc-if value="{{prefSaved}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.04em"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>SAVED JUST NOW</span>
+</sc-if>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; border-top: 1px solid #E5E7EB">
+<sc-for list="{{prefs}}" as="p" hint-placeholder-count="6">
+<li style="display: flex; align-items: center; gap: 24px; padding: 16px 0; border-bottom: 1px solid #E5E7EB">
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span id="{{p.id}}" style="font-weight: 600; font-size: 16px">{{p.label}}</span>
+<span style="font-size: 14px; color: #646B7A">{{p.desc}}</span>
+<sc-if value="{{p.isJobs}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">SAVED FILTERS</span>
+<span style="padding: 2px 10px; border-radius: 999px; background: #F3F4F2; font-size: 13px; color: #3D4556">Engineering</span>
+<span style="padding: 2px 10px; border-radius: 999px; background: #F3F4F2; font-size: 13px; color: #3D4556">Remote</span>
+<a href="JobsV3.dc.html" style="font-size: 14px; font-weight: 500; margin-left: 4px">Edit filters</a>
+</span>
+</sc-if>
+</span>
+<button type="button" role="switch" aria-checked="{{p.checked}}" aria-labelledby="{{p.id}}" onClick="{{p.toggle}}" style="flex: 0 0 auto; width: 56px; height: 44px; border: 0; padding: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<span aria-hidden="true" style="{{p.track}}"><span style="{{p.knob}}"></span></span></button>
+</li>
+</sc-for>
+</ul>
+<sc-if value="{{allOff}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; padding: 16px 18px; border-radius: 16px; background: #F3F4F2; font-size: 15px; color: #3D4556">You’re unsubscribed from everything. We’ll still send receipts for things you submit, like a registration or a job listing.</p>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px">
+<span style="font-size: 14px; color: #646B7A">Every email has a one-click unsubscribe link too.</span>
+<button type="button" aria-disabled="{{unsubDisabled}}" onClick="{{openUnsub}}" style="{{unsubStyle}}">Unsubscribe from everything</button>
+</div>
+<sc-if value="{{tOn.prefs}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.toast}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}<sc-if value="{{toastHasUndo}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{undo}}" style="{{ui.undo}}">Undo</button></sc-if><button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="{{ui.x}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-if>
+<sc-if value="{{dlgOn.unsub}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-modal="true" aria-labelledby="dlg-un-t" aria-describedby="dlg-un-d" onKeyDown="{{dlgKey}}" style="{{ui.dlg}}">
+<h3 id="dlg-un-t" style="{{ui.dlgTitle}}">Unsubscribe from everything?</h3>
+<p id="dlg-un-d" style="margin: 0; font-size: 16px; color: #3D4556">All six kinds of email switch off. We’ll still send receipts for things you submit. You can switch any of them back on here.</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 8px">
+<button type="button" onClick="{{closeDlg}}" style="{{ui.btnS}}">Keep my emails</button>
+<button type="button" onClick="{{confirmUnsub}}" style="{{ui.btnDark}}">Unsubscribe</button>
+</div>
+</div>
+</sc-if>
+</section>
+
+<!-- MY DATA -->
+<section id="data" aria-labelledby="data-title" style="{{ui.card}}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="{{ui.eyebrow}}">PRIVACY</span>
+<h2 id="data-title" style="{{ui.h2}}">My data</h2>
+<p style="margin: 0; font-size: 16px; color: #3D4556; max-width: 640px">Everything we hold for [EMAIL]. No tracking cookies, no ad profiles.</p>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: #E5E7EB; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden">
+<sc-for list="{{held}}" as="h" hint-placeholder-count="6">
+<div style="background: #ffffff; padding: 16px 20px"><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{h.k}}</dt><dd style="margin: 4px 0 0; font-weight: 500; font-size: 15px">{{h.v}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{downloadData}}" style="{{ui.btnS}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg>Download my data (JSON)</button>
+<button type="button" onClick="{{openDelete}}" style="{{ui.btnDangerOutline}}">Delete everything</button>
+</div>
+<p style="margin: 0; display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 14px">
+<a href="PrivacyV3.dc.html" style="font-weight: 500; text-decoration: none">What we store →</a>
+<a href="PrivacyV3.dc.html" style="font-weight: 500; text-decoration: none">How long we keep it →</a>
+<a href="PrivacyV3.dc.html" style="font-weight: 500; text-decoration: none">Your rights →</a>
+</p>
+<sc-if value="{{tOn.data}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="{{ui.toast}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>{{toastText}}<button type="button" aria-label="Dismiss" onClick="{{closeToast}}" style="{{ui.x}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-if>
+<sc-if value="{{dlgOn.delete}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-modal="true" aria-labelledby="dlg-del-t" aria-describedby="dlg-del-d" onKeyDown="{{dlgKey}}" style="{{ui.dlgUp}}">
+<h3 id="dlg-del-t" style="{{ui.dlgTitle}}">Delete everything?</h3>
+<p id="dlg-del-d" style="margin: 0; font-size: 16px; color: #3D4556">This can’t be undone. For [EMAIL] we will remove:</p>
+<ul style="margin: 0; padding: 0 0 0 20px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; color: #3D4556">
+<li>Your Summit 2027 registration (VRC-2027-0142) and starred sessions</li>
+<li>Your applications (PIT-2027-018, INT-0088)</li>
+<li>Your Slack join request (MBR-2026-0312)</li>
+<li>Your name on map submissions. Published entries stay on the map.</li>
+<li>Your job listing (JOB-0219), which closes now</li>
+<li>All email subscriptions and this link</li>
+</ul>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="me-del" style="font-size: 15px; font-weight: 500">Type DELETE to confirm</label>
+<input id="me-del" type="text" autocomplete="off" value="{{del.text}}" onChange="{{del.set}}" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; font-family: 'Geist Mono', monospace; font-size: 16px; color: #0A1222; background: #ffffff">
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 4px">
+<button type="button" onClick="{{closeDlg}}" style="{{ui.btnS}}">Keep my data</button>
+<button type="button" aria-disabled="{{del.disabled}}" onClick="{{del.confirm}}" style="{{del.btnStyle}}">Delete everything</button>
+</div>
+</div>
+</sc-if>
+</section>
+
+</div>
+</div>
+</div>
+</main>
+</sc-if>
+
+<!-- ===================== EXPIRED LINK / SIGNED OUT ===================== -->
+<sc-if value="{{isRelink}}" hint-placeholder-val="{{ false }}">
+<main style="padding: 96px 32px 128px">
+<div style="max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #F3F4F2; color: #3D4556; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path><path d="M4 4l16 16"></path></svg></span>
+<span style="{{ui.eyebrow}}">MY VRC</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 1; letter-spacing: -0.04em">{{rl.title}}</h1>
+<p style="margin: 0; font-size: 18px; color: #3D4556">{{rl.sub}}</p>
+
+<sc-if value="{{rl.showForm}}" hint-placeholder-val="{{ true }}">
+<div style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="rl-email" style="font-size: 15px; font-weight: 500">Email</label>
+<input id="rl-email" type="email" autocomplete="email" placeholder="you@example.org" value="{{rl.email}}" onChange="{{rl.setEmail}}" onBlur="{{rl.blur}}" aria-invalid="{{rl.inv}}" aria-describedby="rl-email-help rl-email-err" style="{{rl.inputStyle}}">
+<sc-if value="{{rl.errOn}}" hint-placeholder-val="{{ false }}"><span id="rl-email-err" style="font-size: 14px; color: #B42318">{{rl.errMsg}}</span></sc-if>
+<span id="rl-email-help" style="font-size: 13px; color: #646B7A">Use the email you registered, applied or subscribed with.</span>
+</div>
+<button type="button" onClick="{{rl.send}}" style="display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Send me a new link</button>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #646B7A"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: none"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We only use your email to send the link. <a href="PrivacyV3.dc.html">How we use this →</a></p>
+</div>
+</sc-if>
+
+<sc-if value="{{rl.sent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="border: 1px solid #E5E7EB; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: #E8F6EE; color: #0B7A47; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; letter-spacing: -0.02em">Check your inbox</h2>
+<p style="margin: 0; font-size: 16px; color: #3D4556">We’ve sent a new link to <strong style="font-weight: 600; color: #0A1222">{{rl.email}}</strong>. It works for 7 days. If that address isn’t on our list, nothing is sent.</p>
+<sc-if value="{{rl.resent}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 15px; color: #0B7A47">Sent again. The newest link replaces the older ones.</p></sc-if>
+<sc-if value="{{rl.limited}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 0; padding: 12px 14px; border-radius: 12px; background: #FFF4E5; color: #8A4B00; font-size: 15px; font-weight: 500">Too many tries. Wait a minute.</p></sc-if>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" aria-disabled="{{rl.limitedAttr}}" onClick="{{rl.resend}}" style="{{rl.resendStyle}}">Send again</button>
+<button type="button" onClick="{{rl.change}}" style="{{ui.btnT}}">Use a different email</button>
+</div>
+<p style="margin: 0; font-size: 14px; color: #646B7A">Not there after a few minutes? Check your spam folder for mail from Vert Robo Con.</p>
+</div>
+</sc-if>
+<p style="margin: 0; font-size: 15px; color: #646B7A">There’s no password to remember. Links expire after 7 days to keep your details safe. Need a hand? <a href="ContactV3.dc.html">Contact us</a>.</p>
+</div>
+</main>
+</sc-if>
+
+<!-- ===================== DELETED ===================== -->
+<sc-if value="{{isDeleted}}" hint-placeholder-val="{{ false }}">
+<main style="padding: 96px 32px 128px">
+<div role="status" style="max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; color: #0B7A47; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 56px; line-height: 1; letter-spacing: -0.04em">Everything is deleted</h1>
+<p style="margin: 0; font-size: 18px; color: #3D4556">We removed your registration, applications, Slack join request, job listing and email subscriptions, and took your name off your map submissions. This link no longer works.</p>
+<p style="margin: 0; font-size: 15px; color: #646B7A">We’ve sent one last confirmation to [EMAIL]. Backups clear within [N] days. <a href="PrivacyV3.dc.html">How long we keep it →</a></p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="HomeV3.dc.html" style="{{ui.btnP}}">Back to the homepage</a>
+</div>
+</div>
+</main>
+</sc-if>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 64px 32px 40px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">An open community for people who build, fund and use robots that help a warming planet.</p>
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 380px; margin-top: 8px">
+<sc-if value="{{ft.notIdle}}" hint-placeholder-val="{{ true }}"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">MONTHLY DIGEST</span></sc-if>
+<sc-if value="{{ft.idle}}" hint-placeholder-val="{{ false }}">
+<label for="ft-email" style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">MONTHLY DIGEST</label>
+<div style="display: flex; gap: 8px">
+<input id="ft-email" type="email" autocomplete="email" placeholder="you@example.org" value="{{ft.email}}" onChange="{{ft.onEmail}}" aria-invalid="{{ft.inv}}" style="{{ft.inputStyle}}">
+<button type="button" onClick="{{ft.submit}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{ft.err}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #B42318">Enter your email address</span></sc-if>
+</sc-if>
+<sc-if value="{{ft.pending}}" hint-placeholder-val="{{ false }}"><span role="status" style="font-size: 15px; color: #3D4556">Check your inbox to confirm.</span></sc-if>
+<sc-if value="{{ft.done}}" hint-placeholder-val="{{ true }}"><span role="status" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-size: 14px; font-weight: 500"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>You’re on the list · <a href="#email" style="color: #0B7A47">Manage</a></span></sc-if>
+</div>
+</div>
+<sc-for list="{{footGroups}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.title}}" style="flex: 1 1 140px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.label}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="4">
+<a class="flink" href="{{l.href}}">{{l.label}}</a>
+</sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">
+<span>© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<span style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/video" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="HomeV3.dc.html#join" aria-label="Slack: join the network" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2zM13 3v6h2a2 2 0 0 0 0-4M11 21v-6H9a2 2 0 0 0 0 4"></path></svg></a>
+</span>
+</div>
+</div>
+</footer>
+
+<!-- dialog backdrop -->
+<sc-if value="{{dlgOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeDlg}}" style="position: absolute; inset: 0; z-index: 40; background: rgba(10,18,34,0.48)"></div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5430}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = this.initial();
+}
+initial() {
+return { view: 'active', live: false, reg: 'registered', slack: 'pending',
+saved: { name: '[NAME]', org: '[ORGANIZATION]', access: '', days: [true, true, true] },
+editOpen: false, f: null, fTried: false, fBlur: false,
+calMenu: '', starred: ['s1', 's2', 's3', 's4'], copied: false,
+pitch: 'review', job: 'open', renewed: false,
+prefs: { ann: true, prog: true, rec: true, digest: true, videos: false, jobs: true }, prefSaved: false, prevPrefs: null,
+dlg: '', delText: '', menu: null,
+toastAt: '', toastText: '', toastUndo: '',
+exEmail: '', exBlur: false, exTried: false, exSent: false, exResends: 0,
+ftEmail: '', ftTried: false, ftPending: false };
+}
+renderVals() {
+const s = this.state;
+const set = (o) => this.setState(o);
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const TONE = {
+blue: ['#EEF2FB', '#0138AC', '#0138AC'], green: ['#E8F6EE', '#0B7A47', '#1DB46C'],
+amber: ['#FFF4E5', '#8A4B00', '#D9822B'], neutral: ['#F3F4F2', '#3D4556', '#646B7A']
+};
+const chip = (tone, label) => ({ label,
+style: 'flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: ' + TONE[tone][0] + '; color: ' + TONE[tone][1] + '; ' + MONO + 'font-size: 12px; letter-spacing: 0.04em; line-height: 1.4',
+dot: 'width: 6px; height: 6px; border-radius: 50%; background: ' + TONE[tone][2] });
+const BTN = 'display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer; box-sizing: border-box; ';
+const BTN_T = 'display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 6px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer; ';
+const DIS = '; opacity: 0.45; cursor: not-allowed';
+const ui = {
+eyebrow: MONO + 'font-size: 12px; letter-spacing: 0.06em; color: #646B7A',
+h2: "margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -0.02em",
+card: 'position: relative; border: 1px solid #E5E7EB; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 24px; scroll-margin-top: 24px',
+ref: 'display: inline-flex; padding: 4px 10px; border-radius: 8px; background: #F3F4F2; ' + MONO + 'font-size: 13px; color: #3D4556',
+btnP: BTN + 'border: 1px solid #0138AC; background: #0138AC; color: #ffffff',
+btnS: BTN + 'border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222',
+btnDark: BTN + 'border: 1px solid #0A1222; background: #0A1222; color: #ffffff',
+btnDanger: BTN + 'border: 1px solid #B42318; background: #B42318; color: #ffffff',
+btnDangerOutline: BTN + 'border: 1px solid #F4C7C3; background: #ffffff; color: #B42318',
+btnT: BTN_T + 'color: #0138AC',
+btnRed: BTN_T + 'color: #B42318; margin-left: auto',
+menu: 'position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 300px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); padding: 6px',
+menuItem: 'width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 15px; color: #0A1222; text-align: left; cursor: pointer',
+toast: 'align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 12px; background: #0A1222; color: #ffffff; font-size: 15px',
+undo: 'min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #BFD0F5; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: underline',
+x: 'width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center',
+dlg: 'position: absolute; z-index: 41; top: 32px; left: 50%; transform: translateX(-50%); width: 480px; max-width: calc(100% - 32px); box-sizing: border-box; background: #ffffff; border-radius: 24px; padding: 28px; box-shadow: 0 32px 64px -24px rgba(10,18,34,0.5); display: flex; flex-direction: column; gap: 14px',
+dlgTitle: "margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.2; letter-spacing: -0.02em"
+};
+ui.dlgUp = ui.dlg.replace('top: 32px', 'bottom: 32px');
+ui.refStart = ui.ref + '; align-self: flex-start';
+
+const toast = (at, text, undo) => ({ toastAt: at, toastText: text, toastUndo: undo || '' });
+const tOn = {};
+['summit', 'agenda', 'apps', 'jobs', 'prefs', 'data'].forEach((k) => { tOn[k] = s.toastAt === k; });
+
+// canvas controls
+const seg = (on) => 'min-height: 30px; padding: 0 12px; border: 0; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; '
++ (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556');
+const goView = (k) => set({ view: k, dlg: '', delText: '', calMenu: '', exEmail: '', exBlur: false, exTried: false, exSent: false, exResends: 0 });
+const cc = {
+views: [['active', 'Active link'], ['expired', 'Expired link']].map((v) => ({ label: v[1], pressed: s.view === v[0] ? 'true' : 'false', style: seg(s.view === v[0]), pick: () => goView(v[0]) })),
+lives: [[false, 'Before the summit'], [true, 'Live']].map((v) => ({ label: v[1], pressed: s.live === v[0] ? 'true' : 'false', style: seg(s.live === v[0]), pick: () => set({ live: v[0] }) })),
+slacks: [['pending', 'Pending approval'], ['approved', 'Approved']].map((v) => ({ label: v[1], pressed: s.slack === v[0] ? 'true' : 'false', style: seg(s.slack === v[0]), pick: () => set({ slack: v[0] }) })),
+showOpenLink: (s.view === 'expired' || s.view === 'signedout') && s.exSent,
+openLink: () => goView('active'),
+showConfirmDigest: s.ftPending && !s.prefs.digest,
+confirmDigest: () => set({ prefs: Object.assign({}, this.state.prefs, { digest: true }), ftPending: false }),
+reset: () => this.setState(this.initial())
+};
+
+const registered = s.reg === 'registered';
+const isActive = s.view === 'active';
+
+// summit card
+const DAYS = [['DAY 1', 'Tue, Apr 20'], ['DAY 2', 'Wed, Apr 21'], ['DAY 3', 'Thu, Apr 22']];
+const tiles = DAYS.map((d, i) => {
+const att = s.saved.days[i];
+const now = s.live && i === 0;
+const st = now ? chip('green', 'LIVE NOW') : (att ? chip('blue', 'ATTENDING') : chip('neutral', 'NOT ATTENDING'));
+return { label: d[0], date: d[1], status: st.label, stChip: st.style, stDot: st.dot, live: s.live,
+tile: 'display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border-radius: 16px; ' + (now ? 'border: 1px solid #1DB46C; background: #ffffff' : 'border: 1px solid #E5E7EB; background: ' + (att ? '#ffffff' : '#F7F8F9')),
+joinStyle: (now ? ui.btnP : ui.btnS) + '; margin-top: 10px; align-self: flex-start; min-height: 40px; padding: 0 14px',
+joinMeta: now ? 'Room is open' : 'Link works from [HH:MM] UTC' };
+});
+const F = s.f || s.saved;
+const nameBad = !F.name.trim();
+const daysBad = !F.days.some(Boolean);
+const errs = [];
+if (nameBad) errs.push(['#me-name', 'Enter your name']);
+if (daysBad) errs.push(['#me-day-1', 'Choose at least one day']);
+const inBase = 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; color: #0A1222; background: #ffffff; ';
+const nameErr = (s.fTried || s.fBlur) && nameBad;
+const daysErr = s.fTried && daysBad;
+const setF = (patch) => set({ f: Object.assign({}, this.state.f || this.state.saved, patch) });
+const box = (c, bad) => 'flex: 0 0 auto; width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; '
++ (c ? 'background: #0138AC; border: 1px solid #0138AC; color: #ffffff' : 'background: #ffffff; border: 1.5px solid ' + (bad ? '#B42318' : '#8A909C') + '; color: transparent');
+const ef = {
+name: F.name, org: F.org, access: F.access, count: F.access.length,
+setName: (e) => setF({ name: e.target.value }),
+setOrg: (e) => setF({ org: e.target.value }),
+setAccess: (e) => setF({ access: e.target.value.slice(0, 200) }),
+blurName: () => set({ fBlur: true }),
+nameErr, nameInv: nameErr ? 'true' : 'false', daysErr,
+nameStyle: inBase + (nameErr ? 'border: 1px solid #B42318; box-shadow: 0 0 0 1px #B42318' : 'border: 1px solid #D5D8DE'),
+orgStyle: inBase + 'border: 1px solid #D5D8DE',
+accessStyle: inBase + 'border: 1px solid #D5D8DE; padding: 12px 14px; resize: vertical; line-height: 1.5',
+showSummary: s.fTried && errs.length > 0,
+errTitle: errs.length === 1 ? 'There is 1 problem' : 'There are ' + errs.length + ' problems',
+errList: errs.map((e) => ({ href: e[0], msg: e[1] })),
+days: DAYS.map((d, i) => {
+const c = F.days[i];
+return { id: 'me-day-' + (i + 1), label: d[0], date: d[1], checked: c ? 'true' : 'false', box: box(c, daysErr),
+style: 'display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; font: inherit; color: #0A1222; text-align: left; cursor: pointer; '
++ (c ? 'background: #EEF2FB; border: 1px solid #0138AC' : 'background: #ffffff; border: 1px solid ' + (daysErr ? '#B42318' : '#D5D8DE')),
+toggle: () => { const a = (this.state.f || this.state.saved).days.slice(); a[i] = !a[i]; setF({ days: a }); } };
+}),
+save: () => {
+const cur = this.state.f || this.state.saved;
+if (!cur.name.trim() || !cur.days.some(Boolean)) { set({ fTried: true }); return; }
+set(Object.assign({ saved: cur, f: null, editOpen: false, fTried: false, fBlur: false }, toast('summit', 'Saved. We’ve emailed you an updated confirmation.')));
+},
+cancel: () => set({ editOpen: false, f: null, fTried: false, fBlur: false })
+};
+const toggleEdit = () => (s.editOpen
+? set({ editOpen: false, f: null, fTried: false, fBlur: false })
+: set({ editOpen: true, calMenu: '', f: { name: s.saved.name, org: s.saved.org, access: s.saved.access, days: s.saved.days.slice() }, fTried: false, fBlur: false }));
+
+// calendar menus
+const CAL = [['Apple / Outlook (.ics)', '.ICS', 'Calendar file downloaded'], ['Google Calendar', 'GOOGLE', 'Opened Google Calendar in a new tab'], ['Outlook.com', 'OUTLOOK.COM', 'Opened Outlook.com in a new tab']];
+const nStar = s.starred.length;
+const cal = {
+summitOpen: s.calMenu === 'summit', summitExpanded: s.calMenu === 'summit' ? 'true' : 'false',
+agendaOpen: s.calMenu === 'agenda', agendaExpanded: s.calMenu === 'agenda' ? 'true' : 'false',
+toggleSummit: () => set({ calMenu: this.state.calMenu === 'summit' ? '' : 'summit' }),
+toggleAgenda: () => set({ calMenu: this.state.calMenu === 'agenda' ? '' : 'agenda' }),
+summitItems: CAL.map((c) => ({ label: c[0], meta: c[1], pick: () => set(Object.assign({ calMenu: '' }, toast('summit', c[2]))) })),
+agendaItems: CAL.map((c) => ({ label: c[0], meta: c[1], pick: () => set(Object.assign({ calMenu: '' }, toast('agenda', c[2] + (c[1] === '.ICS' ? ' · ' + nStar + ' sessions' : '')))) }))
+};
+
+// agenda
+const SESS = [
+{ id: 's1', day: 0, title: 'Keynote: [KEYNOTE SPEAKER]', kind: 'Keynote' },
+{ id: 's2', day: 0, title: '[SESSION TITLE]', kind: 'Session' },
+{ id: 's3', day: 1, title: '[SESSION TITLE]', kind: 'Session' },
+{ id: 's4', day: 2, title: '[SESSION TITLE]', kind: 'Session' }
+];
+const WHEN = ['DAY 1 · TUE APR 20', 'DAY 2 · WED APR 21', 'DAY 3 · THU APR 22'];
+const agenda = {
+// before the summit the 2027 program is a draft (as ProgramV3: 'DRAFT PROGRAM · SUBJECT TO CHANGE')
+eyebrow: s.live ? 'SUMMIT 2027 · STARRED SESSIONS' : 'SUMMIT 2027 · DRAFT PROGRAM · SUBJECT TO CHANGE',
+countLabel: nStar === 1 ? '1 session starred' : nStar + ' sessions starred',
+none: nStar === 0,
+calNote: nStar + ' events, in UTC. Your calendar shows them in your time zone.',
+rows: SESS.map((x) => {
+const on = s.starred.includes(x.id);
+const k = chip('neutral', x.kind.toUpperCase());
+return { title: x.title, kind: k.label, kindStyle: k.style,
+when: WHEN[x.day] + ' · [HH:MM] UTC',
+now: s.live && x.id === 's1' && on,
+pressed: on ? 'true' : 'false', starLabel: 'Star ' + x.title + ', ' + ['day 1', 'day 2', 'day 3'][x.day],
+fill: on ? '#0138AC' : 'none', stroke: on ? '#0138AC' : '#646B7A',
+titleStyle: "font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -0.015em; color: " + (on ? '#0A1222' : '#646B7A'),
+toggle: () => { const cur = this.state.starred; set({ starred: cur.includes(x.id) ? cur.filter((y) => y !== x.id) : cur.concat([x.id]) }); } };
+})
+};
+const feedOn = registered;
+const feed = {
+disabled: feedOn ? 'false' : 'true',
+copied: feedOn && s.copied,
+label: feedOn && s.copied ? 'Copied' : 'Copy URL',
+help: feedOn ? 'Subscribe once in your calendar app. Starred sessions stay in sync.' : 'Available while you’re registered.',
+inputStyle: 'flex: 1 1 auto; min-width: 0; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid #D5D8DE; border-radius: 12px; ' + MONO + 'font-size: 13px; color: ' + (feedOn ? '#3D4556' : '#9AA3B5') + '; background: #F3F4F2',
+btnStyle: ui.btnS + '; flex: 0 0 auto' + (feedOn ? '' : DIS),
+copy: () => { if (this.state.reg === 'registered') set({ copied: true }); }
+};
+
+// applications
+const pitchActive = s.pitch === 'review';
+const pitchChip = pitchActive ? chip('neutral', 'IN REVIEW') : chip('neutral', 'WITHDRAWN');
+// same timeline as the GetInvolvedV3 startup pitch (decisions [DATE], pitch day Apr 20, 2027)
+const STEPS = [['SUBMITTED', '[DATE]'], ['IN REVIEW', 'Now'], ['DECISION', 'By email by [DATE]'], ['PITCH DAY', 'Apr 20, 2027']];
+const stepRow = (x, done, cur) => ({ label: x[0], note: x[1], done, current: cur ? 'step' : 'false',
+labelStyle: 'display: inline-flex; align-items: center; gap: 6px; ' + MONO + 'font-size: 12px; letter-spacing: 0.06em; ' + (done ? 'color: #0B7A47' : cur ? 'color: #0A1222; font-weight: 500' : 'color: #646B7A'),
+bar: 'display: block; height: 4px; border-radius: 999px; background: ' + (done ? '#0138AC' : cur ? '#0138AC; opacity: 0.45' : '#E5E7EB') });
+const steps = STEPS.map((x, i) => stepRow(x, i < 1, i === 1));
+// internship INT-0088: same 4 steps and chip as the JobsV3 confirmation
+const INT_STEPS = [['RECEIVED', '[DATE]'], ['IN REVIEW', 'Reply within 24–48 hours'], ['INTERVIEW', 'Within [N] days'], ['DECISION', 'Within [N] days']];
+const intSteps = INT_STEPS.map((x, i) => stepRow(x, i < 1, i === 1));
+const intChip = chip('neutral', 'IN REVIEW');
+
+// slack join request (approved by hand by an admin)
+const slackOk = s.slack === 'approved';
+const SLACK_STEPS = [['REQUESTED', '[DATE]'], ['PENDING APPROVAL', slackOk ? 'Approved [DATE]' : 'An admin reviews it'], ['APPROVED · INVITE SENT', slackOk ? 'Invite emailed [DATE]' : 'Typically within 24–48 hours']];
+const slack = {
+pending: !slackOk, approved: slackOk,
+chip: slackOk ? chip('green', 'APPROVED · INVITE SENT') : chip('amber', 'PENDING APPROVAL'),
+steps: SLACK_STEPS.map((x, i) => stepRow(x, slackOk ? true : i < 1, !slackOk && i === 1))
+};
+
+// map
+const mapRows = [
+{ name: 'Kelpcombe Robotics', meta: 'EDIT SUGGESTION · MAP-0457 · SENT [DATE]', tone: 'neutral', status: 'IN REVIEW', action: 'View current entry' },
+{ name: '[NEW ORG]', meta: 'NEW ORGANIZATION · MAP-[NNNN] · SENT [DATE]', tone: 'green', status: 'PUBLISHED', action: 'View on map' }
+].map((m) => { const c = chip(m.tone, m.status); return Object.assign({}, m, { chip: c.style, dot: c.dot, actionLabel: m.action + ': ' + m.name }); });
+
+// jobs
+const jobClosed = s.job === 'closed';
+const expires = s.renewed ? 72 : 12;
+const job = {
+open: !jobClosed, closed: jobClosed,
+meta: jobClosed ? 'CLOSED' : 'EXPIRES IN ' + expires + ' DAYS',
+chips: jobClosed ? [chip('neutral', 'CLOSED')] : (s.renewed ? [chip('green', 'PUBLISHED')] : [chip('green', 'PUBLISHED'), chip('amber', 'EXPIRING SOON')]),
+renewLabel: s.renewed ? 'Renewed' : 'Renew 60 days',
+renewDisabled: s.renewed ? 'true' : 'false',
+renewStyle: ui.btnP + (s.renewed ? DIS : ''),
+renew: () => { if (!this.state.renewed) set(Object.assign({ renewed: true }, toast('jobs', 'Renewed for 60 days. It now expires in 72 days.'))); },
+close: () => set(Object.assign({ job: 'closed' }, toast('jobs', 'Listing closed', 'job')))
+};
+
+// prefs
+const PREFS = [
+['ann', 'Summit announcements', 'Dates, registration opening, and calls for speakers and pitches.'],
+['prog', 'Program published', 'One email when the 2027 program goes live.'],
+['rec', 'Recordings released', 'When session videos from a summit you registered for are online.'],
+['digest', 'Monthly digest', 'News, jobs and new map entries, once a month.'],
+['videos', 'New videos', 'Each new talk in the Watch library.'],
+['jobs', 'Job alerts', 'New listings that match your saved filters.']
+];
+const prefs = PREFS.map((p) => {
+const on = s.prefs[p[0]];
+return { id: 'pref-' + p[0], label: p[1], desc: p[2], isJobs: p[0] === 'jobs', checked: on ? 'true' : 'false',
+track: 'position: relative; display: inline-block; width: 40px; height: 24px; border-radius: 999px; background: ' + (on ? '#0138AC' : '#C9CDD5'),
+knob: 'position: absolute; top: 3px; left: ' + (on ? '19px' : '3px') + '; width: 18px; height: 18px; border-radius: 50%; background: #ffffff; box-shadow: 0 1px 2px rgba(10,18,34,0.2)',
+toggle: () => set({ prefs: Object.assign({}, this.state.prefs, { [p[0]]: !this.state.prefs[p[0]] }), prefSaved: true, toastAt: this.state.toastAt === 'prefs' ? '' : this.state.toastAt }) };
+});
+const onCount = PREFS.filter((p) => s.prefs[p[0]]).length;
+const allOff = onCount === 0;
+
+// dialogs
+const closeDlg = () => set({ dlg: '', delText: '' });
+const dlgOn = { cancel: s.dlg === 'cancel', withdraw: s.dlg === 'withdraw', unsub: s.dlg === 'unsub', delete: s.dlg === 'delete' };
+const delOk = s.delText === 'DELETE';
+
+// relink (expired / signed out)
+const exOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.exEmail.trim());
+const exErrOn = (s.exTried || s.exBlur) && !exOk;
+const limited = s.exResends >= 2;
+const rl = {
+title: s.view === 'signedout' ? 'You’re signed out on this device' : 'This link has expired',
+sub: s.view === 'signedout' ? 'Nothing was deleted. To come back, open the link in any email from us, or ask for a new one here.' : 'Links from our emails work for 7 days. Enter your email and we’ll send you a fresh one.',
+showForm: !s.exSent, sent: s.exSent,
+email: s.exEmail, setEmail: (e) => set({ exEmail: e.target.value }), blur: () => set({ exBlur: this.state.exEmail.length > 0 }),
+errOn: exErrOn, inv: exErrOn ? 'true' : 'false',
+errMsg: s.exEmail.trim() ? 'Enter an email address like name@example.org' : 'Enter your email address',
+inputStyle: inBase + (exErrOn ? 'border: 1px solid #B42318; box-shadow: 0 0 0 1px #B42318' : 'border: 1px solid #D5D8DE'),
+send: () => { if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.state.exEmail.trim())) { set({ exTried: true }); return; } set({ exSent: true, exResends: 0 }); },
+resent: s.exResends === 1, limited, limitedAttr: limited ? 'true' : 'false',
+resendStyle: ui.btnS + (limited ? DIS : ''),
+resend: () => { if (this.state.exResends < 2) set({ exResends: this.state.exResends + 1 }); },
+change: () => set({ exSent: false, exResends: 0, exTried: false, exBlur: false })
+};
+
+// footer
+const ftOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.ftEmail.trim());
+const ftErr = s.ftTried && !ftOk;
+const ft = {
+idle: !s.prefs.digest && !s.ftPending, notIdle: s.prefs.digest || s.ftPending, pending: s.ftPending && !s.prefs.digest, done: s.prefs.digest,
+email: s.ftEmail, onEmail: (e) => set({ ftEmail: e.target.value }), err: ftErr, inv: ftErr ? 'true' : 'false',
+inputStyle: 'flex: 1 1 auto; min-width: 0; box-sizing: border-box; min-height: 44px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 15px; background: #ffffff; ' + (ftErr ? 'border: 1px solid #B42318' : 'border: 1px solid #D5D8DE'),
+submit: () => { if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.state.ftEmail.trim())) { set({ ftTried: true }); return; } set({ ftPending: true, ftTried: false }); }
+};
+const footGroups = [
+{ label: 'SUMMIT', title: 'Summit', links: [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']] },
+{ label: 'LEARN', title: 'Learn', links: [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']] },
+{ label: 'COMMUNITY', title: 'Community', links: [['Join', 'HomeV3.dc.html#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']] },
+{ label: 'ABOUT', title: 'About', links: [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']] }
+].map((g) => ({ label: g.label, title: g.title, links: g.links.map((l) => ({ label: l[0], href: l[1] })) }));
+
+const toc = [
+['#summit', 'Summit 2027', registered ? 'REGISTERED' : 'CANCELLED'],
+['#agenda', 'My agenda', nStar + ' STARRED'],
+['#applications', 'Applications', '2'],
+['#community', 'Slack community', slackOk ? 'APPROVED' : 'PENDING'],
+['#map', 'Map submissions', '2'],
+['#jobs', 'Job listings', jobClosed ? 'CLOSED' : '1'],
+['#email', 'Email preferences', onCount + ' ON'],
+['#data', 'My data', '']
+].map((t) => ({ href: t[0], label: t[1], meta: t[2] }));
+
+const held = [
+['SUMMIT 2027', registered ? 'Registration · VRC-2027-0142' : 'Cancelled registration · VRC-2027-0142'],
+['AGENDA', nStar + ' starred sessions'],
+['APPLICATIONS', 'PIT-2027-018 · INT-0088'],
+['SLACK', 'Join request · MBR-2026-0312 · ' + (slackOk ? 'approved' : 'pending approval')],
+['MAP', 'MAP-0457 · MAP-[NNNN]'],
+['JOBS', 'JOB-0219 · ' + (jobClosed ? 'closed' : 'published')],
+['EMAIL', onCount + ' of 6 subscriptions on']
+].map((h) => ({ k: h[0], v: h[1] }));
+
+// header menus (as HomeV3 / RegisterV3)
+const MENUS = {
+community: { label: 'Community', items: [['Join the network', 'Slack community or email updates', 'HomeV3.dc.html#join'], ['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'], ['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'], ['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'], ['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'], ['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'], ['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'], ['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'], ['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'], ['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'], ['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const menus = ['community', 'about'].map((key) => {
+const open = s.menu === key;
+return { label: MENUS[key].label, id: 'menu-' + key, open, expanded: open ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (open ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => set({ menu: this.state.menu === key ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) set({ menu: null }); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], go: () => set({ menu: null }) })) };
+});
+
+const showMySummit = isActive && registered;
+return {
+cc, ui, tOn, dlgOn, menus,
+isActive, isRelink: s.view === 'expired' || s.view === 'signedout', isDeleted: s.view === 'deleted',
+showMySummit, slack,
+signOut: () => goView('signedout'),
+toc,
+regChip: registered ? chip('green', 'REGISTERED') : chip('neutral', 'CANCELLED'),
+liveBanner: s.live && registered,
+isRegistered: registered, isCancelled: !registered,
+tiles, ef, editOpen: s.editOpen && registered, editExpanded: s.editOpen ? 'true' : 'false', toggleEdit, cal,
+openCancel: () => set({ dlg: 'cancel', calMenu: '' }),
+confirmCancel: () => set(Object.assign({ dlg: '', reg: 'cancelled', editOpen: false, f: null, copied: false }, toast('summit', 'Registration cancelled. We’ve emailed you a confirmation.'))),
+registerAgain: () => set(Object.assign({ reg: 'registered' }, toast('summit', 'You’re registered again. Same reference, same days.'))),
+agenda, feed,
+pitchActive, pitchWithdrawn: !pitchActive, pitchChip, steps, intSteps, intChip,
+openWithdraw: () => set({ dlg: 'withdraw' }),
+confirmWithdraw: () => set(Object.assign({ dlg: '', pitch: 'withdrawn' }, toast('apps', 'Pitch withdrawn. We’ve emailed you a confirmation.'))),
+mapRows, job,
+prefs, prefSaved: s.prefSaved, allOff,
+unsubDisabled: allOff ? 'true' : 'false',
+unsubStyle: BTN_T + 'color: #B42318' + (allOff ? DIS : ''),
+openUnsub: () => { if (!allOff) set({ dlg: 'unsub' }); },
+confirmUnsub: () => set(Object.assign({ dlg: '', prevPrefs: this.state.prefs, prefs: { ann: false, prog: false, rec: false, digest: false, videos: false, jobs: false }, prefSaved: true }, toast('prefs', 'Unsubscribed from everything', 'prefs'))),
+held,
+downloadData: () => set(toast('data', 'my-vrc-data.json downloaded · generated just now')),
+openDelete: () => set({ dlg: 'delete', delText: '' }),
+del: { text: s.delText, set: (e) => set({ delText: e.target.value }), disabled: delOk ? 'false' : 'true',
+btnStyle: ui.btnDanger + (delOk ? '' : DIS),
+confirm: () => { if (this.state.delText === 'DELETE') set({ view: 'deleted', dlg: '', delText: '', toastAt: '' }); } },
+dlgOpen: s.dlg !== '', closeDlg,
+dlgKey: (e) => { if (e.key === 'Escape') closeDlg(); },
+toastText: s.toastText, toastHasUndo: s.toastUndo !== '',
+closeToast: () => set({ toastAt: '' }),
+undo: () => {
+const u = this.state.toastUndo;
+if (u === 'job') set({ job: 'open', toastAt: '', toastUndo: '' });
+else if (u === 'prefs' && this.state.prevPrefs) set({ prefs: this.state.prevPrefs, prevPrefs: null, toastAt: '', toastUndo: '' });
+},
+rl, ft, footGroups
+};
+}
+}
+</script>
+</body>
+</html>

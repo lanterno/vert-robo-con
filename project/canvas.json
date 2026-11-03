@@ -1,0 +1,338 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-26T12:00:00Z"
+ },
+ "title": "Vert Robo Con redesign",
+ "launch": {
+  "view": "canvas",
+  "page": "v3"
+ },
+ "pages": [
+  {
+   "id": "v3",
+   "name": "V3 · Built-in (no PDFs/forms)"
+  },
+  {
+   "id": "admin",
+   "name": "V3 · Backoffice"
+  }
+ ],
+ "boards": {
+  "HomeV3.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 6230,
+   "title": "Home",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "SummitV3.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 4900,
+   "title": "Summit edition (state-driven)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "ProgramV3.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 2260,
+   "title": "Program (replaces agenda PDF)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "RegisterV3.dc.html": {
+   "x": 4560,
+   "y": 0,
+   "w": 1440,
+   "h": 3900,
+   "title": "Registration (replaces Google Form)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "GetInvolvedV3.dc.html": {
+   "x": 6080,
+   "y": 0,
+   "w": 1440,
+   "h": 3720,
+   "title": "Get involved: pitches, sponsor, volunteer",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "MyVRCV3.dc.html": {
+   "x": 7600,
+   "y": 0,
+   "w": 1440,
+   "h": 5430,
+   "title": "My VRC (magic-link hub)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "PhoneV3.dc.html": {
+   "x": 9120,
+   "y": 0,
+   "w": 390,
+   "h": 924,
+   "title": "Phone: register + My agenda",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "MapV3.dc.html": {
+   "x": 0,
+   "y": 6650,
+   "w": 1440,
+   "h": 1592,
+   "title": "Map: suggest + data download",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "ResearchV3.dc.html": {
+   "x": 1520,
+   "y": 6650,
+   "w": 1440,
+   "h": 5234,
+   "title": "White paper reader",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "WatchV3.dc.html": {
+   "x": 3040,
+   "y": 6650,
+   "w": 1440,
+   "h": 4100,
+   "title": "Watch library",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "JobsV3.dc.html": {
+   "x": 4560,
+   "y": 6650,
+   "w": 1440,
+   "h": 2488,
+   "title": "Jobs & internships",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "ContactV3.dc.html": {
+   "x": 6080,
+   "y": 6650,
+   "w": 1440,
+   "h": 2300,
+   "title": "Contact by intent + consulting",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "AdminDashboardV3.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 2320,
+   "title": "Admin · Dashboard",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminRegistrationsV3.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1450,
+   "title": "Admin · Registrations",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminEditionV3.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 2100,
+   "title": "Admin · Edition settings (Summit 2027)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminProgramV3.dc.html": {
+   "x": 6080,
+   "y": 0,
+   "w": 1440,
+   "h": 1850,
+   "title": "Admin · Program builder and people",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminPitchesV3.dc.html": {
+   "x": 4560,
+   "y": 0,
+   "w": 1440,
+   "h": 2560,
+   "title": "Admin · Pitch review (Startup and Research)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminQueueV3.dc.html": {
+   "x": 7600,
+   "y": 0,
+   "w": 1440,
+   "h": 1750,
+   "title": "Admin · Moderation queue",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminSettingsV3.dc.html": {
+   "x": 12160,
+   "y": 0,
+   "w": 1440,
+   "h": 2080,
+   "title": "Admin · Site settings and feature toggles",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminUsersV3.dc.html": {
+   "x": 13680,
+   "y": 0,
+   "w": 1440,
+   "h": 1440,
+   "title": "Admin · Admins (one role) and audit log",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "NewsV3.dc.html": {
+   "x": 7600,
+   "y": 6650,
+   "w": 1440,
+   "h": 3960,
+   "title": "News (blog back on site)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "PeopleV3.dc.html": {
+   "x": 9120,
+   "y": 6650,
+   "w": 1440,
+   "h": 2390,
+   "title": "People: team, speakers, authors",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "PrivacyV3.dc.html": {
+   "x": 10640,
+   "y": 6650,
+   "w": 1440,
+   "h": 7280,
+   "title": "Privacy (draft for legal review)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "v3"
+  },
+  "AdminMapV3.dc.html": {
+   "x": 9120,
+   "y": 0,
+   "w": 1440,
+   "h": 2440,
+   "title": "Admin · Map organizations",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminContentV3.dc.html": {
+   "x": 10640,
+   "y": 0,
+   "w": 1440,
+   "h": 1580,
+   "title": "Admin · Content (news, videos, documents, partners)",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  },
+  "AdminSystemV3.dc.html": {
+   "x": 15200,
+   "y": 0,
+   "w": 1440,
+   "h": 1600,
+   "title": "Admin · Jobs, email & backups",
+   "expand": "fill",
+   "is_interactive": true,
+   "page": "admin"
+  }
+ },
+ "order": [
+  "HomeV3.dc.html",
+  "SummitV3.dc.html",
+  "ProgramV3.dc.html",
+  "RegisterV3.dc.html",
+  "GetInvolvedV3.dc.html",
+  "MyVRCV3.dc.html",
+  "PhoneV3.dc.html",
+  "MapV3.dc.html",
+  "ResearchV3.dc.html",
+  "WatchV3.dc.html",
+  "JobsV3.dc.html",
+  "ContactV3.dc.html",
+  "NewsV3.dc.html",
+  "PeopleV3.dc.html",
+  "PrivacyV3.dc.html",
+  "AdminDashboardV3.dc.html",
+  "AdminEditionV3.dc.html",
+  "AdminRegistrationsV3.dc.html",
+  "AdminPitchesV3.dc.html",
+  "AdminProgramV3.dc.html",
+  "AdminQueueV3.dc.html",
+  "AdminMapV3.dc.html",
+  "AdminContentV3.dc.html",
+  "AdminSettingsV3.dc.html",
+  "AdminUsersV3.dc.html",
+  "AdminSystemV3.dc.html"
+ ],
+ "notes": {
+  "rowTitleV3": {
+   "x": 0,
+   "y": -320,
+   "text": "Vert Robo Con: v3, built-in summit: program, registration, calls, My VRC",
+   "kind": "title1",
+   "maxW": 9510,
+   "page": "v3"
+  },
+  "rowTitleV3b": {
+   "x": 0,
+   "y": 6330,
+   "text": "v3 — map, research, video, jobs, contact, news, people and privacy without Sheets, Docs or PDFs",
+   "kind": "title1",
+   "maxW": 12080,
+   "page": "v3"
+  },
+  "rowTitleAdmin": {
+   "x": 0,
+   "y": -320,
+   "text": "VRC backoffice: the admin screens of the one VRC app",
+   "kind": "title1",
+   "maxW": 16640,
+   "page": "admin"
+  }
+ },
+ "designSystems": []
+}

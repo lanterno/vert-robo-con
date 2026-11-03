@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vert Robo Con Map (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#0138AC}a:hover{color:#002A80}
+:focus-visible{outline:2px solid #0138AC;outline-offset:3px}
+.navlink{color:#3D4556;text-decoration:none;padding:10px 12px;border-radius:10px}
+.navlink:hover{background:#F3F4F2;color:#0A1222}
+.mitem{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;color:#0A1222;text-decoration:none;width:100%;box-sizing:border-box;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer}
+.mitem:hover{background:#F3F4F2;color:#0A1222}
+.row:hover{background:#F7F8F9}
+.tbtn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0;border:0;background:transparent;font:inherit;font-size:15px;font-weight:500;color:#0138AC;text-decoration:none;cursor:pointer}
+.tbtn:hover{color:#002A80;text-decoration:underline}
+.flink{color:#0A1222;text-decoration:none;background:transparent;border:0;padding:0;font:inherit;text-align:left;cursor:pointer}
+.flink:hover{color:#0138AC;text-decoration:underline}
+.ibtn{width:44px;height:44px;border:0;border-radius:10px;background:#F3F4F2;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#3D4556}
+.ibtn:hover{background:#E5E7EB;color:#0A1222}
+</style>
+</helmet>
+<div style="font-family: 'Geist', system-ui, sans-serif; color: #0A1222; background: #ffffff; font-size: 16px; line-height: 1.55">
+
+<!-- CANVAS CONTROL (not part of the page) -->
+<div style="background: #E9EBEE; border-bottom: 1px solid #D5D8DE; padding: 8px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-family: 'Geist Mono', monospace; font-size: 11px; color: #3D4556">
+<span style="margin-right: 8px; letter-spacing: 0.04em">Canvas control · not part of the page</span>
+<sc-for list="{{jumps}}" as="j" hint-placeholder-count="10">
+<button type="button" onClick="{{j.go}}" style="{{j.style}}">{{j.label}}</button>
+</sc-for>
+</div>
+
+<div style="position: relative">
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeMenu}}" style="position: absolute; inset: 0; z-index: 9"></div>
+</sc-if>
+
+<!-- HEADER -->
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.86); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 32px; min-height: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<a href="HomeV3.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0A1222">
+<img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain">
+<span style="font-family: 'Bricolage Grotesque', 'Geist', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em">Vert Robo Con</span>
+</a>
+<nav aria-label="Primary" style="display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 15px; font-weight: 500">
+<a class="navlink" href="SummitV3.dc.html">Summits</a>
+<a class="navlink" href="WatchV3.dc.html">Watch</a>
+<a class="navlink" href="ResearchV3.dc.html">Research</a>
+<a class="navlink" href="MapV3.dc.html" aria-current="page" style="background: #F3F4F2; color: #0A1222">Map</a>
+<sc-for list="{{menus}}" as="m" hint-placeholder-count="2">
+<div onKeyDown="{{m.key}}" style="position: relative">
+<button type="button" class="navlink" aria-expanded="{{m.expanded}}" aria-controls="{{m.id}}" onClick="{{m.toggle}}" style="{{m.btn}}">{{m.label}}
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{m.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{m.id}}" style="position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 320px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 16px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<sc-for list="{{m.items}}" as="i" hint-placeholder-count="6">
+<a class="mitem" href="{{i.href}}" onClick="{{i.go}}"><span style="font-size: 15px; font-weight: 600">{{i.label}}</span><span style="font-size: 13px; font-weight: 400; color: #646B7A">{{i.desc}}</span></a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</nav>
+<button type="button" onClick="{{openJoin}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Join the network</button>
+</div>
+</header>
+
+<!-- TOOLBAR -->
+<div style="padding: 14px 24px; border-bottom: 1px solid #E5E7EB; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<label style="position: relative; flex: 0 1 300px; min-width: 220px; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search organizations</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#646B7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" value="{{query}}" onChange="{{onQuery}}" placeholder="Search 120 organizations" style="width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 14px 0 40px; border: 1px solid #D5D8DE; border-radius: 12px; font: inherit; font-size: 15px; background: #ffffff">
+</label>
+<div role="group" aria-label="Robot type" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 12px; background: #F3F4F2">
+<sc-for list="{{types}}" as="t" hint-placeholder-count="6">
+<button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}"><span aria-hidden="true" style="{{t.dot}}"></span>{{t.label}} <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{t.count}}</span></button>
+</sc-for>
+</div>
+<label style="position: relative; display: inline-flex">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Application</span>
+<select value="{{app}}" onChange="{{onApp}}" style="{{appSel}}">
+<option value="all">All applications</option>
+<option value="Agriculture">Agriculture</option>
+<option value="Biodiversity Monitoring">Biodiversity Monitoring</option>
+<option value="Building Retrofit">Building Retrofit</option>
+<option value="Ocean Monitoring">Ocean Monitoring</option>
+<option value="Offshore Energy Inspection">Offshore Energy Inspection</option>
+<option value="Plastic Collection">Plastic Collection</option>
+<option value="Reef Restoration">Reef Restoration</option>
+<option value="Reforestation">Reforestation</option>
+<option value="Soil Carbon Measurement">Soil Carbon Measurement</option>
+<option value="Solar Maintenance">Solar Maintenance</option>
+<option value="Waste Sorting">Waste Sorting</option>
+<option value="Water Management">Water Management</option>
+<option value="Wildfire Response">Wildfire Response</option>
+<option value="Wind Turbine Inspection">Wind Turbine Inspection</option>
+</select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 14px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</label>
+<label style="position: relative; display: inline-flex">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Region</span>
+<select value="{{region}}" onChange="{{onRegion}}" style="{{regionSel}}">
+<option value="all">All regions</option>
+<option value="Africa">Africa</option>
+<option value="Asia">Asia</option>
+<option value="Europe">Europe</option>
+<option value="North America">North America</option>
+<option value="Oceania">Oceania</option>
+<option value="South America">South America</option>
+</select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 14px; top: 15px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</label>
+<button type="button" role="switch" aria-checked="{{deployedChecked}}" onClick="{{toggleDeployed}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; font: inherit; font-size: 15px; cursor: pointer">
+<span aria-hidden="true" style="{{switchTrack}}"><span style="{{switchKnob}}"></span></span>Deployed only</button>
+<span style="margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{countLabel}}</span>
+<button type="button" onClick="{{openSuggest}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>Suggest an organization</button>
+</div>
+
+<!-- BODY -->
+<div style="display: flex; flex-wrap: wrap-reverse">
+<!-- list -->
+<div style="flex: 1 1 400px; max-width: 460px; height: 860px; overflow-y: auto; border-right: 1px solid #E5E7EB">
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; color: #646B7A">
+<strong style="color: #0A1222; font-size: 17px">No organizations match</strong>
+<span>Try a different robot type, region or search.</span>
+<button type="button" onClick="{{clearFilters}}" style="margin-top: 6px; display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Clear filters</button>
+<button type="button" class="tbtn" onClick="{{openSuggest}}">Know one we’ve missed? Suggest it</button>
+</div>
+</sc-if>
+<ul style="margin: 0; padding: 0; list-style: none">
+<sc-for list="{{orgs}}" as="o" hint-placeholder-count="8">
+<li style="border-bottom: 1px solid #EEF0F3">
+<button type="button" class="row" onClick="{{o.pick}}" aria-current="{{o.current}}" style="{{o.rowStyle}}">
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<strong style="font-weight: 600; font-size: 16px">{{o.name}}</strong>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{o.country}} · {{o.founded}}</span>
+</span>
+<span style="font-size: 14px; color: #3D4556; line-height: 1.45">{{o.desc}}</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px">
+<span style="{{o.typeChip}}"><span aria-hidden="true" style="{{o.typeDot}}"></span>{{o.typeLabel}}</span>
+<span style="padding: 2px 8px; border-radius: 999px; background: #F3F4F2; font-size: 12px; color: #3D4556">{{o.app}}</span>
+<span style="{{o.deployChip}}">{{o.deployLabel}}</span>
+</span>
+</button>
+</li>
+</sc-for>
+</ul>
+</div>
+
+<!-- map -->
+<div style="flex: 999 1 560px; min-width: 0; position: relative; height: 860px; background: #EEF1F4; overflow: hidden; display: flex; align-items: center; justify-content: center">
+<div style="position: relative; width: 100%; aspect-ratio: 1289 / 635">
+<img src="img/world-map.svg" alt="World map showing where organizations building climate robots are headquartered" style="position: absolute; inset: 0; width: 100%; height: 100%; filter: grayscale(1) contrast(0.8) brightness(1.12); opacity: 0.7">
+<sc-for list="{{pins}}" as="p" hint-placeholder-count="18">
+<span aria-hidden="true" style="{{p.style}}">{{p.n}}</span>
+</sc-for>
+</div>
+
+<!-- toast -->
+<div role="status" style="position: absolute; left: 20px; top: 20px; z-index: 3">
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 12px; background: #0A1222; color: #ffffff; font-size: 14px; box-shadow: 0 16px 32px -16px rgba(10,18,34,0.5)">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7FD6A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>
+<span style="font-weight: 500">{{toast.msg}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #9AA3B5">{{toast.sub}}</span>
+<button type="button" aria-label="Dismiss" onClick="{{hideToast}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: #141D30; color: #C8CEDA; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+</div>
+
+<!-- detail card -->
+<sc-if value="{{hasSel}}" hint-placeholder-val="{{ true }}">
+<article style="position: absolute; top: 20px; right: 20px; z-index: 2; width: 360px; max-width: calc(100% - 40px); box-sizing: border-box; background: #ffffff; border-radius: 20px; padding: 24px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.35); display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center">
+<span style="{{sel.typeChip}}"><span aria-hidden="true" style="{{sel.typeDot}}"></span>{{sel.typeLabel}}</span>
+<sc-if value="{{sel.hiring}}" hint-placeholder-val="{{ false }}">
+<a href="JobsV3.dc.html" title="{{sel.jobsPath}}" style="display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; background: #EEF2FB; color: #0138AC; font-family: 'Geist Mono', monospace; font-size: 12px; text-decoration: none"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #0138AC"></span>{{sel.hiringLabel}}</a>
+</sc-if>
+</span>
+<span style="display: flex; gap: 6px">
+<button type="button" class="ibtn" aria-label="{{sel.copyLabel}}" onClick="{{copyLink}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg></button>
+<button type="button" class="ibtn" aria-label="Close details" onClick="{{clearSel}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</span>
+</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.05; letter-spacing: -0.02em">{{sel.name}}</h2>
+<p style="margin: 0; font-size: 15px; color: #3D4556">{{sel.desc}}</p>
+<dl style="margin: 4px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; font-size: 14px">
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">HQ</dt><dd style="margin: 0; font-weight: 500">{{sel.country}}</dd></div>
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">FOUNDED</dt><dd style="margin: 0; font-weight: 500">{{sel.founded}}</dd></div>
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">APPLICATION</dt><dd style="margin: 0; font-weight: 500">{{sel.app}}</dd></div>
+<div><dt style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A">CLIMATE ROLE</dt><dd style="margin: 0; font-weight: 500">{{sel.am}}</dd></div>
+</dl>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; margin-top: 4px; border-top: 1px solid #E5E7EB; padding-top: 6px">
+<a class="tbtn" href="{{sel.web}}">Visit website
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+<sc-if value="{{sel.hasLi}}" hint-placeholder-val="{{ true }}"><a class="tbtn" href="{{sel.li}}">LinkedIn
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a></sc-if>
+<button type="button" class="tbtn" onClick="{{suggestEdit}}">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Suggest an edit</button>
+</div>
+</article>
+</sc-if>
+
+<!-- legend + data downloads -->
+<div style="position: absolute; left: 20px; bottom: 20px; right: 20px; z-index: 4; box-sizing: border-box; background: rgba(255,255,255,0.94); backdrop-filter: blur(8px); border-radius: 16px; padding: 16px 18px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 32px">
+<div style="flex: 1 1 420px; max-width: 560px; display: flex; flex-direction: column; gap: 10px">
+<span style="display: flex; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 11px; color: #646B7A"><span>BY ROBOT TYPE</span><span>120 ORGANIZATIONS · 18 COUNTRIES</span></span>
+<span aria-hidden="true" style="display: flex; height: 10px; border-radius: 999px; overflow: hidden; gap: 2px">
+<span style="flex: 29; background: #1F9D5C"></span><span style="flex: 31; background: #0B6FB8"></span><span style="flex: 37; background: #6D5BD0"></span><span style="flex: 11; background: #D9822B"></span><span style="flex: 12; background: #A7ADB8"></span>
+</span>
+<span style="display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: #3D4556">
+<span>Aerial 37</span><span>Ground 36</span><span>Ocean 31</span><span>Robotic arm 9</span><span>Other 7</span>
+</span>
+</div>
+<div id="map-data" style="position: relative">
+<button type="button" aria-expanded="{{dlExpanded}}" aria-haspopup="dialog" onClick="{{toggleDl}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #D5D8DE; border-radius: 12px; background: #ffffff; color: #0A1222; font-family: 'Geist Mono', monospace; font-size: 12px; cursor: pointer">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg>
+Download data: <span style="color: #0138AC">CSV</span> · <span style="color: #0138AC">JSON</span> · Updated [DATE] · Licence: CC BY 4.0</button>
+<sc-if value="{{dlOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Download the map data" style="position: absolute; right: 0; bottom: calc(100% + 10px); width: 420px; box-sizing: border-box; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 20px; padding: 20px; box-shadow: 0 24px 48px -20px rgba(10,18,34,0.4); display: flex; flex-direction: column; gap: 16px; text-align: left">
+<span style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.02em">Map data</span>
+<span style="font-size: 14px; color: #3D4556">Generated from the live map, so the files always match what you see.</span>
+<span style="margin-top: 4px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">UPDATED [DATE] · LICENCE: CC BY 4.0</span>
+</span>
+<button type="button" class="ibtn" aria-label="Close data downloads" onClick="{{toggleDl}}">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{dlBtns}}" as="d" hint-placeholder-count="2">
+<button type="button" aria-busy="{{d.busy}}" onClick="{{d.go}}" style="{{d.style}}">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500">
+<sc-if value="{{d.isIdle}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"></path></svg></sc-if>
+<sc-if value="{{d.isPrep}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"></path></svg></sc-if>
+<sc-if value="{{d.isDone}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></sc-if>
+{{d.label}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px">{{d.sub}}</span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{anyPrep}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{finishDl}}" style="align-self: flex-start; min-height: 30px; padding: 0 10px; border: 1px dashed #9AA3B5; border-radius: 8px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; cursor: pointer">Canvas only · Simulate: file ready</button>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">FIELDS · ONE ROW PER ORGANIZATION</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{fieldList}}" as="fl" hint-placeholder-count="12">
+<code style="padding: 2px 8px; border-radius: 6px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 12px; color: #3D4556">{{fl.t}}</code>
+</sc-for>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">HOW TO CITE THE DATASET</span>
+<button type="button" onClick="{{copyCite}}" style="{{citeBtn}}">{{citeLabel}}</button>
+</span>
+<p style="margin: 0; padding: 12px 14px; border-radius: 12px; background: #F3F4F2; font-size: 13px; line-height: 1.5; color: #0A1222">Vert Robo Con. Vert Robo Con Map [Data set]. Updated [DATE]. Licensed under CC BY 4.0. Available at https://vert-robo-con.example/map.</p>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+</div>
+
+<!-- MAP CREDIT -->
+<div style="padding: 12px 24px; border-top: 1px solid #E5E7EB; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 24px; font-size: 13px; color: #646B7A">
+<span>Data suggested by the Vert Robo Con community and reviewed by an admin · Sample data: every organization is fictional</span>
+<button type="button" class="tbtn" onClick="{{openSuggest}}" style="font-size: 13px; min-height: 32px">Spotted a gap? Suggest an organization</button>
+</div>
+
+<!-- FOOTER -->
+<footer style="border-top: 1px solid #E5E7EB; padding: 56px 24px 32px">
+<div style="max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px">
+<div style="flex: 1.6 1 340px; display: flex; flex-direction: column; gap: 16px">
+<span style="display: flex; align-items: center; gap: 10px"><img src="img/logo.svg" alt="" style="width: 44px; height: 27px; object-fit: contain"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 18px">Vert Robo Con</span></span>
+<p style="margin: 0; max-width: 360px; font-size: 15px; color: #646B7A">An open community for people who build, fund and study robots for climate work.</p>
+<sc-if value="{{nfClosed}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{nfOpen}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>Get the monthly digest</button>
+</sc-if>
+<sc-if value="{{nfIsOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 440px">
+<div role="group" aria-label="Topics" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{nfTopics}}" as="tp" hint-placeholder-count="5">
+<button type="button" aria-pressed="{{tp.pressed}}" onClick="{{tp.toggle}}" style="{{tp.style}}">{{tp.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; gap: 8px">
+<label style="flex: 1 1 auto; display: block">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Email</span>
+<input type="email" value="{{nfEmail}}" onChange="{{setNfEmail}}" placeholder="you@example.org" autocomplete="email" style="{{nfInput}}">
+</label>
+<button type="button" onClick="{{nfSubmit}}" style="min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">Notify me</button>
+</div>
+<sc-if value="{{nfErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #B42318">Enter an email like name@example.org</span></sc-if>
+<span style="font-size: 13px; color: #646B7A">One email a month. Unsubscribe in one click. <a href="PrivacyV3.dc.html">How we use this →</a></span>
+</div>
+</sc-if>
+<sc-if value="{{nfPending}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>CHECK YOUR INBOX TO CONFIRM</span>
+<button type="button" onClick="{{nfConfirm}}" style="min-height: 30px; padding: 0 10px; border: 1px dashed #9AA3B5; border-radius: 8px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; cursor: pointer">Canvas only · Simulate: confirm email</button>
+</div>
+</sc-if>
+<sc-if value="{{nfOn}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>YOU’RE ON THE LIST</span>
+<a href="MyVRCV3.dc.html">Manage</a></span>
+</sc-if>
+</div>
+<sc-for list="{{footer}}" as="g" hint-placeholder-count="4">
+<nav aria-label="{{g.label}}" style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">{{g.title}}</span>
+<sc-for list="{{g.links}}" as="l" hint-placeholder-count="5"><a class="flink" href="{{l.href}}" onClick="{{l.go}}">{{l.label}}</a></sc-for>
+</nav>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid #E5E7EB">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+<div style="display: flex; gap: 4px">
+<a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"></path></svg></a>
+<a href="https://vert-robo-con.example/social/videos" aria-label="YouTube" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z"></path></svg></a>
+<a href="#join" aria-label="Slack: join the network" onClick="{{openJoin}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #646B7A; border-radius: 10px">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 0 0 4h2V5a2 2 0 0 0-2-2zM3 9a2 2 0 0 0 2 2h6V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2zM21 15a2 2 0 0 0-2-2h-6v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2zM15 21a2 2 0 0 0 0-4h-2v2a2 2 0 0 0 2 2zM13 3v6h2a2 2 0 0 0 0-4M11 21v-6H9a2 2 0 0 0 0 4"></path></svg></a>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- SIDE SHEETS -->
+<sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; z-index: 40">
+<button type="button" aria-label="Close" onClick="{{closeSheet}}" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: rgba(10,18,34,0.42); cursor: pointer"></button>
+
+<!-- suggest / edit sheet -->
+<sc-if value="{{isSuggest}}" hint-placeholder-val="{{ true }}">
+<aside role="dialog" aria-modal="true" aria-labelledby="sheet-title" style="position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<div style="padding: 24px 28px 18px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<span style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">{{sheetEyebrow}}</span>
+<h2 id="sheet-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{sheetTitle}}</h2>
+</span>
+<button type="button" class="ibtn" aria-label="Close" onClick="{{closeSheet}}" style="width: 44px; height: 44px; flex: 0 0 auto">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: 1 1 auto; overflow-y: auto; padding: 24px 28px 32px; display: flex; flex-direction: column; gap: 22px">
+<sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{sheetIntro}}</p>
+
+<sc-if value="{{showSummary}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="background: #FEF3F2; border: 1px solid #F4C7C1; border-radius: 14px; padding: 16px 18px; color: #B42318; display: flex; flex-direction: column; gap: 8px">
+<strong style="font-weight: 600; font-size: 15px">{{errHeading}}</strong>
+<ul style="margin: 0; padding-left: 18px; font-size: 14px; display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{errList}}" as="er" hint-placeholder-count="3">
+<li><a href="{{er.href}}" style="color: #B42318">{{er.msg}}</a></li>
+</sc-for>
+</ul>
+</div>
+</sc-if>
+
+<!-- name -->
+<div style="{{w.name}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500">Organization name<sc-if value="{{chg.name}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></span>
+<input id="f-name" type="text" value="{{f.name}}" onChange="{{set.name}}" autocomplete="organization" style="{{inp.name}}">
+</label>
+<sc-if value="{{e.name}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.name}}</span></sc-if>
+<sc-if value="{{hasDupes}}" hint-placeholder-val="{{ false }}">
+<div style="margin-top: 4px; border: 1px solid #E5E7EB; border-radius: 14px; background: #F3F4F2; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">Is it one of these?</strong><span style="font-size: 13px; color: #646B7A">It may already be on the map.</span></span>
+<sc-for list="{{dupes}}" as="dp" hint-placeholder-count="1">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; padding: 6px 6px 6px 14px; border-radius: 10px; background: #ffffff">
+<span style="display: flex; flex-direction: column; line-height: 1.35"><strong style="font-weight: 600; font-size: 15px">{{dp.name}}</strong><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #646B7A">{{dp.meta}}</span></span>
+<button type="button" class="tbtn" onClick="{{dp.edit}}" style="font-size: 14px; padding: 0 8px">Suggest an edit instead</button>
+</div>
+</sc-for>
+<span style="font-size: 13px; color: #646B7A">Not on the list? Carry on below.</span>
+</div>
+</sc-if>
+</div>
+
+<!-- website -->
+<div style="{{w.web}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500">Website<sc-if value="{{chg.web}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></span>
+<input id="f-web" type="url" value="{{f.web}}" onChange="{{set.web}}" placeholder="https://" style="{{inp.web}}">
+</label>
+<sc-if value="{{e.web}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.web}}</span></sc-if>
+</div>
+
+<!-- country + city -->
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<div style="{{wx.country}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500">HQ country<sc-if value="{{chg.country}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></span>
+<input id="f-country" type="text" list="vrc-countries" role="combobox" value="{{f.country}}" onChange="{{set.country}}" placeholder="Start typing" autocomplete="country-name" style="{{inp.country}}">
+</label>
+<datalist id="vrc-countries">
+<option value="Australia"></option><option value="Brazil"></option><option value="Canada"></option><option value="Chile"></option><option value="France"></option><option value="Germany"></option><option value="India"></option><option value="Japan"></option><option value="Kenya"></option><option value="Netherlands"></option><option value="New Zealand"></option><option value="Nigeria"></option><option value="Norway"></option><option value="Singapore"></option><option value="South Africa"></option><option value="Spain"></option><option value="United Kingdom"></option><option value="United States"></option>
+</datalist>
+<sc-if value="{{e.country}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.country}}</span></sc-if>
+</div>
+<div style="{{wx.city}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500"><span>City <span style="font-weight: 400; color: #646B7A">(optional)</span></span><sc-if value="{{chg.city}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></span>
+<input id="f-city" type="text" value="{{f.city}}" onChange="{{set.city}}" autocomplete="address-level2" style="{{inp.city}}">
+</label>
+</div>
+</div>
+
+<!-- robot type -->
+<fieldset id="f-type" style="{{w.type}}">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500">Robot type <sc-if value="{{chg.type}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></legend>
+<div role="radiogroup" aria-label="Robot type" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{typeOpts}}" as="r" hint-placeholder-count="5">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.style}}"><span aria-hidden="true" style="{{r.dot}}"></span>{{r.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{e.type}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.type}}</span></sc-if>
+</fieldset>
+
+<!-- application -->
+<div style="{{w.app}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500">Application<sc-if value="{{chg.app}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></span>
+<span style="position: relative; display: block">
+<select id="f-app" value="{{f.app}}" onChange="{{set.app}}" style="{{selApp}}">
+<option value="">Choose one</option>
+<option value="Agriculture">Agriculture</option>
+<option value="Biodiversity Monitoring">Biodiversity Monitoring</option>
+<option value="Building Retrofit">Building Retrofit</option>
+<option value="Ocean Monitoring">Ocean Monitoring</option>
+<option value="Offshore Energy Inspection">Offshore Energy Inspection</option>
+<option value="Plastic Collection">Plastic Collection</option>
+<option value="Reef Restoration">Reef Restoration</option>
+<option value="Reforestation">Reforestation</option>
+<option value="Soil Carbon Measurement">Soil Carbon Measurement</option>
+<option value="Solar Maintenance">Solar Maintenance</option>
+<option value="Waste Sorting">Waste Sorting</option>
+<option value="Water Management">Water Management</option>
+<option value="Wildfire Response">Wildfire Response</option>
+<option value="Wind Turbine Inspection">Wind Turbine Inspection</option>
+<option value="Other">Other</option>
+</select>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 16px; top: 17px; pointer-events: none"><path d="M6 9l6 6 6-6"></path></svg>
+</span>
+</label>
+<sc-if value="{{e.app}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.app}}</span></sc-if>
+<sc-if value="{{appIsOther}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px">
+<span style="font-size: 14px; font-weight: 500">Which application?</span>
+<input id="f-appOther" type="text" value="{{f.appOther}}" onChange="{{set.appOther}}" style="{{inp.appOther}}">
+</label>
+<sc-if value="{{e.appOther}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.appOther}}</span></sc-if>
+</sc-if>
+</div>
+
+<!-- deployed -->
+<fieldset id="f-dep" style="{{w.dep}}">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500">Deployed in the field? <sc-if value="{{chg.dep}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></legend>
+<div role="radiogroup" aria-label="Deployed in the field?" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{depOpts}}" as="r" hint-placeholder-count="3">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.style}}">{{r.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{e.dep}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.dep}}</span></sc-if>
+</fieldset>
+
+<!-- climate role -->
+<fieldset id="f-role" style="{{w.role}}">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500">Climate role <sc-if value="{{chg.role}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></legend>
+<div role="radiogroup" aria-label="Climate role" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{roleOpts}}" as="r" hint-placeholder-count="3">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.style}}">{{r.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{e.role}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.role}}</span></sc-if>
+</fieldset>
+
+<!-- description -->
+<div style="{{w.desc}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500">One-line description<sc-if value="{{chg.desc}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></span>
+<textarea id="f-desc" rows="2" maxlength="140" value="{{f.desc}}" onChange="{{set.desc}}" style="{{ta.desc}}"></textarea>
+</label>
+<span style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #646B7A"><span>What the robots do, in plain words. Shown on the map card.</span><span style="{{descCountStyle}}">{{descCount}}</span></span>
+<sc-if value="{{e.desc}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.desc}}</span></sc-if>
+</div>
+
+<!-- founded + linkedin -->
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<div style="{{wx.founded}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500"><span>Founded <span style="font-weight: 400; color: #646B7A">(optional)</span></span></span>
+<input id="f-founded" type="text" inputmode="numeric" maxlength="4" value="{{f.founded}}" onChange="{{set.founded}}" placeholder="YYYY" style="{{inp.founded}}">
+</label>
+<sc-if value="{{chg.founded}}" hint-placeholder-val="{{ false }}"><span style="{{tagChangedSelf}}">CHANGED</span></sc-if>
+<sc-if value="{{e.founded}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.founded}}</span></sc-if>
+</div>
+<div style="{{wx.li}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; font-weight: 500"><span>LinkedIn <span style="font-weight: 400; color: #646B7A">(optional)</span></span><sc-if value="{{chg.li}}" hint-placeholder-val="{{ false }}"><span style="{{tagChanged}}">CHANGED</span></sc-if></span>
+<input id="f-li" type="url" value="{{f.li}}" onChange="{{set.li}}" placeholder="https://" style="{{inp.li}}">
+</label>
+</div>
+</div>
+
+<!-- edit only: what changed -->
+<sc-if value="{{isEdit}}" hint-placeholder-val="{{ false }}">
+<div style="{{w.why}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; font-weight: 500">What changed and how do you know? <span style="font-weight: 400; color: #646B7A">(optional)</span></span>
+<textarea id="f-why" rows="3" value="{{f.why}}" onChange="{{set.why}}" style="{{ta.why}}"></textarea>
+</label>
+<span style="font-size: 13px; color: #646B7A">A link to a source helps us review it faster.</span>
+</div>
+</sc-if>
+
+<!-- relationship -->
+<fieldset id="f-rel" style="{{w.rel}}">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500">Your relationship</legend>
+<div role="radiogroup" aria-label="Your relationship" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{relOpts}}" as="r" hint-placeholder-count="2">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.style}}">{{r.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{e.rel}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.rel}}</span></sc-if>
+</fieldset>
+
+<!-- email -->
+<div style="{{w.email}}">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; font-weight: 500">Your email</span>
+<input id="f-email" type="email" value="{{f.email}}" onChange="{{set.email}}" autocomplete="email" style="{{inp.email}}">
+</label>
+<span style="font-size: 13px; color: #646B7A">So we can tell you when it’s live.</span>
+<sc-if value="{{e.email}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{m.email}}</span></sc-if>
+</div>
+
+<!-- consent + spam check (ALTCHA, self-hosted) -->
+<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 4px; border-top: 1px solid #E5E7EB">
+<p style="margin: 8px 0 0; font-size: 13px; color: #646B7A">We use your email only to update you about this suggestion. <a href="PrivacyV3.dc.html">How we use this →</a></p>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A">
+<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</sc-if>
+
+<!-- confirmation -->
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #1DB46C; display: flex; align-items: center; justify-content: center">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<div role="status" style="display: flex; flex-direction: column; gap: 10px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">{{doneTitle}}</h3>
+<span style="align-self: flex-start; padding: 4px 10px; border-radius: 8px; background: #F3F4F2; font-family: 'Geist Mono', monospace; font-size: 13px; color: #0A1222">REF MAP-0457</span>
+</div>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{doneLede}}</p>
+<p style="margin: 0; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: #F3F4F2; font-size: 14px; color: #3D4556">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 3px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8v.01"></path></svg>{{doneNote}}</p>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{nextSteps}}" as="ns" hint-placeholder-count="3">
+<li style="display: flex; gap: 14px">
+<span style="display: flex; flex-direction: column; align-items: center"><span style="{{ns.disc}}">{{ns.n}}</span><span aria-hidden="true" style="{{ns.line}}"></span></span>
+<span style="display: flex; flex-direction: column; padding-bottom: 14px"><strong style="font-weight: 600; font-size: 15px">{{ns.title}}</strong><span style="font-size: 14px; color: #646B7A">{{ns.body}}</span></span>
+</li>
+</sc-for>
+</ol>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">Track status</a>
+<button type="button" onClick="{{suggestAnother}}" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Suggest another</button>
+</div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We’ve emailed a receipt and a link to manage this to {{doneEmail}}.</p>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 16px 28px; border-top: 1px solid #E5E7EB; background: #ffffff; display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<button type="button" class="tbtn" onClick="{{closeSheet}}" style="color: #3D4556">Cancel</button>
+<button type="button" onClick="{{submit}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">{{submitLabel}}</button>
+</div>
+</sc-if>
+</aside>
+</sc-if>
+
+<!-- join sheet -->
+<sc-if value="{{isJoin}}" hint-placeholder-val="{{ false }}">
+<aside id="join" role="dialog" aria-modal="true" aria-labelledby="join-title" style="position: absolute; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100%; background: #ffffff; box-shadow: -24px 0 48px -24px rgba(10,18,34,0.35); display: flex; flex-direction: column">
+<div style="padding: 24px 28px 18px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<span style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">COMMUNITY · FREE</span>
+<h2 id="join-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">Join the network</h2>
+</span>
+<button type="button" class="ibtn" aria-label="Close" onClick="{{closeSheet}}" style="width: 44px; height: 44px; flex: 0 0 auto">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="flex: 1 1 auto; overflow-y: auto; padding: 24px 28px 32px; display: flex; flex-direction: column; gap: 22px">
+<sc-if value="{{jNotDone}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 16px; color: #3D4556">Takes about a minute. Join the Slack community, or get email updates only.</p>
+<sc-if value="{{jf.hasSummary}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border: 1px solid #F4C7C3; background: #FEF3F2; border-radius: 12px; padding: 16px 18px; color: #B42318; display: flex; flex-direction: column; gap: 6px">
+<strong style="font-weight: 600; font-size: 16px">{{jf.summaryTitle}}</strong>
+<ul style="margin: 0; padding-left: 18px; font-size: 15px"><sc-for list="{{jf.summary}}" as="je" hint-placeholder-count="3"><li><a href="{{je.href}}" style="color: #B42318">{{je.text}}</a></li></sc-for></ul>
+</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="join-name" style="font-size: 15px; font-weight: 500">Full name</label>
+<input id="join-name" type="text" autocomplete="name" value="{{jn.name}}" onChange="{{jSet.name}}" onBlur="{{jf.blurName}}" aria-invalid="{{jf.nameInvalid}}" style="{{jInp.name}}">
+<sc-if value="{{jE.name}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{jE.name}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="join-email" style="font-size: 15px; font-weight: 500">Email</label>
+<input id="join-email" type="email" autocomplete="email" value="{{jn.email}}" onChange="{{jSet.email}}" onBlur="{{jf.blurEmail}}" aria-invalid="{{jf.emailInvalid}}" style="{{jInp.email}}">
+<span style="font-size: 13px; color: #646B7A">We send your invite or the digest here. Nothing else without asking.</span>
+<sc-if value="{{jE.email}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{jE.email}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="join-role" style="font-size: 15px; font-weight: 500">Role <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<select id="join-role" value="{{jn.role}}" onChange="{{jf.setRole}}" style="{{jf.selectStyle}}">
+<option value="">Choose one</option>
+<option value="Researcher">Researcher</option>
+<option value="Founder or startup">Founder or startup</option>
+<option value="Investor or funder">Investor or funder</option>
+<option value="Policy or government">Policy or government</option>
+<option value="NGO">NGO</option>
+<option value="Student">Student</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div style="position: relative; display: flex; flex-direction: column; gap: 6px">
+<label for="join-country" style="font-size: 15px; font-weight: 500">Country <span style="font-weight: 400; color: #646B7A">(optional)</span></label>
+<input id="join-country" type="text" role="combobox" aria-autocomplete="list" aria-expanded="{{jf.countryExpanded}}" aria-controls="join-country-list" autocomplete="off" value="{{jn.country}}" onChange="{{jf.setCountry}}" placeholder="Start typing, e.g. Kenya" style="{{jf.countryInput}}">
+<sc-if value="{{jf.hasSugg}}" hint-placeholder-val="{{ false }}">
+<ul id="join-country-list" role="listbox" aria-label="Countries" style="margin: 0; padding: 6px; list-style: none; border: 1px solid #E5E7EB; border-radius: 12px; background: #ffffff; box-shadow: 0 16px 32px -16px rgba(10,18,34,0.3); display: flex; flex-direction: column">
+<sc-for list="{{jf.sugg}}" as="jc" hint-placeholder-count="4"><li role="none"><button type="button" role="option" aria-selected="false" onClick="{{jc.pick}}" style="width: 100%; min-height: 40px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 15px; text-align: left; cursor: pointer; color: #0A1222">{{jc.label}}</button></li></sc-for>
+</ul>
+</sc-if>
+</div>
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500">Interests <span style="font-weight: 400; color: #646B7A">(optional)</span></legend>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{jf.interests}}" as="ji" hint-placeholder-count="7"><button type="button" aria-pressed="{{ji.pressed}}" onClick="{{ji.toggle}}" style="{{ji.style}}">{{ji.label}}</button></sc-for></div>
+</fieldset>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span id="join-path-label" style="font-size: 15px; font-weight: 500">How would you like to take part?</span>
+<div role="radiogroup" aria-labelledby="join-path-label" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{jPaths}}" as="r" hint-placeholder-count="2">
+<button type="button" role="radio" aria-checked="{{r.checked}}" onClick="{{r.pick}}" style="{{r.card}}">
+<span aria-hidden="true" style="{{r.ring}}"><span style="{{r.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; font-size: 16px">{{r.title}}<sc-if value="{{r.rec}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em">RECOMMENDED</span></sc-if></span>
+<span style="font-size: 14px; color: #3D4556">{{r.desc}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div id="join-coc" style="display: flex; align-items: flex-start; gap: 6px">
+<button type="button" role="checkbox" aria-checked="{{jCocChecked}}" aria-labelledby="join-coc-label" aria-invalid="{{jCocInvalid}}" onClick="{{toggleCoc}}" style="flex: 0 0 auto; width: 44px; height: 44px; margin-left: -10px; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; padding: 0"><span aria-hidden="true" style="{{jCocBox}}"><sc-if value="{{jn.coc}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></sc-if></span></button>
+<span style="padding-top: 10px; display: flex; flex-direction: column; gap: 4px"><span id="join-coc-label" style="font-size: 15px; font-weight: 500">I’ve read the <a href="ResearchV3.dc.html">code of conduct</a></span>
+<sc-if value="{{jE.coc}}" hint-placeholder-val="{{ false }}"><span style="{{errText}}">{{jE.coc}}</span></sc-if></span>
+</div>
+</div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We use your name and email to send your invite or digest, and nothing else. <a href="PrivacyV3.dc.html">How we use this →</a></p>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #646B7A">Slack requests are approved by an admin.</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #646B7A"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"></path></svg>Protected by ALTCHA, a privacy-friendly spam check (no tracking)</span>
+</div>
+</sc-if>
+<sc-if value="{{jDone}}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{jSlack}}" hint-placeholder-val="{{ true }}">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #FFF4E5; display: flex; align-items: center; justify-content: center">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A4B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+</sc-if>
+<sc-if value="{{jMail}}" hint-placeholder-val="{{ false }}">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; background: #E8F6EE; display: flex; align-items: center; justify-content: center">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B7A47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+</sc-if>
+<div role="status" style="display: flex; flex-direction: column; gap: 10px">
+<h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -0.02em">{{joinTitle}}</h3>
+<sc-if value="{{jSlack}}" hint-placeholder-val="{{ true }}"><span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-family: 'Geist Mono', monospace; font-size: 12px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #D9822B"></span>PENDING APPROVAL</span></sc-if>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: #646B7A">REFERENCE · <span style="color: #0A1222">MBR-2026-0312</span></span>
+</div>
+<p style="margin: 0; font-size: 16px; color: #3D4556">{{joinLede}}</p>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #646B7A">WHAT HAPPENS NEXT</span>
+<sc-if value="{{jSlack}}" hint-placeholder-val="{{ true }}">
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="{{jStepNum}}">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">An admin reviews your request</strong><span style="font-size: 14px; color: #3D4556">Typically within 24–48 hours. Follow the status in <a href="MyVRCV3.dc.html">My VRC</a>.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{jStepNum}}">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">Accept the invite</strong><span style="font-size: 14px; color: #3D4556">Slack emails it once your request is approved. Check spam if it isn’t there.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{jStepNum}}">3</span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px"><strong style="font-weight: 600; font-size: 15px">Say hello in #welcome</strong>
+<span style="padding: 14px 16px; border-radius: 12px; background: #F3F4F2; font-size: 15px; color: #0A1222">{{jIntro}}</span>
+<span style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{jCopy}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>Copy intro</button><span aria-live="polite" style="font-size: 14px; font-weight: 500; color: #0B7A47">{{jCopied}}</span></span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{jStepNum}}">4</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">Try #jobs and #[CHANNEL]</strong><span style="font-size: 14px; color: #3D4556">Open roles, plus the people working on your topic.</span></span></li>
+</ol>
+</sc-if>
+<sc-if value="{{jMail}}" hint-placeholder-val="{{ false }}">
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 14px"><span style="{{jStepNum}}">1</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">Confirm your email</strong><span style="font-size: 14px; color: #3D4556">One click on the link we just sent.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{jStepNum}}">2</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">Your first digest arrives on [DATE]</strong><span style="font-size: 14px; color: #3D4556">One email a month. Unsubscribe in one click.</span></span></li>
+<li style="display: flex; gap: 14px"><span style="{{jStepNum}}">3</span><span style="display: flex; flex-direction: column"><strong style="font-weight: 600; font-size: 15px">Switch to Slack any time</strong><span style="font-size: 14px; color: #3D4556">From the Manage link in every email.</span></span></li>
+</ol>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 12px">
+<sc-if value="{{jResendWait}}" hint-placeholder-val="{{ true }}">
+<button type="button" disabled="disabled" aria-disabled="true" style="min-height: 44px; padding: 0 4px; border: 0; background: transparent; font: inherit; font-size: 15px; color: #646B7A; cursor: not-allowed">Didn’t get our email? Resend in <span style="font-family: 'Geist Mono', monospace">0:59</span></button>
+<button type="button" onClick="{{jTick}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 10px; border: 1px dashed #A7ADB8; border-radius: 8px; background: #F3F4F2; color: #3D4556; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em; cursor: pointer">CANVAS · Simulate: a minute passes</button>
+</sc-if>
+<sc-if value="{{jResendReady}}" hint-placeholder-val="{{ false }}">
+<button type="button" class="tbtn" onClick="{{jResend}}">Didn’t get our email? Resend</button>
+</sc-if>
+<sc-if value="{{jResent}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; color: #0B7A47; font-weight: 500"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #1DB46C"></span>Sent again to {{joinEmail}}.</span>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="MyVRCV3.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; background: #0138AC; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none">{{joinManageLabel}}</a>
+<button type="button" onClick="{{closeSheet}}" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #D5D8DE; background: #ffffff; color: #0A1222; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">Back to the map</button>
+</div>
+<p style="margin: 0; font-size: 13px; color: #646B7A">We’ve emailed a receipt and a link to manage this to {{joinEmail}}. Questions? <a href="mailto:hello@vert-robo-con.example">hello@vert-robo-con.example</a></p>
+</sc-if>
+</div>
+<sc-if value="{{jNotDone}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 16px 28px; border-top: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<button type="button" class="tbtn" onClick="{{closeSheet}}" style="color: #3D4556">Cancel</button>
+<button type="button" onClick="{{joinSubmit}}" style="min-height: 48px; padding: 0 22px; border: 0; border-radius: 12px; background: #0138AC; color: #ffffff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer">{{joinSubmitLabel}}</button>
+</div>
+</sc-if>
+</aside>
+</sc-if>
+</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1592}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.F0 = { name: '', web: '', country: '', city: '', type: '', app: '', appOther: '', dep: '', role: '', desc: '', founded: '', li: '', rel: '', email: '', why: '' };
+this.T = {
+Aerial: { label: 'Aerial', color: '#6D5BD0', count: 37 },
+Ground: { label: 'Ground', color: '#1F9D5C', count: 36 },
+Ocean: { label: 'Ocean', color: '#0B6FB8', count: 31 },
+Arm: { label: 'Robotic arm', color: '#D9822B', count: 9 },
+Other: { label: 'Other', color: '#A7ADB8', count: 7 }
+};
+this.ALL = [
+{ name: 'Kelpcombe Robotics', country: 'Singapore', region: 'Asia', founded: 2014, type: 'Ocean', app: 'Ocean Monitoring', deployed: true, am: 'Adaptation', jobs: '[N]', web: 'https://kelpcombe-robotics.example/', li: '', desc: 'A solar-powered surface vessel that records temperature, oxygen and acidity along coastal transects for months at a time.' },
+{ name: 'Ploverhollow Dynamics', country: 'Brazil', region: 'South America', founded: 2022, type: 'Ocean', app: 'Ocean Monitoring', deployed: true, am: 'Adaptation', web: 'https://ploverhollow-dynamics.example/', li: '', desc: 'A small diving robot that records temperature, oxygen and acidity along coastal transects for months at a time.' },
+{ name: 'Osierfen Robotics', country: 'Brazil', region: 'South America', founded: 2013, type: 'Ocean', app: 'Offshore Energy Inspection', deployed: true, am: 'Mitigation', web: 'https://osierfen-robotics.example/', li: '', desc: 'A small diving robot that inspects cables, foundations and moorings at offshore energy sites.' },
+{ name: 'Heathmere Dynamics', country: 'Chile', region: 'South America', founded: 2021, type: 'Ocean', app: 'Reef Restoration', deployed: true, am: 'Adaptation', web: 'https://heathmere-dynamics.example/', li: '', desc: 'A small diving robot that plants coral fragments on damaged reef and returns to measure their growth.' },
+{ name: 'Nettleburrow Works', country: 'Canada', region: 'North America', founded: 2020, type: 'Ocean', app: 'Plastic Collection', deployed: true, am: 'Both', web: 'https://nettleburrow-works.example/', li: '', desc: 'An uncrewed catamaran that skims floating litter from harbours and river mouths.' },
+{ name: 'Tidecombe Field Robotics', country: 'New Zealand', region: 'Oceania', founded: 2015, type: 'Ocean', app: 'Reef Restoration', deployed: true, am: 'Adaptation', web: 'https://tidecombe-field-robotics.example/', li: '', desc: 'An autonomous underwater vehicle that plants coral fragments on damaged reef and returns to measure their growth.' },
+{ name: 'Cobblecombe Works', country: 'Japan', region: 'Asia', founded: 2014, type: 'Ocean', app: 'Plastic Collection', deployed: true, am: 'Both', web: 'https://cobblecombe-works.example/', li: '', desc: 'A solar-powered surface vessel that skims floating litter from harbours and river mouths.' },
+{ name: 'Osierwick Systems', country: 'Kenya', region: 'Africa', founded: 2019, type: 'Ocean', app: 'Reef Restoration', deployed: true, am: 'Adaptation', web: 'https://osierwick-systems.example/', li: '', desc: 'An autonomous underwater vehicle that plants coral fragments on damaged reef and returns to measure their growth.' },
+{ name: 'Brackstead Collective', country: 'Nigeria', region: 'Africa', founded: 2013, type: 'Ocean', app: 'Offshore Energy Inspection', deployed: true, am: 'Mitigation', web: 'https://brackstead-collective.example/', li: '', desc: 'A floating robotic platform that inspects cables, foundations and moorings at offshore energy sites.' },
+{ name: 'Alderford Works', country: 'United Kingdom', region: 'Europe', founded: 2008, type: 'Ocean', app: 'Ocean Monitoring', deployed: true, am: 'Adaptation', web: 'https://alderford-works.example/', li: '', desc: 'A remotely operated sub that records temperature, oxygen and acidity along coastal transects for months at a time.' },
+{ name: 'Mosswick Dynamics', country: 'Canada', region: 'North America', founded: 2017, type: 'Ocean', app: 'Offshore Energy Inspection', deployed: true, am: 'Mitigation', web: 'https://mosswick-dynamics.example/', li: '', desc: 'A solar-powered surface vessel that inspects cables, foundations and moorings at offshore energy sites.' },
+{ name: 'Ploverridge Instruments', country: 'Canada', region: 'North America', founded: 2009, type: 'Aerial', app: 'Reforestation', deployed: true, am: 'Mitigation', web: 'https://ploverridge-instruments.example/', li: '', desc: 'A drone fleet that scatters seed pods over cleared slopes and logs which ones take root.' },
+{ name: 'Tansywick Dynamics', country: 'Norway', region: 'Europe', founded: 2022, type: 'Aerial', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://tansywick-dynamics.example/', li: '', desc: 'A small quadcopter that weeds and thins crops row by row so farms can cut fertiliser and diesel.' },
+{ name: 'Mosscombe Dynamics', country: 'South Africa', region: 'Africa', founded: 2013, type: 'Aerial', app: 'Reforestation', deployed: true, am: 'Mitigation', web: 'https://mosscombe-dynamics.example/', li: '', desc: 'A drone fleet that scatters seed pods over cleared slopes and logs which ones take root.' },
+{ name: 'Marramburrow Field Robotics', country: 'Netherlands', region: 'Europe', founded: 2020, type: 'Aerial', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://marramburrow-field-robotics.example/', li: '', desc: 'A drone fleet that weeds and thins crops row by row so farms can cut fertiliser and diesel.' },
+{ name: 'Thistleburrow Field Robotics', country: 'Australia', region: 'Oceania', founded: 2013, type: 'Aerial', app: 'Biodiversity Monitoring', deployed: true, am: 'Adaptation', web: 'https://thistleburrow-field-robotics.example/', li: '', desc: 'A drone fleet that counts birds, insects and grazing animals from repeat survey routes.' },
+{ name: 'Brackhollow Collective', country: 'Australia', region: 'Oceania', founded: 2011, type: 'Aerial', app: 'Wind Turbine Inspection', deployed: true, am: 'Mitigation', web: 'https://brackhollow-collective.example/', li: '', desc: 'A small quadcopter that climbs or circles turbine blades to find cracks before they spread.' },
+{ name: 'Bramblemere Works', country: 'France', region: 'Europe', founded: 2022, type: 'Aerial', app: 'Wind Turbine Inspection', deployed: true, am: 'Mitigation', web: 'https://bramblemere-works.example/', li: '', desc: 'A fixed-wing survey drone that climbs or circles turbine blades to find cracks before they spread.' },
+{ name: 'Gorsereach Systems', country: 'Spain', region: 'Europe', founded: 2019, type: 'Aerial', app: 'Biodiversity Monitoring', deployed: true, am: 'Adaptation', web: 'https://gorsereach-systems.example/', li: '', desc: 'A small quadcopter that counts birds, insects and grazing animals from repeat survey routes.' },
+{ name: 'Cloverstead Dynamics', country: 'India', region: 'Asia', founded: 2021, type: 'Aerial', app: 'Reforestation', deployed: true, am: 'Mitigation', web: 'https://cloverstead-dynamics.example/', li: '', desc: 'A small quadcopter that scatters seed pods over cleared slopes and logs which ones take root.' },
+{ name: 'Rilllark Autonomy', country: 'Kenya', region: 'Africa', founded: 2020, type: 'Aerial', app: 'Wildfire Response', deployed: true, am: 'Adaptation', web: 'https://rilllark-autonomy.example/', li: '', desc: 'A fixed-wing survey drone that patrols dry woodland at night and flags new hot spots for local crews.' },
+{ name: 'Tideridge Works', country: 'Spain', region: 'Europe', founded: 2015, type: 'Aerial', app: 'Wildfire Response', deployed: true, am: 'Adaptation', web: 'https://tideridge-works.example/', li: '', desc: 'A drone fleet that patrols dry woodland at night and flags new hot spots for local crews.' },
+{ name: 'Rowanburrow Instruments', country: 'United States', region: 'North America', founded: 2017, type: 'Ground', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://rowanburrow-instruments.example/', li: '', desc: 'A compact electric robot that weeds and thins crops row by row so farms can cut fertiliser and diesel.' },
+{ name: 'Nettlelark Collective', country: 'Kenya', region: 'Africa', founded: 2018, type: 'Ground', app: 'Solar Maintenance', deployed: true, am: 'Mitigation', web: 'https://nettlelark-collective.example/', li: '', desc: 'A tracked rover that cleans and checks panel rows on large solar farms without using fresh water.' },
+{ name: 'Shoallark Works', country: 'Germany', region: 'Europe', founded: 2008, type: 'Ground', app: 'Soil Carbon Measurement', deployed: true, am: 'Mitigation', web: 'https://shoallark-works.example/', li: '', desc: 'A wheeled field robot that drills shallow cores across fields to map how much carbon the soil holds.' },
+{ name: 'Rillholm Autonomy', country: 'South Africa', region: 'Africa', founded: 2023, type: 'Ground', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://rillholm-autonomy.example/', li: '', desc: 'A tracked rover that weeds and thins crops row by row so farms can cut fertiliser and diesel.' },
+{ name: 'Thistlegrove Collective', country: 'Japan', region: 'Asia', founded: 2016, type: 'Ground', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://thistlegrove-collective.example/', li: '', desc: 'A tracked rover that weeds and thins crops row by row so farms can cut fertiliser and diesel.' },
+{ name: 'Puffinridge Dynamics', country: 'Netherlands', region: 'Europe', founded: 2020, type: 'Ground', app: 'Soil Carbon Measurement', deployed: true, am: 'Mitigation', web: 'https://puffinridge-dynamics.example/', li: '', desc: 'A compact electric robot that drills shallow cores across fields to map how much carbon the soil holds.' },
+{ name: 'Fernwhistle Collective', country: 'Chile', region: 'South America', founded: 2012, type: 'Ground', app: 'Solar Maintenance', deployed: true, am: 'Mitigation', web: 'https://fernwhistle-collective.example/', li: '', desc: 'A tracked rover that cleans and checks panel rows on large solar farms without using fresh water.' },
+{ name: 'Kelpford Systems', country: 'Kenya', region: 'Africa', founded: 2022, type: 'Ground', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://kelpford-systems.example/', li: '', desc: 'A compact electric robot that weeds and thins crops row by row so farms can cut fertiliser and diesel.' },
+{ name: 'Rillreach Systems', country: 'New Zealand', region: 'Oceania', founded: 2018, type: 'Ground', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://rillreach-systems.example/', li: '', desc: 'A tracked rover that weeds and thins crops row by row so farms can cut fertiliser and diesel.' },
+{ name: 'Cobblehollow Labs', country: 'India', region: 'Asia', founded: 2020, type: 'Arm', app: 'Waste Sorting', deployed: true, am: 'Mitigation', web: 'https://cobblehollow-labs.example/', li: '', desc: 'A wheeled field robot that picks recyclable material off fast conveyor belts at sorting plants.' },
+{ name: 'Puffinhollow Labs', country: 'Australia', region: 'Oceania', founded: 2023, type: 'Arm', app: 'Building Retrofit', deployed: true, am: 'Mitigation', web: 'https://puffinhollow-labs.example/', li: '', desc: 'A robotic arm cell that sprays insulation into wall cavities of older homes with minimal disruption.' },
+{ name: 'Quillhollow Labs', country: 'United States', region: 'North America', founded: 2020, type: 'Arm', app: 'Waste Sorting', deployed: true, am: 'Mitigation', web: 'https://quillhollow-labs.example/', li: '', desc: 'A wheeled field robot that picks recyclable material off fast conveyor belts at sorting plants.' },
+{ name: 'Brackford Systems', country: 'Chile', region: 'South America', founded: 2018, type: 'Arm', app: 'Waste Sorting', deployed: true, am: 'Mitigation', web: 'https://brackford-systems.example/', li: '', desc: 'A modular robot kit that picks recyclable material off fast conveyor belts at sorting plants.' },
+{ name: 'Wrenmere Labs', country: 'India', region: 'Asia', founded: 2020, type: 'Arm', app: 'Waste Sorting', deployed: true, am: 'Mitigation', web: 'https://wrenmere-labs.example/', li: '', desc: 'A tracked rover that picks recyclable material off fast conveyor belts at sorting plants.' },
+{ name: 'Cloverreach Systems', country: 'France', region: 'Europe', founded: 2008, type: 'Other', app: 'Water Management', deployed: true, am: 'Adaptation', web: 'https://cloverreach-systems.example/', li: '', desc: 'A drone that docks on a mobile base that samples rivers and reservoirs and warns operators about rising pollution.' },
+{ name: 'Driftfield Labs', country: 'Brazil', region: 'South America', founded: 2019, type: 'Other', app: 'Solar Maintenance', deployed: true, am: 'Mitigation', web: 'https://driftfield-labs.example/', li: '', desc: 'A robotic arm cell that cleans and checks panel rows on large solar farms without using fresh water.' },
+{ name: 'Bramblehollow Dynamics', country: 'South Africa', region: 'Africa', founded: 2010, type: 'Other', app: 'Wildfire Response', deployed: true, am: 'Adaptation', web: 'https://bramblehollow-dynamics.example/', li: '', desc: 'An air-and-ground robot pair that patrols dry woodland at night and flags new hot spots for local crews.' },
+{ name: 'Bracklark Machines', country: 'Kenya', region: 'Africa', founded: 2009, type: 'Other', app: 'Agriculture', deployed: true, am: 'Both', web: 'https://bracklark-machines.example/', li: '', desc: 'A drone that docks on a mobile base that weeds and thins crops row by row so farms can cut fertiliser and diesel.' }
+];
+this.state = Object.assign(this.base(), { nf: 'closed', nfEmail: '', nfTried: false, topics: ['digest'] });
+}
+base() {
+return { type: 'all', query: '', deployed: false, app: 'all', region: 'all', sel: 'Kelpcombe Robotics', menu: null, toast: null, dl: false, csv: 'idle', json: 'idle', cited: false,
+sheet: null, mode: 'new', editOf: null, f: Object.assign({}, this.F0), tried: false, done: false,
+jn: { name: '', email: '', role: '', country: '', interests: [], path: 'slack', dir: false, coc: false }, jTried: false, jDone: false,
+jCountryOpen: false, jBlurName: false, jBlurEmail: false, jCopied: false, jResendReady: false, jResent: false };
+}
+org(n) { return this.ALL.find((o) => o.name === n); }
+slug(n) { return n.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
+prefill(o) {
+return Object.assign({}, this.F0, { name: o.name, web: o.web, country: o.country, type: o.type, app: o.app, dep: o.deployed ? 'Yes' : 'Not yet', role: o.am, desc: o.desc, founded: String(o.founded), li: o.li });
+}
+openSuggest() {
+this.setState({ sheet: 'suggest', mode: 'new', editOf: null, f: Object.assign({}, this.F0), tried: false, done: false, menu: null, dl: false });
+}
+startEdit(n) {
+const o = this.org(n);
+if (!o) return;
+this.setState({ sheet: 'suggest', mode: 'edit', editOf: n, f: this.prefill(o), tried: false, done: false, menu: null, dl: false });
+}
+renderVals() {
+const s = this.state;
+const T = this.T;
+const MONO = "font-family: 'Geist Mono', monospace; ";
+const emailOk = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim());
+const chip = () => 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: #F3F4F2; font-size: 12px; color: #0A1222';
+const dot = (c) => 'width: 8px; height: 8px; border-radius: 50%; background: ' + c + '; display: inline-block';
+
+/* canvas jumps */
+const SG = this.org('Kelpcombe Robotics');
+const J = [
+['Page (closed)', {}],
+['Suggest sheet', { sheet: 'suggest' }],
+['Duplicate check', { sheet: 'suggest', f: Object.assign({}, this.F0, { name: 'Plover' }) }],
+['Edit mode', { sheet: 'suggest', mode: 'edit', editOf: SG.name, f: Object.assign(this.prefill(SG), { web: 'https://kelpcombe.example/' }) }],
+['Error summary', { sheet: 'suggest', tried: true }],
+['Submitted', { sheet: 'suggest', done: true }],
+['Download popover', { dl: true }],
+['Link copied', { toast: { msg: 'Link copied', sub: 'vert-robo-con.example/map?org=kelpcombe-robotics' } }],
+['Empty state', { query: 'Hydrogen' }],
+['Region: Africa', { region: 'Africa', sel: 'Nettlelark Collective' }],
+['Join sheet', { sheet: 'join' }],
+['Join: errors', { sheet: 'join', jTried: true }],
+['Join: pending approval', { sheet: 'join', jn: { name: 'Alex Morgan', email: 'alex@example.org', role: 'Researcher', country: 'Kenya', interests: ['Land'], path: 'slack', dir: false, coc: true }, jDone: true }],
+['Join: email only', { sheet: 'join', jn: { name: 'Alex Morgan', email: 'alex@example.org', role: 'Researcher', country: 'Kenya', interests: ['Land'], path: 'email', dir: false, coc: true }, jDone: true }]
+];
+const jumps = J.map(([label, o]) => ({ label,
+style: 'min-height: 28px; padding: 0 10px; border: 1px solid #C9CDD5; border-radius: 8px; background: #ffffff; color: #0A1222; ' + MONO + 'font-size: 11px; cursor: pointer',
+go: () => this.setState(Object.assign(this.base(), o)) }));
+
+/* header menus */
+const MENUS = {
+community: { label: 'Community', items: [
+['Join the network', 'Slack community or email updates', '#join', 'join'],
+['Jobs & internships', 'Roles across the field', 'JobsV3.dc.html'],
+['Get involved', 'Pitch, sponsor, volunteer, nominate a speaker', 'GetInvolvedV3.dc.html'],
+['People', 'Team, advisors and speakers', 'PeopleV3.dc.html'],
+['Code of conduct', 'How we treat each other', 'ResearchV3.dc.html'],
+['Deployment code', 'Principles for robots in the field', 'ResearchV3.dc.html']] },
+about: { label: 'About', items: [
+['Mission and approach', 'Why the network exists', 'HomeV3.dc.html#field'],
+['Principles', 'How we judge a robot project', 'ResearchV3.dc.html'],
+['Consulting', 'Advice drawn from the whole network', 'ContactV3.dc.html'],
+['News', 'Essays, announcements and episodes', 'NewsV3.dc.html'],
+['Contact', 'Questions, press, partnerships', 'ContactV3.dc.html'],
+['Privacy', 'Cookieless analytics, consent on every form', 'PrivacyV3.dc.html']] }
+};
+const openJoin = () => this.setState({ sheet: 'join', jn: Object.assign({}, this.base().jn), jTried: false, jDone: false, menu: null, dl: false,
+jCountryOpen: false, jBlurName: false, jBlurEmail: false, jCopied: false, jResendReady: false, jResent: false });
+const menus = ['community', 'about'].map((key) => {
+const on = s.menu === key;
+return { label: MENUS[key].label, id: 'menu-' + key, open: on, expanded: on ? 'true' : 'false',
+btn: 'display: inline-flex; align-items: center; gap: 4px; border: 0; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #F3F4F2; color: #0A1222' : 'background: transparent'),
+toggle: () => this.setState({ menu: on ? null : key }),
+key: (e) => { if (e && e.key === 'Escape' && this.state.menu) this.setState({ menu: null }); },
+items: MENUS[key].items.map((i) => ({ label: i[0], desc: i[1], href: i[2], go: i[3] === 'join' ? openJoin : () => this.setState({ menu: null }) })) };
+});
+
+/* filters + list */
+const q = s.query.trim().toLowerCase();
+const list = this.ALL.filter((o) => (s.type === 'all' || o.type === s.type)
+&& (!s.deployed || o.deployed)
+&& (s.app === 'all' || o.app === s.app)
+&& (s.region === 'all' || o.region === s.region)
+&& (!q || (o.name + ' ' + o.country + ' ' + o.app).toLowerCase().includes(q)));
+const typeBase = 'display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ';
+const types = [{ key: 'all', label: 'All', count: 120, color: null }].concat(['Aerial', 'Ground', 'Ocean', 'Arm', 'Other'].map((k) => ({ key: k, label: T[k].label, count: T[k].count, color: T[k].color }))).map((t) => {
+const on = s.type === t.key;
+return { label: t.label, count: t.count, pressed: on ? 'true' : 'false',
+dot: t.color ? dot(t.color) : 'display: none',
+style: typeBase + (on ? 'background: #ffffff; color: #0A1222; box-shadow: 0 1px 3px rgba(10,18,34,0.14)' : 'background: transparent; color: #3D4556'),
+pick: () => this.setState({ type: t.key }) };
+});
+const selBase = 'appearance: none; -webkit-appearance: none; min-height: 44px; padding: 0 38px 0 14px; border-radius: 12px; font: inherit; font-size: 15px; color: #0A1222; cursor: pointer; ';
+const selStyle = (active) => selBase + (active ? 'border: 1px solid #0138AC; background: #EEF2FB' : 'border: 1px solid #D5D8DE; background: #ffffff');
+const rowBase = 'width: 100%; display: flex; flex-direction: column; gap: 6px; padding: 16px 24px; border: 0; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ';
+const orgs = list.map((o) => {
+const on = o.name === s.sel;
+return Object.assign({}, o, { typeLabel: T[o.type].label, typeChip: chip(), typeDot: dot(T[o.type].color),
+deployLabel: o.deployed ? 'Deployed' : 'In development',
+deployChip: o.deployed ? 'padding: 2px 8px; border-radius: 999px; background: #E8F6EE; color: #0B7A47; font-size: 12px' : 'padding: 2px 8px; border-radius: 999px; background: #FFF4E5; color: #8A4B00; font-size: 12px',
+current: on ? 'true' : 'false',
+rowStyle: rowBase + (on ? 'background: #EEF2FB; box-shadow: inset 3px 0 0 #0138AC' : 'background: #ffffff'),
+pick: () => this.setState({ sel: o.name }) });
+});
+
+/* detail */
+const so = this.org(s.sel);
+const sel = so ? Object.assign({}, so, { typeLabel: T[so.type].label, typeChip: chip(), typeDot: dot(T[so.type].color), slug: this.slug(so.name),
+hiring: !!so.jobs, jobsPath: '/jobs?employer=' + this.slug(so.name), hiringLabel: so.jobs ? 'Hiring · ' + so.jobs + (so.jobs === 1 ? ' role' : ' roles') : '', hasLi: !!so.li, copyLabel: 'Copy link to ' + so.name }) :
+{ name: '', desc: '', country: '', founded: '', app: '', am: '', web: '#', li: '#', hasLi: false, typeLabel: '', typeChip: chip(), typeDot: 'display: none', slug: '', hiring: false, jobsPath: '', hiringLabel: '', copyLabel: 'Copy link' };
+
+/* pins (v2) */
+const P = [[22.6,27.9,14],[49.3,20.0,9],[20.5,18.8,8],[52.9,21.6,8],[35.6,57.9,7],[71.7,38.3,7],[87.2,64.1,7],[51.5,21.1,7],[50.6,24.1,6],[52.4,16.4,6],[56.4,67.0,6],[88.4,29.9,6],[60.5,50.0,6],[49.0,27.5,6],[30.1,69.8,5],[78.8,49.2,4],[52.4,44.9,4],[97.0,72.8,4]];
+const pins = P.map(([x, y, n]) => {
+const size = n >= 50 ? 52 : n >= 10 ? 40 : n >= 4 ? 32 : 26;
+return { n, style: 'position: absolute; left: ' + x + '%; top: ' + y + '%; width: ' + size + 'px; height: ' + size + 'px; margin: -' + (size / 2) + 'px 0 0 -' + (size / 2) + 'px; border-radius: 50%; background: #0A1222; color: #ffffff; border: 3px solid #ffffff; box-shadow: 0 4px 10px rgba(10,18,34,0.3); display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: ' + (n >= 10 ? 13 : 11) + 'px; font-weight: 500; box-sizing: border-box' };
+});
+
+/* downloads */
+const dlBtn = (k, label) => {
+const st = s[k];
+return { label: st === 'idle' ? 'Download ' + label : st === 'prep' ? 'Preparing ' + label + '…' : 'Downloaded',
+sub: st === 'done' ? label + ' · [SIZE] · JUST NOW' : label + ' · [SIZE]',
+isIdle: st === 'idle', isPrep: st === 'prep', isDone: st === 'done', busy: st === 'prep' ? 'true' : 'false',
+style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 64px; padding: 10px 14px; border-radius: 12px; font: inherit; text-align: left; cursor: pointer; ' +
+(st === 'done' ? 'background: #E8F6EE; color: #0B7A47; border: 1px solid #E8F6EE' : st === 'prep' ? 'background: #EEF2FB; color: #0138AC; border: 1px solid #EEF2FB' : 'background: #0138AC; color: #ffffff; border: 1px solid #0138AC'),
+go: () => { if (st !== 'prep') this.setState({ [k]: 'prep' }); } };
+};
+const dlBtns = [dlBtn('csv', 'CSV'), dlBtn('json', 'JSON')];
+const anyPrep = s.csv === 'prep' || s.json === 'prep';
+
+/* suggest form */
+const f = s.f;
+const KEYS = Object.keys(this.F0);
+const E = {};
+if (!f.name.trim()) E.name = 'Enter the organization’s name';
+if (!/\.[a-z]{2,}/i.test(f.web)) E.web = 'Enter the website, like example.org';
+if (!f.country.trim()) E.country = 'Choose the HQ country';
+if (!f.type) E.type = 'Choose a robot type';
+if (!f.app) E.app = 'Choose an application';
+if (f.app === 'Other' && !f.appOther.trim()) E.appOther = 'Tell us the application';
+if (!f.dep) E.dep = 'Tell us if it’s deployed in the field';
+if (!f.role) E.role = 'Choose a climate role';
+if (!f.desc.trim()) E.desc = 'Add a one-line description';
+if (f.founded && !/^(18|19|20)\d\d$/.test(f.founded.trim())) E.founded = 'Enter a year, like 2019';
+if (!f.rel) E.rel = 'Tell us your relationship to it';
+if (!emailOk(f.email)) E.email = 'Enter an email like name@example.org';
+const errKeys = Object.keys(E);
+const orig = s.mode === 'edit' && this.org(s.editOf) ? this.prefill(this.org(s.editOf)) : null;
+const e = {}, m = {}, chg = {}, w = {}, inp = {}, set = {};
+const W0 = 'margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; border-radius: 14px; ';
+const I0 = 'width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 14px; border-radius: 12px; font: inherit; font-size: 16px; color: #0A1222; background: #ffffff; ';
+KEYS.forEach((k) => {
+e[k] = s.tried && !!E[k];
+m[k] = E[k] || '';
+chg[k] = !!orig && ['why', 'rel', 'email'].indexOf(k) < 0 && f[k] !== orig[k];
+w[k] = W0 + (chg[k] ? 'padding: 12px 14px 14px; background: #EEF2FB; border: 1px solid #0138AC' : 'padding: 0; border: 0');
+inp[k] = I0 + 'border: 1px solid ' + (e[k] ? '#B42318' : '#D5D8DE');
+set[k] = (ev) => this.setState({ f: Object.assign({}, this.state.f, { [k]: ev.target.value }) });
+});
+const taStyle = (k) => I0 + 'padding: 12px 14px; min-height: 76px; resize: vertical; line-height: 1.45; border: 1px solid ' + (e[k] ? '#B42318' : '#D5D8DE');
+const R0 = 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ';
+const radios = (k, opts) => opts.map(([v, label, color]) => {
+const on = f[k] === v;
+return { label, checked: on ? 'true' : 'false', dot: color ? dot(color) : 'display: none',
+style: R0 + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid ' + (e[k] ? '#B42318' : '#D5D8DE')),
+pick: () => this.setState({ f: Object.assign({}, this.state.f, { [k]: v }) }) };
+});
+const nq = f.name.trim().toLowerCase();
+const dupes = s.mode === 'new' && nq.length >= 3 ? this.ALL.filter((o) => o.name.toLowerCase().includes(nq)).slice(0, 3).map((o) => ({
+name: o.name, meta: o.country + ' · ' + T[o.type].label, edit: () => this.startEdit(o.name) })) : [];
+const isEdit = s.mode === 'edit';
+const descLen = f.desc.length;
+const firstStep = isEdit ? 'Edit received' : 'Suggestion received';
+const disc = (on) => 'width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 12px; ' + (on ? 'background: #E8F6EE; color: #0B7A47' : 'background: #F3F4F2; color: #3D4556');
+const steps = [[firstStep, 'Today. It’s in the moderation queue.'], ['Admin review', 'Typically within 24–48 hours. An admin checks the website and any sources you gave.'], ['Live on the map', 'We email you a link to the entry once an admin approves it.']];
+const nextSteps = steps.map(([title, body], i) => ({ n: String(i + 1), title, body, disc: disc(i === 0),
+line: i < steps.length - 1 ? 'flex: 1 1 auto; width: 1px; min-height: 14px; background: #E5E7EB; margin: 4px 0' : 'display: none' }));
+
+/* join sheet */
+const jn = s.jn;
+const jShowName = s.jTried || s.jBlurName, jShowEmail = s.jTried || s.jBlurEmail;
+const jE = {
+name: jShowName && !jn.name.trim() ? 'Enter your full name.' : '',
+email: jShowEmail ? (!jn.email.trim() ? 'Enter your email address.' : (!emailOk(jn.email) ? 'Enter an email address like name@example.org.' : '')) : '',
+coc: s.jTried && !jn.coc ? 'Confirm you’ve read the code of conduct.' : ''
+};
+const jSummary = [];
+if (s.jTried) {
+if (jE.name) jSummary.push({ text: 'Full name: ' + jE.name, href: '#join-name' });
+if (jE.email) jSummary.push({ text: 'Email: ' + jE.email, href: '#join-email' });
+if (jE.coc) jSummary.push({ text: 'Code of conduct: confirm you’ve read it.', href: '#join-coc' });
+}
+const setJn = (o) => this.setState({ jn: Object.assign({}, this.state.jn, o) });
+const COUNTRIES = ['Australia', 'Brazil', 'Canada', 'Chile', 'France', 'Germany', 'India', 'Japan', 'Kenya', 'Netherlands', 'New Zealand', 'Nigeria', 'Norway', 'Singapore', 'South Africa', 'Spain', 'United Kingdom', 'United States'];
+const cq = jn.country.trim().toLowerCase();
+const jSugg = s.jCountryOpen && cq ? COUNTRIES.filter((c) => c.toLowerCase().indexOf(cq) > -1 && c.toLowerCase() !== cq).slice(0, 5) : [];
+const jBox = (on) => 'width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: flex; align-items: center; justify-content: center; ' + (on ? 'background: #0138AC; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid #A7ADB8');
+const jf = {
+hasSummary: jSummary.length > 0, summary: jSummary,
+summaryTitle: jSummary.length === 1 ? 'There is 1 problem to fix' : 'There are ' + jSummary.length + ' problems to fix',
+nameInvalid: jE.name ? 'true' : 'false', emailInvalid: jE.email ? 'true' : 'false',
+blurName: () => this.setState({ jBlurName: true }),
+blurEmail: () => this.setState({ jBlurEmail: true }),
+setRole: (ev) => setJn({ role: ev.target.value }),
+selectStyle: I0 + 'border: 1px solid #D5D8DE; appearance: auto',
+setCountry: (ev) => { setJn({ country: ev.target.value }); this.setState({ jCountryOpen: true }); },
+countryInput: I0 + 'border: 1px solid #D5D8DE',
+countryExpanded: jSugg.length ? 'true' : 'false', hasSugg: jSugg.length > 0,
+sugg: jSugg.map((c) => ({ label: c, pick: () => { setJn({ country: c }); this.setState({ jCountryOpen: false }); } })),
+interests: ['Air', 'Land', 'Sea', 'Materials', 'Policy', 'Funding', 'Jobs'].map((t) => {
+const on = jn.interests.indexOf(t) > -1;
+return { label: t, pressed: on ? 'true' : 'false',
+style: 'display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #0A1222; color: #ffffff; border: 1px solid #0A1222' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE'),
+toggle: () => { const cur = this.state.jn.interests; setJn({ interests: on ? cur.filter((x) => x !== t) : cur.concat([t]) }); } };
+}),
+dirChecked: jn.dir ? 'true' : 'false', dirBox: jBox(jn.dir),
+toggleDir: () => setJn({ dir: !this.state.jn.dir })
+};
+const jTopic = jn.interests.length ? jn.interests.map((x) => x.toLowerCase()).join(' and ') + ' robotics' : '[topic]';
+const jIntro = 'Hi, I’m ' + (jn.name.trim() || '[name]') + ', I work on ' + jTopic + ' in ' + (jn.country.trim() || '[country]') + '…';
+const jSlackPath = jn.path !== 'email';
+const jPaths = [
+{ key: 'slack', title: 'Slack community', rec: true, desc: 'An admin approves each request by hand, then we email you an invite, typically within 24–48 hours.' },
+{ key: 'email', title: 'Email updates only', rec: false, desc: 'The monthly digest. No Slack account needed.' }
+].map((r) => {
+const on = jn.path === r.key;
+return { title: r.title, rec: r.rec, desc: r.desc, checked: on ? 'true' : 'false',
+card: 'display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 16px; border-radius: 14px; font: inherit; text-align: left; cursor: pointer; color: #0A1222; ' + (on ? 'background: #EEF2FB; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid #E5E7EB'),
+ring: 'flex: 0 0 auto; margin-top: 3px; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; border: 2px solid ' + (on ? '#0138AC' : '#A7ADB8') + '; display: flex; align-items: center; justify-content: center; background: #ffffff',
+dot: 'width: 10px; height: 10px; border-radius: 50%; background: ' + (on ? '#0138AC' : 'transparent'),
+pick: () => this.setState({ jn: Object.assign({}, this.state.jn, { path: r.key }) }) };
+});
+const jCocBox = 'width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; display: flex; align-items: center; justify-content: center; ' + (jn.coc ? 'background: #0138AC; border: 2px solid #0138AC' : 'background: #ffffff; border: 2px solid ' + (jE.coc ? '#B42318' : '#A7ADB8'));
+const jInp = { name: I0 + 'border: 1px solid ' + (jE.name ? '#B42318' : '#D5D8DE'), email: I0 + 'border: 1px solid ' + (jE.email ? '#B42318' : '#D5D8DE') };
+const jSet = {};
+['name', 'email'].forEach((k) => { jSet[k] = (ev) => this.setState({ jn: Object.assign({}, this.state.jn, { [k]: ev.target.value }) }); });
+const jStepNum = 'flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #EEF2FB; color: #0138AC; display: flex; align-items: center; justify-content: center; ' + MONO + 'font-size: 13px; font-weight: 500';
+
+/* notify (footer digest) */
+const TOPICS = [['digest', 'Monthly digest'], ['summit', 'Summit announcements'], ['program', 'Program published'], ['videos', 'New videos'], ['jobs', 'Job alerts']];
+const nfTopics = TOPICS.map(([k, label]) => {
+const on = s.topics.indexOf(k) >= 0;
+return { label, pressed: on ? 'true' : 'false',
+style: 'min-height: 36px; padding: 0 12px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; ' + (on ? 'background: #EEF2FB; color: #0138AC; border: 1px solid #0138AC' : 'background: #ffffff; color: #3D4556; border: 1px solid #D5D8DE'),
+toggle: () => this.setState({ topics: on ? s.topics.filter((x) => x !== k) : s.topics.concat([k]) }) };
+});
+const nfErr = s.nfTried && !emailOk(s.nfEmail);
+
+/* footer */
+const openDl = () => this.setState({ dl: true });
+const footer = [
+['SUMMIT', 'Summit', [['Register / Notify me', 'RegisterV3.dc.html'], ['Program', 'ProgramV3.dc.html'], ['Sponsor the summit', 'GetInvolvedV3.dc.html'], ['Past editions', 'SummitV3.dc.html']]],
+['LEARN', 'Learn', [['White paper', 'ResearchV3.dc.html'], ['Watch', 'WatchV3.dc.html'], ['News', 'NewsV3.dc.html'], ['RSS', '#'], ['Map data (CSV · JSON)', 'MapV3.dc.html']]],
+['COMMUNITY', 'Community', [['Join', '#join'], ['Jobs', 'JobsV3.dc.html'], ['Internships', 'JobsV3.dc.html'], ['Get involved', 'GetInvolvedV3.dc.html'], ['Code of conduct', 'ResearchV3.dc.html']]],
+['ABOUT', 'About', [['Team', 'PeopleV3.dc.html'], ['Consulting', 'ContactV3.dc.html'], ['Contact', 'ContactV3.dc.html'], ['Privacy', 'PrivacyV3.dc.html'], ['My VRC', 'MyVRCV3.dc.html']]]
+].map((g) => ({ title: g[0], label: g[1], links: g[2].map((l) => ({ label: l[0], href: l[1],
+go: l[1] === '#join' ? openJoin : l[1] === 'MapV3.dc.html' ? openDl : () => {} })) }));
+
+const on = s.deployed;
+return {
+jumps, menus, openJoin,
+menuOpen: !!s.menu, closeMenu: () => this.setState({ menu: null }),
+query: s.query,
+onQuery: (ev) => this.setState({ query: ev.target.value }),
+types, orgs, empty: orgs.length === 0,
+countLabel: 'SHOWING ' + orgs.length + ' OF 120',
+app: s.app, region: s.region, appSel: selStyle(s.app !== 'all'), regionSel: selStyle(s.region !== 'all'),
+onApp: (ev) => this.setState({ app: ev.target.value }),
+onRegion: (ev) => this.setState({ region: ev.target.value }),
+clearFilters: () => this.setState({ type: 'all', query: '', deployed: false, app: 'all', region: 'all' }),
+deployedChecked: on ? 'true' : 'false',
+toggleDeployed: () => this.setState({ deployed: !on }),
+switchTrack: 'position: relative; width: 34px; height: 20px; border-radius: 999px; background: ' + (on ? '#0138AC' : '#C9CDD5') + '; display: inline-block',
+switchKnob: 'position: absolute; top: 2px; left: ' + (on ? '16px' : '2px') + '; width: 16px; height: 16px; border-radius: 50%; background: #ffffff',
+hasSel: !!so, sel, clearSel: () => this.setState({ sel: null }),
+copyLink: () => { if (so) this.setState({ toast: { msg: 'Link copied', sub: 'vert-robo-con.example/map?org=' + this.slug(so.name) } }); },
+suggestEdit: () => { if (so) this.startEdit(so.name); },
+hasToast: !!s.toast, toast: s.toast || { msg: '', sub: '' }, hideToast: () => this.setState({ toast: null }),
+pins,
+dlOpen: s.dl, dlExpanded: s.dl ? 'true' : 'false', toggleDl: () => this.setState({ dl: !s.dl }),
+dlBtns, anyPrep,
+finishDl: () => this.setState({ csv: s.csv === 'prep' ? 'done' : s.csv, json: s.json === 'prep' ? 'done' : s.json }),
+fieldList: ['name', 'website', 'linkedin', 'robot_type', 'application', 'deployed', 'climate_role', 'country', 'region', 'founded', 'description', 'updated_at'].map((t) => ({ t })),
+copyCite: () => this.setState({ cited: true }),
+citeLabel: s.cited ? 'Copied' : 'Copy',
+citeBtn: 'min-height: 32px; padding: 0 12px; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; ' + (s.cited ? 'background: #E8F6EE; color: #0B7A47; border: 1px solid #E8F6EE' : 'background: #ffffff; color: #0A1222; border: 1px solid #D5D8DE'),
+openSuggest: () => this.openSuggest(),
+sheetOpen: !!s.sheet, isSuggest: s.sheet === 'suggest', isJoin: s.sheet === 'join',
+closeSheet: () => this.setState({ sheet: null }),
+isEdit, notDone: !s.done, done: s.done,
+sheetEyebrow: isEdit ? 'GLOBAL MAP · SUGGEST AN EDIT' : 'GLOBAL MAP · NEW ENTRY',
+sheetTitle: isEdit ? 'Suggest an edit to ' + s.editOf : 'Suggest an organization',
+sheetIntro: isEdit ? 'Change anything that’s out of date. Fields you change are marked, so the admin reviewing it sees exactly what’s new.' : 'Know an organization we’ve missed? An admin reviews every suggestion before it goes on the map.',
+submitLabel: isEdit ? 'Send edit' : 'Send suggestion',
+showSummary: s.tried && errKeys.length > 0,
+errHeading: errKeys.length === 1 ? 'There is 1 thing to fix' : 'There are ' + errKeys.length + ' things to fix',
+errList: errKeys.map((k) => ({ msg: E[k], href: '#f-' + k })),
+errText: 'font-size: 13px; color: #B42318',
+tagChanged: 'display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: #0138AC; color: #ffffff; ' + MONO + 'font-size: 11px; font-weight: 400; letter-spacing: 0.04em',
+f, e, m, chg, w, inp, set,
+wx: { country: w.country + '; flex: 1.3 1 200px', city: w.city + '; flex: 1 1 160px', founded: w.founded + '; flex: 0 1 140px', li: w.li + '; flex: 1 1 220px' },
+tagChangedSelf: 'align-self: flex-start; display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: #0138AC; color: #ffffff; ' + MONO + 'font-size: 11px; letter-spacing: 0.04em',
+ta: { desc: taStyle('desc'), why: taStyle('why') },
+selApp: I0 + 'appearance: none; -webkit-appearance: none; padding-right: 40px; cursor: pointer; border: 1px solid ' + (e.app ? '#B42318' : '#D5D8DE'),
+appIsOther: f.app === 'Other',
+typeOpts: radios('type', [['Aerial', 'Aerial', T.Aerial.color], ['Ground', 'Ground', T.Ground.color], ['Ocean', 'Ocean', T.Ocean.color], ['Arm', 'Robotic arm', T.Arm.color], ['Other', 'Other', T.Other.color]]),
+depOpts: radios('dep', [['Yes', 'Yes'], ['Pilot', 'Pilot'], ['Not yet', 'Not yet']]),
+roleOpts: radios('role', [['Mitigation', 'Mitigation'], ['Adaptation', 'Adaptation'], ['Both', 'Both']]),
+relOpts: radios('rel', [['work', 'I work there'], ['know', 'I know of it']]),
+hasDupes: dupes.length > 0, dupes,
+descCount: descLen + ' / 140',
+descCountStyle: MONO + 'font-size: 12px; flex: 0 0 auto; color: ' + (descLen > 120 ? '#8A4B00' : '#646B7A'),
+submit: () => { if (errKeys.length) this.setState({ tried: true }); else this.setState({ done: true }); },
+doneTitle: isEdit ? 'Thanks, we’ve got your edit' : 'Thanks, we’ve got it',
+doneLede: isEdit ? 'Thanks. An admin reviews edits, typically within 24–48 hours, and we’ll email you when it’s live.' : 'Thanks. An admin reviews new entries, typically within 24–48 hours, and we’ll email you when it’s live.',
+doneNote: isEdit ? 'The map keeps showing the current entry until an admin approves your edit.' : 'It won’t appear on the map until an admin approves it.',
+nextSteps,
+doneEmail: f.email.trim() || '[EMAIL]',
+suggestAnother: () => this.openSuggest(),
+jn, jE, jInp, jSet, jf, jNotDone: !s.jDone, jDone: s.jDone,
+jStepNum, jIntro, jCopy: () => this.setState({ jCopied: true }), jCopied: s.jCopied ? 'Copied' : '',
+jResendWait: !s.jResendReady, jResendReady: s.jResendReady && !s.jResent, jResent: s.jResent,
+jTick: () => this.setState({ jResendReady: true }), jResend: () => this.setState({ jResent: true }),
+jPaths, jSlack: jSlackPath, jMail: !jSlackPath,
+jCocChecked: jn.coc ? 'true' : 'false', jCocInvalid: jE.coc ? 'true' : 'false', jCocBox,
+toggleCoc: () => this.setState({ jn: Object.assign({}, this.state.jn, { coc: !this.state.jn.coc }) }),
+joinTitle: jSlackPath ? 'Request received, ' + (jn.name.trim().split(/\s+/)[0] || '[NAME]') + '.' : 'Welcome, ' + (jn.name.trim().split(/\s+/)[0] || '[NAME]') + '.',
+joinEmail: jn.email.trim() || '[EMAIL]',
+joinLede: jSlackPath ? 'We’ve received your request to join Slack. An admin reviews every request by hand, and your invite is emailed to ' + (jn.email.trim() || '[EMAIL]') + ' once approved, typically within 24–48 hours.' : 'You’re subscribed to the monthly digest. Confirm your address from the email we sent to ' + (jn.email.trim() || '[EMAIL]') + '.',
+joinManageLabel: jSlackPath ? 'Track your request' : 'Manage this',
+joinSubmitLabel: jSlackPath ? 'Request to join' : 'Get email updates',
+joinSubmit: () => { const n = this.state.jn; if (!n.name.trim() || !emailOk(n.email) || !n.coc) this.setState({ jTried: true }); else this.setState({ jTried: true, jDone: true }); },
+nfClosed: s.nf === 'closed', nfIsOpen: s.nf === 'open', nfPending: s.nf === 'pending', nfOn: s.nf === 'on',
+nfOpen: () => this.setState({ nf: 'open' }),
+nfTopics, nfEmail: s.nfEmail, nfErr,
+setNfEmail: (ev) => this.setState({ nfEmail: ev.target.value }),
+nfInput: I0 + 'border: 1px solid ' + (nfErr ? '#B42318' : '#D5D8DE'),
+nfSubmit: () => { if (emailOk(s.nfEmail)) this.setState({ nf: 'pending' }); else this.setState({ nfTried: true }); },
+nfConfirm: () => this.setState({ nf: 'on' }),
+footer
+};
+}
+}
+</script>
+</body>
+</html>
