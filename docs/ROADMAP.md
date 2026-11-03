@@ -142,7 +142,7 @@ One TypeScript web app serves the public site, My VRC and the admin, with one da
 
 The V3 design canvas has 15 public boards and 12 admin boards. Most boards ship in pieces: a first version when the page or screen is built, then each interactive part in the milestone that builds the feature behind it. Until a part ships, the page shows its state, such as "Coming soon", and never sends people to an outside tool.
 
-The notes on the admin boards describe an earlier stack: Payload, listmonk, authentik, a tailnet and site rebuilds. Where they differ from [`ARCHITECTURE.md`](../ARCHITECTURE.md), the architecture wins. StackV3 is that earlier stack's overview, and #1 replaces it.
+The boards were first drawn for an earlier stack: Payload, listmonk, authentik, a tailnet and site rebuilds. On November 4, 2026 they were brought in line with this plan; "Taken out of the designs" below lists what went. StackV3 still shows the earlier stack, and #1 replaces it, so don't build from it. If a board still disagrees with [`ARCHITECTURE.md`](../ARCHITECTURE.md), the architecture wins.
 
 ### Public pages
 
@@ -254,15 +254,17 @@ The notes on the admin boards describe an earlier stack: Payload, listmonk, auth
 - M3: background jobs with retry, email template previews with a test send, the last backup, and the running version with recent deploys (#47)
 - M5: the delivery report for the summit emails (#66)
 
-### In the designs, but not planned
+### Taken out of the designs
 
-- The "List me in the public member directory" checkbox on the join sheet, and its row on PrivacyV3. PeopleV3 already marks the directory as undecided, and it is listed under "Not planned" below
-- File uploads for pitch decks, project PDFs and CVs (GetInvolvedV3, JobsV3). People send links instead (#58)
-- Site builds, the build queue and rolling back a release (AdminSystemV3, and the build status on other admin screens). Admin changes go live at once, and a rollback restarts the previous version (#19)
-- The "External tools" tab (AdminUsersV3), which opens listmonk, Umami, Beszel and Uptime Kuma. Uptime alerts come from Uptime Kuma at another provider (#21)
-- An admin reachable only on a tailnet. The admin is protected by sign-in with two-factor authentication (#13)
-- Syncing video details from YouTube (AdminContentV3). Videos are edited in the admin (#45)
-- Patch-day and restore-drill checklists in the admin (AdminSystemV3). They live in the runbook (#23, #73)
+These were removed from the boards because the plan rules them out. Older notes or issues may still mention them; don't build them.
+
+- **The public member directory:** the "List me in the public member directory" checkbox on the join sheet and its line on PrivacyV3. It is listed under "Not planned" below
+- **File uploads:** pitch decks, project PDFs and CVs. Visitors send links instead (#58)
+- **Site builds:** the build queue, release rollback from the admin, and the build status on admin screens. Admin changes go live at once, and a rollback restarts the previous version from the runbook (#19). The admin's "Builds, email & backups" screen is now "Jobs, email & backups" (#47)
+- **Outside tools:** the "External tools" tab, which opened listmonk, Umami, Beszel and Uptime Kuma, and every mention of listmonk and Umami. The app sends its own topic emails (#65), and uptime alerts come from Uptime Kuma at another provider (#21)
+- **The tailnet:** an admin reachable only on a private network. The admin is protected by sign-in with two-factor authentication (#13)
+- **YouTube sync:** syncing video details from YouTube. Videos are edited in the admin (#45)
+- **Runbook routines in the admin:** patch-day and restore-drill checklists. They live in the runbook (#23, #73)
 
 ### In the designs, without a milestone yet
 
