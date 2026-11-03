@@ -72,6 +72,10 @@ Before registration opens: someone outside the project reviews the sign-in code,
 
 **Tracked in:** #39–#44, #46–#49, #77
 
+**Tracked here:**
+
+- [ ] A banner across the site, set in Settings or on an edition, to announce registration (AdminSettingsV3, AdminEditionV3)
+
 ### M4 · Pitch calls and moderation
 
 **Founders and researchers** pitch through a short multi-step form, can save it and come back, and follow the outcome in My VRC.
@@ -86,6 +90,10 @@ Before registration opens: someone outside the project reviews the sign-in code,
 
 **Tracked in:** #50–#54
 
+**Tracked here:**
+
+- [ ] "Ask the authors" on the research pages opens the contact form with the research topic chosen (ResearchV3)
+
 ### M5 · Program and summit emails
 
 **Attendees** browse the program, save sessions to a personal agenda and calendar feed, get a reminder and their join link, and see what's on now and next during the summit.
@@ -95,6 +103,10 @@ Before registration opens: someone outside the project reviews the sign-in code,
 **Ready when:** a full rehearsal passes: register, get the reminder and the join link, open My VRC, download your data, delete it. Registration also holds up under ten times the expected peak.
 
 **Tracked in:** #61, #62, #66, #67, #69
+
+**Tracked here:**
+
+- [ ] Upcoming deadlines on the dashboard, from the edition and call dates (AdminDashboardV3)
 
 ### M6 · Summit
 
@@ -115,6 +127,15 @@ Recordings come first: each session links its video, and speakers' pages show wh
 7. The old tools are switched off (#72), then a retrospective and a maintenance routine (#73)
 
 **Tracked in:** #71, #45, #55–#60, #63–#65, #68, #72, #73
+
+**Tracked here:**
+
+- [ ] "Propose a project", with the smaller forms (GetInvolvedV3)
+- [ ] "Book an intro call" after a consulting enquiry (ContactV3). An outside booking page would break "Everything happens on the site", so settle how it books before building it
+- [ ] Version history with restore for editions and map organisations (AdminEditionV3, AdminMapV3)
+- [ ] Making registration questions required or optional, and versions of the consent wording (AdminEditionV3)
+- [ ] The map snapshot on the dashboard (AdminDashboardV3)
+- [ ] Transcript downloads for recordings (ProgramV3, WatchV3)
 
 ## Open decisions
 
@@ -145,7 +166,7 @@ This section is for whoever picks up the build, whether a person or an agent.
 
 ### Where things are decided
 
-- **The issue says what to build.** Each one lists its routes, its design boards, a checklist, and what it depends on.
+- **The issue says what to build.** Each one lists its routes, its design boards, a checklist, and what it depends on. Smaller work with no issue is listed under its milestone as "Tracked here", and its line in "The designs, stage by stage" is its spec.
 - **[`ARCHITECTURE.md`](../ARCHITECTURE.md) says how.** Where a design board disagrees with it, the architecture wins.
 - **The design canvas shows the look, the copy and every state.** Build only the parts the issue asks for, not everything on the board.
 - **This file says the order**, and which parts of each board belong to which milestone ("The designs, stage by stage" below).
@@ -161,13 +182,13 @@ Work through the milestones in order. Within a milestone, follow each issue's "D
 
 M2 starts with #10 (server mode) and #11 (the database), and the rest follow their dependencies. Two decisions fall along the way: when registration opens (#3), at the end of M1, and privacy (#5), before M3 starts.
 
-### Taking an issue
+### Taking a piece of work
 
-- **Read three things first:** the issue, its design boards, and each board's lines below. Build what the current milestone's line says.
+- **Read three things first:** the issue (or the "Tracked here" item), its design boards, and each board's lines below. Build what the current milestone's line says.
 - **Later parts wait.** Parts from later milestones show their state, such as "Coming soon", and never link to a form or file outside the site.
-- **Some things wait for an issue.** Don't build anything under "Not planned" or "In the designs, without a milestone yet" until an issue exists for it.
+- **Some things stay out.** Don't build anything under "Not planned" or "Taken out of the designs".
 - **Every page** works on a phone, passes the accessibility and link checks (#76), and uses synthetic data only.
-- **When it's done,** close the issue from the pull request, and tick it in #74.
+- **When it's done,** close the issue from the pull request and tick it in #74. For work tracked here, tick its box in this file in the same pull request.
 - **Commits** have one goal each. Tests go in their own commit, right after the code they cover. Frontend and backend changes never share a commit. Messages follow the existing style, `type(scope): Sentence`, for example `docs: Rewrite the roadmap for one developer`.
 
 ### Reading the designs
@@ -201,7 +222,7 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 **ProgramV3**
 - M1: past programs with day tabs, filters, search, time zones, session pages and an `.ics` file per session (#29)
 - M5: the 2027 program, provisional and then published; starred sessions saved to the registration, a personal calendar feed, join links for registrants, and the Now/Next strip (#61, #62)
-- M7: recordings on each session (#71), the program as a PDF (#68), and "email me when the program is published" (#65)
+- M7: recordings on each session (#71), the program as a PDF (#68), and "email me when the program is published" (#65); transcript downloads (tracked here)
 
 **RegisterV3**
 - M3: the form, its confirmation with calendar links, and the opens-soon, closing-soon and closed states (#40)
@@ -210,7 +231,7 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 **GetInvolvedV3**
 - M1: who it's for, sponsor tiers, the FAQ, volunteer roles, and community projects with their status (#35)
 - M4: the startup and research pitch forms with "Save and finish later" (#51), and the join sheet (#53)
-- M7: sponsor interest, recommend a speaker, volunteer, and register interest in a programme (#59); the sponsor deck as a PDF (#68)
+- M7: sponsor interest, recommend a speaker, volunteer, and register interest in a programme (#59); "Propose a project" (tracked here); the sponsor deck as a PDF (#68)
 
 **MapV3**, and the phone's Map tab
 - M1: the map on MapLibre with filters, search, organisation cards, a keyboard-friendly list, and CSV, JSON and GeoJSON downloads with "How to cite" (#32)
@@ -220,11 +241,12 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 
 **ResearchV3**
 - M1: the white paper reader and the three codes, with contents, deep links and citations in APA and BibTeX (#31)
+- M4: "Ask the authors", through the contact form (tracked here)
 - M7: suggest an edit, propose a research topic, join the research team, and report a concern (#59); the white paper as a PDF (#68)
 
 **WatchV3**
 - M1: the library with shelves and filters, video pages with the privacy-enhanced player, and the series (#30)
-- M7: the 2027 recordings, marked "Recording in editing" until each is published (#71); "email me new videos" (#65)
+- M7: the 2027 recordings, marked "Recording in editing" until each is published (#71); "email me new videos" (#65); transcript downloads (tracked here)
 
 **JobsV3**
 - M1: the layout, an empty state, and the internship tracks with their status (#36)
@@ -233,6 +255,7 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 **ContactV3**
 - M1: the FAQ, routing by topic, and the email fallback (#37)
 - M4: the contact form and the 2-step consulting enquiry (#54)
+- M7: "Book an intro call" after a consulting enquiry (tracked here)
 
 **NewsV3**
 - M1: the list, the posts, redirects from old `/blog/` links, and RSS (#34)
@@ -260,13 +283,14 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 
 **AdminDashboardV3**
 - M3: registrations today and in total, with a chart by day; warnings for failed jobs, old backups and bounces (#48)
-- M5: the Today view, with queue counts and the oldest item, days until the summit, Slack link expiry and recent admin activity (#67)
+- M5: the Today view, with queue counts and the oldest item, days until the summit, Slack link expiry and recent admin activity (#67); upcoming deadlines (tracked here)
+- M7: the map snapshot (tracked here)
 
 **AdminEditionV3**
-- M3: editions with dates, the daily window, format, price and the registration window, a timeline of the states, and a diff before saving (#39)
+- M3: editions with dates, the daily window, format, price and the registration window, a timeline of the states, and a diff before saving (#39); the edition's banner (tracked here)
 - M4: the open, close and decision dates of each pitch call (#51)
 - M5: the program state, draft and then published (#61)
-- M7: the recordings state (#71)
+- M7: the recordings state (#71); version history with restore, required or optional registration questions, and versions of the consent wording (tracked here)
 
 **AdminRegistrationsV3**
 - M3: search, filters, details, re-sending the link, cancelling on someone's behalf, and an audited CSV export (#43)
@@ -280,12 +304,12 @@ The boards were first drawn for an earlier stack: Payload, listmonk, authentik, 
 
 **AdminProgramV3**: M5. A day grid with drafts and clash warnings, a provisional marker and publish, accepted pitches turned into sessions, and "Copy the 2026 structure" (#61)
 
-**AdminMapV3**: M7. The organisations move into the database, and the downloads are generated from them (#55). Suggestions are reviewed field by field, pins can be nudged, and places are geocoded once, on approval (#56)
+**AdminMapV3**: M7. The organisations move into the database, and the downloads are generated from them (#55). Suggestions are reviewed field by field, pins can be nudged, and places are geocoded once, on approval (#56). Version history with restore (tracked here)
 
 **AdminContentV3**: M7. News, videos and series, people, partners and documents, with drafts, scheduled publishing and image upload (#45)
 
 **AdminSettingsV3**
-- M3: switches for the programmes, each internship track, the research team and geocoding; the contact address for each topic; the Slack invite link (#46)
+- M3: switches for the programmes, each internship track, the research team and geocoding; the contact address for each topic; the Slack invite link (#46); the site-wide banner (tracked here)
 - The Slack link is first used in M4 (#53), and geocoding in M7 (#56)
 
 **AdminUsersV3**: M3. Admins with their 2FA methods, invites and removals by the owner, 2FA resets with a reason, and the audit log (#44)
@@ -306,18 +330,6 @@ These were removed from the boards because the plan rules them out. Older notes 
 - **YouTube sync:** syncing video details from YouTube. Videos are edited in the admin (#45)
 - **Runbook routines in the admin:** patch-day and restore-drill checklists. They live in the runbook (#23, #73)
 - **The stack overview:** StackV3, which drew the earlier stack. #1 replaces it, and [`ARCHITECTURE.md`](../ARCHITECTURE.md) describes the stack now
-
-### In the designs, without a milestone yet
-
-Leave these out until an issue exists for one.
-
-- A site-wide banner (AdminSettingsV3, AdminEditionV3)
-- "Propose a project" (GetInvolvedV3) and "Ask the authors" (ResearchV3)
-- "Book an intro call" after a consulting enquiry (ContactV3)
-- Version history with restore for editions and map organisations (AdminEditionV3, AdminMapV3)
-- Making registration questions required or optional, and versions of the consent wording (AdminEditionV3)
-- Upcoming deadlines and the map snapshot on the dashboard (AdminDashboardV3)
-- Transcript downloads (ProgramV3, WatchV3)
 
 ## Risks
 
