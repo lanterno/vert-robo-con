@@ -180,9 +180,9 @@ M2 starts with #10 (server mode) and #11 (the database), and the rest follow the
 
 ## The designs, stage by stage
 
-The V3 design canvas has 15 public boards and 12 admin boards. Most boards ship in pieces: a first version when the page or screen is built, then each interactive part in the milestone that builds the feature behind it. Until a part ships, the page shows its state, such as "Coming soon", and never sends people to an outside tool.
+The V3 design canvas has 15 public boards and 11 admin boards. Most boards ship in pieces: a first version when the page or screen is built, then each interactive part in the milestone that builds the feature behind it. Until a part ships, the page shows its state, such as "Coming soon", and never sends people to an outside tool.
 
-The boards were first drawn for an earlier stack: Payload, listmonk, authentik, a tailnet and site rebuilds. On November 4, 2026 they were brought in line with this plan; "Taken out of the designs" below lists what went. StackV3 still shows the earlier stack, and #1 replaces it, so don't build from it. If a board still disagrees with [`ARCHITECTURE.md`](../ARCHITECTURE.md), the architecture wins.
+The boards were first drawn for an earlier stack: Payload, listmonk, authentik, a tailnet and site rebuilds. On November 4, 2026 they were brought in line with this plan; "Taken out of the designs" below lists what went. If a board still disagrees with [`ARCHITECTURE.md`](../ARCHITECTURE.md), the architecture wins.
 
 ### Public pages
 
@@ -305,6 +305,7 @@ These were removed from the boards because the plan rules them out. Older notes 
 - **The tailnet:** an admin reachable only on a private network. The admin is protected by sign-in with two-factor authentication (#13)
 - **YouTube sync:** syncing video details from YouTube. Videos are edited in the admin (#45)
 - **Runbook routines in the admin:** patch-day and restore-drill checklists. They live in the runbook (#23, #73)
+- **The stack overview:** StackV3, which drew the earlier stack. #1 replaces it, and [`ARCHITECTURE.md`](../ARCHITECTURE.md) describes the stack now
 
 ### In the designs, without a milestone yet
 
