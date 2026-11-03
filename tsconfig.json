@@ -9,9 +9,8 @@
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@content/*": ["src/content/*"]
+      "@layouts/*": ["src/layouts/*"]
     }
   },
-  "include": ["src", "tina"]
+  "include": ["src"]
 }

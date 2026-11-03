@@ -10,9 +10,6 @@ dist/
 .env.*
 !.env.example
 
-# Tina CMS
-.tina/__generated__/
-
 # OS files
 .DS_Store
 Thumbs.db
