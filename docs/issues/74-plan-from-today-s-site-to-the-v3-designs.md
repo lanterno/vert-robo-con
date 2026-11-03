@@ -27,7 +27,7 @@ Choices that block the build. Only #5 (privacy) is still open, and it must be se
 ## M1 · Public site without a database
 Every public page rebuilt from the V3 boards, reading data files in the repo and still on GitHub Pages. Ends with the new public site live.
 
-- [ ] #75
+- [x] #75
 - [ ] #76
 - [ ] #24
 - [ ] #25
