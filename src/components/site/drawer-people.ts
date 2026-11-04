@@ -17,7 +17,7 @@ export function roleLine(p: Person, year?: number): string {
   return [role.title, role.org].filter(Boolean).join(' · ');
 }
 
-function tags(p: Person): string[] {
+export function personTags(p: Person): string[] {
   const out: string[] = [];
   for (const r of p.roles) {
     if (r.kind === 'team') out.push('Organising team');
@@ -28,7 +28,7 @@ function tags(p: Person): string[] {
   return [...new Set(out)];
 }
 
-function appears(p: Person): NonNullable<DrawerPerson['appears']> {
+export function appearances(p: Person): NonNullable<DrawerPerson['appears']> {
   const out: NonNullable<DrawerPerson['appears']> = [];
   for (const year of [2026, 2025]) {
     for (const day of getProgram(year) ?? []) {
@@ -47,6 +47,15 @@ function appears(p: Person): NonNullable<DrawerPerson['appears']> {
     if (!v.speakers.includes(p.slug)) continue;
     out.push({ title: v.title, meta: `RECORDING · ${v.duration}`, href: `/watch/${v.slug}`, kind: 'video' });
   }
+  for (const r of p.roles) {
+    if (r.kind !== 'author') continue;
+    out.push({
+      title: `Working Notes on Climate Robots, ${r.edition}`,
+      meta: `WHITE PAPER${r.credited && r.credited !== p.name ? ` · AS ${r.credited.toUpperCase()}` : ''}`,
+      href: `/research/white-paper/${r.edition}`,
+      kind: 'document',
+    });
+  }
   return out;
 }
 
@@ -56,9 +65,9 @@ export function toDrawerPeople(people: Person[], year?: number): DrawerPerson[] 
     name: p.name,
     roleLine: roleLine(p, year),
     ...(p.photo ? { photo: p.photo } : {}),
-    tags: tags(p),
+    tags: personTags(p),
     bio: p.bio ?? `${p.name} has no profile text yet.`,
-    appears: appears(p),
+    appears: appearances(p),
     ...(p.links ? { links: p.links } : {}),
   }));
 }
