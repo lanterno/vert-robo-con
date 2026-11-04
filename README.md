@@ -39,7 +39,8 @@ Every test runs twice, at desktop and phone widths, over the routes in
 | Check | What fails it |
 | :--- | :--- |
 | `tests/smoke.spec.ts` | A route that doesn't return 200, has no `h1`, or throws in the browser |
-| `tests/a11y.spec.ts` | An axe violation under WCAG 2.1 A or AA, including text contrast below 4.5:1 |
+| `tests/a11y.spec.ts` | An axe violation under WCAG 2.1 A or AA, including text contrast below 4.5:1. Text on a gradient, which axe can't judge, is checked by `tests/gradient-contrast.ts` |
+| `tests/gradient-contrast.spec.ts` | The gradient check itself giving the wrong answer on fixture pages |
 | `tests/links.spec.ts` | A link to an outside form, spreadsheet or file-sharing host |
 
 The link check is what keeps "everything happens on the site" true: a feature
@@ -110,6 +111,7 @@ Edit the files in the repo; there is no CMS. The team edits content in the admin
 - The navigation lives in `src/components/Header.astro`
 - Summit data, speakers, partners and the organising team live in `src/lib/summits-data.ts`
 - Links, site metadata, footer links and figures live in `src/lib/constants.ts`
+- Colours and fonts live in `tailwind.config.mjs`. The colour notes there say what each token is for: blue only for things you can act on, bright green only for dots and icons, and a grey chip for a status such as "Coming soon"
 - Map organisations live in `src/data/organizations.json`
 
 ## Further reading
