@@ -32,7 +32,7 @@ Edit these files as work progresses; nothing syncs back to GitHub.
 | [30](30-watchv3-videos-and-series.md) | WatchV3: videos and series | closed |
 | [31](31-researchv3-white-paper-reader-principles-deployment-code-cod.md) | ResearchV3: white paper reader, principles, deployment code, code of conduct | open |
 | [32](32-mapv3-the-map-on-maplibre-with-self-hosted-tiles.md) | MapV3: the map on MapLibre with self-hosted tiles | open |
-| [33](33-peoplev3-team-advisors-speakers-and-authors.md) | PeopleV3: team, advisors, speakers and authors | open |
+| [33](33-peoplev3-team-advisors-speakers-and-authors.md) | PeopleV3: team, advisors, speakers and authors | closed |
 | [34](34-newsv3-news-list-posts-and-rss.md) | NewsV3: news list, posts and RSS | open |
 | [35](35-getinvolvedv3-static-parts.md) | GetInvolvedV3: static parts | open |
 | [36](36-jobsv3-layout-and-internship-tracks.md) | JobsV3: layout and internship tracks | open |
