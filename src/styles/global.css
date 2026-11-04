@@ -1,4 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+/* V3 fonts, self-hosted: the woff2 files are bundled into dist/, so no
+   request leaves the site (#24). Bricolage uses its optical-size axis, as the
+   boards do. Each face uses font-display: swap. */
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
 
 @tailwind base;
 @tailwind components;
