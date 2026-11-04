@@ -1,0 +1,85 @@
+---
+/**
+ * A video in the library, as WatchV3 shows them: a thumbnail or a text tile,
+ * its length, what it is, and its title.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { getPerson, VIDEO_TOPICS, type Video, type VideoKind } from '@/lib/content';
+
+interface Props {
+  video: Video;
+  /** Marks the card for the library's filters. */
+  filterable?: boolean;
+  class?: string;
+}
+
+const { video, filterable = false, class: className } = Astro.props;
+
+const KIND_LABEL: Record<VideoKind, string> = {
+  keynote: 'Keynote',
+  panel: 'Panel',
+  talk: 'Talk',
+  pitch: 'Pitches',
+  opening: 'Opening',
+  closing: 'Closing',
+  recap: 'Recap',
+  episode: 'Episode',
+  explainer: 'Explainer',
+};
+const names = video.speakers.map((s) => getPerson(s)?.name).filter((n) => n !== undefined);
+// A video with no picture shows its title on a tile, as the board does. The
+// repo's portraits are initials on a square, which crop badly at 16:9.
+const thumbnail = video.thumbnail;
+const meta = [
+  video.series ? `EPISODE ${video.series.episode}` : KIND_LABEL[video.kind].toUpperCase(),
+  video.edition ? `SUMMIT ${video.edition}` : '',
+  video.duration,
+]
+  .filter(Boolean)
+  .join(' · ');
+
+// What the search looks through.
+const text = [video.title, video.summary, ...names, ...(video.topics ?? []).map((t) => VIDEO_TOPICS[t])]
+  .filter(Boolean)
+  .join(' ')
+  .toLowerCase();
+---
+
+<a
+  href={`/watch/${video.slug}`}
+  class:list={['group flex flex-col gap-3 rounded-[20px] text-vrc-ink no-underline hover:text-vrc-ink', className]}
+  {...filterable
+    ? {
+        'data-result': true,
+        'data-video-type': video.series ? 'series' : video.edition ? 'summit' : video.kind,
+        'data-video-topics': (video.topics ?? []).join(' '),
+        'data-video-edition': video.edition ? String(video.edition) : '',
+        'data-video-text': text,
+      }
+    : {}}
+>
+  <span class="relative block aspect-video overflow-hidden rounded-[20px] bg-vrc-navy">
+    {
+      thumbnail ? (
+        <img src={thumbnail} alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover opacity-90" />
+      ) : (
+        <span class="absolute inset-0 flex items-start bg-vrc-blue-tint p-5 font-heading text-[20px] font-semibold leading-tight tracking-[-0.02em] text-vrc-ink">
+          <span class="line-clamp-3">{video.tile ?? video.title}</span>
+        </span>
+      )
+    }
+    <!-- Centred over a picture, in the corner over a title, so the two never overlap. -->
+    <span
+      aria-hidden="true"
+      class:list={[
+        'absolute flex h-14 w-14 items-center justify-center rounded-full bg-white text-vrc-ink shadow-[0_6px_18px_rgba(10,18,34,0.2)] transition-transform group-hover:scale-105 motion-reduce:transition-none',
+        thumbnail ? 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' : 'bottom-4 right-4',
+      ]}
+    >
+      <Icon name="play" size={20} filled />
+    </span>
+  </span>
+  <span class="font-mono text-[11px] tracking-[0.06em] text-vrc-muted">{meta}</span>
+  <span class="font-heading text-lg font-semibold leading-tight tracking-[-0.015em] group-hover:underline">{video.title}</span>
+  {names.length > 0 && <span class="text-sm text-vrc-muted">{names.join(' · ')}</span>}
+</a>
