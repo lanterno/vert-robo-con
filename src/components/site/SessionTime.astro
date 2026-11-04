@@ -1,0 +1,29 @@
+---
+/**
+ * A session's time. Written in UTC, because the site is built once for
+ * everyone; src/scripts/local-time.ts adds the reader's own time beside it.
+ */
+interface Props {
+  /** UTC calendar date, such as "2026-05-19". */
+  date: string;
+  /** HH:MM in UTC. */
+  time: string;
+  end?: string;
+  /** Show the range, rather than only the start. */
+  range?: boolean;
+  class?: string;
+}
+
+const { date, time, end, range = false, class: className } = Astro.props;
+const showRange = range && end !== undefined;
+const utcText = showRange ? `${time}–${end}` : time;
+const startsAt = `${date}T${time}:00Z`;
+---
+
+<time
+  datetime={startsAt}
+  data-utc={startsAt}
+  data-utc-end={showRange ? `${date}T${end}:00Z` : undefined}
+  data-utc-text={utcText}
+  class={className}>{utcText} UTC</time
+>
