@@ -1,0 +1,383 @@
+---
+/**
+ * An edition of the summit (#28), from SummitV3: /summits/2025, 2026, 2027.
+ *
+ * The state, and what the page offers, come from the edition's dates at
+ * build time. Registration is built in M3 (#40): until then an open edition
+ * shows when registration opens rather than a Register button, and the
+ * "notify me" spots say "Coming soon". The live view is M5 and recordings
+ * for 2027 are M7.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PersonDrawer from '@/components/site/PersonDrawer.astro';
+import SpeakerCard from '@/components/site/SpeakerCard.astro';
+import PartnerGrid from '@/components/site/PartnerGrid.astro';
+import EditionCard from '@/components/site/EditionCard.astro';
+import { toDrawerPeople } from '@/components/site/drawer-people';
+import {
+  editionChip,
+  editionDates,
+  formatShortDate,
+  getEditions,
+  getNow,
+  getPartners,
+  getProgram,
+  getSpeakers,
+  getVideos,
+  isRegistrationOpen,
+  type Edition,
+} from '@/lib/content';
+
+export function getStaticPaths() {
+  return getEditions()
+    .filter((e) => !e.pilot)
+    .map((edition) => ({ params: { year: String(edition.year) }, props: { edition } }));
+}
+
+interface Props {
+  edition: Edition;
+}
+
+const { edition } = Astro.props;
+const now = getNow();
+const chip = editionChip(edition, now);
+const editions = getEditions();
+const current = editions[0]!;
+const isCurrent = edition.year === current.year;
+const program = getProgram(edition.year);
+const speakers = getSpeakers(edition.year);
+const keynotes = speakers.filter((p) => p.roles.some((r) => r.kind === 'speaker' && r.year === edition.year && r.keynote));
+const others = speakers.filter((p) => !keynotes.includes(p));
+const partners = getPartners(edition.year);
+const recordings = getVideos().filter((v) => v.edition === edition.year);
+const upcoming = chip.state === 'upcoming';
+const regOpen = isRegistrationOpen(chip.state);
+const before = upcoming || regOpen || chip.state === 'closed';
+const programHref = `/summits/${edition.year}/program`;
+
+const keynoteSession = (slug: string) => {
+  for (const day of program ?? []) {
+    const s = day.sessions.find((x) => x.kind === 'keynote' && x.speakers.includes(slug));
+    if (s) return `DAY ${day.day} · ${s.time} UTC`;
+  }
+  return undefined;
+};
+
+const keynoteCount = program?.flatMap((d) => d.sessions).filter((s) => s.kind === 'keynote').length ?? 0;
+const facts: [string, string][] = [
+  ['DATES', editionDates(edition, 'short')],
+  ['WHERE', isCurrent ? `${edition.format} · ${edition.price}` : edition.format],
+  edition.window
+    ? ['DAILY', `${edition.window.start}–${edition.window.end} UTC`]
+    : ['ATTENDEES', `${edition.stats?.attendees ?? '[N]'} from ${edition.stats?.countries ?? '[N]'} countries`],
+  edition.recordings === 'published' && recordings.length > 0
+    ? ['RECORDED', `${recordings.length} sessions`]
+    : ['FORMAT', program ? `${keynoteCount} keynotes · ${edition.stats?.sessions ?? '[N]'} sessions` : '[N] keynotes · [N] sessions'],
+];
+
+const startup = edition.calls?.find((c) => c.id === 'startup');
+const research = edition.calls?.find((c) => c.id === 'research');
+const opensLabel = (iso?: string) => (iso ? `OPENS ${formatShortDate(iso).replace(/, \d{4}$/, '').toUpperCase()}` : 'OPENS [DATE]');
+
+const subnav = [
+  ['overview', 'Overview'],
+  ['program', 'Program'],
+  ['speakers', 'Speakers'],
+  ['partners', 'Partners'],
+  ...(isCurrent && before ? [['involved', 'Get involved']] : []),
+  ['past', 'Other editions'],
+];
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+const h2 = 'm-0 font-heading text-[clamp(36px,4.6vw,56px)] font-semibold leading-[0.98] tracking-[-0.035em]';
+const soon = 'inline-flex items-center gap-2 text-[15px] text-vrc-muted';
+---
+
+<SiteLayout title={`Summit ${edition.year}`} description={edition.dek}>
+  <!-- HERO -->
+  <section id="overview" class="scroll-mt-32 px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+          <a href="/summits" class="text-vrc-muted no-underline hover:text-vrc-ink">SUMMITS</a> / <span class="text-vrc-ink" aria-current="page">{edition.year}</span>
+        </nav>
+        <nav aria-label="Editions" class="flex flex-wrap gap-1 rounded-xl bg-vrc-surface p-1">
+          {
+            editions
+              .filter((e) => !e.pilot)
+              .map((e) => (
+                <a
+                  href={`/summits/${e.year}`}
+                  aria-current={e.year === edition.year ? 'page' : undefined}
+                  class="inline-flex min-h-9 items-center gap-2 rounded-[9px] px-3.5 text-sm font-medium text-vrc-ink-2 no-underline hover:text-vrc-ink aria-[current=page]:bg-white aria-[current=page]:text-vrc-ink aria-[current=page]:shadow-[0_1px_3px_rgba(10,18,34,0.14)]"
+                >
+                  {e.year}
+                  {e.year === current.year && <span class="font-mono text-[11px] text-vrc-muted">NEXT</span>}
+                </a>
+              ))
+          }
+        </nav>
+      </div>
+
+      <div class="flex flex-wrap items-end gap-x-16 gap-y-10">
+        <div class="flex flex-[1.3_1_560px] flex-col gap-6">
+          <Chip tone={chip.tone} dot>{chip.label}</Chip>
+          <h1 class="m-0 font-heading text-[clamp(48px,8vw,96px)] font-semibold leading-[0.92] tracking-[-0.045em]">
+            Vert Robo Con Summit <span class="text-vrc-green-dark">{edition.year}</span>
+          </h1>
+          <p class="m-0 max-w-[620px] text-xl text-vrc-ink-2">{edition.dek}</p>
+        </div>
+        <dl class="m-0 grid flex-[1_1_340px] grid-cols-2 gap-px overflow-hidden rounded-[20px] border border-vrc-line bg-vrc-line">
+          {
+            facts.map(([k, v]) => (
+              <div class="bg-white p-5">
+                <dt class="font-mono text-[11px] tracking-[0.06em] text-vrc-muted">{k}</dt>
+                <dd class="m-0 mt-1 font-semibold">{v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+          {
+            isCurrent && before ? (
+              <>
+                <span class={soon}>
+                  <Icon name="bell" />
+                  Email me when registration opens <Chip>Coming soon</Chip>
+                </span>
+                <Button href="/get-involved" variant="secondary">Pitch at the summit</Button>
+              </>
+            ) : edition.year === 2025 ? (
+              <>
+                <Button href="/watch">Watch all {recordings.length} sessions</Button>
+                <Button href={programHref} variant="secondary">Full program</Button>
+              </>
+            ) : (
+              <>
+                {program && <Button href={programHref}>Full program</Button>}
+                {edition.recordings === 'in-editing' && (
+                  <span class={soon}>
+                    <Icon name="bell" />
+                    Notify me when videos land <Chip>Coming soon</Chip>
+                  </span>
+                )}
+              </>
+            )
+          }
+        </div>
+        {
+          isCurrent && edition.registration && (regOpen || upcoming) && (
+            <p class="m-0 text-[15px] text-vrc-muted">
+              Registration {regOpen ? 'opened' : 'opens'} {formatShortDate(edition.registration.opensAt)}. Free · open to everyone, online, and it takes one
+              short form.
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBNAV -->
+  <nav aria-label="On this page" class="sticky top-[60px] z-20 mt-14 border-y border-vrc-line bg-white/[0.92] backdrop-blur-[12px] lg:top-[72px]">
+    <div class="mx-auto flex max-w-page flex-wrap items-center gap-x-8 px-4 text-[15px] font-medium lg:px-8">
+      {
+        subnav.map(([id, label]) => (
+          <a href={`#${id}`} class="border-b-2 border-transparent py-3.5 text-vrc-ink-2 no-underline hover:border-vrc-ink hover:text-vrc-ink">
+            {label}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+
+  {
+    isCurrent && before && (
+      <section id="involved" class="scroll-mt-32 px-4 py-20 lg:px-8 lg:py-24">
+        <div class="mx-auto flex max-w-page flex-col gap-8">
+          <div class="flex flex-col gap-4">
+            <span class={eyebrow}>GET INVOLVED · {edition.year}</span>
+            <h2 class={h2}>Take part in {edition.year}</h2>
+          </div>
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
+            {[
+              { chip: opensLabel(startup?.opensAt), title: 'Pitch your startup', body: 'Present your company in the startup pitch session, in front of researchers, founders and funders.' },
+              { chip: opensLabel(research?.opensAt), title: 'Pitch your research', body: 'Share your lab’s work in the research pitch session.' },
+            ].map((g) => (
+              <article class="flex flex-col gap-3.5 rounded-3xl border border-vrc-line p-7">
+                <Chip dot>{g.chip}</Chip>
+                <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">{g.title}</h3>
+                <p class="m-0 text-base text-vrc-ink-2">{g.body}</p>
+                <span class={`mt-auto ${soon}`}>
+                  <Icon name="bell" />
+                  Remind me <Chip>Coming soon</Chip>
+                </span>
+              </article>
+            ))}
+            <article class="flex flex-col gap-3.5 rounded-3xl border border-vrc-line p-7">
+              <Chip tone="green" dot>OPEN</Chip>
+              <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Sponsor {edition.year}</h3>
+              <p class="m-0 text-base text-vrc-ink-2">Help keep the summit free and online, and reach the whole network.</p>
+              <Button href="/get-involved#sponsor" variant="secondary" size="sm" class="mt-auto self-start">See packages</Button>
+            </article>
+            <article class="flex flex-col gap-3.5 rounded-3xl border border-vrc-line p-7">
+              <Chip tone="green" dot>OPEN</Chip>
+              <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Recommend a speaker or volunteer</h3>
+              <p class="m-0 text-base text-vrc-ink-2">Know someone the network should hear from, or want to help run the summit?</p>
+              <Button href="/get-involved#volunteer" variant="secondary" size="sm" class="mt-auto self-start">Nominate</Button>
+            </article>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- PROGRAM -->
+  <section id="program" class:list={['scroll-mt-32 px-4 py-20 lg:px-8 lg:py-24', isCurrent ? 'bg-vrc-surface' : '']}>
+    <div class="mx-auto flex max-w-page flex-col gap-8">
+      {
+        program ? (
+          <>
+            <div class="flex flex-wrap items-end justify-between gap-4">
+              <div class="flex flex-col gap-4">
+                <span class={eyebrow}>PROGRAM · {editionDates(edition).toUpperCase()} · ALL TIMES UTC</span>
+                <h2 class={h2}>Three days, on the record</h2>
+              </div>
+              <a href={programHref} class="inline-flex items-center gap-1.5 font-medium no-underline hover:underline">Full program <Icon name="arrow-right" /></a>
+            </div>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
+              {program.map((day) => (
+                <div class="flex flex-col gap-3 rounded-3xl border border-vrc-line p-6">
+                  <span class={eyebrow}>DAY {day.day} · {formatShortDate(day.date).toUpperCase()}</span>
+                  <h3 class="m-0 font-heading text-xl font-semibold tracking-[-0.02em]">{day.theme}</h3>
+                  <ol class="m-0 flex list-none flex-col p-0">
+                    {day.sessions.map((s) => (
+                      <li class="flex gap-3 border-t border-vrc-line py-2.5 text-[15px]">
+                        <span class="w-12 shrink-0 font-mono text-[13px] text-vrc-muted">{s.time}</span>
+                        <a href={`/summits/${edition.year}/sessions/${s.slug}`} class="text-vrc-ink no-underline hover:text-vrc-blue hover:underline">{s.title}</a>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div class="flex max-w-3xl flex-col gap-4">
+                <span class={eyebrow}>PROGRAM · PROPOSED TRACKS · [TRACKS TBC]</span>
+                <h2 class={h2}>Program announced [DATE]</h2>
+                <p class="m-0 text-lg text-vrc-ink-2">
+                  Three days online, {editionDates(edition)}. These are the tracks we are planning around. Sessions, times and speakers follow with the program.
+                </p>
+              </div>
+              <Chip dot onSurface>DRAFT PROGRAM</Chip>
+            </div>
+            <ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3 p-0">
+              {(edition.tracks ?? []).map((t, i) => (
+                <li class="flex flex-col gap-2 rounded-[20px] bg-white p-6">
+                  <span class={eyebrow}>TRACK {String(i + 1).padStart(2, '0')}</span>
+                  <span class="font-heading text-xl font-semibold tracking-[-0.02em]">{t}</span>
+                  <span class="text-sm text-vrc-muted">Sessions announced with the program</span>
+                </li>
+              ))}
+            </ul>
+            <span class={soon}>
+              <Icon name="bell" />
+              Tell me when the program is live <Chip onSurface>Coming soon</Chip>
+            </span>
+          </>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- SPEAKERS -->
+  <section id="speakers" class="scroll-mt-32 px-4 py-20 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-12">
+      {
+        keynotes.length > 0 && (
+          <div class="flex flex-col gap-6">
+            <h2 class={h2}>Keynotes</h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
+              {keynotes.map((p) => {
+                const when = keynoteSession(p.slug);
+                return <SpeakerCard person={p} year={edition.year} keynote {...(when ? { when } : {})} />;
+              })}
+            </div>
+          </div>
+        )
+      }
+      <div class="flex flex-col gap-6">
+        <h2 class={h2}>Speakers</h2>
+        {
+          others.length > 0 ? (
+            <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
+              {others.map((p) => <SpeakerCard person={p} year={edition.year} />)}
+            </div>
+          ) : (
+            <div class="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-dashed border-vrc-line-strong p-7">
+              <span class="flex flex-col gap-1">
+                <strong class="font-semibold">Speakers not announced yet</strong>
+                <span class="text-[15px] text-vrc-muted">The {edition.year} lineup is announced with the program on [DATE].</span>
+              </span>
+              <Button href="/get-involved#volunteer" variant="secondary" size="sm">Recommend a speaker</Button>
+            </div>
+          )
+        }
+      </div>
+      {speakers.length > 0 && <PersonDrawer people={toDrawerPeople(speakers, edition.year)} context={`SPEAKERS ${edition.year}`} />}
+    </div>
+  </section>
+
+  {
+    !isCurrent && edition.description && (
+      <section id="recap" class="px-4 pb-20 lg:px-8 lg:pb-24">
+        <div class="mx-auto flex max-w-page flex-wrap items-start gap-x-16 gap-y-6 rounded-3xl bg-vrc-surface p-8 lg:p-12">
+          <div class="flex flex-[1_1_320px] flex-col gap-4">
+            <span class={eyebrow}>RECAP</span>
+            <h2 class="m-0 font-heading text-[clamp(28px,3.4vw,40px)] font-semibold leading-tight tracking-[-0.03em]">{edition.tagline ?? `Summit ${edition.year}`}</h2>
+          </div>
+          <div class="flex flex-[1.4_1_420px] flex-col gap-4">
+            <p class="m-0 text-lg text-vrc-ink-2">{edition.description}</p>
+            {edition.recordings === 'published' && recordings.length > 0 ? (
+              <a href="/watch" class="inline-flex items-center gap-1.5 font-medium no-underline hover:underline">
+                Watch all {recordings.length} recordings <Icon name="arrow-right" />
+              </a>
+            ) : edition.recordings === 'in-editing' ? (
+              <Chip dot onSurface>Recordings in editing</Chip>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- PARTNERS -->
+  <section id="partners" class="scroll-mt-32 px-4 pb-20 lg:px-8 lg:pb-24">
+    <div class="mx-auto flex max-w-page flex-col gap-6">
+      <span class={eyebrow}>{partners.length ? `PARTNERS · ${edition.year}` : `SPONSORS · ${edition.year}`}</span>
+      {partners.length === 0 && <p class="m-0 text-[17px] text-vrc-ink-2">Sponsorship for {edition.year} is open. Partners are listed here as they join.</p>}
+      <PartnerGrid partners={partners} nextYear={current.year} />
+    </div>
+  </section>
+
+  <!-- OTHER EDITIONS -->
+  <section id="past" class="scroll-mt-32 bg-vrc-surface px-4 py-20 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <div class="flex flex-col gap-4">
+        <span class={eyebrow}>ARCHIVE</span>
+        <h2 class={h2}>{isCurrent ? 'Past editions' : 'Other editions'}</h2>
+      </div>
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
+        {editions.filter((e) => e.year !== edition.year).map((e) => <EditionCard edition={e} />)}
+      </div>
+    </div>
+  </section>
+</SiteLayout>

@@ -1,451 +1,56 @@
 ---
 /**
- * Summits Landing Page
- * Spotlight on the latest edition, the recording archive (placeholders),
- * edition timeline, organisers, partners and summary numbers.
- * All summit content is fictional demo data.
+ * The summits overview (#28): the next edition and every past one, each
+ * linking to its page.
  */
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import TeamCard from '@/components/TeamCard.astro';
-import SponsorGrid from '@/components/SponsorGrid.astro';
-import VideoPlaceholder from '@/components/VideoPlaceholder.astro';
-import {
-  SUMMITS,
-  ORGANIZERS,
-  SPEAKERS_2026,
-  SUMMIT_2026_PROGRAM,
-  SUMMIT_2025_VIDEOS,
-  SPONSORS_2026,
-  getKeynoteSpeakers,
-} from '@/lib/summits-data';
-import { LINKS } from '@/lib/constants';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import EditionCard from '@/components/site/EditionCard.astro';
+import { editionChip, editionDates, getCurrentEdition, getEditions, getNow } from '@/lib/content';
 
-const allSummits = Object.values(SUMMITS).sort(
-  (a, b) => parseInt(b.year) - parseInt(a.year)
-);
-const upcomingSummit = allSummits.find(s => s.status === 'upcoming');
-const latestPastSummit = allSummits.find(s => s.status === 'past');
-const olderPastSummits = allSummits.filter(
-  s => s.status === 'past' && s.year !== latestPastSummit?.year
-);
-
-const featuredSpeakers = [
-  ...getKeynoteSpeakers('2026'),
-  ...SPEAKERS_2026.filter(s => s.photoUrl && !s.isKeynote).slice(0, 9),
-].filter(s => s.photoUrl).slice(0, 8);
-
-const heroMosaicSpeakers = featuredSpeakers.slice(0, 6);
-
-// 2026 session topics (the visual chips)
-const summit2026Topics = [
-  { label: 'Methane Leaks', color: 'from-amber-700 to-orange-800' },
-  { label: 'Soil Carbon', color: 'from-emerald-700 to-green-800' },
-  { label: 'Flood Recovery', color: 'from-blue-700 to-cyan-800' },
-  { label: 'Greenhouse Automation', color: 'from-lime-700 to-green-800' },
-  { label: 'Technician Training', color: 'from-violet-700 to-purple-800' },
-  { label: 'Student Research', color: 'from-rose-700 to-pink-800' },
-];
-
-// Edition totals for the numbers band
-const editionsHeld = allSummits.filter(s => s.status === 'past').length;
-const totalSessionsAllEditions = allSummits.reduce(
-  (acc, s) => acc + parseInt(s.stats?.sessions ?? '0', 10),
-  0
-);
-
-const totalAttendeesAllEditions = allSummits.reduce(
-  (acc, s) => acc + parseInt(s.stats?.attendees ?? '0', 10),
-  0
-);
-const maxCountries = Math.max(
-  ...allSummits.map(s => parseInt(s.stats?.countries ?? '0', 10))
-);
-
-const totalSessionsCount =
-  SUMMIT_2026_PROGRAM.reduce((acc, day) => acc + day.sessions.length, 0);
-const speakers2026Count = SPEAKERS_2026.length;
+const current = getCurrentEdition();
+const chip = editionChip(current, getNow());
+const past = getEditions().filter((e) => e.year !== current.year);
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
 ---
 
-<BaseLayout
-  title="Vert Robo Con Summits"
-  description="The Vert Robo Con Summit is a fictional, free online gathering about robots built for climate work. Every speaker, partner and recording on this page is demo content."
->
-  {/* ─── HERO ─── */}
-  <section class="relative overflow-hidden bg-vrc-navy text-white">
-    {/* Background gradient + grain */}
-    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-blue"></div>
-    <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 20% 20%, rgba(22,163,74,0.25), transparent 40%), radial-gradient(circle at 80% 80%, rgba(59,130,246,0.25), transparent 40%);"></div>
-    <div class="absolute inset-0 opacity-[0.07]" style="background-image: url('data:image/svg+xml,%3Csvg width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M0 39h40M39 0v40%22 stroke=%22%23ffffff%22 stroke-width=%221%22 fill=%22none%22/%3E%3C/svg%3E');"></div>
-
-    <div class="relative container mx-auto px-4 py-20 lg:py-28">
-      <div class="grid lg:grid-cols-12 gap-12 items-center">
-        {/* Left: copy */}
-        <div class="lg:col-span-7">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-vrc-green/15 border border-vrc-green/40 rounded-full text-vrc-on-navy-green text-xs font-semibold uppercase tracking-wider mb-6">
-            <span class="w-1.5 h-1.5 bg-vrc-green rounded-full"></span>
-            {upcomingSummit ? 'Next Edition' : `Latest: ${latestPastSummit?.dates}`}
-          </div>
-          <h1 class="font-heading font-bold text-5xl md:text-6xl lg:text-7xl leading-[0.95] mb-6">
-            Robots for a
-            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-vrc-on-navy-green to-teal-300">Cooler Planet</span>
-          </h1>
-          <p class="text-lg md:text-xl text-white/75 max-w-2xl mb-10 leading-relaxed">
-            Once a year the Vert Robo Con Summit puts builders, field scientists and funders on the same call for a few afternoons of talks, panels and pitches about robots that do climate work. The next edition is planned for April 20-22, 2027, online and free.
-          </p>
-          <div class="flex flex-wrap gap-3">
-            {latestPastSummit && (
-              <a
-                href={`/summits/${latestPastSummit.year}`}
-                class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-vrc-navy font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-green-dark hover:text-white transition-colors"
-              >
-                Explore Summit {latestPastSummit.year}
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-              </a>
-            )}
-            <a
-              href={LINKS.social.videos}
-              class="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 backdrop-blur-sm border border-white/30 text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-white/20 transition-colors"
-            >
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-              Browse Recordings
-            </a>
-          </div>
-        </div>
-
-        {/* Right: speaker mosaic */}
-        <div class="lg:col-span-5">
-          <div class="relative grid grid-cols-3 gap-3 max-w-md ml-auto">
-            {heroMosaicSpeakers.map((s, i) => (
-              <div class={`aspect-square rounded-2xl overflow-hidden ring-1 ring-white/20 shadow-2xl ${i === 1 ? 'translate-y-6' : ''} ${i === 4 ? '-translate-y-6' : ''} ${i === 3 ? 'translate-y-4' : ''}`}>
-                <img
-                  src={s.photoUrl}
-                  alt={s.name}
-                  class="w-full h-full object-cover"
-                  loading="eager"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+<SiteLayout title="Summits" description={`Vert Robo Con Summit: ${current.dek}`}>
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <div class="flex max-w-4xl flex-col gap-6">
+        <span class={eyebrow}>SUMMITS · ANNUAL · ONLINE · FREE</span>
+        <h1 class="m-0 font-heading text-[clamp(48px,8vw,96px)] font-semibold leading-[0.92] tracking-[-0.045em]">Vert Robo Con Summit</h1>
+        <p class="m-0 max-w-[620px] text-xl text-vrc-ink-2">{current.dek}</p>
       </div>
+
+      <a
+        href={`/summits/${current.year}`}
+        class="group flex flex-wrap items-end justify-between gap-6 rounded-3xl bg-vrc-navy p-8 text-white no-underline hover:text-white lg:p-12"
+      >
+        <span class="flex flex-col gap-4">
+          <span class="inline-flex items-center gap-2 self-start rounded-full bg-vrc-navy-raised px-2.5 py-1 font-mono text-[11px] tracking-[0.06em] text-vrc-on-navy">
+            <span aria-hidden="true" class:list={['h-1.5 w-1.5 rounded-full', chip.tone === 'green' ? 'bg-vrc-green' : chip.tone === 'amber' ? 'bg-vrc-amber' : 'bg-vrc-on-navy-muted']}></span>{chip.label}
+          </span>
+          <span class="font-heading text-[clamp(36px,5vw,64px)] font-semibold leading-none tracking-[-0.035em] group-hover:underline">Summit {current.year}</span>
+          <span class="text-lg text-vrc-on-navy">{editionDates(current)} · {current.format} · {current.price}</span>
+        </span>
+        <span class="inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-5 font-medium text-vrc-ink">See Summit {current.year} →</span>
+      </a>
     </div>
   </section>
 
-  {/* ─── LATEST SUMMIT SPOTLIGHT ─── */}
-  {latestPastSummit && (
-    <section class="py-20 lg:py-28 bg-white">
-      <div class="container mx-auto px-4">
-        <div class="grid lg:grid-cols-12 gap-12 items-start max-w-7xl mx-auto">
-          {/* Left: copy + chips */}
-          <div class="lg:col-span-7">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
-              Most Recent Edition
-            </div>
-            <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-4 leading-tight">
-              {latestPastSummit.name}
-            </h2>
-            <p class="text-lg text-gray-600 mb-2">{latestPastSummit.dates} · {latestPastSummit.location}</p>
-            <p class="text-gray-600 mb-8 max-w-2xl">{latestPastSummit.description}</p>
-
-            {/* Topic chips */}
-            <div class="flex flex-wrap gap-2 mb-10">
-              {summit2026Topics.map(topic => (
-                <span class={`inline-block px-3 py-1.5 text-xs font-semibold text-white rounded-full bg-gradient-to-r ${topic.color}`}>
-                  {topic.label}
-                </span>
-              ))}
-            </div>
-
-            {/* Inline stats */}
-            <div class="grid grid-cols-3 gap-6 mb-10 max-w-md">
-              <div>
-                <div class="font-heading font-bold text-4xl text-vrc-blue">{SUMMIT_2026_PROGRAM.length}</div>
-                <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Days</div>
-              </div>
-              <div>
-                <div class="font-heading font-bold text-4xl text-vrc-blue">{totalSessionsCount}</div>
-                <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Sessions</div>
-              </div>
-              <div>
-                <div class="font-heading font-bold text-4xl text-vrc-blue">{speakers2026Count}</div>
-                <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Speakers</div>
-              </div>
-            </div>
-
-            <a
-              href={`/summits/${latestPastSummit.year}`}
-              class="inline-flex items-center gap-2 px-6 py-3 bg-vrc-blue text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-blue-dark transition-colors"
-            >
-              View Program & Speakers
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
-          </div>
-
-          {/* Right: Speaker mosaic */}
-          <div class="lg:col-span-5">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-600 mb-4">
-              Featured Speakers
-            </div>
-            <div class="grid grid-cols-3 gap-3">
-              {featuredSpeakers.slice(0, 6).map(s => (
-                <a href={`/summits/${latestPastSummit.year}#speakers`} class="group block aspect-square rounded-xl overflow-hidden bg-gray-100 relative">
-                  <img
-                    src={s.photoUrl}
-                    alt={s.name}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                    <span class="text-white text-xs font-semibold leading-tight">{s.name}</span>
-                  </div>
-                </a>
-              ))}
-            </div>
-            <a href={`/summits/${latestPastSummit.year}#speakers`} class="inline-flex items-center gap-1 text-vrc-blue font-semibold text-sm uppercase tracking-wider mt-4 hover:underline">
-              See all {speakers2026Count} speakers →
-            </a>
-          </div>
+  <section class="px-4 py-20 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-10 rounded-[32px] bg-vrc-surface p-6 lg:p-12">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="flex flex-col gap-4">
+          <span class={eyebrow}>ARCHIVE</span>
+          <h2 class="m-0 font-heading text-[clamp(36px,4.6vw,56px)] font-semibold leading-[0.98] tracking-[-0.035em]">Past editions</h2>
         </div>
+        <Button href="/watch" variant="secondary">All recordings</Button>
       </div>
-    </section>
-  )}
-
-  {/* ─── 2025 RECORDINGS (placeholders) ─── */}
-  <section id="recordings" class="py-20 lg:py-28 bg-gray-900 text-white relative overflow-hidden">
-    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 30% 40%, rgba(22,163,74,0.4), transparent 50%);"></div>
-    <div class="relative container mx-auto px-4">
-      <div class="grid lg:grid-cols-12 gap-10 items-center max-w-7xl mx-auto">
-        <div class="lg:col-span-5">
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-on-navy-green mb-3">
-            On-Demand Library
-          </div>
-          <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4 leading-tight">
-            Catch Up on the
-            <span class="block text-vrc-on-navy-green">2025 Sessions</span>
-          </h2>
-          <p class="text-white/80 text-lg mb-8 leading-relaxed">
-            {SUMMIT_2025_VIDEOS.length} recording slots from the first edition: a glacier keynote, two pitch rounds, and talks on wetlands, city heat, insurance and repair. This is a demo site, so each slot shows a placeholder instead of a video.
-          </p>
-          <div class="flex flex-wrap gap-3">
-            <a
-              href="/summits/2025"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-vrc-green-dark text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-green-800 transition-colors"
-            >
-              Browse All Sessions
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
-            <a
-              href="/summits/2025#watch"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 border border-white/20 text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-white/20 transition-colors"
-            >
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-              All Recordings
-            </a>
-          </div>
-        </div>
-
-        <div class="lg:col-span-7">
-          <div class="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-            <VideoPlaceholder
-              title="Vert Robo Con Summit 2025: all sessions"
-              caption={`${SUMMIT_2025_VIDEOS.length} placeholder recordings. No real video exists.`}
-              class="rounded-none border-0"
-            />
-          </div>
-        </div>
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
+        {past.map((e) => <EditionCard edition={e} />)}
       </div>
     </div>
   </section>
-
-  {/* ─── SUMMIT TIMELINE ─── */}
-  <section class="py-20 lg:py-24 bg-gray-50">
-    <div class="container mx-auto px-4">
-      <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
-          The Summit Archive
-        </div>
-        <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-4">
-          Every Edition So Far
-        </h2>
-        <p class="text-gray-600 text-lg">
-          Programs, speaker lists and recording slots for each year. The third edition follows on April 20-22, 2027.
-        </p>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-        {allSummits.map((summit, idx) => (
-          <a
-            href={`/summits/${summit.year}`}
-            class="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-          >
-            {/* Year backdrop */}
-            <div class={`absolute inset-0 bg-gradient-to-br ${summit.year === '2026' ? 'from-vrc-blue via-vrc-blue-dark to-vrc-navy' : 'from-gray-700 via-gray-800 to-gray-900'} opacity-95`}></div>
-            <div class="absolute -bottom-8 -right-4 font-heading font-bold text-[12rem] leading-none text-white/[0.08]">
-              {summit.year}
-            </div>
-
-            <div class="relative p-8 md:p-10 text-white min-h-[280px] flex flex-col">
-              <div class="flex items-center gap-2 mb-4">
-                <span class={`inline-block w-2 h-2 rounded-full ${summit.status === 'upcoming' ? 'bg-vrc-green animate-pulse' : 'bg-white/40'}`}></span>
-                <span class="text-xs uppercase tracking-wider font-semibold">
-                  {summit.status === 'upcoming' ? 'Upcoming' : 'Past Edition'}
-                </span>
-              </div>
-              <h3 class="font-heading font-bold text-3xl md:text-4xl mb-2 leading-tight">
-                {summit.name}
-              </h3>
-              <p class="text-white/80 mb-1">{summit.dates}</p>
-              <p class="text-white/80 text-sm mb-6">{summit.tagline}</p>
-
-              {summit.stats && (
-                <div class="flex gap-6 mt-auto pt-4 border-t border-white/20">
-                  <div>
-                    <div class="font-heading font-bold text-2xl">{summit.stats.attendees}</div>
-                    <div class="text-xs uppercase tracking-wider text-white/80">Attendees</div>
-                  </div>
-                  <div>
-                    <div class="font-heading font-bold text-2xl">{summit.stats.sessions}</div>
-                    <div class="text-xs uppercase tracking-wider text-white/80">Sessions</div>
-                  </div>
-                  <div>
-                    <div class="font-heading font-bold text-2xl">{summit.stats.countries}</div>
-                    <div class="text-xs uppercase tracking-wider text-white/80">Countries</div>
-                  </div>
-                </div>
-              )}
-
-              <div class="mt-auto pt-6 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider group-hover:gap-3 transition-all">
-                Open
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* ─── ORGANIZERS ─── */}
-  <section id="team" class="py-20 lg:py-24 bg-white">
-    <div class="container mx-auto px-4">
-      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 max-w-5xl mx-auto gap-4">
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
-            The Team
-          </div>
-          <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 leading-tight">
-            Organisers & Volunteers
-          </h2>
-        </div>
-        <p class="text-gray-600 max-w-md lg:text-right">
-          A small group of fictional volunteers plans the program, looks after speakers and runs the livestream each year.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
-        {ORGANIZERS.map(member => (
-          <TeamCard member={member} />
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* ─── PARTNERS ─── */}
-  <section id="partners" class="py-20 lg:py-24 bg-gray-50">
-    <div class="container mx-auto px-4">
-      <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
-          Partners
-        </div>
-        <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-4">
-          Who Helped Make 2026 Happen
-        </h2>
-        <p class="text-gray-600 text-lg">
-          The summit stays free because a few organisations cover the costs. Want to support the 2027 edition? Write to us and we will send the partner notes.
-        </p>
-      </div>
-
-      <div class="max-w-5xl mx-auto">
-        <SponsorGrid sponsors={SPONSORS_2026} />
-      </div>
-
-      <div class="text-center mt-12">
-        <a
-          href={LINKS.contact.mailto}
-          class="inline-flex items-center gap-2 px-6 py-3 bg-vrc-blue text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-blue-dark transition-colors"
-        >
-          Become a Partner
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  {/* ─── IMPACT NUMBERS ─── */}
-  <section class="py-20 bg-vrc-navy text-white relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-navy"></div>
-    <img src="/images/summit-crowd.svg" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover opacity-[0.15]" loading="lazy" />
-    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 70% 30%, rgba(22,163,74,0.3), transparent 50%);"></div>
-    <div class="relative container mx-auto px-4">
-      <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-on-navy-green mb-3">
-          By the Numbers
-        </div>
-        <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4">
-          Two editions so far.
-        </h2>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{editionsHeld}</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Summits Held</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{totalAttendeesAllEditions}+</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Total Attendees</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{totalSessionsAllEditions}</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Sessions</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{maxCountries}</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Countries</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* ─── COMMUNITY CTA ─── */}
-  <section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
-      <div class="relative overflow-hidden bg-gradient-to-br from-vrc-blue to-vrc-blue-dark rounded-3xl max-w-5xl mx-auto p-10 md:p-16">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-vrc-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
-
-        <div class="relative grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h2 class="font-heading font-bold text-3xl md:text-4xl text-white mb-3 leading-tight">
-              Want a reminder before 2027?
-            </h2>
-            <p class="text-white/80 text-lg">
-              Join the community workspace. Dates, calls for speakers and new recordings are posted there first, and you can meet other attendees between editions.
-            </p>
-          </div>
-          <div class="flex md:justify-end">
-            <a
-              href="/slack"
-              class="inline-flex items-center gap-3 px-8 py-4 bg-white text-vrc-blue font-bold uppercase tracking-wider rounded-lg hover:bg-vrc-green-dark hover:text-white transition-colors shadow-xl"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8M8 14h5m-9 6l3-3h11a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 001 1.732"/>
-              </svg>
-              Join the Community
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+</SiteLayout>
