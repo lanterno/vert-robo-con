@@ -1,0 +1,40 @@
+---
+/**
+ * The phone tab bar from PhoneV3: Home, Summit, Watch, Map and More, floating
+ * at the bottom of the screen below 1024px, where the header's links are
+ * hidden. "More" opens a sheet with the rest of the site (MoreSheet.astro).
+ */
+import { TABS, isCurrent } from '@/lib/site-nav';
+import Icon from '@/components/ui/Icon.astro';
+
+const path = Astro.url.pathname;
+const tab =
+  'relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-[14px] border-0 bg-transparent p-0 text-[11px] font-medium text-vrc-muted no-underline hover:text-vrc-ink aria-[current=page]:text-vrc-ink';
+---
+
+<nav
+  aria-label="Primary, phone"
+  class="fixed inset-x-3 bottom-4 z-30 grid grid-cols-5 rounded-[20px] border border-vrc-line bg-white/[0.94] p-1.5 shadow-bar backdrop-blur-[14px] lg:hidden"
+>
+  {
+    TABS.map((t) => {
+      const current = t.href !== undefined && isCurrent(path, t.href);
+      const inner = (
+        <>
+          <Icon name={t.icon} size={20} />
+          {t.label}
+          {current && <span aria-hidden="true" class="absolute bottom-0.5 left-1/2 h-0.5 w-5 -translate-x-1/2 rounded-full bg-vrc-blue" />}
+        </>
+      );
+      return t.href ? (
+        <a href={t.href} class={tab} aria-current={current ? 'page' : undefined}>
+          {inner}
+        </a>
+      ) : (
+        <button type="button" data-sheet-open={t.sheet} class:list={[tab, 'cursor-pointer']}>
+          {inner}
+        </button>
+      );
+    })
+  }
+</nav>

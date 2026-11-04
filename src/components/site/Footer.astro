@@ -1,0 +1,57 @@
+---
+/**
+ * The site footer from HomeV3: the tagline, the monthly digest, four groups
+ * of links, and the copyright and social row.
+ *
+ * The digest sign-up arrives with the topic emails in M7 (#65), so until then
+ * it shows its state instead of a form.
+ */
+import { FOOTER, JOIN_SHEET } from '@/lib/site-nav';
+import NavLinkItem from './NavLinkItem.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+const social = 'flex h-11 w-11 items-center justify-center rounded-[10px] text-vrc-muted hover:bg-vrc-surface hover:text-vrc-ink';
+const flink = 'text-vrc-ink no-underline hover:text-vrc-blue hover:underline';
+---
+
+<footer class="border-t border-vrc-line px-4 pb-10 pt-16 lg:px-8">
+  <div class="mx-auto flex max-w-page flex-col gap-14">
+    <div class="flex flex-wrap gap-x-14 gap-y-10">
+      <div class="flex max-w-[420px] flex-[2_1_340px] flex-col gap-4">
+        <span class="flex items-center gap-2.5">
+          <img src="/images/logo.svg" alt="" width="44" height="27" class="h-[27px] w-11 object-contain" />
+          <span class="font-heading text-lg font-semibold">Vert Robo Con</span>
+        </span>
+        <p class="m-0 text-[15px] text-vrc-muted">A friendly community for people who build, fund and repair robots for climate work.</p>
+        <span class="mt-2 font-mono text-xs tracking-[0.06em] text-vrc-muted">THE MONTHLY DIGEST</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <Chip>Coming soon</Chip>
+          <span class="text-sm text-vrc-muted">One email a month, once topic emails launch.</span>
+        </div>
+      </div>
+
+      {
+        FOOTER.map((g) => (
+          <nav aria-label={g.label} class="flex flex-[1_1_150px] flex-col gap-2.5 text-[15px]">
+            <span class="font-mono text-xs tracking-[0.06em] text-vrc-muted">{g.title}</span>
+            {g.links.map((l) => (
+              <NavLinkItem link={l} class={flink} />
+            ))}
+          </nav>
+        ))
+      }
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-vrc-line pt-6">
+      <span class="font-mono text-xs text-vrc-muted">© 2026 VERT ROBO CON · ROBOTS FOR A COOLER PLANET.</span>
+      <div class="flex gap-1">
+        <a href="https://vert-robo-con.example/social/linkedin" aria-label="LinkedIn" class={social}><Icon name="linkedin" size={18} /></a>
+        <a href="/watch" aria-label="Videos" class={social}><Icon name="video" size={18} /></a>
+        <button type="button" data-sheet-open={JOIN_SHEET} aria-label="Slack: join the network" class:list={[social, 'cursor-pointer border-0 bg-transparent']}>
+          <Icon name="slack" size={18} />
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>

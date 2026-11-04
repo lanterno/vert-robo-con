@@ -1,0 +1,32 @@
+---
+/**
+ * One NavLink (src/lib/site-nav.ts) as a link, a sheet opener, or, for a
+ * page from a later milestone, text with a "Coming soon" chip.
+ */
+import type { NavLink } from '@/lib/site-nav';
+import Chip from '@/components/ui/Chip.astro';
+
+interface Props {
+  link: NavLink;
+  class?: string;
+}
+
+const { link, class: className } = Astro.props;
+---
+
+{
+  'href' in link ? (
+    <a href={link.href} class={className}>
+      <slot>{link.label}</slot>
+    </a>
+  ) : 'sheet' in link ? (
+    <button type="button" data-sheet-open={link.sheet} class:list={['cursor-pointer border-0 bg-transparent p-0 text-left font-[inherit]', className]}>
+      <slot>{link.label}</slot>
+    </button>
+  ) : (
+    <span class:list={['inline-flex flex-wrap items-center gap-2 text-vrc-muted', className]}>
+      <slot>{link.label}</slot>
+      <Chip>Coming soon</Chip>
+    </span>
+  )
+}

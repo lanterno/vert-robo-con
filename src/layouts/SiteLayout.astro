@@ -1,0 +1,65 @@
+---
+/**
+ * The page shell for the V3 pages: the header, the footer, the phone tab bar,
+ * and the sheets every page can open. Pages move onto it as they are rebuilt
+ * from the boards in M1; until then the old pages keep BaseLayout.
+ */
+import '@/styles/global.css';
+import { SITE } from '@/lib/constants';
+import Header from '@/components/site/Header.astro';
+import Footer from '@/components/site/Footer.astro';
+import TabBar from '@/components/site/TabBar.astro';
+import JoinSheet from '@/components/site/JoinSheet.astro';
+import MoreSheet from '@/components/site/MoreSheet.astro';
+
+interface Props {
+  /** The page's own title; the site name is added after it. */
+  title: string;
+  description?: string;
+  /** Keep the page out of search results, such as the components gallery. */
+  noindex?: boolean;
+}
+
+const { title, description = `${SITE.name}: ${SITE.tagline}. ${SITE.description}`, noindex = false } = Astro.props;
+const path = Astro.url.pathname;
+const fullTitle = path === '/' ? `${SITE.name}: ${SITE.tagline}` : `${title} · ${SITE.name}`;
+const canonical = new URL(path, SITE.url).href;
+const image = new URL('/images/og-image.png', SITE.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0138AC" />
+  </head>
+  <body class="flex min-h-screen flex-col bg-white font-body text-[17px] leading-relaxed text-vrc-ink">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <Header />
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <!-- Room below the footer on phones, so the tab bar never covers the end of the page. -->
+    <div aria-hidden="true" class="h-24 lg:hidden"></div>
+    <TabBar />
+    <JoinSheet />
+    <MoreSheet />
+  </body>
+</html>

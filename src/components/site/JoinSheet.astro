@@ -1,0 +1,24 @@
+---
+/**
+ * The join sheet, opened by every "Join" control on the site.
+ *
+ * Joining is built in M4 (#53): a request, approved by hand, with the invite
+ * sent by email. Until then the sheet says so, and never links to an outside
+ * form.
+ */
+import { JOIN_SHEET } from '@/lib/site-nav';
+import Sheet from '@/components/ui/Sheet.astro';
+import Chip from '@/components/ui/Chip.astro';
+import { LINKS } from '@/lib/constants';
+---
+
+<Sheet id={JOIN_SHEET} title="Join the network">
+  <Chip dot>Coming soon</Chip>
+  <p class="m-0 text-[17px] text-vrc-ink-2">
+    Asking to join on the site opens soon. You’ll tell us a little about yourself here, the team approves each request by hand,
+    and your invite to the Slack community arrives by email.
+  </p>
+  <p class="m-0 text-[15px] text-vrc-muted">
+    Until then, write to us at <a href={LINKS.contact.mailto}>{LINKS.contact.email}</a> and we’ll let you know when it opens.
+  </p>
+</Sheet>

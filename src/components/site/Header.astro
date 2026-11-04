@@ -1,0 +1,87 @@
+---
+/**
+ * The site header from HomeV3: the logo, the primary links, the Community and
+ * About menus, and "Join the network". It sticks to the top as you scroll.
+ *
+ * Below 1024px the links and menus give way to the phone tab bar
+ * (TabBar.astro), and the header keeps only the logo and "Join", as on
+ * PhoneV3.
+ */
+import { JOIN_SHEET, MENUS, PRIMARY, isCurrent } from '@/lib/site-nav';
+import Icon from '@/components/ui/Icon.astro';
+import Button from '@/components/ui/Button.astro';
+
+const path = Astro.url.pathname;
+const navLink =
+  'rounded-[10px] px-3 py-2.5 text-vrc-ink-2 no-underline hover:bg-vrc-surface hover:text-vrc-ink aria-[current=page]:text-vrc-ink aria-[current=page]:underline aria-[current=page]:decoration-vrc-blue aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[6px]';
+---
+
+<header class="sticky top-0 z-30 border-b border-vrc-line bg-white/[0.86] backdrop-blur-[14px] backdrop-saturate-[1.8]">
+  <div class="mx-auto flex min-h-[60px] max-w-page items-center justify-between gap-6 px-4 lg:min-h-[72px] lg:px-8">
+    <a
+      href="/"
+      aria-current={path === '/' ? 'page' : undefined}
+      class="flex items-center gap-2.5 text-vrc-ink no-underline hover:text-vrc-ink"
+    >
+      <img src="/images/logo.svg" alt="" width="44" height="27" class="h-[22px] w-9 object-contain lg:h-[27px] lg:w-11" />
+      <span class="font-heading text-base font-semibold tracking-[-0.01em] lg:text-lg">Vert Robo Con</span>
+    </a>
+
+    <nav aria-label="Primary" class="hidden flex-wrap items-center gap-0.5 text-[15px] font-medium lg:flex">
+      {
+        PRIMARY.map((l) => (
+          <a href={l.href} class={navLink} aria-current={isCurrent(path, l.href) ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+      {
+        MENUS.map((m) => (
+          <div data-disclosure class="relative">
+            <button
+              type="button"
+              aria-expanded="false"
+              aria-controls={`menu-${m.id}`}
+              class="inline-flex items-center gap-1 rounded-[10px] px-3 py-2.5 text-vrc-ink-2 hover:bg-vrc-surface hover:text-vrc-ink aria-expanded:bg-vrc-surface aria-expanded:text-vrc-ink"
+            >
+              {m.label}
+              <Icon name="chevron-down" size={14} />
+            </button>
+            <div
+              id={`menu-${m.id}`}
+              hidden
+              class="absolute left-0 top-[calc(100%+8px)] z-40 w-80 flex-col rounded-2xl border border-vrc-line bg-white p-2 shadow-pop [&:not([hidden])]:flex"
+            >
+              {m.items.map((i) => {
+                const inner = (
+                  <>
+                    <span class="text-[15px] font-semibold">{i.label}</span>
+                    {i.desc && <span class="text-[13px] font-normal text-vrc-muted">{i.desc}</span>}
+                  </>
+                );
+                const item =
+                  'flex flex-col gap-0.5 rounded-[10px] px-3 py-2.5 text-left text-vrc-ink no-underline hover:bg-vrc-surface hover:text-vrc-ink';
+                return 'href' in i ? (
+                  <a href={i.href} class={item}>{inner}</a>
+                ) : 'sheet' in i ? (
+                  <button type="button" data-sheet-open={i.sheet} class={item}>{inner}</button>
+                ) : (
+                  <span class={item}>{inner}</span>
+                );
+              })}
+            </div>
+          </div>
+        ))
+      }
+    </nav>
+
+    <Button size="sm" data-sheet-open={JOIN_SHEET}>
+      <span class="lg:hidden">Join</span><span class="hidden lg:inline">Join the network</span>
+    </Button>
+  </div>
+</header>
+
+<script>
+  import { initDisclosureNav } from '@/scripts/disclosure-nav';
+  initDisclosureNav();
+</script>
