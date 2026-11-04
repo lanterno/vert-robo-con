@@ -1,0 +1,85 @@
+---
+/**
+ * A video that loads nothing from the video host until someone presses play,
+ * as on WatchV3: a thumbnail with a label, a play button and the duration.
+ *
+ * Pressing play swaps in YouTube's privacy-enhanced player
+ * (youtube-nocookie.com), which sets no cookies until the video plays. A
+ * video without a `youtubeId` has no recording to show, which is every video
+ * in the demo content, so it shows a placeholder player instead and contacts
+ * no one.
+ */
+interface Props {
+  /** The video's title: the button's name starts "Play: <title>". */
+  title: string;
+  thumbnail: string;
+  /** Shown top left, such as "KEYNOTE · SUMMIT 2025". */
+  label?: string;
+  /** Shown bottom left, such as "33:40". */
+  duration?: string;
+  youtubeId?: string;
+  class?: string;
+}
+
+const { title, thumbnail, label, duration, youtubeId, class: className } = Astro.props;
+const pill = 'absolute rounded-full bg-vrc-navy/80 px-3 py-1.5 font-mono text-xs tracking-[0.04em] text-white';
+---
+
+<div data-video-facade data-youtube-id={youtubeId} data-title={title} class:list={['relative aspect-video w-full overflow-hidden rounded-[20px] bg-vrc-navy', className]}>
+  <!-- No aria-label: the button's name is built from its text, so it
+       includes the label and duration people can see, which speech input
+       relies on. The title, which isn't shown, leads in hidden text. -->
+  <button type="button" class="group absolute inset-0 block h-full w-full cursor-pointer border-0 bg-transparent p-0">
+    <span class="sr-only">Play: {title}.</span>
+    <img src={thumbnail} alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover opacity-[0.82]" />
+    {label && <span class:list={[pill, 'left-5 top-5']}>{label}</span>}
+    <span
+      aria-hidden="true"
+      class="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0_10px_30px_rgba(10,18,34,0.35)] transition-transform group-hover:scale-105 motion-reduce:transition-none"
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#0A1222"><path d="M8 5v14l11-7z"></path></svg>
+    </span>
+    {duration && <span class:list={[pill, 'bottom-5 left-5 px-2.5 tracking-normal']}>{duration}</span>}
+  </button>
+  <template data-video-placeholder>
+    <div role="status" class="absolute inset-0 flex flex-col items-center justify-center gap-2.5 px-6 text-center text-white">
+      <span class="inline-flex items-center gap-2 font-mono text-xs tracking-[0.06em] text-vrc-on-navy-green">
+        <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-vrc-green"></span>RECORDING PLACEHOLDER
+      </span>
+      <span class="font-mono text-[13px] text-vrc-on-navy-muted">This demo has no video to play.</span>
+    </div>
+  </template>
+</div>
+
+<script>
+  /**
+   * On play, replace the button with the player and move focus to it, so a
+   * keyboard user lands on what they asked for.
+   */
+  function play(root: HTMLElement): void {
+    const id = root.dataset['youtubeId'];
+    const title = root.dataset['title'] ?? 'Video';
+    let content: HTMLElement;
+    if (id) {
+      const frame = document.createElement('iframe');
+      frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+      frame.title = title;
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      frame.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.className = 'absolute inset-0 h-full w-full border-0';
+      content = frame;
+    } else {
+      const tpl = root.querySelector<HTMLTemplateElement>('template[data-video-placeholder]');
+      const node = tpl?.content.firstElementChild?.cloneNode(true);
+      if (!(node instanceof HTMLElement)) return;
+      node.tabIndex = -1;
+      content = node;
+    }
+    root.replaceChildren(content);
+    content.focus();
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-video-facade]')) {
+    root.querySelector('button')?.addEventListener('click', () => play(root), { once: true });
+  }
+</script>
