@@ -22,6 +22,7 @@ import {
 import { LINKS } from '@/lib/constants';
 
 const summit = SUMMITS['2025'];
+if (!summit) throw new Error('No summit data for 2025 in SUMMITS');
 const keynoteSpeakers = getKeynoteSpeakers('2025');
 
 // Tab configuration
