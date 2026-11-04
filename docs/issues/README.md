@@ -29,7 +29,7 @@ Edit these files as work progresses; nothing syncs back to GitHub.
 | [27](27-homev3-the-home-page.md) | HomeV3: the home page | closed |
 | [28](28-summitv3-summit-overview-and-edition-pages.md) | SummitV3: summit overview and edition pages | closed |
 | [29](29-programv3-program-pages-for-past-editions.md) | ProgramV3: program pages for past editions | closed |
-| [30](30-watchv3-videos-and-series.md) | WatchV3: videos and series | open |
+| [30](30-watchv3-videos-and-series.md) | WatchV3: videos and series | closed |
 | [31](31-researchv3-white-paper-reader-principles-deployment-code-cod.md) | ResearchV3: white paper reader, principles, deployment code, code of conduct | open |
 | [32](32-mapv3-the-map-on-maplibre-with-self-hosted-tiles.md) | MapV3: the map on MapLibre with self-hosted tiles | open |
 | [33](33-peoplev3-team-advisors-speakers-and-authors.md) | PeopleV3: team, advisors, speakers and authors | open |
