@@ -28,7 +28,7 @@ Edit these files as work progresses; nothing syncs back to GitHub.
 | [26](26-data-layer-for-public-pages-repo-data-first-postgres-later.md) | Data layer for public pages: repo data first, Postgres later | closed |
 | [27](27-homev3-the-home-page.md) | HomeV3: the home page | closed |
 | [28](28-summitv3-summit-overview-and-edition-pages.md) | SummitV3: summit overview and edition pages | closed |
-| [29](29-programv3-program-pages-for-past-editions.md) | ProgramV3: program pages for past editions | open |
+| [29](29-programv3-program-pages-for-past-editions.md) | ProgramV3: program pages for past editions | closed |
 | [30](30-watchv3-videos-and-series.md) | WatchV3: videos and series | open |
 | [31](31-researchv3-white-paper-reader-principles-deployment-code-cod.md) | ResearchV3: white paper reader, principles, deployment code, code of conduct | open |
 | [32](32-mapv3-the-map-on-maplibre-with-self-hosted-tiles.md) | MapV3: the map on MapLibre with self-hosted tiles | open |
