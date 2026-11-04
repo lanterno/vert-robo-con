@@ -1,0 +1,175 @@
+---
+/**
+ * The video library (#30), from WatchV3: recordings grouped by edition, the
+ * Robots in the Field series, and the explainers.
+ *
+ * Every video is on the page in its shelf. The filters hide the shelves and
+ * show one grid of what matched, so the library is complete without
+ * JavaScript. "Notify me when videos land" comes with #65.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import VideoCard from '@/components/site/VideoCard.astro';
+import {
+  VIDEO_TOPICS,
+  getEditions,
+  getEpisodes,
+  getRecordings,
+  getSeries,
+  getVideos,
+  type Video,
+  type VideoTopic,
+} from '@/lib/content';
+
+const videos = getVideos();
+const episodes = getEpisodes();
+const series = getSeries();
+const explainers = videos.filter((v) => v.kind === 'explainer');
+const editions = getEditions().filter((e) => getRecordings(e.year).length > 0 || e.recordings === 'in-editing');
+
+type Shelf = { title: string; note: string; videos: Video[]; href?: string; editing?: boolean };
+const shelves: Shelf[] = [
+  { title: series.title, note: `${episodes.length} episodes`, videos: episodes },
+  ...editions.map((e) => {
+    const recordings = getRecordings(e.year);
+    return {
+      title: `Summit ${e.year}`,
+      note: e.recordings === 'in-editing' ? 'Recordings in editing' : `${recordings.length} ${recordings.length === 1 ? 'video' : 'videos'}`,
+      videos: recordings,
+      href: `/summits/${e.year}`,
+      editing: e.recordings === 'in-editing',
+    };
+  }),
+  ...(explainers.length ? [{ title: 'Explainers', note: `${explainers.length} ${explainers.length === 1 ? 'video' : 'videos'}`, videos: explainers }] : []),
+];
+
+const TYPES: [string, string][] = [
+  ['all', 'All'],
+  ['summit', 'Summit talks'],
+  ['series', 'Series'],
+  ['explainer', 'Explainers'],
+];
+const topics = Object.entries(VIDEO_TOPICS) as [VideoTopic, string][];
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title="Watch" description="Summit talks, the Robots in the Field series and explainers, all in one place.">
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-wrap items-end justify-between gap-x-12 gap-y-6">
+      <div class="flex max-w-3xl flex-col gap-4">
+        <span class={eyebrow}>WATCH · SUMMIT TALKS · SERIES · EXPLAINERS</span>
+        <h1 class="m-0 font-heading text-[clamp(48px,8vw,96px)] font-semibold leading-[0.92] tracking-[-0.045em]">Watch</h1>
+        <p class="m-0 text-xl text-vrc-ink-2">Summit talks, the Robots in the Field series and explainers, all in one place.</p>
+      </div>
+      <span class="inline-flex items-center gap-2 text-[15px] text-vrc-muted">
+        <Icon name="bell" />Notify me when videos land <Chip>Coming soon</Chip>
+      </span>
+    </div>
+  </section>
+
+  <div data-library class="px-4 py-10 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-col gap-8">
+      <div data-library-controls hidden class="flex flex-col gap-3 rounded-2xl bg-vrc-surface p-3">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+          <div role="group" aria-label="Video type" class="flex flex-wrap gap-1.5">
+            {
+              TYPES.map(([value, label]) => (
+                <button
+                  type="button"
+                  data-type-filter={value}
+                  aria-pressed={value === 'all' ? 'true' : 'false'}
+                  class="min-h-9 cursor-pointer rounded-full border border-vrc-line-strong bg-white px-3.5 text-sm font-medium text-vrc-ink-2 aria-pressed:border-vrc-ink aria-pressed:bg-vrc-ink aria-pressed:text-white"
+                >
+                  {label}
+                </button>
+              ))
+            }
+          </div>
+          <label class="flex items-center gap-2">
+            <span class="sr-only">Edition</span>
+            <select data-edition-filter class="min-h-9 rounded-xl border border-vrc-line-strong bg-white px-3 text-sm">
+              <option value="all">All editions</option>
+              {editions.map((e) => <option value={String(e.year)}>{e.year}{e.recordings === 'in-editing' ? ' · in editing' : ''}</option>)}
+            </select>
+          </label>
+          <label class="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl border border-vrc-line-strong bg-white px-3">
+            <span class="sr-only">Search talks, speakers and topics</span>
+            <Icon name="arrow-right" class="text-vrc-muted" />
+            <input type="search" data-search placeholder="Search talks, speakers, topics" class="min-h-9 w-full border-0 bg-transparent text-sm outline-none" />
+          </label>
+          <span data-count class="font-mono text-xs text-vrc-muted"></span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class={eyebrow}>TOPIC</span>
+          <div role="group" aria-label="Topic" class="flex flex-wrap gap-1.5">
+            {
+              topics.map(([value, label]) => (
+                <button
+                  type="button"
+                  data-topic-filter={value}
+                  aria-pressed="false"
+                  class="min-h-9 cursor-pointer rounded-full border border-vrc-line-strong bg-white px-3.5 text-sm font-medium text-vrc-ink-2 aria-pressed:border-vrc-ink aria-pressed:bg-vrc-ink aria-pressed:text-white"
+                >
+                  {label}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- What matched, once a filter is on. -->
+      <section data-results hidden aria-label="Search results" class="flex flex-col gap-6">
+        <div data-results-grid class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-x-4 gap-y-8">
+          {videos.map((v) => <VideoCard video={v} filterable />)}
+        </div>
+        <div data-empty hidden class="flex flex-col items-start gap-2 rounded-2xl border border-dashed border-vrc-line-strong p-7">
+          <strong class="font-semibold">No videos match</strong>
+          <span class="text-[15px] text-vrc-muted">Try another type, edition or topic, or a different search.</span>
+          <Button data-clear variant="secondary" size="sm">Clear filters</Button>
+        </div>
+      </section>
+
+      <div data-shelves class="flex flex-col gap-12">
+        {
+          shelves.map((shelf) => (
+            <section aria-labelledby={`shelf-${shelf.title.replace(/\W+/g, '-').toLowerCase()}`} class="flex flex-col gap-4">
+              <div class="flex flex-wrap items-baseline justify-between gap-3">
+                <h2 id={`shelf-${shelf.title.replace(/\W+/g, '-').toLowerCase()}`} class="m-0 font-heading text-3xl font-semibold tracking-[-0.025em]">
+                  {shelf.title}
+                </h2>
+                <span class="flex items-center gap-3">
+                  {shelf.editing ? <Chip dot>{shelf.note}</Chip> : <span class={eyebrow}>{shelf.note.toUpperCase()}</span>}
+                  {shelf.href && (
+                    <a href={shelf.href} class="inline-flex items-center gap-1.5 font-medium no-underline hover:underline">
+                      About this edition <Icon name="arrow-right" />
+                    </a>
+                  )}
+                </span>
+              </div>
+              {shelf.title === series.title && <p class="m-0 max-w-2xl text-vrc-ink-2">{series.description}</p>}
+              {
+                shelf.videos.length > 0 ? (
+                  <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-x-4 gap-y-8">
+                    {shelf.videos.map((v) => <VideoCard video={v} />)}
+                  </div>
+                ) : (
+                  <p class="m-0 rounded-2xl border border-dashed border-vrc-line-strong p-6 text-[15px] text-vrc-muted">
+                    The recordings are being edited. They appear here as they are published.
+                  </p>
+                )
+              }
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</SiteLayout>
+
+<script>
+  import { initWatchFilter } from '@/scripts/watch-filter';
+  initWatchFilter();
+</script>

@@ -10,6 +10,7 @@ export const ROUTES = [
   '/summits/2025',
   '/summits/2026',
   '/summits/2027',
+  '/watch',
   '/map',
   '/slack',
   // The shared components gallery (#25).

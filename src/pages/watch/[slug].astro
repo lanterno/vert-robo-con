@@ -1,0 +1,149 @@
+---
+/**
+ * One video (#30), from WatchV3's video page: the player, what it is about,
+ * who is in it, and where it came from.
+ *
+ * Transcripts and chapters are M7 (tracked in the roadmap), so the page
+ * doesn't offer them yet.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import VideoFacade from '@/components/ui/VideoFacade.astro';
+import VideoCard from '@/components/site/VideoCard.astro';
+import PersonDrawer from '@/components/site/PersonDrawer.astro';
+import SpeakerCard from '@/components/site/SpeakerCard.astro';
+import { toDrawerPeople } from '@/components/site/drawer-people';
+import {
+  VIDEO_TOPICS,
+  getEdition,
+  getEpisodes,
+  getPerson,
+  getRecordings,
+  getSeries,
+  getSessions,
+  getVideo,
+  getVideos,
+  type Video,
+  type VideoKind,
+} from '@/lib/content';
+
+export function getStaticPaths() {
+  return getVideos().map((video) => ({ params: { slug: video.slug }, props: { video } }));
+}
+
+interface Props {
+  video: Video;
+}
+
+const { video } = Astro.props;
+const KIND_LABEL: Record<VideoKind, string> = {
+  keynote: 'Keynote',
+  panel: 'Panel',
+  talk: 'Talk',
+  pitch: 'Pitches',
+  opening: 'Opening',
+  closing: 'Closing',
+  recap: 'Recap',
+  episode: 'Episode',
+  explainer: 'Explainer',
+};
+
+const edition = video.edition ? getEdition(video.edition) : undefined;
+const series = video.series ? getSeries() : undefined;
+const speakers = video.speakers.map((s) => getPerson(s)).filter((p) => p !== undefined);
+// The session this was recorded at, if it came from a summit.
+const session = video.edition ? getSessions(video.edition)?.find((s) => s.recording?.video === video.slug) : undefined;
+const more = (video.series ? getEpisodes() : video.edition ? getRecordings(video.edition) : getVideos().filter((v) => v.kind === video.kind))
+  .filter((v) => v.slug !== video.slug)
+  .slice(0, 3);
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title={video.title} description={video.summary ?? `${video.title}, on Vert Robo Con.`}>
+  <article class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <a href="/watch" class="text-vrc-muted no-underline hover:text-vrc-ink">WATCH</a> /
+        <span class="text-vrc-ink" aria-current="page">{(series?.title ?? (edition ? `SUMMIT ${edition.year}` : KIND_LABEL[video.kind])).toUpperCase()}</span>
+      </nav>
+
+      <div class="flex flex-wrap items-start gap-x-12 gap-y-8">
+        <div class="flex min-w-0 flex-[1.6_1_600px] flex-col gap-6">
+          <VideoFacade
+            title={video.title}
+            thumbnail={video.thumbnail ?? '/images/v3/forest.svg'}
+            label={`${series ? `EPISODE ${video.series?.episode}` : KIND_LABEL[video.kind].toUpperCase()}${edition ? ` · SUMMIT ${edition.year}` : ''}`}
+            duration={video.duration}
+            {...(video.youtubeId ? { youtubeId: video.youtubeId } : {})}
+          />
+          <div class="flex flex-col gap-4">
+            <span class="flex flex-wrap items-center gap-2">
+              <Chip>{series ? `Episode ${video.series?.episode}` : KIND_LABEL[video.kind]}</Chip>
+              {(video.topics ?? []).map((t) => <Chip tone="green">{VIDEO_TOPICS[t]}</Chip>)}
+              <span class={eyebrow}>{video.duration}</span>
+            </span>
+            <h1 class="m-0 font-heading text-[clamp(32px,5vw,52px)] font-semibold leading-[0.98] tracking-[-0.035em]">{video.title}</h1>
+            {video.summary && <p class="m-0 text-lg text-vrc-ink-2">{video.summary}</p>}
+          </div>
+
+          {
+            speakers.length > 0 && (
+              <section aria-labelledby="in-this-video" class="flex flex-col gap-4">
+                <h2 id="in-this-video" class={eyebrow}>IN THIS VIDEO</h2>
+                <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
+                  {speakers.map((p) => <SpeakerCard person={p} year={video.edition ?? 0} />)}
+                </div>
+                <PersonDrawer people={toDrawerPeople(speakers, video.edition)} context={video.title.toUpperCase()} />
+              </section>
+            )
+          }
+        </div>
+
+        <aside class="flex flex-[1_1_300px] flex-col gap-6">
+          <div class="flex flex-col gap-3 rounded-3xl border border-vrc-line p-6">
+            <span class={eyebrow}>WHERE THIS CAME FROM</span>
+            {
+              session && edition ? (
+                <>
+                  <a href={`/summits/${edition.year}/sessions/${session.slug}`} class="font-heading text-xl font-semibold leading-tight tracking-[-0.02em] text-vrc-ink no-underline hover:text-vrc-blue hover:underline">
+                    {session.title}
+                  </a>
+                  <span class="text-[15px] text-vrc-ink-2">Day {session.day} of the {edition.name}</span>
+                  <a href={`/summits/${edition.year}/program`} class="inline-flex items-center gap-1.5 font-medium no-underline hover:underline">
+                    The whole program <Icon name="arrow-right" />
+                  </a>
+                </>
+              ) : series ? (
+                <>
+                  <span class="font-heading text-xl font-semibold leading-tight tracking-[-0.02em]">{series.title}</span>
+                  <span class="text-[15px] text-vrc-ink-2">{series.description}</span>
+                </>
+              ) : edition ? (
+                <a href={`/summits/${edition.year}`} class="font-heading text-xl font-semibold leading-tight tracking-[-0.02em] text-vrc-ink no-underline hover:text-vrc-blue hover:underline">
+                  {edition.name}
+                </a>
+              ) : (
+                <span class="text-[15px] text-vrc-ink-2">An explainer from the network.</span>
+              )
+            }
+          </div>
+
+          {
+            more.length > 0 && (
+              <section aria-labelledby="more" class="flex flex-col gap-4">
+                <h2 id="more" class={eyebrow}>{series ? 'MORE EPISODES' : edition ? 'MORE FROM THIS EDITION' : 'MORE TO WATCH'}</h2>
+                <div class="flex flex-col gap-6">
+                  {more.map((v) => <VideoCard video={v} />)}
+                </div>
+                <Button href="/watch" variant="secondary" size="sm" class="self-start">All videos</Button>
+              </section>
+            )
+          }
+        </aside>
+      </div>
+    </div>
+  </article>
+</SiteLayout>
