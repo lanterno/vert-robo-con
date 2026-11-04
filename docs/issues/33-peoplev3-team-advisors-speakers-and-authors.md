@@ -10,5 +10,6 @@
 - [ ] Person pages with "Appears in" links to sessions and videos
 - [ ] People without a photo get an initials avatar, never a broken image
 - [ ] Phone layout
+- [ ] Add the advisors, white paper authors, bios and links from PeopleV3 to the content layer (moved from #26)
 
 **Depends on:** #25, #26

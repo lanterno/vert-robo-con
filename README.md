@@ -19,14 +19,16 @@ bun install      # install deps
 bun run dev      # dev server at http://localhost:4321
 bun run build    # build to dist/, what the Pages workflow runs
 bun run preview  # preview the built dist/ locally
-bun run check    # type-check the Astro files
-bun run test     # smoke, accessibility and link checks
+bun run check    # type-check the Astro files and the tests
+bun run test     # unit tests, then the smoke, accessibility, link and component checks
 ```
 
 ## Checks
 
-`bun run test` runs Playwright against the **built** site, so it checks what
-Pages serves. Build first, and install the browser once:
+`bun run test` runs the unit tests (Vitest, `tests/unit/`, no browser), then
+Playwright against the **built** site, so it checks what Pages serves.
+`bun run test:unit` and `bun run test:e2e` run one each. Build first, and
+install the browser once:
 
 ```sh
 bunx playwright install chromium
@@ -38,6 +40,7 @@ Every test runs twice, at desktop and phone widths, over the routes in
 
 | Check | What fails it |
 | :--- | :--- |
+| `tests/unit/*.test.ts` | An edition's state wrong at any boundary or in any time zone, or a broken reference in the content |
 | `tests/smoke.spec.ts` | A route that doesn't return 200, has no `h1`, or throws in the browser |
 | `tests/a11y.spec.ts` | An axe violation under WCAG 2.1 A or AA, including text contrast below 4.5:1. Text on a gradient, which axe can't judge, is checked by `tests/gradient-contrast.ts` |
 | `tests/gradient-contrast.spec.ts` | The gradient check itself giving the wrong answer on fixture pages |
@@ -76,10 +79,10 @@ sending people to an outside tool.
 │   ├── components/        # Today's Astro components, replaced as pages are rebuilt
 │   │   ├── ui/            # V3 building blocks: Button, Chip, Bento, Sheet, VideoFacade
 │   │   └── site/          # V3 page chrome: Header, Footer, TabBar, PersonDrawer
-│   ├── data/
-│   │   └── organizations.json  # Fictional map dataset
+│   ├── data/              # Content files: editions, news, settings, the map dataset
 │   ├── layouts/           # SiteLayout for V3 pages; BaseLayout for today's
 │   ├── lib/               # Cross-cutting data, the source of truth
+│   │   ├── content/       # The content layer: the only way pages read content (#26)
 │   │   ├── site-nav.ts    # Every navigation link, for the header, footer and tab bar
 │   │   ├── constants.ts   # Links, site and summit metadata
 │   │   ├── summits-data.ts# Summits, speakers, programs, partners, team

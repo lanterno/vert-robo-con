@@ -10,6 +10,7 @@
 - [ ] The documents are Markdown files in the repo (#26) until #45 moves them into Postgres
 - [ ] "Suggest an edit" on each section shows "coming soon" until #59
 - [ ] Phone layout
+- [ ] Add the 2025 white paper and the three codes as Markdown, read through the content layer (moved from #26)
 
 Needs the white paper source text from #7.
 

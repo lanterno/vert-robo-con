@@ -10,5 +10,6 @@
 - [ ] Post pages with author, date, reading time and related links
 - [ ] An RSS feed
 - [ ] Phone layout
+- [ ] The board's "Elsewhere" cross-post card is placeholders throughout, including its address, so it is left out of the news data (#26)
 
 **Depends on:** #25, #26

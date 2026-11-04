@@ -10,5 +10,6 @@
 - [ ] The video facade, with the 2025 placeholders until real recordings exist
 - [ ] Filters by edition, topic and speaker
 - [ ] Phone layout
+- [ ] Add the "Robots in the Field" series and its episodes to the content layer (moved from #26)
 
 **Depends on:** #25, #26
