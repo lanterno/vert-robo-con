@@ -212,8 +212,11 @@ const DATA_URL = LINKS.map.data;
     </div>
 
     <!-- Reset view button -->
-    <button id="reset-view" class="reset-view-btn" type="button" aria-label="Reset map view">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>
+    <!-- No aria-label: the visible "Reset view" is the accessible name. An
+         aria-label that doesn't contain the visible text breaks speech
+         input, which matches on what the user can read. -->
+    <button id="reset-view" class="reset-view-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>
       Reset view
     </button>
 

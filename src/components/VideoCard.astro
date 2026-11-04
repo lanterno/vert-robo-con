@@ -14,12 +14,14 @@ interface Props {
 
 const { video, compact = false } = Astro.props;
 
+// These are badge backgrounds behind white text, so each needs at least
+// 4.5:1 against white. The 500-weight shades don't reach it.
 const typeColors = {
-  keynote: 'bg-purple-500',
+  keynote: 'bg-purple-700',
   panel: 'bg-vrc-blue',
-  talk: 'bg-teal-500',
-  pitch: 'bg-orange-500',
-  opening: 'bg-vrc-green',
+  talk: 'bg-teal-700',
+  pitch: 'bg-orange-700',
+  opening: 'bg-vrc-green-dark',
   closing: 'bg-gray-600',
 };
 
@@ -33,12 +35,14 @@ const typeLabels = {
 };
 ---
 
+{/* No aria-label on the card: its own text is the accessible name. A label
+    naming only the title wouldn't contain the rest of the visible text,
+    which breaks speech input. */}
 <div
   class={`video-card group relative bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${compact ? '' : 'hover:-translate-y-1'}`}
   data-video-title={video.title}
   role="button"
   tabindex="0"
-  aria-label={`Open recording placeholder: ${video.title}`}
 >
   {/* Placeholder thumbnail */}
   <div class="relative aspect-video">
