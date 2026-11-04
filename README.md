@@ -41,6 +41,7 @@ Every test runs twice, at desktop and phone widths, over the routes in
 | `tests/smoke.spec.ts` | A route that doesn't return 200, has no `h1`, or throws in the browser |
 | `tests/a11y.spec.ts` | An axe violation under WCAG 2.1 A or AA, including text contrast below 4.5:1. Text on a gradient, which axe can't judge, is checked by `tests/gradient-contrast.ts` |
 | `tests/gradient-contrast.spec.ts` | The gradient check itself giving the wrong answer on fixture pages |
+| `tests/components.spec.ts` | A shared component's keyboard path, focus handling or phone layout breaking, on `/components` |
 | `tests/links.spec.ts` | A link to an outside form, spreadsheet or file-sharing host |
 
 The link check is what keeps "everything happens on the site" true: a feature
@@ -72,18 +73,23 @@ sending people to an outside tool.
 ├── public/                # Static assets, copied as-is into dist/
 │   └── images/            # Synthetic SVG artwork, avatars and partner wordmarks
 ├── src/
-│   ├── components/        # Reusable Astro components
+│   ├── components/        # Today's Astro components, replaced as pages are rebuilt
+│   │   ├── ui/            # V3 building blocks: Button, Chip, Bento, Sheet, VideoFacade
+│   │   └── site/          # V3 page chrome: Header, Footer, TabBar, PersonDrawer
 │   ├── data/
 │   │   └── organizations.json  # Fictional map dataset
-│   ├── layouts/           # BaseLayout (Header + Footer + global SEO)
+│   ├── layouts/           # SiteLayout for V3 pages; BaseLayout for today's
 │   ├── lib/               # Cross-cutting data, the source of truth
+│   │   ├── site-nav.ts    # Every navigation link, for the header, footer and tab bar
 │   │   ├── constants.ts   # Links, site and summit metadata
 │   │   ├── summits-data.ts# Summits, speakers, programs, partners, team
 │   │   ├── mapData.ts     # Loads the map dataset at build time
 │   │   └── types.ts       # Shared types for the map
-│   ├── pages/             # File-based routes
+│   ├── pages/             # File-based routes; /components shows the V3 components
+│   ├── scripts/           # Browser code for sheets, menus and the person drawer
 │   └── styles/global.css  # Tailwind + utility classes
-├── tests/                 # Playwright smoke, accessibility and link checks
+├── tests/                 # Playwright smoke, accessibility, link and component checks
+├── scripts/               # preview-strict.mjs, the server the checks run against
 ├── project/               # The 26 V3 design boards, plus canvas.json, their index
 ├── docs/
 │   ├── ROADMAP.md         # Plan from today's site to the V3 designs

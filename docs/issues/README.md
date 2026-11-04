@@ -24,7 +24,7 @@ Edit these files as work progresses; nothing syncs back to GitHub.
 | # | Title | State |
 | --- | --- | --- |
 | [24](24-v3-design-tokens-and-self-hosted-fonts.md) | V3 design tokens and self-hosted fonts | closed |
-| [25](25-shared-components-header-footer-chips-bento-tiles-drawers-sh.md) | Shared components: header, footer, chips, bento tiles, drawers, sheets, phone tab bar | open |
+| [25](25-shared-components-header-footer-chips-bento-tiles-drawers-sh.md) | Shared components: header, footer, chips, bento tiles, drawers, sheets, phone tab bar | closed |
 | [26](26-data-layer-for-public-pages-repo-data-first-postgres-later.md) | Data layer for public pages: repo data first, Postgres later | open |
 | [27](27-homev3-the-home-page.md) | HomeV3: the home page | open |
 | [28](28-summitv3-summit-overview-and-edition-pages.md) | SummitV3: summit overview and edition pages | open |
