@@ -1,0 +1,130 @@
+---
+/**
+ * The shared components (#25) on one page, so the smoke, accessibility and
+ * link checks cover them, and the keyboard tests have something to drive
+ * before the pages that use them are built. Kept out of search results and
+ * the sitemap; nothing links here.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Bento from '@/components/ui/Bento.astro';
+import BentoTile from '@/components/ui/BentoTile.astro';
+import Sheet from '@/components/ui/Sheet.astro';
+import VideoFacade from '@/components/ui/VideoFacade.astro';
+import PersonDrawer, { type DrawerPerson } from '@/components/site/PersonDrawer.astro';
+import { ORGANIZERS } from '@/lib/summits-data';
+
+const people: DrawerPerson[] = ORGANIZERS.slice(0, 3).map((o) => ({
+  slug: o.id.replace(/-team$/, ''),
+  name: o.name,
+  roleLine: [o.role, o.organization].filter(Boolean).join(' · '),
+  ...(o.photoUrl ? { photo: o.photoUrl } : {}),
+  tags: ['Organising team', 'Summit 2026'],
+  bio: `${o.name} is part of the fictional organising team. This profile is demo content, used to check the person drawer.`,
+  appears: [{ title: 'Summit 2026', meta: 'ORGANISING TEAM · MAY 2026', href: '/summits/2026', kind: 'team' }],
+}));
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title="Components" noindex>
+  <div class="mx-auto flex max-w-page flex-col gap-16 px-4 py-14 lg:px-8">
+    <header class="flex flex-col gap-3">
+      <span class={eyebrow}>SHARED COMPONENTS · #25</span>
+      <h1 class="m-0 font-heading text-5xl font-semibold tracking-[-0.035em]">Components</h1>
+      <p class="m-0 max-w-2xl text-vrc-ink-2">
+        Every shared V3 component, for checking them on their own. The header, footer and phone tab bar are the page's own.
+      </p>
+    </header>
+
+    <section aria-labelledby="buttons" class="flex flex-col gap-4">
+      <h2 id="buttons" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Buttons</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <Button>Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="text">Text button</Button>
+        <Button size="sm">Small primary</Button>
+        <Button href="/components#buttons" variant="secondary" size="sm">A link styled as a button <Icon name="arrow-right" /></Button>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 rounded-3xl bg-vrc-blue p-6">
+        <Button variant="white">White, on blue</Button>
+      </div>
+    </section>
+
+    <section aria-labelledby="chips" class="flex flex-col gap-4">
+      <h2 id="chips" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Status chips</h2>
+      <div class="flex flex-wrap gap-2">
+        <Chip>Coming soon</Chip>
+        <Chip dot>Registration opens Dec 7, 2026</Chip>
+        <Chip tone="green" dot>Open</Chip>
+        <Chip tone="amber" dot>Closing soon</Chip>
+        <Chip tone="red" dot>Problem</Chip>
+      </div>
+    </section>
+
+    <section aria-labelledby="bento" class="flex flex-col gap-4">
+      <h2 id="bento" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Bento tiles</h2>
+      <Bento>
+        <BentoTile span={5} tall tone="surface">
+          <span class={eyebrow}>SURFACE · TALL</span>
+          <p class="m-0 font-heading text-[22px] font-semibold leading-tight tracking-[-0.02em]">Five columns, two rows.</p>
+        </BentoTile>
+        <BentoTile span={7} tone="blue">
+          <span class="font-mono text-xs tracking-[0.06em] text-vrc-on-navy-blue">BLUE</span>
+          <span class="font-heading text-[88px] font-semibold leading-[0.85] tracking-[-0.04em]">120</span>
+          <a href="/components#bento" class="font-medium text-white hover:text-white">A link on the blue tile</a>
+        </BentoTile>
+        <BentoTile span={3} tone="green" lift>
+          <span class="font-mono text-xs tracking-[0.06em] text-vrc-green-dark">GREEN · LIFTS ON HOVER</span>
+          <p class="m-0 font-heading text-[22px] font-semibold leading-tight tracking-[-0.02em]">Researchers, founders and funders.</p>
+        </BentoTile>
+        <BentoTile span={4}>
+          <span class={eyebrow}>OUTLINE</span>
+          <Chip dot>Registration opens Dec 7, 2026</Chip>
+          <p class="m-0 font-heading text-[28px] font-semibold leading-tight tracking-[-0.02em]">April 20–22, 2027</p>
+        </BentoTile>
+      </Bento>
+    </section>
+
+    <section aria-labelledby="sheet" class="flex flex-col gap-4">
+      <h2 id="sheet" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Sheet</h2>
+      <p class="m-0 text-vrc-ink-2">A side sheet on wider screens and a bottom sheet on phones. Esc closes it and focus returns here.</p>
+      <div><Button variant="secondary" data-sheet-open="demo-sheet">Open the sheet</Button></div>
+      <Sheet id="demo-sheet" title="A sheet">
+        <p class="m-0 text-vrc-ink-2">Tab stays inside while the sheet is open.</p>
+        <label class="flex flex-col gap-1">
+          <span class="text-[15px] font-medium">A field</span>
+          <input type="text" class="min-h-12 rounded-xl border border-vrc-line-strong px-3.5" />
+        </label>
+        <Button>An action</Button>
+      </Sheet>
+    </section>
+
+    <section aria-labelledby="drawer" class="flex flex-col gap-4">
+      <h2 id="drawer" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Person drawer</h2>
+      <ul class="m-0 flex list-none flex-wrap gap-3 p-0">
+        {
+          people.map((p) => (
+            <li>
+              <a href={`/people/${p.slug}`} data-person-open={p.slug} class="flex items-center gap-3 rounded-2xl border border-vrc-line px-4 py-3 text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">
+                {p.photo && <img src={p.photo} alt="" width="40" height="40" class="h-10 w-10 rounded-xl bg-vrc-blue-tint" />}
+                <span class="flex flex-col leading-tight">
+                  <strong class="font-semibold">{p.name}</strong>
+                  <span class="text-sm text-vrc-muted">{p.roleLine}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <PersonDrawer people={people} context="TEAM" />
+    </section>
+
+    <section aria-labelledby="video" class="flex max-w-3xl flex-col gap-4">
+      <h2 id="video" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Video facade</h2>
+      <p class="m-0 text-vrc-ink-2">Nothing loads from a video host until play is pressed. The demo videos have no recording, so play shows a placeholder.</p>
+      <VideoFacade title="Measuring a glacier that will not hold still" thumbnail="/images/hero.svg" label="KEYNOTE · SUMMIT 2025" duration="33:40" />
+    </section>
+  </div>
+</SiteLayout>
