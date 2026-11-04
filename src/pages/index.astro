@@ -1,261 +1,436 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE, LINKS } from '@/lib/constants';
-import { SUMMITS, SPEAKERS_2026, getKeynoteSpeakers } from '@/lib/summits-data';
+/**
+ * The home page (#27), from HomeV3 and PhoneV3's Home tab.
+ *
+ * Later milestones fill in what shows "Coming soon" here: the "notify me"
+ * forms (M3), the join form (#53, M4) and the digest (#65, M7). The summit
+ * tile's state comes from the edition's dates at build time (#26).
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Bento from '@/components/ui/Bento.astro';
+import BentoTile from '@/components/ui/BentoTile.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import type { IconName } from '@/lib/icons';
+import { JOIN_SHEET } from '@/lib/site-nav';
+import {
+  editionChip,
+  editionDates,
+  formatShortDate,
+  getCurrentEdition,
+  getDomains,
+  getMapStats,
+  getNews,
+  getNow,
+  getPerson,
+  getSettings,
+  type NewsPost,
+} from '@/lib/content';
 
-const latestSummit = Object.values(SUMMITS).sort((a, b) => parseInt(b.year) - parseInt(a.year))[0];
-const summitsHeld = Object.values(SUMMITS).filter(s => s.status === 'past').length;
+const now = getNow();
+const edition = getCurrentEdition();
+const chip = editionChip(edition, now);
+const startupCall = edition.calls?.find((c) => c.id === 'startup');
+const callOpens = startupCall?.opensAt ? formatShortDate(startupCall.opensAt).replace(/, \d{4}$/, '') : '[DATE]';
+const stats = getMapStats();
+const domains = getDomains();
+const openTracks = getSettings().internshipTracks.filter((t) => t.status === 'open').length;
+const summitHref = `/summits/${edition.year}`;
 
-const heroSpeakers = [
-  ...getKeynoteSpeakers('2026'),
-  ...SPEAKERS_2026.filter(s => s.photoUrl && !s.isKeynote).slice(0, 4),
-].filter(s => s.photoUrl).slice(0, 6);
+// The newest video, essay and announcement.
+const news = getNews();
+const latest = (['video', 'essay', 'announcement'] as const)
+  .map((type) => news.find((p) => p.type === type))
+  .filter((p): p is NewsPost => p !== undefined);
+const TYPE_LABEL: Record<NewsPost['type'], string> = { essay: 'ESSAY', video: 'VIDEO', announcement: 'ANNOUNCEMENT', summit: 'SUMMIT' };
+const meta = (p: NewsPost) => `${p.date ? formatShortDate(p.date).toUpperCase() : '[DATE]'} · ${p.readTime}`;
 
-const applicationDomains = [
-  { label: 'Methane Leak Surveys', color: 'from-amber-700 to-orange-700' },
-  { label: 'Peatland Monitoring', color: 'from-emerald-700 to-green-800' },
-  { label: 'Street Heat Mapping', color: 'from-red-700 to-rose-800' },
-  { label: 'Snowpack Sensing', color: 'from-cyan-700 to-blue-700' },
-  { label: 'Greenhouse Automation', color: 'from-violet-700 to-purple-800' },
-];
+const faces = ['saskia-overmeer', 'dario-fenwick', 'kofi-ashgrove', 'hollis-wexford', 'tamsin-ocampo']
+  .map((slug) => getPerson(slug)?.photo)
+  .filter((p): p is string => p !== undefined);
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+const h2 = 'm-0 font-heading text-[clamp(40px,6vw,60px)] font-semibold leading-[0.98] tracking-[-0.035em]';
+const arrowLink = 'inline-flex items-center gap-1.5 font-medium no-underline hover:underline';
 ---
 
-<BaseLayout title="Home" description={`${SITE.name} - ${SITE.tagline}. ${SITE.description}`}>
-  {/* ─── HERO ─── */}
-  <section class="relative overflow-hidden bg-vrc-navy text-white">
-    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-blue"></div>
-    <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 25% 25%, rgba(22,163,74,0.3), transparent 45%), radial-gradient(circle at 75% 75%, rgba(59,130,246,0.3), transparent 45%);"></div>
-
-    <div class="relative container mx-auto px-4 py-20 lg:py-28">
-      <div class="grid lg:grid-cols-12 gap-12 items-center">
-        <div class="lg:col-span-7">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-vrc-green/15 border border-vrc-green/40 rounded-full text-vrc-on-navy-green text-xs font-semibold uppercase tracking-wider mb-6">
-            <span class="w-1.5 h-1.5 bg-vrc-green rounded-full animate-pulse"></span>
-            {SITE.stats.members} members · {SITE.stats.countries} countries
-          </div>
-          <h1 class="font-heading font-bold text-5xl md:text-6xl lg:text-7xl leading-[0.95] mb-6">
-            Robots for a
-            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-vrc-on-navy-green via-emerald-400 to-teal-300">Cooler Planet.</span>
-          </h1>
-          <p class="text-lg md:text-xl text-white/75 max-w-2xl mb-10 leading-relaxed">
-            {SITE.name} is a fictional meeting place for people who design, test and deploy machines that help with climate work. Swap notes, find collaborators and learn what works in the field — and what does not.
+<SiteLayout title="Home">
+  <!-- HERO -->
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-12">
+      <div class="flex flex-wrap items-end justify-between gap-x-16 gap-y-8">
+        <h1 class="m-0 flex-[1.5_1_560px] font-heading text-[clamp(52px,9vw,108px)] font-semibold leading-[0.92] tracking-[-0.045em]">
+          Robots for a<br /><span class="text-vrc-green-dark">cooler planet.</span>
+        </h1>
+        <div class="flex max-w-[440px] flex-[1_1_360px] flex-col gap-6 pb-2">
+          <p class="m-0 text-xl leading-normal text-vrc-ink-2">
+            A friendly community for people who build, fund, study and repair robots for climate work, and who say plainly what robots
+            can’t do.
           </p>
-          <div class="flex flex-wrap gap-3">
-            <a
-              href="/slack"
-              class="inline-flex items-center gap-2 px-6 py-3.5 bg-vrc-green-dark text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-green-800 transition-colors shadow-lg shadow-vrc-green/25"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-              Join the Community
-            </a>
-            <a
-              href="/summits"
-              class="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 backdrop-blur-sm border border-white/30 text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-white/20 transition-colors"
-            >
-              Explore the Summits
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <div class="lg:col-span-5">
-          <div class="relative">
-            <div class="absolute -inset-4 bg-gradient-to-br from-vrc-green/20 to-vrc-blue/20 rounded-3xl blur-2xl"></div>
-            <img
-              src="/images/hero.svg"
-              alt="Illustration of a small robot planting a sapling on a green hill"
-              class="relative w-full rounded-2xl shadow-2xl ring-1 ring-white/10"
-              loading="eager"
-            />
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2.5">
+            <Button data-sheet-open={JOIN_SHEET}>Join 120+ members <Icon name="arrow-right" /></Button>
+            <Button href="/map" variant="secondary">Explore the map</Button>
+            <a href="/watch" class="text-base font-medium no-underline hover:underline">Latest videos →</a>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  {/* ─── WHAT WE DO ─── */}
-  <section class="py-20 lg:py-28 bg-white">
-    <div class="container mx-auto px-4">
-      <div class="grid lg:grid-cols-12 gap-12 items-start max-w-7xl mx-auto">
-        <div class="lg:col-span-5">
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
-            Why We Exist
-          </div>
-          <h2 class="font-heading font-bold text-4xl md:text-5xl text-gray-900 mb-6 leading-tight">
-            Fewer surprises<br/>in the field.
-          </h2>
-          <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-            Most climate robots are built by small teams who rarely meet the people who will <strong class="text-gray-900">repair, insure, buy or regulate</strong> them. We put those groups in the same conversation, so weak spots show up before a machine ships rather than after.
-          </p>
-          <p class="text-gray-600 mb-8 leading-relaxed">
-            A technician's complaint about a hidden fuse box is worth as much here as a founder's demo video.
-          </p>
-          <a href="/research" class="inline-flex items-center gap-2 text-vrc-blue font-bold uppercase tracking-wider text-sm hover:underline">
-            Read the White Paper
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-          </a>
-        </div>
-
-        <div class="lg:col-span-7">
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-600 mb-4">
-            Topics Members Raised This Year
-          </div>
-          <div class="flex flex-wrap gap-2 mb-6">
-            {applicationDomains.map(domain => (
-              <span class={`inline-block px-4 py-2 text-sm font-semibold text-white rounded-full bg-gradient-to-r ${domain.color} shadow-sm`}>
-                {domain.label}
-              </span>
-            ))}
-          </div>
-          <p class="text-gray-500 italic">
-            Each chip is a theme that came up on member calls. The projects behind them, like everything on this site, are invented.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* ─── LATEST SUMMIT SPOTLIGHT ─── */}
-  {latestSummit && (
-    <section class="py-20 lg:py-28 bg-gray-900 text-white relative overflow-hidden">
-      <div class="absolute inset-0 opacity-25" style="background-image: radial-gradient(circle at 30% 50%, rgba(22,163,74,0.4), transparent 50%), radial-gradient(circle at 80% 80%, rgba(59,130,246,0.4), transparent 50%);"></div>
-
-      <div class="relative container mx-auto px-4">
-        <div class="grid lg:grid-cols-12 gap-12 items-center max-w-7xl mx-auto">
-          <div class="lg:col-span-7 order-2 lg:order-1">
-            <div class="grid grid-cols-3 gap-3">
-              {heroSpeakers.map((s, i) => (
-                <div class={`aspect-square rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-xl ${i === 1 ? 'translate-y-6' : ''} ${i === 4 ? '-translate-y-6' : ''}`}>
-                  <img src={s.photoUrl} alt={s.name} class="w-full h-full object-cover" loading="lazy" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div class="lg:col-span-5 order-1 lg:order-2">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-on-navy-green mb-3">
-              {latestSummit.status === 'upcoming' ? 'Coming Up' : 'Most Recent'}
-            </div>
-            <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4 leading-tight">
-              Vert Robo Con<br/>Summit {latestSummit.year}
-            </h2>
-            <p class="text-white/80 mb-2">{latestSummit.dates} · {latestSummit.location}</p>
-            <p class="text-white/80 mb-8 leading-relaxed">
-              {latestSummit.description}
-            </p>
-            <a
-              href={`/summits/${latestSummit.year}`}
-              class="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-vrc-green-dark hover:text-white transition-colors"
-            >
-              Explore Summit {latestSummit.year}
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  )}
-
-  {/* ─── WHITE PAPER + MAP — TWO-CARD FEATURE ─── */}
-  <section class="py-20 lg:py-24 bg-gray-50">
-    <div class="container mx-auto px-4">
-      <div class="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-        {/* White Paper card */}
-        <a href="/research" class="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-8 md:p-10 flex flex-col">
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-blue mb-3">
-            2026 Research
-          </div>
-          <h3 class="font-heading font-bold text-2xl md:text-3xl text-gray-900 mb-3 leading-tight">
-            Working Notes on Climate Robots
-          </h3>
-          <p class="text-gray-600 mb-6 leading-relaxed">
-            A short, fictional white paper on what field robots can and cannot do for climate work, written as demo content for this site.
-          </p>
-          <div class="aspect-video rounded-xl overflow-hidden bg-gray-100 mb-6 mt-auto">
-            <img src="/images/white-paper.svg" alt="Illustration of a white paper cover" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-          </div>
-          <span class="inline-flex items-center gap-1 text-vrc-blue font-bold uppercase tracking-wider text-sm group-hover:gap-2 transition-all">
-            Read White Paper
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      <Bento>
+        <BentoTile span={5} tall tone="tint" class="min-h-[460px] !p-0">
+          <img src="/images/v3/hero.svg" alt="Illustration of a field robot in a green landscape" class="absolute inset-0 h-full w-full object-cover" />
+          <span class="absolute bottom-5 left-5 inline-flex items-center gap-2 rounded-full bg-white/[0.88] px-3.5 py-2 font-mono text-xs text-vrc-ink backdrop-blur-sm">
+            SKY · FIELD · WATER · FACTORY
           </span>
-        </a>
+        </BentoTile>
 
-        {/* Map card */}
-        <a href="/map" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-vrc-blue to-vrc-blue-dark text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-8 md:p-10 flex flex-col">
-          <div class="absolute top-0 right-0 w-64 h-64 bg-vrc-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div class="relative">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-on-navy-green mb-3">
-              The Global Map
-            </div>
-            <h3 class="font-heading font-bold text-2xl md:text-3xl mb-3 leading-tight">
-              120 fictional organisations across 18 countries
-            </h3>
-            <p class="text-white/75 mb-6 leading-relaxed">
-              Every pin is a made-up team placed in a real city. Open one to read its profile, or download the whole dataset as JSON.
-            </p>
-            <div class="aspect-video rounded-xl overflow-hidden bg-white/10 mb-6 mt-auto ring-1 ring-white/10">
-              <img src="/images/global-map.svg" alt="Abstract map illustration with location pins" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" loading="lazy" />
-            </div>
-            <span class="inline-flex items-center gap-1 text-white font-bold uppercase tracking-wider text-sm group-hover:gap-2 transition-all">
-              Open the Map
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        <BentoTile span={7} tone="blue" class="justify-between gap-5 !p-7">
+          <a href="/map" class="flex flex-col gap-6 text-white no-underline hover:text-white">
+            <span class="flex items-center justify-between font-mono text-xs tracking-[0.06em] text-vrc-on-navy-blue">
+              GLOBAL MAP <Icon name="arrow-up-right" size={20} />
             </span>
+            <span class="flex flex-wrap items-end gap-4">
+              <span class="font-heading text-[88px] font-semibold leading-[0.85] tracking-[-0.04em]">{stats.organizations}</span>
+              <span class="max-w-[300px] text-base leading-snug text-[#E4EAF8]">
+                organizations building climate robots in {stats.countries} countries, {stats.deployed} already deployed in the field.
+              </span>
+            </span>
+          </a>
+          <span class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-white/[0.22] pt-4 text-sm">
+            <span class="inline-flex flex-wrap items-center gap-x-3.5 gap-y-1">
+              <a href="/map#data" class="inline-flex items-center gap-2 font-medium text-white hover:text-white">
+                <Icon name="download" size={14} />Download the data (CSV · JSON)
+              </a>
+              <span class="text-[13px] text-vrc-on-navy-blue">Licence: {getSettings().mapLicence}</span>
+            </span>
+            <span class="font-mono text-[11px] tracking-[0.06em] text-vrc-on-navy-blue">GENERATED FROM THE MAP · UPDATED [DATE]</span>
+          </span>
+        </BentoTile>
+
+        <BentoTile span={3} tone="green" lift class="!p-0">
+          <button type="button" data-sheet-open={JOIN_SHEET} class="flex h-full w-full cursor-pointer flex-col justify-between gap-4 border-0 bg-transparent p-6 text-left font-[inherit] text-vrc-ink">
+            <span class="flex w-full items-center justify-between font-mono text-xs tracking-[0.06em] text-vrc-green-dark">
+              COMMUNITY <Icon name="arrow-up-right" size={20} />
+            </span>
+            <span class="flex items-center">
+              {faces.map((src, i) => <img src={src} alt="" width="44" height="44" class:list={['h-11 w-11 rounded-full border-[3px] border-vrc-green-tint object-cover', i > 0 && '-ml-3']} />)}
+              <span class="ml-2.5 font-mono text-[13px] text-vrc-green-dark">+120</span>
+            </span>
+            <span class="font-heading text-[22px] font-semibold leading-tight tracking-[-0.02em]">
+              Researchers, founders, funders, technicians and public buyers in 18 countries.
+            </span>
+          </button>
+        </BentoTile>
+
+        <BentoTile span={4} class="gap-3">
+          <span class={`flex items-center justify-between ${eyebrow}`}>
+            SUMMIT {edition.year} · {edition.format.toUpperCase()}
+            <a href={summitHref} aria-label={`Open Summit ${edition.year}`} class="inline-flex text-vrc-ink hover:text-vrc-blue"><Icon name="arrow-up-right" size={20} /></a>
+          </span>
+          <Chip tone={chip.tone} dot>{chip.label}</Chip>
+          <a href={summitHref} class="font-heading text-[28px] font-semibold leading-tight tracking-[-0.02em] text-vrc-ink no-underline hover:text-vrc-blue">
+            {editionDates(edition)}
+          </a>
+          <span class="text-[15px] text-vrc-ink-2">Free · open to everyone, no cap on places. Startup pitches open {callOpens}.</span>
+          <span class="mt-auto flex flex-wrap items-center gap-2 text-sm text-vrc-muted"><Icon name="bell" />Email reminders <Chip>Coming soon</Chip></span>
+        </BentoTile>
+      </Bento>
+
+      <div class="flex flex-wrap items-center gap-x-10 gap-y-4 border-y border-vrc-line py-7">
+        <span class={eyebrow}>SUMMITS ORGANIZED WITH</span>
+        <ul class="m-0 flex list-none flex-wrap gap-x-10 gap-y-3 p-0 font-heading text-xl font-semibold tracking-[-0.01em] text-vrc-muted">
+          <li>Example University</li><li>Example Polytechnic</li><li>Example Climate Fund</li><li>Example Data Commons</li><li>Example Field Tools Co.</li><li>Example Coastal Trust</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 THE FIELD -->
+  <section id="field" class="scroll-mt-24 px-4 py-20 lg:px-8 lg:py-32">
+    <div class="mx-auto flex max-w-page flex-wrap items-start gap-x-20 gap-y-12">
+      <div class="flex flex-[1_1_360px] flex-col gap-5">
+        <span class={eyebrow}>01 — THE FIELD</span>
+        <h2 class={h2}>What do robots do for the climate?</h2>
+        <p class="m-0 text-lg text-vrc-ink-2">
+          Robots already inspect turbines, map reefs and sort recycling. They only help if someone can fix them, pay for them and trust
+          their data, so we look at the whole life of a robot, not just the demo.
+        </p>
+        <a href="/research/white-paper/2025" class={arrowLink}>Read the white paper <Icon name="arrow-right" /></a>
+      </div>
+
+      <div data-tabs class="flex min-w-0 flex-[1.7_1_560px] flex-col gap-4">
+        <div role="tablist" aria-label="Where robots work" class="flex flex-wrap gap-1 self-start rounded-[14px] bg-vrc-surface p-1">
+          {
+            domains.map((d, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${d.id}`}
+                aria-controls={`panel-${d.id}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-[10px] border-0 bg-transparent px-[18px] text-[15px] font-medium text-vrc-ink-2 aria-selected:bg-white aria-selected:text-vrc-ink aria-selected:shadow-[0_1px_3px_rgba(10,18,34,0.14)]"
+              >
+                {d.label} <span class="font-mono text-xs">{d.count}</span>
+              </button>
+            ))
+          }
+        </div>
+        {
+          domains.map((d) => (
+            <div role="tabpanel" id={`panel-${d.id}`} aria-labelledby={`tab-${d.id}`} class="flex flex-col gap-2 rounded-3xl border border-vrc-line p-6 lg:p-8">
+              <p class="m-0 mb-4 font-heading text-[clamp(22px,2.6vw,28px)] font-medium leading-tight tracking-[-0.02em]">{d.lede}</p>
+              {d.examples.map((o) => (
+                <a
+                  href="/map"
+                  class="-mx-3 flex flex-wrap items-baseline gap-x-6 gap-y-1.5 rounded-xl border-t border-vrc-line px-3 py-[18px] text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink"
+                >
+                  <span class="flex flex-[0_0_200px] flex-col">
+                    <strong class="text-[17px] font-semibold">{o.name}</strong>
+                    <span class="font-mono text-xs text-vrc-muted">{o.country.toUpperCase()}{o.founded ? ` · ${o.founded}` : ''}</span>
+                  </span>
+                  <span class="flex-[1_1_240px] text-base text-vrc-ink-2">{o.description}</span>
+                  <Chip>{o.tag}</Chip>
+                  <Icon name="arrow-up-right" class="self-center text-vrc-blue" />
+                </a>
+              ))}
+              <a href="/map" class={`mt-3 ${arrowLink}`}>See all {d.count} on the map <Icon name="arrow-right" /></a>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 WAYS IN -->
+  <section id="ways" class="px-4 pb-20 lg:px-8 lg:pb-32">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+        <div class="flex flex-col gap-4">
+          <span class={eyebrow}>02 — WHAT WE DO</span>
+          <h2 class={h2}>Ways into the network</h2>
+        </div>
+        <p class="m-0 max-w-[420px] text-lg text-vrc-ink-2">Whether you build robots, fund them, study them or regulate them.</p>
+      </div>
+
+      <Bento>
+        <BentoTile span={7} tall tone="navy" class="min-h-[560px] justify-between gap-7 !p-8">
+          <span class="flex flex-wrap items-center justify-between gap-2 font-mono text-xs tracking-[0.06em] text-vrc-on-navy-muted">
+            SUMMIT {edition.year} · ANNUAL · {edition.format.toUpperCase()}
+            <span class="inline-flex items-center gap-2 rounded-full bg-vrc-navy-raised px-2.5 py-1 text-[11px] text-vrc-on-navy">
+              <span aria-hidden="true" class:list={['h-1.5 w-1.5 rounded-full', chip.tone === 'green' ? 'bg-vrc-green' : chip.tone === 'amber' ? 'bg-vrc-amber' : 'bg-vrc-on-navy-muted']}></span>{chip.label}
+            </span>
+          </span>
+          <img src="/images/v3/summit-grid.svg" alt="Summit participants in a video-call grid" class="block aspect-[16/7] w-full rounded-[14px] object-cover" />
+          <span class="flex flex-col gap-2.5">
+            <a href={summitHref} class="font-heading text-[clamp(30px,3.4vw,40px)] font-semibold leading-[1.02] tracking-[-0.03em] text-white no-underline hover:text-white hover:underline">
+              {edition.name}
+            </a>
+            <span class="text-base text-vrc-on-navy">{editionDates(edition)} · 3 days online · keynotes, panels and pitches · Free · no cap on places</span>
+          </span>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <span class="inline-flex items-center gap-2 text-sm text-vrc-on-navy-muted">
+                <Icon name="bell" />Email me when registration opens
+                <span class="rounded-full bg-vrc-navy-raised px-2.5 py-1 font-mono text-[11px] font-medium tracking-[0.06em] text-vrc-on-navy">COMING SOON</span>
+              </span>
+              <a href="/get-involved" class="font-medium text-vrc-on-navy-blue hover:text-white">Pitch your startup · opens {callOpens}</a>
+            </div>
+            <a href="/summits/2026/program" class="font-medium text-vrc-on-navy-blue hover:text-white">Last year’s program →</a>
           </div>
+        </BentoTile>
+
+        <BentoTile span={5} tone="surface" class="gap-[18px] !p-7">
+          <span class={eyebrow}>RESEARCH · 2025 EDITION</span>
+          <a href="/research/white-paper/2025" class="font-heading text-[28px] font-semibold leading-tight tracking-[-0.02em] text-vrc-ink no-underline hover:text-vrc-blue">
+            Working Notes on Climate Robots: when a robot helps, and when it doesn’t
+          </a>
+          <img src="/images/v3/white-paper.svg" alt="" class="aspect-[16/6] w-full rounded-[14px] object-cover" />
+          <div class="mt-auto flex flex-wrap gap-2.5">
+            <Button href="/research/white-paper/2025" size="sm">Read online</Button>
+            <Button href="/research" size="sm" variant="secondary">Write the next edition</Button>
+          </div>
+        </BentoTile>
+
+        <BentoTile span={5} class="gap-[18px] !p-7">
+          <span class={eyebrow}>CONSULTING</span>
+          <span class="font-heading text-[26px] font-semibold leading-tight tracking-[-0.02em]">
+            Practical advice on policy, research, partners and getting to market, from members who have done the work
+          </span>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-3">
+            <a href="/contact#consulting" class="flex items-center gap-3 text-vrc-ink no-underline hover:text-vrc-ink">
+              <span aria-hidden="true" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-vrc-blue-tint font-mono text-sm font-medium text-vrc-blue">IC</span>
+              <span class="flex flex-col leading-tight">
+                <strong class="text-[15px] font-semibold underline decoration-vrc-line-strong underline-offset-[3px]">Imogen Calder</strong>
+                <span class="text-sm text-vrc-muted">Consulting coordinator</span>
+              </span>
+            </a>
+            <Button href="/contact#consulting" size="sm" variant="secondary">Start an enquiry</Button>
+          </div>
+        </BentoTile>
+
+        <BentoTile span={7} lift class="!p-0">
+          <a href="/watch" class="flex h-full flex-wrap items-center gap-x-7 gap-y-4 p-4 text-vrc-ink no-underline hover:text-vrc-ink">
+            <span class="relative aspect-video flex-[1_1_280px] overflow-hidden rounded-2xl bg-vrc-navy">
+              <img src="/images/v3/forest.svg" alt="" class="absolute inset-0 h-full w-full object-cover opacity-[0.88]" />
+              <span aria-hidden="true" class="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-vrc-ink">
+                <Icon name="play" size={20} filled />
+              </span>
+            </span>
+            <span class="flex flex-[1_1_220px] flex-col gap-2.5 py-2 pr-2">
+              <span class={eyebrow}>WATCH · SERIES</span>
+              <span class="font-heading text-[28px] font-semibold leading-tight tracking-[-0.02em]">Robots in the Field</span>
+              <span class={eyebrow}>4 EPISODES</span>
+              <span class="inline-flex items-center gap-1.5 font-medium text-vrc-blue">Watch the series <Icon name="arrow-right" /></span>
+            </span>
+          </a>
+        </BentoTile>
+
+        <BentoTile span={5} tone="tint" lift class="!p-0">
+          <a href="/jobs" class="flex h-full flex-col justify-between gap-[18px] p-7 text-vrc-ink no-underline hover:text-vrc-ink">
+            <span class="flex items-center justify-between font-mono text-xs tracking-[0.06em] text-vrc-blue">
+              JOBS &amp; INTERNSHIPS <Icon name="arrow-up-right" size={20} />
+            </span>
+            <span class="flex flex-col gap-2.5">
+              <span class="font-heading text-[28px] font-semibold leading-tight tracking-[-0.02em]">Jobs building climate robots</span>
+              <Chip tone="green" dot>{openTracks} INTERNSHIP TRACKS OPEN</Chip>
+              <span class="text-base text-vrc-ink-2">Roles and internships shared by members and partners.</span>
+            </span>
+          </a>
+        </BentoTile>
+      </Bento>
+    </div>
+  </section>
+
+  <!-- 03 PRINCIPLES -->
+  <section class="bg-vrc-surface px-4 py-20 lg:px-8 lg:py-32">
+    <div class="mx-auto flex max-w-page flex-col gap-14">
+      <div class="flex max-w-[980px] flex-col gap-5">
+        <span class={eyebrow}>03 — HOW WE WORK</span>
+        <p class="m-0 font-heading text-[clamp(36px,5.4vw,64px)] font-semibold leading-none tracking-[-0.035em]">
+          A robot is a tool, not a climate plan. <span class="text-vrc-muted">We look hard at what each one fixes, what it breaks and who keeps it running.</span>
+        </p>
+      </div>
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
+        {
+          (
+            [
+                ['calendar', 'Count the upkeep', 'A pilot is only half the story. We ask who charges, repairs and pays for a robot in its third season, not just its first week.'],
+              ['document', 'Publish the failures', 'Robots that stalled, sank or sat in a shed get written up too, so nobody pays twice for the same lesson.'],
+              ['link', 'Share the tools', 'Checklists, test plans and parts lists from one project are posted where the next project can reuse them.'],
+            ] satisfies [IconName, string, string][]
+          ).map(([icon, title, text]) => (
+            <div class="flex flex-col gap-3 rounded-[20px] bg-white p-7">
+              <Icon name={icon} size={24} class="text-vrc-green-dark" />
+              <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">{title}</h3>
+              <p class="m-0 text-base text-vrc-ink-2">{text}</p>
+            </div>
+          ))
+        }
+      </div>
+      <a href="/principles" class={`self-start ${arrowLink}`}>Read how we work <Icon name="arrow-right" /></a>
+    </div>
+  </section>
+
+  <!-- 04 FROM THE NETWORK -->
+  <section class="px-4 py-20 lg:px-8 lg:py-32">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+        <div class="flex flex-col gap-4">
+          <span class={eyebrow}>04 — WATCH &amp; READ</span>
+          <h2 class={h2}>From the network</h2>
+        </div>
+        <a href="/news" class={arrowLink}>All news <Icon name="arrow-right" /></a>
+      </div>
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
+        {
+          latest.map((p) => (
+            <a href={`/news/${p.slug}`} class="group flex flex-col gap-3.5 rounded-[20px] text-vrc-ink no-underline hover:text-vrc-ink">
+              {p.image ? (
+                <span class="relative block aspect-[4/3] overflow-hidden rounded-[20px] bg-vrc-navy">
+                  <img src={p.image} alt="" class="absolute inset-0 h-full w-full object-cover opacity-90" />
+                  {p.type === 'video' && (
+                    <>
+                      <span aria-hidden="true" class="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-vrc-ink">
+                        <Icon name="play" size={22} filled />
+                      </span>
+                      {p.episode && <span class="absolute bottom-3.5 left-3.5 rounded-full bg-vrc-navy/80 px-2.5 py-1.5 font-mono text-xs text-white">EPISODE {p.episode} OF 4</span>}
+                    </>
+                  )}
+                </span>
+              ) : (
+                <span
+                  class:list={[
+                    'flex aspect-[4/3] items-end rounded-[20px] p-6 font-heading text-[34px] font-semibold leading-[1.05] tracking-[-0.02em]',
+                    p.cover?.tint === 'blue' ? 'bg-vrc-blue-tint text-vrc-ink' : 'bg-vrc-green-tint text-vrc-green-dark',
+                  ]}
+                >
+                  {p.cover?.text}
+                </span>
+              )}
+              <span class="flex flex-wrap items-center gap-x-2.5 gap-y-2">
+                <span class="font-mono text-xs tracking-[0.04em] text-vrc-muted">{TYPE_LABEL[p.type]}</span>
+                <span class="font-mono text-xs tracking-[0.04em] text-vrc-muted">{meta(p)}</span>
+              </span>
+              <span class="font-heading text-[22px] font-semibold leading-tight tracking-[-0.015em] group-hover:underline">{p.title}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section id="join" class="scroll-mt-24 px-4 pb-20 lg:px-8 lg:pb-32">
+    <div class="mx-auto flex max-w-page flex-wrap items-stretch gap-4">
+      <div class="box-border flex flex-[2_1_640px] flex-col gap-7 rounded-[32px] bg-vrc-navy px-6 py-12 text-white lg:px-14 lg:py-16">
+        <span class="inline-flex items-center gap-2 font-mono text-xs tracking-[0.06em] text-vrc-on-navy-green">
+          <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-vrc-green"></span>120+ MEMBERS ON SLACK
+        </span>
+        <h2 class="m-0 font-heading text-[clamp(40px,5.4vw,64px)] font-semibold leading-[0.98] tracking-[-0.035em]">Come say hello.</h2>
+        <p class="m-0 max-w-[560px] text-lg text-vrc-on-navy">
+          People from 18 countries who build, fund, study and fix robots for climate work. The form takes about a minute, and an admin
+          approves each Slack request by hand, typically within 24–48 hours. Then say hello in #welcome and tell us what you work on.
+        </p>
+        <ol class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 p-0">
+          <li class="flex flex-col gap-1.5 rounded-2xl bg-vrc-navy-raised p-5">
+            <span class="font-mono text-[13px] text-vrc-on-navy-green">01</span><strong class="font-semibold">Share what you know</strong>
+            <span class="text-[15px] text-vrc-on-navy-muted">Answer questions, post what failed, introduce people to each other.</span>
+          </li>
+          <li class="flex flex-col gap-1.5 rounded-2xl bg-vrc-navy-raised p-5">
+            <span class="font-mono text-[13px] text-vrc-on-navy-green">02</span><strong class="font-semibold">Assume good faith</strong>
+            <span class="text-[15px] text-vrc-on-navy-muted">Members come from labs, farms, start-ups and agencies. Ask before you judge.</span>
+          </li>
+          <li class="flex flex-col gap-1.5 rounded-2xl bg-vrc-navy-raised p-5">
+            <span class="font-mono text-[13px] text-vrc-on-navy-green">03</span><strong class="font-semibold">Follow the code of conduct</strong>
+            <span class="text-[15px] text-vrc-on-navy-muted">Read <a href="/code-of-conduct" class="text-white underline hover:text-white">our code of conduct</a> before you post.</span>
+          </li>
+        </ol>
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2.5">
+          <Button variant="white" data-sheet-open={JOIN_SHEET}>Join the network <Icon name="arrow-right" /></Button>
+          <span class="text-[15px] text-vrc-on-navy-muted">Slack, or email updates only. Your choice.</span>
+        </div>
+      </div>
+
+      <div class="flex flex-[1_1_340px] flex-col gap-4">
+        <div class="flex flex-col gap-3.5 rounded-[28px] bg-vrc-surface p-8">
+          <span class={eyebrow}>PREFER EMAIL?</span>
+          <span class="font-heading text-[28px] font-semibold leading-tight tracking-[-0.02em]">The monthly digest</span>
+          <p class="m-0 text-base text-vrc-ink-2">Network news, new videos, jobs and summit dates in one email a month. No Slack account needed.</p>
+          <span class="inline-flex items-center gap-2 self-start rounded-full bg-white px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-vrc-ink-2">Coming soon</span>
+        </div>
+        <a href="/contact" class="flex items-center justify-between gap-4 rounded-[28px] border border-vrc-line px-8 py-6 text-vrc-ink no-underline transition-[transform,box-shadow] duration-200 hover:-translate-y-[3px] hover:text-vrc-ink hover:shadow-lift motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+          <span class="flex flex-col gap-1">
+            <span class={eyebrow}>CONTACT US</span>
+            <span class="text-[17px] font-semibold">Questions, press, partnerships</span>
+          </span>
+          <Icon name="arrow-right" size={20} class="text-vrc-blue" />
         </a>
       </div>
     </div>
   </section>
+</SiteLayout>
 
-  {/* ─── IMPACT NUMBERS ─── */}
-  <section class="py-20 bg-vrc-navy text-white relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-vrc-navy via-vrc-blue-dark to-vrc-navy"></div>
-    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 30% 30%, rgba(22,163,74,0.3), transparent 50%), radial-gradient(circle at 70% 70%, rgba(59,130,246,0.3), transparent 50%);"></div>
-    <div class="relative container mx-auto px-4">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{SITE.stats.members}</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Members</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{SITE.stats.countries}</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Countries</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{SITE.stats.sectors}</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Sectors</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{summitsHeld}</div>
-          <div class="text-sm uppercase tracking-wider text-white/80">Summits Held</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* ─── COMMUNITY CTA ─── */}
-  <section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
-      <div class="relative overflow-hidden bg-gradient-to-br from-vrc-blue to-vrc-blue-dark rounded-3xl max-w-5xl mx-auto p-10 md:p-16">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-vrc-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
-
-        <div class="relative grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h2 class="font-heading font-bold text-3xl md:text-4xl text-white mb-3 leading-tight">
-              Want to pitch in?
-            </h2>
-            <p class="text-white/80 text-lg">
-              {SITE.stats.members} members already trade ideas in our community workspace. Say hello, ask a question, share what you are building.
-            </p>
-          </div>
-          <div class="flex md:justify-end">
-            <a href="/slack" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-vrc-blue font-bold uppercase tracking-wider rounded-lg hover:bg-vrc-green-dark hover:text-white transition-colors shadow-xl">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-              Join the Community
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+<script>
+  import { initTabs } from '@/scripts/tabs';
+  initTabs();
+</script>
