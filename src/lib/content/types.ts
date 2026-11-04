@@ -106,23 +106,43 @@ export interface Person {
   roles: PersonRole[];
 }
 
-export type VideoKind = 'keynote' | 'panel' | 'talk' | 'pitch' | 'opening' | 'closing' | 'episode' | 'explainer';
+export type VideoKind =
+  | 'keynote'
+  | 'panel'
+  | 'talk'
+  | 'pitch'
+  | 'opening'
+  | 'closing'
+  | 'recap'
+  | 'episode'
+  | 'explainer';
 
-export interface Video {
+/** Where a robot works, as Watch groups videos (WatchV3). */
+export type VideoTopic = 'air' | 'land' | 'sea' | 'materials';
+
+/** A video as src/data/videos.ts stores it. */
+export interface VideoRecord {
   slug: string;
   title: string;
-  description?: string;
-  /** "33:40". */
-  duration: string;
   kind: VideoKind;
+  /** "33:40", or "[DURATION]" while unknown. */
+  duration: string;
   /** The edition it was recorded at, if any. */
   edition?: number;
-  /** The series it belongs to, if any, and its place in it. */
+  /** The series it belongs to, and its place in it. */
   series?: { slug: string; episode: number };
+  topics?: VideoTopic[];
+  summary?: string;
+  thumbnail?: string;
+  /** A text cover, for a video with no picture. */
+  tile?: string;
+  /** Slugs of people (getPeople). */
   speakers: string[];
   /** No demo video has one; see VideoFacade. */
   youtubeId?: string;
 }
+
+export type Video = VideoRecord;
 
 export type NewsType = 'essay' | 'video' | 'announcement' | 'summit';
 

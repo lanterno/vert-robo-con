@@ -1,23 +1,19 @@
 /**
- * Recordings and episodes. Every video here is demo content with no
- * recording behind it: none has a YouTube id, so the player shows a
- * placeholder (VideoFacade). The "Robots in the Field" series joins in #30.
+ * Recordings and episodes (#30), from src/data/videos.ts.
+ *
+ * No demo video has a recording behind it, so each shows a placeholder
+ * instead of contacting a video host (VideoFacade).
  */
-import { SUMMIT_2025_VIDEOS, SUMMIT_2026_VIDEOS, type Video as LegacyVideo } from '@/lib/summits-data';
-import { slugify } from './slug';
-import type { Video } from './types';
+import { SERIES, VIDEOS } from '@/data/videos';
+import type { Video, VideoTopic } from './types';
 
-const fromLegacy = (edition: number) => (v: LegacyVideo): Video => ({
-  slug: v.id,
-  title: v.title,
-  ...(v.description ? { description: v.description } : {}),
-  duration: v.duration,
-  kind: v.type,
-  edition,
-  speakers: (v.speakers ?? []).map(slugify),
-});
-
-const VIDEOS: Video[] = [...SUMMIT_2025_VIDEOS.map(fromLegacy(2025)), ...SUMMIT_2026_VIDEOS.map(fromLegacy(2026))];
+/** What each topic is called in Watch. */
+export const VIDEO_TOPICS: Record<VideoTopic, string> = {
+  air: 'Air',
+  land: 'Land',
+  sea: 'Sea',
+  materials: 'Materials',
+};
 
 export function getVideos(): Video[] {
   return VIDEOS;
@@ -25,4 +21,23 @@ export function getVideos(): Video[] {
 
 export function getVideo(slug: string): Video | undefined {
   return VIDEOS.find((v) => v.slug === slug);
+}
+
+export function getSeries(): typeof SERIES {
+  return SERIES;
+}
+
+/** The series' episodes, in order. */
+export function getEpisodes(): Video[] {
+  return VIDEOS.filter((v) => v.series !== undefined).sort((a, b) => (a.series?.episode ?? 0) - (b.series?.episode ?? 0));
+}
+
+/** An edition's recordings, in the order they were recorded. */
+export function getRecordings(year: number): Video[] {
+  return VIDEOS.filter((v) => v.edition === year);
+}
+
+/** Every person who appears in a video, by slug, for the speaker filter. */
+export function getVideoSpeakers(): string[] {
+  return [...new Set(VIDEOS.flatMap((v) => v.speakers))];
 }
