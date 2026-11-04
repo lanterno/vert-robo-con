@@ -28,7 +28,7 @@ Choices that block the build. Only #5 (privacy) is still open, and it must be se
 Every public page rebuilt from the V3 boards, reading data files in the repo and still on GitHub Pages. Ends with the new public site live.
 
 - [x] #75
-- [ ] #76
+- [x] #76
 - [ ] #24
 - [ ] #25
 - [ ] #26

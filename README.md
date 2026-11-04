@@ -19,9 +19,35 @@ bun install      # install deps
 bun run dev      # dev server at http://localhost:4321
 bun run build    # build to dist/, what the Pages workflow runs
 bun run preview  # preview the built dist/ locally
+bun run check    # type-check the Astro files
+bun run test     # smoke, accessibility and link checks
 ```
 
-There is **no test suite, no type-check script, no linter and no formatter** yet. `bun astro check` needs `@astrojs/check`, which isn't a dependency, so it stops and asks to install it with npm. Checks come with [#76](docs/issues/76-static-site-ci-checks-and-a-daily-rebuild.md).
+## Checks
+
+`bun run test` runs Playwright against the **built** site, so it checks what
+Pages serves. Build first, and install the browser once:
+
+```sh
+bunx playwright install chromium
+bun run build && bun run test
+```
+
+Every test runs twice, at desktop and phone widths, over the routes in
+[`tests/routes.ts`](tests/routes.ts) — add a route there when you add a page.
+
+| Check | What fails it |
+| :--- | :--- |
+| `tests/smoke.spec.ts` | A route that doesn't return 200, has no `h1`, or throws in the browser |
+| `tests/a11y.spec.ts` | An axe violation under WCAG 2.1 A or AA, including text contrast below 4.5:1 |
+| `tests/links.spec.ts` | A link to an outside form, spreadsheet or file-sharing host |
+
+The link check is what keeps "everything happens on the site" true: a feature
+that isn't built yet shows its state, such as "Coming soon", rather than
+sending people to an outside tool.
+
+`.github/workflows/checks.yml` runs all of it on every pull request, and
+`deploy.yml` runs it before publishing. There is no linter or formatter yet.
 
 ## Pages
 
@@ -56,6 +82,7 @@ There is **no test suite, no type-check script, no linter and no formatter** yet
 │   │   └── types.ts       # Shared types for the map
 │   ├── pages/             # File-based routes
 │   └── styles/global.css  # Tailwind + utility classes
+├── tests/                 # Playwright smoke, accessibility and link checks
 ├── project/               # The 26 V3 design boards, plus canvas.json, their index
 ├── docs/
 │   ├── ROADMAP.md         # Plan from today's site to the V3 designs
@@ -71,7 +98,7 @@ The `/map` page reads the fictional dataset in `src/data/organizations.json` at 
 
 ## Deployment
 
-`.github/workflows/deploy.yml` builds with `bun run build` and publishes `dist/` to GitHub Pages on every push to `main`. The custom domain `crn.elghareeb.space` is set in `public/CNAME`.
+`.github/workflows/deploy.yml` runs the checks, builds with `bun run build` and publishes `dist/` to GitHub Pages on every push to `main`, and once a day so the build-time edition states stay current. The custom domain `crn.elghareeb.space` is set in `public/CNAME`.
 
 `astro.config.mjs` sets `output: 'static'`: there is no SSR, no API routes and no server. Anything that needs data is baked in at build time.
 

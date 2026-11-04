@@ -4,12 +4,13 @@ How the Vert Robo Con (VRC) site works today, and the target architecture approv
 
 ## Today
 
-A static Astro 5 site with no server, database or tests.
+A static Astro 5 site with no server or database.
 
 | Part | What it is |
 | --- | --- |
 | Build | Astro 5 with `output: 'static'`, built with Bun. 9 pages, all rendered at build time |
-| Hosting | GitHub Pages on a preview domain. `.github/workflows/deploy.yml` runs `bun run build` on every push to `main` |
+| Checks | `astro check`, plus Playwright smoke, axe accessibility and outside-link checks against the built site, at desktop and phone widths. Run on every PR and before each deploy ([#76](docs/issues/76-static-site-ci-checks-and-a-daily-rebuild.md)) |
+| Hosting | GitHub Pages on a preview domain. `.github/workflows/deploy.yml` runs the checks and `bun run build` on every push to `main`, and once a day |
 | Content | TypeScript and JSON in the repo: `src/lib/summits-data.ts`, `src/lib/constants.ts`, `src/data/organizations.json`. Changing content means a commit and a rebuild |
 | Styling | Tailwind CSS v3 with the `vrc-*` colour tokens, and fonts from Google Fonts |
 | Map | Leaflet and its marker-cluster plugin loaded from unpkg, with tiles from CARTO and Esri. The data is the JSON file, also served at `/data/organizations.json` |
