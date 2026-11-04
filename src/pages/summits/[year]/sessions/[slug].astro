@@ -1,0 +1,153 @@
+---
+/**
+ * One session (#29), from ProgramV3's session drawer: when it ran, who spoke,
+ * the recording if there is one, and the sessions around it.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import VideoFacade from '@/components/ui/VideoFacade.astro';
+import PersonDrawer from '@/components/site/PersonDrawer.astro';
+import SpeakerCard from '@/components/site/SpeakerCard.astro';
+import SessionTime from '@/components/site/SessionTime.astro';
+import { toDrawerPeople } from '@/components/site/drawer-people';
+import {
+  formatLongDate,
+  getEditions,
+  getPerson,
+  getProgram,
+  getSessions,
+  getVideo,
+  type Edition,
+  type Session,
+  type SessionKind,
+} from '@/lib/content';
+
+export function getStaticPaths() {
+  return getEditions().flatMap((edition) =>
+    (getSessions(edition.year) ?? []).map((session) => ({
+      params: { year: String(edition.year), slug: session.slug },
+      props: { session, edition },
+    })),
+  );
+}
+
+interface Props {
+  session: Session;
+  edition: Edition;
+}
+
+const { session, edition } = Astro.props;
+const day = getProgram(edition.year)?.find((d) => d.day === session.day);
+const date = day?.date ?? edition.days[session.day - 1]?.date ?? '';
+const speakers = session.speakers.map((s) => getPerson(s)).filter((p) => p !== undefined);
+const video = session.recording ? getVideo(session.recording.video) : undefined;
+const sameDay = (day?.sessions ?? []).filter((s) => s.slug !== session.slug);
+
+const KIND_LABEL: Record<SessionKind, string> = { keynote: 'Keynote', session: 'Session', pitch: 'Pitches', remarks: 'Remarks' };
+const KIND_TONE: Record<SessionKind, 'neutral' | 'green' | 'amber'> = { keynote: 'neutral', session: 'green', pitch: 'amber', remarks: 'neutral' };
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+const icsHref = `/summits/${edition.year}/sessions/${session.slug}.ics`;
+---
+
+<SiteLayout
+  title={`${session.title} · Summit ${edition.year}`}
+  description={session.summary ?? `${session.title}, at the Vert Robo Con Summit ${edition.year}.`}
+>
+  <article class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto flex max-w-[820px] flex-col gap-8">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <a href="/summits" class="text-vrc-muted no-underline hover:text-vrc-ink">SUMMITS</a> /
+        <a href={`/summits/${edition.year}`} class="text-vrc-muted no-underline hover:text-vrc-ink">{edition.year}</a> /
+        <a href={`/summits/${edition.year}/program`} class="text-vrc-muted no-underline hover:text-vrc-ink">PROGRAM</a> /
+        <span class="text-vrc-ink" aria-current="page">SESSION</span>
+      </nav>
+
+      <header class="flex flex-col gap-4">
+        <span class="flex flex-wrap items-center gap-2">
+          <Chip tone={KIND_TONE[session.kind]}>{KIND_LABEL[session.kind]}</Chip>
+          <span class={eyebrow}>{session.track ?? 'Plenary'}</span>
+        </span>
+        <h1 class="m-0 font-heading text-[clamp(32px,5vw,52px)] font-semibold leading-[0.98] tracking-[-0.035em]">{session.title}</h1>
+        <p class="m-0 text-lg text-vrc-ink-2">
+          Day {session.day} · {formatLongDate(date)}
+        </p>
+        <p class="m-0 text-lg text-vrc-ink-2">
+          <SessionTime date={date} time={session.time} end={session.end} range />
+        </p>
+        <p class="m-0 text-[15px] text-vrc-muted" data-zone-note>Times are in UTC.</p>
+        {session.summary && <p class="m-0 text-lg text-vrc-ink-2">{session.summary}</p>}
+        <div class="flex flex-wrap items-center gap-3">
+          <Button href={icsHref} download variant="secondary"><Icon name="calendar" />Add to calendar</Button>
+          <Button href={`/summits/${edition.year}/program`} variant="text">Back to the program</Button>
+        </div>
+      </header>
+
+      {
+        video ? (
+          <section aria-labelledby="recording" class="flex flex-col gap-4">
+            <h2 id="recording" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Recording</h2>
+            <VideoFacade
+              title={session.title}
+              thumbnail="/images/v3/forest.svg"
+              label={`${KIND_LABEL[session.kind].toUpperCase()} · SUMMIT ${edition.year}`}
+              {...(session.recording ? { duration: session.recording.duration } : {})}
+              {...(video.youtubeId ? { youtubeId: video.youtubeId } : {})}
+            />
+            <a href={`/watch/${video.slug}`} class="inline-flex items-center gap-1.5 self-start font-medium no-underline hover:underline">
+              Open the video page <Icon name="arrow-right" />
+            </a>
+          </section>
+        ) : edition.recordings === 'in-editing' ? (
+          <section aria-labelledby="recording" class="flex flex-col gap-3 rounded-3xl bg-vrc-surface p-7">
+            <h2 id="recording" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Recording</h2>
+            <Chip dot onSurface>Recording in editing</Chip>
+            <p class="m-0 text-[15px] text-vrc-ink-2">The recording will appear here, and in Watch, once it is published.</p>
+          </section>
+        ) : null
+      }
+
+      {
+        speakers.length > 0 && (
+          <section aria-labelledby="speakers" class="flex flex-col gap-4">
+            <h2 id="speakers" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">
+              {speakers.length === 1 ? 'Speaker' : 'Speakers'}
+            </h2>
+            <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
+              {speakers.map((p) => <SpeakerCard person={p} year={edition.year} />)}
+            </div>
+            <PersonDrawer people={toDrawerPeople(speakers, edition.year)} context={session.title.toUpperCase()} />
+          </section>
+        )
+      }
+
+      {
+        sameDay.length > 0 && (
+          <section aria-labelledby="related" class="flex flex-col gap-3 border-t border-vrc-line pt-8">
+            <h2 id="related" class={eyebrow}>ALSO ON DAY {session.day}</h2>
+            <ul class="m-0 flex list-none flex-col gap-2 p-0">
+              {sameDay.map((s) => (
+                <li>
+                  <a
+                    href={`/summits/${edition.year}/sessions/${s.slug}`}
+                    class="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl px-3 py-2.5 text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink"
+                  >
+                    <SessionTime date={date} time={s.time} class="w-[130px] shrink-0 font-mono text-[13px] text-vrc-muted" />
+                    <span class="font-medium">{s.title}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </article>
+</SiteLayout>
+
+<script>
+  import { initLocalTimes } from '@/scripts/local-time';
+  initLocalTimes();
+</script>

@@ -1,0 +1,205 @@
+---
+/**
+ * An edition's program (#29), from ProgramV3.
+ *
+ * Every session is on the page, grouped by day; the filters show and hide
+ * them, so the whole program is there without JavaScript. Times are written
+ * in UTC and the reader's own time is added beside them.
+ *
+ * 2027's saved agenda, calendar feed and join links come with #62.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import SessionTime from '@/components/site/SessionTime.astro';
+import {
+  editionChip,
+  editionDates,
+  formatShortDate,
+  getEditions,
+  getNow,
+  getPerson,
+  getProgram,
+  getTracks,
+  type Edition,
+  type SessionKind,
+} from '@/lib/content';
+
+export function getStaticPaths() {
+  return getEditions()
+    .filter((e) => getProgram(e.year) !== undefined)
+    .map((edition) => ({ params: { year: String(edition.year) }, props: { edition } }));
+}
+
+interface Props {
+  edition: Edition;
+}
+
+const { edition } = Astro.props;
+const program = getProgram(edition.year)!;
+const tracks = getTracks(edition.year);
+const chip = editionChip(edition, getNow());
+const total = program.reduce((n, d) => n + d.sessions.length, 0);
+
+const KIND_LABEL: Record<SessionKind, string> = { keynote: 'Keynote', session: 'Session', pitch: 'Pitches', remarks: 'Remarks' };
+const KIND_TONE: Record<SessionKind, 'neutral' | 'green' | 'amber'> = {
+  keynote: 'neutral',
+  session: 'green',
+  pitch: 'amber',
+  remarks: 'neutral',
+};
+const FILTERS: [string, string][] = [
+  ['all', 'All'],
+  ['keynote', 'Keynotes'],
+  ['session', 'Sessions'],
+  ['pitch', 'Pitches'],
+  ['remarks', 'Remarks'],
+];
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+const sessionHref = (slug: string) => `/summits/${edition.year}/sessions/${slug}`;
+---
+
+<SiteLayout title={`Program · Summit ${edition.year}`} description={`Every session at the Vert Robo Con Summit ${edition.year}: ${editionDates(edition)}.`}>
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-8">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <a href="/summits" class="text-vrc-muted no-underline hover:text-vrc-ink">SUMMITS</a> /
+        <a href={`/summits/${edition.year}`} class="text-vrc-muted no-underline hover:text-vrc-ink">{edition.year}</a> /
+        <span class="text-vrc-ink" aria-current="page">PROGRAM</span>
+      </nav>
+      <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-6">
+        <div class="flex flex-col gap-4">
+          <h1 class="m-0 font-heading text-[clamp(44px,7vw,80px)] font-semibold leading-[0.92] tracking-[-0.045em]">Program</h1>
+          <p class="m-0 text-xl text-vrc-ink-2">
+            {editionDates(edition)} · {total} sessions · all times UTC
+          </p>
+          <p class="m-0 text-[15px] text-vrc-muted" data-zone-note>Times are in UTC.</p>
+        </div>
+        <Chip tone={chip.tone} dot>{chip.label}</Chip>
+      </div>
+    </div>
+  </section>
+
+  <div data-program class="px-4 py-10 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-col gap-6">
+      <!-- Day tabs are links to each day's heading without JavaScript. -->
+      <div role="tablist" aria-label="Summit days" class="flex flex-wrap gap-2">
+        {
+          program.map((day, i) => (
+            <button
+              type="button"
+              role="tab"
+              data-day-tab={String(day.day)}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              aria-controls={`day-${day.day}`}
+              class="flex min-w-[180px] flex-1 cursor-pointer flex-col gap-1 rounded-2xl border border-vrc-line bg-white p-4 text-left font-[inherit] aria-selected:border-vrc-ink aria-selected:bg-vrc-ink aria-selected:text-white"
+            >
+              <span class="flex items-baseline justify-between gap-2">
+                <span class="font-mono text-xs tracking-[0.06em]">DAY {day.day} · {formatShortDate(day.date).toUpperCase()}</span>
+                <span class="font-mono text-xs opacity-75">{day.sessions.length}</span>
+              </span>
+              <span class="font-heading text-lg font-semibold tracking-[-0.02em]">{day.theme}</span>
+            </button>
+          ))
+        }
+      </div>
+
+      <div data-program-controls hidden class="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl bg-vrc-surface p-3">
+        <div role="group" aria-label="Session type" class="flex flex-wrap gap-1.5">
+          {
+            FILTERS.map(([value, label]) => (
+              <button
+                type="button"
+                data-kind-filter={value}
+                aria-pressed={value === 'all' ? 'true' : 'false'}
+                class="min-h-9 cursor-pointer rounded-full border border-vrc-line-strong bg-white px-3.5 text-sm font-medium text-vrc-ink-2 aria-pressed:border-vrc-ink aria-pressed:bg-vrc-ink aria-pressed:text-white"
+              >
+                {label}
+              </button>
+            ))
+          }
+        </div>
+        <label class="flex items-center gap-2">
+          <span class="sr-only">Track</span>
+          <select data-track class="min-h-9 rounded-xl border border-vrc-line-strong bg-white px-3 text-sm">
+            <option value="all">All tracks</option>
+            {tracks.map((t) => <option value={t}>{t}</option>)}
+          </select>
+        </label>
+        <label class="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl border border-vrc-line-strong bg-white px-3">
+          <span class="sr-only">Search sessions and speakers</span>
+          <Icon name="arrow-right" class="text-vrc-muted" />
+          <input type="search" data-search placeholder="Search sessions and speakers" class="min-h-9 w-full border-0 bg-transparent text-sm outline-none" />
+        </label>
+        <span data-count class="font-mono text-xs text-vrc-muted"></span>
+      </div>
+
+      {
+        program.map((day) => (
+          <section data-day-section={String(day.day)} id={`day-${day.day}`} aria-label={`Day ${day.day}: ${day.theme}`} class="flex flex-col gap-3">
+            <h2 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">
+              Day {day.day} · {day.theme}
+              <span class="ml-2 font-mono text-xs font-normal tracking-[0.06em] text-vrc-muted">{formatShortDate(day.date).toUpperCase()}</span>
+            </h2>
+            <ol class="m-0 flex list-none flex-col gap-2 p-0">
+              {day.sessions.map((s) => (
+                <li
+                  data-session
+                  data-session-day={String(day.day)}
+                  data-session-kind={s.kind}
+                  data-session-track={s.track ?? ''}
+                  class="flex flex-wrap items-start gap-x-5 gap-y-3 rounded-2xl border border-vrc-line p-4 hover:bg-vrc-surface-2"
+                >
+                  <span class="flex w-[150px] shrink-0 flex-col gap-0.5">
+                    <SessionTime date={day.date} time={s.time} end={s.end} range class="font-mono text-[13px] text-vrc-ink" />
+                    {s.recording && <span class="font-mono text-[11px] text-vrc-muted">{s.recording.duration}</span>}
+                  </span>
+                  <span class="flex min-w-[240px] flex-1 flex-col gap-1.5">
+                    <span class="flex flex-wrap items-center gap-2">
+                      <Chip tone={KIND_TONE[s.kind]}>{KIND_LABEL[s.kind]}</Chip>
+                      <span class={eyebrow}>{s.track ?? 'Plenary'}</span>
+                    </span>
+                    <a href={sessionHref(s.slug)} class="font-heading text-xl font-semibold tracking-[-0.02em] text-vrc-ink no-underline hover:text-vrc-blue hover:underline">
+                      {s.title}
+                    </a>
+                    {s.summary && <span class="text-[15px] text-vrc-ink-2">{s.summary}</span>}
+                    {s.speakers.length > 0 && (
+                      <span class="text-sm text-vrc-muted">
+                        {s.speakers.map((slug) => getPerson(slug)?.name).filter(Boolean).join(' · ')}
+                      </span>
+                    )}
+                  </span>
+                  <span class="flex shrink-0 items-center gap-2">
+                    <a
+                      href={`${sessionHref(s.slug)}.ics`}
+                      download
+                      aria-label={`Add to calendar: ${s.title}`}
+                      class="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-vrc-line-strong bg-white px-3 text-sm font-medium text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink"
+                    >
+                      <Icon name="calendar" />Add
+                    </a>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+
+      <div data-empty hidden class="flex flex-col items-start gap-2 rounded-2xl border border-dashed border-vrc-line-strong p-7">
+        <strong class="font-semibold">No sessions match</strong>
+        <span class="text-[15px] text-vrc-muted">Try another day, type or track, or a different search.</span>
+        <Button data-clear variant="secondary" size="sm">Clear filters</Button>
+      </div>
+    </div>
+  </div>
+</SiteLayout>
+
+<script>
+  import { initProgramFilter } from '@/scripts/program-filter';
+  import { initLocalTimes } from '@/scripts/local-time';
+  initProgramFilter();
+  initLocalTimes();
+</script>
