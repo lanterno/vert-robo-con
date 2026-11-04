@@ -95,7 +95,7 @@ export type PersonRole =
   | { kind: 'team'; title: string; org: string }
   | { kind: 'advisor'; title: string; org: string }
   | { kind: 'speaker'; year: number; title: string; org: string; keynote?: boolean }
-  | { kind: 'author'; edition: number; chapter?: string };
+  | { kind: 'author'; edition: number; /** The name the paper credits, if it differs. */ credited?: string };
 
 export interface Person {
   slug: string;
