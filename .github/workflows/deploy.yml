@@ -4,6 +4,12 @@ on:
   # Trigger on push to main branch
   push:
     branches: [main]
+  # Rebuild and republish once a day. An edition's state (upcoming, open,
+  # closing soon, live, concluded) is computed at build time on the static
+  # site, so without a daily rebuild the site would keep showing yesterday's
+  # state until the next push (#26, #76).
+  schedule:
+    - cron: "17 3 * * *"
   # Allow manual trigger
   workflow_dispatch:
 
@@ -22,8 +28,14 @@ env:
   BUILD_PATH: "."
 
 jobs:
+  # Nothing is published unless the checks pass first.
+  checks:
+    name: Checks
+    uses: ./.github/workflows/checks.yml
+
   build:
     name: Build
+    needs: checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
