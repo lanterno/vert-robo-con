@@ -16,10 +16,12 @@ type Tone = 'neutral' | 'green' | 'amber' | 'red';
 interface Props {
   tone?: Tone;
   dot?: boolean;
+  /** On a grey surface, where the neutral chip's own grey would vanish: white instead. */
+  onSurface?: boolean;
   class?: string;
 }
 
-const { tone = 'neutral', dot = false, class: className } = Astro.props;
+const { tone = 'neutral', dot = false, onSurface = false, class: className } = Astro.props;
 
 const tones: Record<Tone, { chip: string; dot: string }> = {
   neutral: { chip: 'bg-vrc-surface text-vrc-ink-2', dot: 'bg-vrc-muted' },
@@ -32,7 +34,7 @@ const tones: Record<Tone, { chip: string; dot: string }> = {
 <span
   class:list={[
     'inline-flex items-center gap-1.5 self-start whitespace-nowrap rounded-full px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em]',
-    tones[tone].chip,
+    onSurface && tone === 'neutral' ? 'bg-white text-vrc-ink-2' : tones[tone].chip,
     className,
   ]}
 >
