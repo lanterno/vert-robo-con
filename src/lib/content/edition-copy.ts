@@ -4,6 +4,7 @@
  */
 import { editionState, editionTimeline, liveDay } from './editions';
 import { formatShortDate } from './format';
+import { getVideos } from './videos';
 import type { Edition, EditionState } from './types';
 
 /**
@@ -51,11 +52,15 @@ export function editionChip(edition: Edition, now: Date): StateChip {
       return { state, tone: 'neutral', label: 'REGISTRATION CLOSED' };
     case 'live':
       return { state, tone: 'green', label: `LIVE NOW · DAY ${liveDay(edition, now) ?? 1}` };
-    case 'concluded':
-      return {
-        state,
-        tone: 'neutral',
-        label: edition.recordings === 'in-editing' ? 'CONCLUDED · RECORDINGS IN EDITING' : 'CONCLUDED',
-      };
+    case 'concluded': {
+      const recorded = getVideos().filter((v) => v.edition === edition.year).length;
+      const label =
+        edition.recordings === 'in-editing'
+          ? 'CONCLUDED · RECORDINGS IN EDITING'
+          : edition.recordings === 'published' && recorded > 0
+            ? `CONCLUDED · ${recorded} RECORDINGS`
+            : 'CONCLUDED';
+      return { state, tone: 'neutral', label };
+    }
   }
 }

@@ -28,6 +28,7 @@ export const EDITIONS: Edition[] = [
     ],
     program: 'not-started',
     recordings: 'not-applicable',
+    tracks: ['Leaks & emissions', 'Floods & recovery', 'Farms & soil', 'Keeping robots running'],
     alsoShow: ['US Eastern', 'Central European'],
   },
   {
@@ -48,6 +49,7 @@ export const EDITIONS: Edition[] = [
     program: 'published',
     recordings: 'in-editing',
     stats: { attendees: '280+', countries: '18', sessions: '10', speakers: '24' },
+    recap: 'Keynotes from Hollis Wexford and Anaïs Brekke, plus eight panels and open sessions.',
     alsoShow: ['US Eastern', 'Central European'],
   },
   {
@@ -67,12 +69,14 @@ export const EDITIONS: Edition[] = [
     program: 'published',
     recordings: 'published',
     stats: { attendees: '240+', countries: '18', sessions: '12', speakers: '8' },
+    recap: '240+ attendees from 18 countries. Keynote from Tamsin Ocampo.',
   },
   {
     year: 2024,
     name: 'Vert Robo Con Summit 2024',
     dek: 'The online pilot that started the Vert Robo Con Summit, held over two days, September 24–25, 2024.',
     pilot: true,
+    recap: 'The online pilot that started the Vert Robo Con Summit, with a recap video.',
     days: [
       { date: '2024-09-24', label: 'Day 1' },
       { date: '2024-09-25', label: 'Day 2' },

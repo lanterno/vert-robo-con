@@ -48,6 +48,10 @@ export interface Edition {
   program: 'not-started' | 'draft' | 'published';
   recordings: 'not-applicable' | 'in-editing' | 'published';
   stats?: { attendees?: string; countries?: string; sessions?: string; speakers?: string };
+  /** One line about how it went, for the list of past editions. */
+  recap?: string;
+  /** The tracks planned before the program is published. */
+  tracks?: string[];
   /** Time zones shown beside UTC, such as "US Eastern". */
   alsoShow?: string[];
 }
