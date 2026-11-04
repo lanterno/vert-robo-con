@@ -51,6 +51,17 @@ export default {
           'on-navy-blue': '#BFD0F5', // links on navy
         },
       },
+      // Shadows and the page width, from the boards.
+      boxShadow: {
+        lift: '0 18px 40px -18px rgba(10, 18, 34, 0.28)', // a tile on hover
+        pop: '0 24px 48px -20px rgba(10, 18, 34, 0.35)', // menus
+        sheet: '-24px 0 48px -24px rgba(10, 18, 34, 0.35)', // the side sheet
+        'sheet-up': '0 -20px 40px -20px rgba(10, 18, 34, 0.35)', // the bottom sheet
+        bar: '0 10px 30px -10px rgba(10, 18, 34, 0.3)', // the phone tab bar
+      },
+      maxWidth: {
+        page: '1280px',
+      },
       // Self-hosted through Fontsource, imported in src/styles/global.css.
       // No request goes to Google Fonts.
       fontFamily: {

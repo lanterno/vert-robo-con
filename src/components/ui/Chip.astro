@@ -1,0 +1,41 @@
+---
+/**
+ * A status chip: mono capitals on a tint, with an optional dot.
+ *
+ * - neutral: a status with no colour of its own, such as "Coming soon"
+ * - green: open, done, live
+ * - amber: soon, closing, needs attention
+ * - red: an error or a problem
+ *
+ * There is no blue chip. Blue is only for things you can act on (#24), and a
+ * chip is never a control. The boards show "Registration opens" as a blue
+ * chip; it is neutral here.
+ */
+type Tone = 'neutral' | 'green' | 'amber' | 'red';
+
+interface Props {
+  tone?: Tone;
+  dot?: boolean;
+  class?: string;
+}
+
+const { tone = 'neutral', dot = false, class: className } = Astro.props;
+
+const tones: Record<Tone, { chip: string; dot: string }> = {
+  neutral: { chip: 'bg-vrc-surface text-vrc-ink-2', dot: 'bg-vrc-muted' },
+  green: { chip: 'bg-vrc-green-tint text-vrc-green-dark', dot: 'bg-vrc-green' },
+  amber: { chip: 'bg-vrc-amber-tint text-vrc-amber-dark', dot: 'bg-vrc-amber' },
+  red: { chip: 'bg-vrc-red-tint text-vrc-red', dot: 'bg-vrc-red' },
+};
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1.5 self-start whitespace-nowrap rounded-full px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em]',
+    tones[tone].chip,
+    className,
+  ]}
+>
+  {dot && <span aria-hidden="true" class:list={['h-1.5 w-1.5 rounded-full', tones[tone].dot]}></span>}
+  <slot />
+</span>

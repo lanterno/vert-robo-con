@@ -1,0 +1,51 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+/**
+ * The V3 buttons. A link when it has an `href`, a button otherwise.
+ *
+ * - primary: blue, the one main action in a section
+ * - secondary: white with a border, for the actions beside it
+ * - white: for a primary action on a blue or navy surface
+ * - text: a blue text button, for a light action in a row of others
+ *
+ * `md` is 48px tall, `sm` 44px: both meet the 44px touch target.
+ */
+type Variant = 'primary' | 'secondary' | 'white' | 'text';
+type Size = 'md' | 'sm';
+
+type Props = {
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  class?: string;
+} & Omit<HTMLAttributes<'button'>, 'class'> &
+  Omit<HTMLAttributes<'a'>, 'class' | 'type'>;
+
+const { variant = 'primary', size = 'md', href, class: className, type = 'button', ...rest } = Astro.props;
+
+const base =
+  'inline-flex items-center justify-center gap-2 rounded-xl font-medium no-underline transition-colors cursor-pointer box-border';
+const heights: Record<Size, string> = { md: 'min-h-12 text-base', sm: 'min-h-11 text-[15px]' };
+// A text button keeps its touch height but drops the side padding.
+const padding = variant === 'text' ? 'px-1' : size === 'md' ? 'px-5' : 'px-4';
+const variants: Record<Variant, string> = {
+  primary: 'bg-vrc-blue text-white hover:bg-vrc-blue-dark hover:text-white',
+  secondary: 'border border-vrc-line-strong bg-white text-vrc-ink hover:bg-vrc-surface-2 hover:text-vrc-ink',
+  white: 'bg-white text-vrc-ink hover:bg-vrc-surface hover:text-vrc-ink',
+  text: 'bg-transparent text-vrc-blue hover:text-vrc-blue-dark hover:underline',
+};
+const classes = [base, heights[size], padding, variants[variant], className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...rest}>
+      <slot />
+    </button>
+  )
+}

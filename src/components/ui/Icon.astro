@@ -1,0 +1,31 @@
+---
+/**
+ * A line icon from src/lib/icons.ts. Icons are decorative: the control they
+ * sit in carries the name.
+ */
+import { ICON_PATHS, type IconName } from '@/lib/icons';
+
+export type { IconName };
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+  /** Solid shapes, such as the play triangle, are filled rather than stroked. */
+  filled?: boolean;
+}
+
+const { name, size = 16, class: className, filled = false } = Astro.props;
+---
+
+<svg
+  aria-hidden="true"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill={filled ? 'currentColor' : 'none'}
+  stroke={filled ? 'none' : 'currentColor'}
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={['shrink-0', className]}><path d={ICON_PATHS[name]}></path></svg>

@@ -1,0 +1,25 @@
+---
+/**
+ * The bento grid from HomeV3: twelve columns with 16px gaps and rows at least
+ * 220px tall. Below 900px every tile takes the full width, as on the board.
+ * Fill it with BentoTile.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['bento grid grid-cols-12 auto-rows-[minmax(220px,auto)] gap-4', className]}>
+  <slot />
+</div>
+
+<style is:global>
+  @media (max-width: 899px) {
+    .bento > * {
+      grid-column: 1 / -1 !important;
+      grid-row: auto !important;
+    }
+  }
+</style>

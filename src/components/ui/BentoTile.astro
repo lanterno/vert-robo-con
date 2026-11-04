@@ -1,0 +1,61 @@
+---
+/**
+ * One tile in a Bento grid.
+ *
+ * `span` is the number of the twelve columns it takes and `tall` makes it two
+ * rows high. `tone` sets the surface:
+ *
+ * - blue: the brand tile, white text
+ * - green: the community tile
+ * - surface: a quiet grey tile
+ * - outline: white with a border
+ * - navy: a dark tile, on-navy text
+ *
+ * A tile is a container, not a link: put the links inside it, so a tile can
+ * hold more than one. `lift` raises it on hover, for tiles that are one big
+ * control.
+ */
+type Span = 3 | 4 | 5 | 6 | 7 | 8 | 12;
+type Tone = 'blue' | 'green' | 'surface' | 'outline' | 'navy';
+
+interface Props {
+  span?: Span;
+  tall?: boolean;
+  tone?: Tone;
+  lift?: boolean;
+  class?: string;
+}
+
+const { span = 4, tall = false, tone = 'outline', lift = false, class: className } = Astro.props;
+
+// Written out in full so Tailwind finds every class.
+const spans: Record<Span, string> = {
+  3: 'col-span-3',
+  4: 'col-span-4',
+  5: 'col-span-5',
+  6: 'col-span-6',
+  7: 'col-span-7',
+  8: 'col-span-8',
+  12: 'col-span-12',
+};
+const tones: Record<Tone, string> = {
+  blue: 'bg-vrc-blue text-white',
+  green: 'bg-vrc-green-tint text-vrc-ink',
+  surface: 'bg-vrc-surface text-vrc-ink',
+  outline: 'border border-vrc-line bg-white text-vrc-ink',
+  navy: 'bg-vrc-navy text-white',
+};
+---
+
+<div
+  class:list={[
+    'relative flex flex-col gap-4 overflow-hidden rounded-3xl p-6',
+    spans[span],
+    tall && 'row-span-2',
+    tones[tone],
+    lift && 'transition-[transform,box-shadow] duration-200 hover:-translate-y-[3px] hover:shadow-lift motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+    className,
+  ]}
+>
+  <slot />
+</div>
