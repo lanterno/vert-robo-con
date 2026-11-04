@@ -8,6 +8,7 @@
  * - blue: the brand tile, white text
  * - green: the community tile
  * - surface: a quiet grey tile
+ * - tint: a pale blue tile, for a tile that is one big link
  * - outline: white with a border
  * - navy: a dark tile, on-navy text
  *
@@ -16,7 +17,7 @@
  * control.
  */
 type Span = 3 | 4 | 5 | 6 | 7 | 8 | 12;
-type Tone = 'blue' | 'green' | 'surface' | 'outline' | 'navy';
+type Tone = 'blue' | 'green' | 'surface' | 'tint' | 'outline' | 'navy';
 
 interface Props {
   span?: Span;
@@ -42,6 +43,7 @@ const tones: Record<Tone, string> = {
   blue: 'bg-vrc-blue text-white',
   green: 'bg-vrc-green-tint text-vrc-ink',
   surface: 'bg-vrc-surface text-vrc-ink',
+  tint: 'bg-vrc-blue-tint text-vrc-ink',
   outline: 'border border-vrc-line bg-white text-vrc-ink',
   navy: 'bg-vrc-navy text-white',
 };
