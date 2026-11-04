@@ -54,7 +54,7 @@ const cardClass = featured
       </svg>
       {summit.dates}
     </p>
-    <p class="text-white/60 text-sm mb-4">
+    <p class="text-white/80 text-sm mb-4">
       <svg class="inline-block w-4 h-4 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -63,7 +63,7 @@ const cardClass = featured
     </p>
     
     {/* Tagline */}
-    <p class={`text-white/70 ${featured ? 'text-lg' : 'text-sm'} mb-6`}>
+    <p class={`text-white/80 ${featured ? 'text-lg' : 'text-sm'} mb-6`}>
       {summit.tagline}
     </p>
     
@@ -72,11 +72,11 @@ const cardClass = featured
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div>
           <span class="block text-2xl font-bold text-white">{summit.stats.attendees}</span>
-          <span class="text-white/60 text-sm">Attendees</span>
+          <span class="text-white/80 text-sm">Attendees</span>
         </div>
         <div>
           <span class="block text-2xl font-bold text-white">{summit.stats.sessions}</span>
-          <span class="text-white/60 text-sm">Sessions</span>
+          <span class="text-white/80 text-sm">Sessions</span>
         </div>
       </div>
     )}

@@ -38,12 +38,12 @@ const heroMosaicSpeakers = featuredSpeakers.slice(0, 6);
 
 // 2026 session topics (the visual chips)
 const summit2026Topics = [
-  { label: 'Methane Leaks', color: 'from-amber-500 to-orange-600' },
-  { label: 'Soil Carbon', color: 'from-emerald-500 to-green-600' },
-  { label: 'Flood Recovery', color: 'from-blue-500 to-cyan-600' },
-  { label: 'Greenhouse Automation', color: 'from-lime-500 to-green-600' },
-  { label: 'Technician Training', color: 'from-violet-500 to-purple-600' },
-  { label: 'Student Research', color: 'from-rose-500 to-pink-600' },
+  { label: 'Methane Leaks', color: 'from-amber-700 to-orange-800' },
+  { label: 'Soil Carbon', color: 'from-emerald-700 to-green-800' },
+  { label: 'Flood Recovery', color: 'from-blue-700 to-cyan-800' },
+  { label: 'Greenhouse Automation', color: 'from-lime-700 to-green-800' },
+  { label: 'Technician Training', color: 'from-violet-700 to-purple-800' },
+  { label: 'Student Research', color: 'from-rose-700 to-pink-800' },
 ];
 
 // Edition totals for the numbers band
@@ -81,13 +81,13 @@ const speakers2026Count = SPEAKERS_2026.length;
       <div class="grid lg:grid-cols-12 gap-12 items-center">
         {/* Left: copy */}
         <div class="lg:col-span-7">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-vrc-green/15 border border-vrc-green/40 rounded-full text-vrc-green text-xs font-semibold uppercase tracking-wider mb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-vrc-green/15 border border-vrc-green/40 rounded-full text-vrc-on-navy-green text-xs font-semibold uppercase tracking-wider mb-6">
             <span class="w-1.5 h-1.5 bg-vrc-green rounded-full"></span>
             {upcomingSummit ? 'Next Edition' : `Latest: ${latestPastSummit?.dates}`}
           </div>
           <h1 class="font-heading font-bold text-5xl md:text-6xl lg:text-7xl leading-[0.95] mb-6">
             Robots for a
-            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-vrc-green to-teal-300">Cooler Planet</span>
+            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-vrc-on-navy-green to-teal-300">Cooler Planet</span>
           </h1>
           <p class="text-lg md:text-xl text-white/75 max-w-2xl mb-10 leading-relaxed">
             Once a year the Vert Robo Con Summit puts builders, field scientists and funders on the same call for a few afternoons of talks, panels and pitches about robots that do climate work. The next edition is planned for April 20-22, 2027, online and free.
@@ -216,14 +216,14 @@ const speakers2026Count = SPEAKERS_2026.length;
     <div class="relative container mx-auto px-4">
       <div class="grid lg:grid-cols-12 gap-10 items-center max-w-7xl mx-auto">
         <div class="lg:col-span-5">
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-green mb-3">
+          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-on-navy-green mb-3">
             On-Demand Library
           </div>
           <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4 leading-tight">
             Catch Up on the
-            <span class="block text-vrc-green">2025 Sessions</span>
+            <span class="block text-vrc-on-navy-green">2025 Sessions</span>
           </h2>
-          <p class="text-white/70 text-lg mb-8 leading-relaxed">
+          <p class="text-white/80 text-lg mb-8 leading-relaxed">
             {SUMMIT_2025_VIDEOS.length} recording slots from the first edition: a glacier keynote, two pitch rounds, and talks on wetlands, city heat, insurance and repair. This is a demo site, so each slot shows a placeholder instead of a video.
           </p>
           <div class="flex flex-wrap gap-3">
@@ -294,22 +294,22 @@ const speakers2026Count = SPEAKERS_2026.length;
               <h3 class="font-heading font-bold text-3xl md:text-4xl mb-2 leading-tight">
                 {summit.name}
               </h3>
-              <p class="text-white/70 mb-1">{summit.dates}</p>
-              <p class="text-white/60 text-sm mb-6">{summit.tagline}</p>
+              <p class="text-white/80 mb-1">{summit.dates}</p>
+              <p class="text-white/80 text-sm mb-6">{summit.tagline}</p>
 
               {summit.stats && (
                 <div class="flex gap-6 mt-auto pt-4 border-t border-white/20">
                   <div>
                     <div class="font-heading font-bold text-2xl">{summit.stats.attendees}</div>
-                    <div class="text-xs uppercase tracking-wider text-white/60">Attendees</div>
+                    <div class="text-xs uppercase tracking-wider text-white/80">Attendees</div>
                   </div>
                   <div>
                     <div class="font-heading font-bold text-2xl">{summit.stats.sessions}</div>
-                    <div class="text-xs uppercase tracking-wider text-white/60">Sessions</div>
+                    <div class="text-xs uppercase tracking-wider text-white/80">Sessions</div>
                   </div>
                   <div>
                     <div class="font-heading font-bold text-2xl">{summit.stats.countries}</div>
-                    <div class="text-xs uppercase tracking-wider text-white/60">Countries</div>
+                    <div class="text-xs uppercase tracking-wider text-white/80">Countries</div>
                   </div>
                 </div>
               )}
@@ -388,7 +388,7 @@ const speakers2026Count = SPEAKERS_2026.length;
     <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 70% 30%, rgba(22,163,74,0.3), transparent 50%);"></div>
     <div class="relative container mx-auto px-4">
       <div class="text-center mb-12 max-w-2xl mx-auto">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-green mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-vrc-on-navy-green mb-3">
           By the Numbers
         </div>
         <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4">
@@ -398,20 +398,20 @@ const speakers2026Count = SPEAKERS_2026.length;
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{editionsHeld}</div>
-          <div class="text-sm uppercase tracking-wider text-white/60">Summits Held</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{editionsHeld}</div>
+          <div class="text-sm uppercase tracking-wider text-white/80">Summits Held</div>
         </div>
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{totalAttendeesAllEditions}+</div>
-          <div class="text-sm uppercase tracking-wider text-white/60">Total Attendees</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{totalAttendeesAllEditions}+</div>
+          <div class="text-sm uppercase tracking-wider text-white/80">Total Attendees</div>
         </div>
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{totalSessionsAllEditions}</div>
-          <div class="text-sm uppercase tracking-wider text-white/60">Sessions</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{totalSessionsAllEditions}</div>
+          <div class="text-sm uppercase tracking-wider text-white/80">Sessions</div>
         </div>
         <div class="text-center">
-          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-green mb-2 tabular-nums">{maxCountries}</div>
-          <div class="text-sm uppercase tracking-wider text-white/60">Countries</div>
+          <div class="font-heading font-bold text-5xl md:text-6xl text-vrc-on-navy-green mb-2 tabular-nums">{maxCountries}</div>
+          <div class="text-sm uppercase tracking-wider text-white/80">Countries</div>
         </div>
       </div>
     </div>
