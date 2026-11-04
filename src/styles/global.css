@@ -9,6 +9,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The hidden attribute always hides. Without this, a display utility such
+   as `flex` on the same element wins and the element stays visible, which
+   tabs, menus and other scripts that toggle `hidden` rely on. */
+[hidden]:not([hidden='until-found']) {
+  display: none !important;
+}
+
 /* While a sheet is open, the page behind it doesn't scroll (src/scripts/sheet.ts). */
 html.sheet-open {
   overflow: hidden;
