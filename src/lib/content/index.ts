@@ -4,6 +4,7 @@
 export * from './editions';
 export * from './edition-copy';
 export * from './format';
+export * from './ics';
 export * from './news';
 export * from './organizations';
 export * from './partners';
