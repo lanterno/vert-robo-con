@@ -89,6 +89,13 @@ describe('programs', () => {
     }
   });
 
+  it('give every session a slug unique across its edition, for its own page', () => {
+    for (const year of [2025, 2026]) {
+      const slugs = (getProgram(year) ?? []).flatMap((d) => d.sessions.map((s) => s.slug));
+      expect(slugs.filter((s, i) => slugs.indexOf(s) !== i), `${year} repeated slugs`).toEqual([]);
+    }
+  });
+
   it('name the speakers of 2026’s panels', () => {
     const methane = getProgram(2026)?.[0]?.sessions.find((s) => s.title.includes('Methane'));
     expect(methane?.speakers).toEqual(['ruth-calloway', 'tobias-hartnell', 'selin-aydemir', 'gregor-pazdera']);
