@@ -32,7 +32,7 @@ Every public page rebuilt from the V3 boards, reading data files in the repo and
 - [x] #24
 - [x] #25
 - [x] #26
-- [ ] #27
+- [x] #27
 - [ ] #28
 - [ ] #29
 - [ ] #30
