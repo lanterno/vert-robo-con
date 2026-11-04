@@ -35,7 +35,7 @@ test('a speaker opens the person drawer, which lists the sessions they spoke in'
   const drawer = page.getByRole('dialog', { name: 'Ruth Calloway' });
   await expect(drawer).toBeVisible();
   await expect(drawer.getByText('Leak Survey Technician · Example Gas Utility')).toBeVisible();
-  await expect(drawer.getByRole('link', { name: /Finding Methane Leaks Sooner/ })).toHaveAttribute(
+  await expect(drawer.getByRole('link', { name: /Finding methane leaks sooner/ })).toHaveAttribute(
     'href',
     '/summits/2026/sessions/panel-finding-methane-leaks-sooner',
   );

@@ -81,8 +81,10 @@ describe('programs', () => {
         expect(isDate(day.date), `${year} day ${day.day}`).toBe(true);
         for (const s of day.sessions) {
           expect(s.time, `${s.slug} has a start time`).toMatch(/^\d{2}:\d{2}$/);
+          expect(s.end, `${s.slug} has an end time`).toMatch(/^\d{2}:\d{2}$/);
+          expect(s.end > s.time, `${s.slug} ends after it starts`).toBe(true);
           for (const slug of s.speakers) expect(getPerson(slug), `${year} ${s.slug} → ${slug}`).toBeDefined();
-          for (const slug of s.videos) expect(getVideo(slug), `${year} ${s.slug} → ${slug}`).toBeDefined();
+          if (s.recording) expect(getVideo(s.recording.video), `${year} ${s.slug} → ${s.recording.video}`).toBeDefined();
         }
         expect(unique(day.sessions.map((s) => s.slug)), `${year} day ${day.day} slugs`).toBe(true);
       }
@@ -97,7 +99,7 @@ describe('programs', () => {
   });
 
   it('name the speakers of 2026’s panels', () => {
-    const methane = getProgram(2026)?.[0]?.sessions.find((s) => s.title.includes('Methane'));
+    const methane = getProgram(2026)?.[0]?.sessions.find((s) => s.title.includes('methane'));
     expect(methane?.speakers).toEqual(['ruth-calloway', 'tobias-hartnell', 'selin-aydemir', 'gregor-pazdera']);
   });
 });

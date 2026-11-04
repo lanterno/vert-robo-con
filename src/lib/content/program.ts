@@ -1,56 +1,46 @@
 /**
- * Each edition's program. 2025 and 2026 come from today's data; 2027's is
- * built in the admin in M5 (#61), so it has none yet.
- *
- * Today's data names speakers only in recordings and descriptions, so a
- * session's speakers are the people in its recordings, or else the speakers
- * of that edition named in its title or description. #29 can store them
- * directly.
+ * Each edition's program, from src/data/program.ts. 2027's is built in the
+ * admin in M5 (#61), so it has none yet.
  */
-import { SUMMIT_2025_PROGRAM, SUMMIT_2026_PROGRAM, type ProgramDay as LegacyDay } from '@/lib/summits-data';
+import { SESSIONS } from '@/data/program';
 import { getEdition } from './editions';
-import { getSpeakers } from './people';
-import { slugify } from './slug';
 import type { ProgramDay, Session } from './types';
 
-const LEGACY: Record<number, LegacyDay[]> = { 2025: SUMMIT_2025_PROGRAM, 2026: SUMMIT_2026_PROGRAM };
+/** Every session of an edition, in time order, or undefined if unpublished. */
+export function getSessions(year: number): Session[] | undefined {
+  const rows = SESSIONS[year];
+  if (!rows) return undefined;
+  return [...rows]
+    .map((s) => ({ ...s, year }))
+    .sort((a, b) => a.day - b.day || a.time.localeCompare(b.time));
+}
 
-function build(year: number): ProgramDay[] | undefined {
-  const legacy = LEGACY[year];
+export function getSession(year: number, slug: string): Session | undefined {
+  return getSessions(year)?.find((s) => s.slug === slug);
+}
+
+/** An edition's program, day by day. */
+export function getProgram(year: number): ProgramDay[] | undefined {
+  const sessions = getSessions(year);
   const edition = getEdition(year);
-  if (!legacy || !edition) return undefined;
-  const speakers = getSpeakers(year);
+  if (!sessions || !edition) return undefined;
 
-  return legacy.map((day) => ({
-    day: day.day,
-    date: edition.days[day.day - 1]?.date ?? '',
-    theme: day.theme,
-    sessions: day.sessions.map((s): Session => {
-      const [start = '', end] = s.time.replace(/\s*UTC$/, '').split(/\s*-\s*/);
-      const fromVideos = s.videos.flatMap((v) => (v.speakers ?? []).map(slugify));
-      const text = `${s.title} ${s.description ?? ''}`;
-      // In the order the text names them.
-      const named = speakers
-        .filter((p) => text.includes(p.name))
-        .sort((a, b) => text.indexOf(a.name) - text.indexOf(b.name))
-        .map((p) => p.slug);
-      return {
-        slug: slugify(s.title),
-        title: s.title,
-        time: start,
-        ...(end ? { end } : {}),
-        kind: s.type,
-        ...(s.description ? { description: s.description } : {}),
-        speakers: [...new Set(fromVideos.length ? fromVideos : named)],
-        videos: s.videos.map((v) => v.id),
-      };
-    }),
+  return edition.days.map((d, i) => ({
+    day: i + 1,
+    date: d.date,
+    theme: THEMES[year]?.[i] ?? '',
+    sessions: sessions.filter((s) => s.day === i + 1),
   }));
 }
 
-const CACHE = new Map<number, ProgramDay[] | undefined>();
+/** Each day's theme, from ProgramV3's day tabs. */
+const THEMES: Record<number, string[]> = {
+  2026: ['Leaks, soil & carbon', 'Floods, storms & greenhouses', 'Skills & what comes next'],
+  2025: ['Wetlands & water agencies', 'Ice & city heat', 'Keeping robots running'],
+};
 
-export function getProgram(year: number): ProgramDay[] | undefined {
-  if (!CACHE.has(year)) CACHE.set(year, build(year));
-  return CACHE.get(year);
+/** Every track in an edition's program, in the order they first appear. */
+export function getTracks(year: number): string[] {
+  const tracks = (getSessions(year) ?? []).map((s) => s.track).filter((t): t is string => t !== undefined);
+  return [...new Set(tracks)];
 }

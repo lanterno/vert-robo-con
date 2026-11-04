@@ -56,20 +56,31 @@ export interface Edition {
   alsoShow?: string[];
 }
 
-export type SessionKind = 'keynote' | 'panel' | 'talk' | 'pitch' | 'break' | 'networking' | 'opening' | 'closing';
+/** The kinds of session, as ProgramV3 filters them. */
+export type SessionKind = 'keynote' | 'session' | 'pitch' | 'remarks';
 
-export interface Session {
+/** A session as src/data/program.ts stores it. */
+export interface SessionRecord {
   slug: string;
   title: string;
-  /** Start and end time on the day, HH:MM in UTC. */
+  /** Which day of the edition, counting from 1. */
+  day: number;
+  /** Start and end on the day, HH:MM in UTC. */
   time: string;
-  end?: string;
+  end: string;
   kind: SessionKind;
-  description?: string;
+  /** Unset for a plenary session. */
+  track?: string;
+  summary?: string;
   /** Slugs of people (getPeople). */
   speakers: string[];
-  /** Slugs of videos (getVideos). */
-  videos: string[];
+  /** The recording of it, if one was made. */
+  recording?: { duration: string; video: string };
+}
+
+export interface Session extends SessionRecord {
+  /** The edition it belongs to. */
+  year: number;
 }
 
 export interface ProgramDay {
