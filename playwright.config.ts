@@ -32,9 +32,13 @@ export default defineConfig({
     { name: 'phone', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
-    command: `bun run preview --port ${PORT}`,
+    // astro preview on exactly this port; see scripts/preview-strict.mjs.
+    command: `node scripts/preview-strict.mjs ${PORT}`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env['CI'],
+    // Always start a fresh server. Reusing one that happened to be on the
+    // port meant a run could lose its server halfway through, and fail
+    // with errors that pointed at the tests rather than the cause.
+    reuseExistingServer: false,
     timeout: 60_000,
   },
 });
