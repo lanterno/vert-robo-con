@@ -1,0 +1,45 @@
+---
+/**
+ * An edition in the list of editions, as SummitV3's "Past editions" shows
+ * them: its state, the year, the dates, one line, and its links.
+ */
+import Chip from '@/components/ui/Chip.astro';
+import { editionChip, editionDates, getNow, getProgram, type Edition } from '@/lib/content';
+
+interface Props {
+  edition: Edition;
+  /** The edition whose page this is, outlined. */
+  current?: boolean;
+}
+
+const { edition, current = false } = Astro.props;
+const chip = editionChip(edition, getNow());
+const hasPage = !edition.pilot;
+const hasProgram = getProgram(edition.year) !== undefined;
+const link = 'py-2 font-medium no-underline hover:underline';
+---
+
+<article
+  class:list={['flex flex-col gap-4 rounded-3xl bg-white p-7', current ? 'border border-vrc-ink' : 'border border-white']}
+>
+  <Chip tone={chip.tone} dot>{chip.label}</Chip>
+  {
+    hasPage ? (
+      <a href={`/summits/${edition.year}`} aria-current={current ? 'page' : undefined} class="flex flex-col text-vrc-ink no-underline hover:text-vrc-ink">
+        <span class="font-heading text-[64px] font-semibold leading-none tracking-[-0.04em]">{edition.year}</span>
+        <span class="font-mono text-xs tracking-[0.06em] text-vrc-muted">{editionDates(edition, 'short').toUpperCase()}</span>
+      </a>
+    ) : (
+      <span class="flex flex-col">
+        <span class="font-heading text-[64px] font-semibold leading-none tracking-[-0.04em]">{edition.year}</span>
+        <span class="font-mono text-xs tracking-[0.06em] text-vrc-muted">{editionDates(edition, 'short').toUpperCase()}</span>
+      </span>
+    )
+  }
+  <p class="m-0 text-[15px] text-vrc-ink-2">{edition.recap ?? edition.dek}</p>
+  <div class="mt-auto flex flex-wrap gap-x-1.5 gap-y-1 text-[15px] text-vrc-muted">
+    {hasProgram && <a href={`/summits/${edition.year}/program`} class={link}>Program</a>}
+    {hasProgram && <span aria-hidden="true" class="py-2">·</span>}
+    <a href="/watch" class={link}>Recordings</a>
+  </div>
+</article>

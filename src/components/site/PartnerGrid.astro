@@ -1,0 +1,49 @@
+---
+/**
+ * An edition's partners by tier, as SummitV3 shows them, ending with an
+ * invitation to sponsor the next edition.
+ */
+import type { Partner, PartnerTier } from '@/lib/content';
+
+interface Props {
+  partners: Partner[];
+  /** The edition people can sponsor next. */
+  nextYear: number;
+}
+
+const { partners, nextYear } = Astro.props;
+const ORDER: PartnerTier[] = ['organizing', 'platinum', 'gold', 'silver', 'partner'];
+const LABEL: Record<PartnerTier, string> = {
+  organizing: 'ORGANIZER',
+  platinum: 'PLATINUM SPONSOR',
+  gold: 'GOLD SPONSOR',
+  silver: 'SILVER SPONSOR',
+  partner: 'PARTNER',
+};
+const sorted = [...partners].sort((a, b) => ORDER.indexOf(a.tier) - ORDER.indexOf(b.tier));
+---
+
+<ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 p-0">
+  {
+    sorted.map((p) => (
+      <li
+        class:list={[
+          'flex min-h-[108px] flex-col items-center justify-center gap-0.5 rounded-2xl px-5 py-7 text-center',
+          p.tier === 'gold' ? 'bg-vrc-green-tint' : 'border border-vrc-line bg-white',
+        ]}
+      >
+        <span class:list={['font-mono text-[11px] tracking-[0.04em]', p.tier === 'gold' ? 'text-vrc-green-dark' : 'text-vrc-muted']}>{LABEL[p.tier]}</span>
+        <span class="font-heading text-xl font-semibold leading-tight">{p.name}</span>
+      </li>
+    ))
+  }
+  <li class="flex">
+    <a
+      href="/get-involved#sponsor"
+      class="flex min-h-[108px] flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl border-[1.5px] border-dashed border-vrc-line-strong px-5 py-7 text-center no-underline hover:bg-vrc-surface-2"
+    >
+      <span class="font-mono text-[11px] tracking-[0.04em] text-vrc-muted">YOUR ORGANIZATION</span>
+      <span class="font-heading text-xl font-semibold leading-tight">Sponsor {nextYear} →</span>
+    </a>
+  </li>
+</ul>

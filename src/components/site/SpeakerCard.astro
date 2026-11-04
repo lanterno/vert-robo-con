@@ -1,0 +1,62 @@
+---
+/**
+ * A speaker, as SummitV3 shows them: a large keynote card, or a compact one
+ * for the grid. Both are links to the person's page that open the person
+ * drawer instead when JavaScript runs.
+ */
+import type { Person } from '@/lib/content';
+import { roleLine } from './drawer-people';
+
+interface Props {
+  person: Person;
+  year: number;
+  keynote?: boolean;
+  /** For the keynote card, such as "DAY 2 · 15:00 UTC". */
+  when?: string;
+  drawer?: string;
+}
+
+const { person, year, keynote = false, when, drawer = 'person-drawer' } = Astro.props;
+const href = `/people/${person.slug}`;
+const role = roleLine(person, year);
+const initials = person.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+---
+
+{
+  keynote ? (
+    <a
+      href={href}
+      data-person-open={person.slug}
+      data-person-drawer={drawer}
+      class="group flex flex-col overflow-hidden rounded-3xl border border-vrc-line bg-white text-vrc-ink no-underline transition-[transform,box-shadow] duration-200 hover:-translate-y-[3px] hover:text-vrc-ink hover:shadow-lift motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+    >
+      {person.photo ? (
+        <img src={person.photo} alt="" class="aspect-[4/3] w-full bg-vrc-blue-tint object-cover" />
+      ) : (
+        <span aria-hidden="true" class="flex aspect-[4/3] items-center justify-center bg-vrc-blue-tint font-mono text-4xl text-vrc-blue">{initials}</span>
+      )}
+      <span class="flex flex-col gap-1.5 p-6">
+        {when && <span class="font-mono text-xs tracking-[0.06em] text-vrc-muted">{when}</span>}
+        <span class="font-heading text-2xl font-semibold tracking-[-0.02em] group-hover:underline">{person.name}</span>
+        <span class="text-[15px] text-vrc-ink-2">{role}</span>
+      </span>
+    </a>
+  ) : (
+    <a
+      href={href}
+      data-person-open={person.slug}
+      data-person-drawer={drawer}
+      class="flex items-center gap-3 rounded-2xl border border-vrc-line bg-white p-3 text-vrc-ink no-underline hover:border-vrc-line-strong hover:bg-vrc-surface-2 hover:text-vrc-ink"
+    >
+      {person.photo ? (
+        <img src={person.photo} alt="" width="48" height="48" class="h-12 w-12 shrink-0 rounded-xl bg-vrc-blue-tint object-cover" />
+      ) : (
+        <span aria-hidden="true" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-vrc-blue-tint font-mono text-sm text-vrc-blue">{initials}</span>
+      )}
+      <span class="flex min-w-0 flex-col leading-snug">
+        <strong class="font-semibold">{person.name}</strong>
+        <span class="text-sm text-vrc-muted">{role}</span>
+      </span>
+    </a>
+  )
+}
