@@ -1,0 +1,98 @@
+---
+/**
+ * One person (#33): who they are, and everywhere they appear on the site.
+ *
+ * Every person card links here, so a profile has an address to share and
+ * works without JavaScript; with it, the card opens the drawer instead.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PersonAvatar from '@/components/site/PersonAvatar.astro';
+import { appearances, personTags, roleLine } from '@/components/site/drawer-people';
+import { getPeople, type Person } from '@/lib/content';
+import type { IconName } from '@/lib/icons';
+
+export function getStaticPaths() {
+  return getPeople().map((person) => ({ params: { slug: person.slug }, props: { person } }));
+}
+
+interface Props {
+  person: Person;
+}
+
+const { person } = Astro.props;
+const appears = appearances(person);
+const tags = personTags(person);
+const KIND_ICON: Record<(typeof appears)[number]['kind'], IconName> = {
+  session: 'calendar',
+  video: 'play',
+  document: 'document',
+  post: 'news',
+  team: 'users',
+};
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title={person.name} description={person.bio ?? `${person.name} on Vert Robo Con.`}>
+  <article class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto flex max-w-[820px] flex-col gap-8">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <a href="/people" class="text-vrc-muted no-underline hover:text-vrc-ink">PEOPLE</a> /
+        <span class="text-vrc-ink" aria-current="page">{person.name.toUpperCase()}</span>
+      </nav>
+
+      <header class="flex flex-wrap items-center gap-6">
+        <PersonAvatar person={person} size={120} class="h-[120px] w-[120px] rounded-[28px]" />
+        <div class="flex min-w-0 flex-1 flex-col gap-3">
+          <h1 class="m-0 font-heading text-[clamp(32px,5vw,48px)] font-semibold leading-tight tracking-[-0.035em]">{person.name}</h1>
+          <p class="m-0 text-lg text-vrc-ink-2">{roleLine(person)}</p>
+          {tags.length > 0 && <div class="flex flex-wrap gap-1.5">{tags.map((t) => <Chip>{t}</Chip>)}</div>}
+        </div>
+      </header>
+
+      {person.bio && <p class="m-0 text-lg text-vrc-ink-2">{person.bio}</p>}
+
+      {
+        person.links && person.links.length > 0 && (
+          <div class="flex flex-wrap gap-3">
+            {person.links.map((l) => (
+              <Button href={l.href} variant="secondary" size="sm">
+                {l.label} <Icon name="arrow-up-right" size={14} />
+              </Button>
+            ))}
+          </div>
+        )
+      }
+
+      {
+        appears.length > 0 && (
+          <section aria-labelledby="appears" class="flex flex-col gap-3">
+            <h2 id="appears" class={eyebrow}>APPEARS IN</h2>
+            <ul class="m-0 flex list-none flex-col gap-2 p-0">
+              {appears.map((a) => (
+                <li>
+                  <a href={a.href} class="flex items-center gap-3 rounded-[14px] border border-vrc-line px-3.5 py-3 text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">
+                    <span aria-hidden="true" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-vrc-blue-tint text-vrc-blue">
+                      <Icon name={KIND_ICON[a.kind]} size={a.kind === 'video' ? 14 : 16} filled={a.kind === 'video'} />
+                    </span>
+                    <span class="flex min-w-0 flex-1 flex-col leading-snug">
+                      <strong class="text-[15px] font-medium">{a.title}</strong>
+                      <span class="font-mono text-[11px] tracking-[0.02em] text-vrc-muted">{a.meta}</span>
+                    </span>
+                    <Icon name="chevron-right" class="text-vrc-blue" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <p class="m-0 border-t border-vrc-line pt-6 text-sm text-vrc-muted">
+        Something wrong or missing in this profile? <a href="/contact">Ask for a correction</a>
+      </p>
+    </div>
+  </article>
+</SiteLayout>

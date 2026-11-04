@@ -1,0 +1,86 @@
+---
+/**
+ * The people pages (#33), from PeopleV3: the organising team, speakers by
+ * edition, and the white paper's authors.
+ *
+ * Each card is a link to the person's page that opens the person drawer
+ * instead when JavaScript runs, so it works either way.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import PersonAvatar from '@/components/site/PersonAvatar.astro';
+import PersonDrawer from '@/components/site/PersonDrawer.astro';
+import { toDrawerPeople, roleLine } from '@/components/site/drawer-people';
+import { creditedAs, getAuthors, getEditions, getPeople, getSpeakers, getTeam, type Person } from '@/lib/content';
+
+const team = getTeam();
+const editions = getEditions().filter((e) => getSpeakers(e.year).length > 0);
+const authors = getAuthors(2025);
+
+type Section = { id: string; title: string; note: string; people: Person[]; year?: number; credited?: boolean };
+const sections: Section[] = [
+  { id: 'team', title: 'Team & organizers', note: `${team.length} people`, people: team },
+  ...editions.map((e) => {
+    const speakers = getSpeakers(e.year);
+    return { id: `speakers-${e.year}`, title: `Summit speakers · ${e.year}`, note: `${speakers.length} speakers`, people: speakers, year: e.year };
+  }),
+  { id: 'authors', title: 'White paper authors', note: `${authors.length} authors`, people: authors, credited: true },
+];
+
+// One drawer for the page, over everyone, so previous and next run through all of them.
+const everyone = getPeople();
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title="People" description="The organising team, the summit speakers and the white paper's authors.">
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-6">
+      <span class={eyebrow}>PEOPLE · TEAM · SPEAKERS · AUTHORS</span>
+      <h1 class="m-0 font-heading text-[clamp(48px,8vw,96px)] font-semibold leading-[0.92] tracking-[-0.045em]">People</h1>
+      <p class="m-0 max-w-[620px] text-xl text-vrc-ink-2">
+        The team that runs the summit, everyone who has spoken at one, and the people who wrote the white paper.
+      </p>
+      <nav aria-label="Sections" class="flex flex-wrap gap-2">
+        {
+          sections.map((s) => (
+            <a href={`#${s.id}`} class="inline-flex min-h-9 items-center rounded-full border border-vrc-line-strong px-3.5 text-sm font-medium text-vrc-ink-2 no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">
+              {s.title}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <div class="px-4 py-10 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-col gap-14">
+      {
+        sections.map((section) => (
+          <section id={section.id} aria-labelledby={`${section.id}-title`} class="flex scroll-mt-28 flex-col gap-5">
+            <div class="flex flex-wrap items-baseline justify-between gap-3">
+              <h2 id={`${section.id}-title`} class="m-0 font-heading text-3xl font-semibold tracking-[-0.025em]">{section.title}</h2>
+              <span class={eyebrow}>{section.note.toUpperCase()}</span>
+            </div>
+            <ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3 p-0">
+              {section.people.map((p) => (
+                <li>
+                  <a
+                    href={`/people/${p.slug}`}
+                    data-person-open={p.slug}
+                    class="flex h-full items-center gap-3 rounded-2xl border border-vrc-line bg-white p-3 text-vrc-ink no-underline hover:border-vrc-line-strong hover:bg-vrc-surface-2 hover:text-vrc-ink"
+                  >
+                    <PersonAvatar person={p} size={48} class="h-12 w-12 rounded-xl" />
+                    <span class="flex min-w-0 flex-col leading-snug">
+                      <strong class="font-semibold">{section.credited ? creditedAs(p, 2025) : p.name}</strong>
+                      <span class="text-sm text-vrc-muted">{section.credited ? 'Author' : roleLine(p, section.year)}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+      <PersonDrawer people={toDrawerPeople(everyone)} context="PEOPLE" />
+    </div>
+  </div>
+</SiteLayout>
