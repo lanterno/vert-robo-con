@@ -12,5 +12,5 @@
       "@layouts/*": ["src/layouts/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "tests", "playwright.config.ts"]
 }
