@@ -14,6 +14,8 @@ const PORT = 4321;
 
 export default defineConfig({
   testDir: './tests',
+  // tests/unit is Vitest's (vitest.config.ts).
+  testIgnore: ['unit/**'],
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
   retries: 0,
