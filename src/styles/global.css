@@ -210,3 +210,9 @@ html.sheet-open {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
 }
+
+/* MapLibre's attribution links sit in a run of text at nearly the same
+   colour, so they are told apart only by colour. Underline them. */
+.maplibregl-ctrl-attrib-inner a {
+  text-decoration: underline;
+}

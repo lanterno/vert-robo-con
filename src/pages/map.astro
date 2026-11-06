@@ -1,108 +1,194 @@
 ---
-import Header from '@/components/Header.astro';
-import ClimateMap from '@/components/ClimateMap.astro';
-import '@/styles/global.css';
+/**
+ * The organisation map (#32), from MapV3.
+ *
+ * Every organisation is in the list on the page, which works by keyboard and
+ * is the map's equal rather than a fallback. The map and the filters are
+ * added by script; without them the whole list is still here, with its
+ * downloads.
+ *
+ * Suggesting an organization, and moving the data into Postgres, come with
+ * #55 and #56. The self-hosted basemap comes with #77.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import {
+  EXPORT_FIELDS,
+  MAP_LICENCE,
+  MAP_LICENCE_URL,
+  TYPE_COLOURS,
+  citation,
+  countsByType,
+  getMapStats,
+  getOrganizations,
+  valuesOf,
+} from '@/lib/content';
 import { SITE } from '@/lib/constants';
-import { fetchOrganizationsData } from '@/lib/mapData';
 
-// Fetch data at build time
-const entries = await fetchOrganizationsData();
-const currentPath = Astro.url.pathname;
-const title = 'Organisation Map';
-const description = `Interactive map of 120 fictional organisations in the ${SITE.name} demo dataset, spread across ${SITE.stats.countries} countries.`;
-const fullTitle = `${title} | ${SITE.name}`;
+const orgs = [...getOrganizations()].sort((a, b) => a.name.localeCompare(b.name));
+const stats = getMapStats();
+const types = countsByType();
+const applications = valuesOf('mainApplication');
+const regions = valuesOf('continentHQ');
+const cite = citation(SITE.url);
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+const pill =
+  'min-h-9 cursor-pointer rounded-full border border-vrc-line-strong bg-white px-3.5 text-sm font-medium text-vrc-ink-2 aria-pressed:border-vrc-ink aria-pressed:bg-vrc-ink aria-pressed:text-white';
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    
-    {/* SEO Meta Tags */}
-    <meta name="robots" content="index, follow" />
-    <meta name="author" content={SITE.name} />
-    <link rel="canonical" href={`${SITE.url}${currentPath}`} />
-    
-    {/* Open Graph */}
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={`${SITE.url}${currentPath}`} />
-    <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:image" content={`${SITE.url}/images/og-image.png`} />
-    
-    {/* Twitter Card */}
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${SITE.url}/images/og-image.png`} />
-    
-    {/* Favicon */}
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
-    
-    {/* Theme Color */}
-    <meta name="theme-color" content="#1e40af" />
-    
-    <title>{fullTitle}</title>
-  </head>
-  <body class="map-page">
-    {/* Skip to main content link for accessibility */}
-    <a href="#main-content" class="skip-link">
-      Skip to main content
-    </a>
-    
-    {/* Floating Header */}
-    <div class="floating-header">
-      <Header currentPath={currentPath} />
-    </div>
-    
-    <main id="main-content" class="map-main" role="main">
-      <ClimateMap entries={entries} />
-    </main>
-  </body>
-</html>
+<SiteLayout
+  title="Map"
+  description={`${stats.organizations} organizations building robots for climate work, in ${stats.countries} countries. Open data under ${MAP_LICENCE}.`}
+>
+  <div data-map-page class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto flex max-w-page flex-col gap-6">
+      <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+        <div class="flex max-w-3xl flex-col gap-4">
+          <span class={eyebrow}>MAP · OPEN DATA · {MAP_LICENCE.toUpperCase()}</span>
+          <h1 class="m-0 font-heading text-[clamp(44px,7vw,84px)] font-semibold leading-[0.94] tracking-[-0.045em]">The global map</h1>
+          <p class="m-0 text-xl text-vrc-ink-2">
+            {stats.organizations} organizations building climate robots in {stats.countries} countries, {stats.deployed} already
+            deployed in the field.
+          </p>
+        </div>
+        <span class="inline-flex items-center gap-2 text-[15px] text-vrc-muted">
+          <Icon name="map-pin" />Suggest an organization <Chip>Coming soon</Chip>
+        </span>
+      </div>
 
-<style>
-  .map-page {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
-  
-  .floating-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 2000;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  }
-  
-  .map-main {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding-top: 72px; /* Height of header */
-  }
-  
-  /* Override skip link for map page */
-  :global(.skip-link) {
-    position: absolute;
-    left: -10000px;
-    z-index: 10000;
-  }
-  
-  :global(.skip-link:focus) {
-    left: 10px;
-    top: 80px;
-  }
-</style>
+      <div data-map-controls hidden class="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl bg-vrc-surface p-3">
+        <label class="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl border border-vrc-line-strong bg-white px-3">
+          <span class="sr-only">Search organizations</span>
+          <Icon name="arrow-right" class="text-vrc-muted" />
+          <input type="search" data-search placeholder={`Search ${stats.organizations} organizations`} class="min-h-9 w-full border-0 bg-transparent text-sm outline-none" />
+        </label>
+        <div role="group" aria-label="Robot type" class="flex flex-wrap gap-1.5">
+          {
+            types.map((t) => (
+              <button type="button" data-type-filter={t.type} aria-pressed="false" class={pill}>
+                <span aria-hidden="true" class="mr-1.5 inline-block h-2 w-2 rounded-full align-middle" style={`background:${TYPE_COLOURS[t.type] ?? '#646B7A'}`}></span>
+                {t.type.replace(' Robot', '')} <span class="font-mono text-xs text-vrc-muted">{t.count}</span>
+              </button>
+            ))
+          }
+        </div>
+        <label class="flex items-center gap-2">
+          <span class="sr-only">Application</span>
+          <select data-app-filter class="min-h-9 rounded-xl border border-vrc-line-strong bg-white px-3 text-sm">
+            <option value="all">All applications</option>
+            {applications.map((a) => <option value={a}>{a}</option>)}
+          </select>
+        </label>
+        <label class="flex items-center gap-2">
+          <span class="sr-only">Region</span>
+          <select data-region-filter class="min-h-9 rounded-xl border border-vrc-line-strong bg-white px-3 text-sm">
+            <option value="all">All regions</option>
+            {regions.map((r) => <option value={r}>{r}</option>)}
+          </select>
+        </label>
+        <button type="button" role="switch" aria-checked="false" data-deployed-filter class={pill}>Deployed only</button>
+        <span data-count class="font-mono text-xs text-vrc-muted"></span>
+      </div>
+
+      <div class="flex flex-wrap gap-4">
+        <!-- The list is the map's equal: everything is here, and it works by keyboard. -->
+        <section aria-labelledby="org-list" class="flex min-w-0 flex-[1_1_340px] flex-col gap-3">
+          <h2 id="org-list" class={eyebrow}>ORGANIZATIONS, A–Z</h2>
+          <ol class="m-0 flex max-h-[560px] list-none flex-col gap-1.5 overflow-y-auto p-0 pr-1">
+            {
+              orgs.map((org) => (
+                <li
+                  data-org={org.id}
+                  data-org-name={org.name}
+                  data-org-type={org.roboticsType}
+                  data-org-app={org.mainApplication}
+                  data-org-region={org.continentHQ}
+                  data-org-deployed={String(org.isDeployed)}
+                  data-org-lat={org.coordinates?.[0]}
+                  data-org-lon={org.coordinates?.[1]}
+                  data-org-colour={TYPE_COLOURS[org.roboticsType] ?? '#646B7A'}
+                  data-org-text={`${org.name} ${org.countryHQ} ${org.roboticsType} ${org.mainApplication} ${org.description}`.toLowerCase()}
+                >
+                  <details class="group rounded-2xl border border-vrc-line open:bg-vrc-surface-2">
+                    <summary class="flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 p-4 marker:content-none">
+                      <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full" style={`background:${TYPE_COLOURS[org.roboticsType] ?? '#646B7A'}`}></span>
+                      <strong class="font-semibold">{org.name}</strong>
+                      <span class="font-mono text-[11px] uppercase tracking-[0.04em] text-vrc-muted">
+                        {org.countryHQ}{org.founded ? ` · ${org.founded}` : ''}
+                      </span>
+                      {org.isDeployed && <Chip tone="green">Deployed</Chip>}
+                    </summary>
+                    <div class="flex flex-col gap-2 px-4 pb-4 text-[15px] text-vrc-ink-2">
+                      <p class="m-0">{org.description}</p>
+                      <dl class="m-0 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                        <div><dt class="inline font-medium text-vrc-ink">Robot: </dt><dd class="m-0 inline">{org.roboticsType}</dd></div>
+                        <div><dt class="inline font-medium text-vrc-ink">Works on: </dt><dd class="m-0 inline">{org.mainApplication}</dd></div>
+                        <div><dt class="inline font-medium text-vrc-ink">Role: </dt><dd class="m-0 inline">{org.adaptationMitigation}</dd></div>
+                        <div><dt class="inline font-medium text-vrc-ink">Biome: </dt><dd class="m-0 inline">{org.biomeType}</dd></div>
+                      </dl>
+                      <a href={org.website} class="font-medium">Visit their site →</a>
+                    </div>
+                  </details>
+                </li>
+              ))
+            }
+          </ol>
+          <p data-empty hidden class="m-0 rounded-2xl border border-dashed border-vrc-line-strong p-6 text-[15px] text-vrc-muted">
+            No organizations match these filters. <button type="button" data-clear class="cursor-pointer border-0 bg-transparent p-0 font-[inherit] font-medium text-vrc-blue underline">Clear them</button>.
+          </p>
+        </section>
+
+        <!-- The map itself. It only appears once its script runs. -->
+        <div class="flex min-w-0 flex-[1.4_1_480px] flex-col gap-2">
+          <!-- A region, not an image: the map holds its own zoom controls and
+               attribution link, which an image may not contain. -->
+          <section aria-label="Map of the organizations" class="contents">
+            <div data-map class="h-[560px] w-full overflow-hidden rounded-3xl bg-vrc-surface"></div>
+          </section>
+          <p class="m-0 text-[13px] text-vrc-muted">
+            Pins are placed at city level. The list beside the map has everything the map shows.
+          </p>
+        </div>
+      </div>
+
+      <section id="data" aria-labelledby="data-h" class="flex scroll-mt-28 flex-col gap-5 rounded-3xl bg-vrc-surface p-7 lg:p-9">
+        <div class="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 id="data-h" class="m-0 font-heading text-3xl font-semibold tracking-[-0.025em]">Download the data</h2>
+          <span class={eyebrow}>{stats.organizations} ORGANIZATIONS · LICENCE: {MAP_LICENCE.toUpperCase()}</span>
+        </div>
+        <p class="m-0 max-w-2xl text-vrc-ink-2">
+          The whole dataset, one row per organization. Free to use with credit, under
+          {' '}<a href={MAP_LICENCE_URL}>{MAP_LICENCE}</a>.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <Button href="/data/organizations.csv" download variant="secondary"><Icon name="download" />CSV</Button>
+          <Button href="/data/organizations.json" download variant="secondary"><Icon name="download" />JSON</Button>
+          <Button href="/data/organizations.geojson" download variant="secondary"><Icon name="download" />GeoJSON</Button>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class={eyebrow}>FIELDS · ONE ROW PER ORGANIZATION</span>
+          <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
+            {EXPORT_FIELDS.map((f) => <li><code class="rounded-md bg-white px-2 py-1 font-mono text-[12px]">{f}</code></li>)}
+          </ul>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class={eyebrow}>HOW TO CITE THE DATASET</span>
+          <p class="m-0 rounded-2xl bg-white p-4 font-mono text-[13px] leading-relaxed text-vrc-ink-2">{cite}</p>
+        </div>
+      </section>
+
+      <p class="m-0 text-[13px] text-vrc-muted">
+        Basemap © OpenStreetMap contributors. It moves to a basemap on our own server in #77, with no third party at all.
+      </p>
+    </div>
+  </div>
+</SiteLayout>
+
+<script>
+  import 'maplibre-gl/dist/maplibre-gl.css';
+  import { initMap } from '@/scripts/map';
+  initMap();
+</script>
