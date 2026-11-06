@@ -88,6 +88,7 @@ sending people to an outside tool.
 │   │   ├── summits-data.ts# Summits, speakers, programs, partners, team
 │   │   ├── mapData.ts     # Loads the map dataset at build time
 │   │   └── types.ts       # Shared types for the map
+│   ├── content/documents/ # The white paper and the three codes, as Markdown
 │   ├── pages/             # File-based routes; /components shows the V3 components
 │   ├── scripts/           # Browser code for sheets, menus and the person drawer
 │   └── styles/global.css  # Tailwind + utility classes
