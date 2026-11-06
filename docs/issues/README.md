@@ -34,8 +34,8 @@ Edit these files as work progresses; nothing syncs back to GitHub.
 | [32](32-mapv3-the-map-on-maplibre-with-self-hosted-tiles.md) | MapV3: the map on MapLibre with self-hosted tiles | open |
 | [33](33-peoplev3-team-advisors-speakers-and-authors.md) | PeopleV3: team, advisors, speakers and authors | closed |
 | [34](34-newsv3-news-list-posts-and-rss.md) | NewsV3: news list, posts and RSS | closed |
-| [35](35-getinvolvedv3-static-parts.md) | GetInvolvedV3: static parts | open |
-| [36](36-jobsv3-layout-and-internship-tracks.md) | JobsV3: layout and internship tracks | open |
+| [35](35-getinvolvedv3-static-parts.md) | GetInvolvedV3: static parts | closed |
+| [36](36-jobsv3-layout-and-internship-tracks.md) | JobsV3: layout and internship tracks | closed |
 | [37](37-contactv3-and-privacyv3-static-parts.md) | ContactV3 and PrivacyV3: static parts | open |
 | [38](38-redirects-from-old-urls-404-sitemap-social-cards-and-analyti.md) | Redirects from old URLs, 404, sitemap, social cards and analytics | open |
 | [75](75-remove-tinacms.md) | Remove TinaCMS | closed |

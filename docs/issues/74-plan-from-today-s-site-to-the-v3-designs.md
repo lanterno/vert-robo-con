@@ -40,8 +40,8 @@ Every public page rebuilt from the V3 boards, reading data files in the repo and
 - [ ] #32
 - [x] #33
 - [x] #34
-- [ ] #35
-- [ ] #36
+- [x] #35
+- [x] #36
 - [ ] #37
 - [ ] #38
 
