@@ -56,18 +56,35 @@ sending people to an outside tool.
 
 ## Pages
 
+Every page is built from the V3 design boards in [`project/`](project).
+
 | Route | Page |
 | :--- | :--- |
-| `/` | Homepage: hero, community figures, call to action |
-| `/consulting` | Consulting services |
-| `/research` | The network's white paper |
-| `/summits` | Summits overview: organising team, past editions |
-| `/summits/2025` | Summit 2025 archive: program, speakers, partners, recording placeholders |
-| `/summits/2026` | Summit 2026 archive: program, speakers, partners |
-| `/map` | Map of fictional organisations (Leaflet, full viewport) |
-| `/data/organizations.json` | The map dataset as a JSON download |
-| `/slack` | Joining the community workspace |
+| `/` | Home: the hero, the map figures, the summit card, the network and the latest news |
+| `/summits` | Every edition, newest first |
+| `/summits/[year]` | One edition: its state, program, speakers and partners (2025, 2026, 2027) |
+| `/summits/[year]/program` | The schedule, with filters and both time zones |
+| `/summits/[year]/sessions/[slug]` | One session, with its speakers and recording |
+| `/summits/[year]/sessions/[slug].ics` | That session as a calendar file |
+| `/watch`, `/watch/[slug]` | The video library and each video |
+| `/research` | The white paper, its chapters and authors, and the three codes |
+| `/research/white-paper/2025` | The white paper reader |
+| `/principles`, `/deployment-code`, `/code-of-conduct` | The three codes, in the same reader |
+| `/map` | The map, the organisation list and the data downloads |
+| `/people`, `/people/[slug]` | The team, speakers and authors, and each person |
+| `/news`, `/news/[slug]` | The news list and each post |
+| `/news/rss.xml` | The news feed |
+| `/get-involved` | Summit calls, sponsoring, volunteering and the network's projects |
+| `/jobs` | Roles and the internship tracks |
+| `/contact` | The questions people ask, and where each topic goes |
+| `/privacy` | The privacy draft |
+| `/components` | Every shared component, for checking them (noindex) |
+| `/data/organizations.{json,csv,geojson}` | The map dataset, under CC BY 4.0 |
+| `/sitemap.xml`, `/robots.txt` | For search engines |
 | `/404` | Not-found page |
+
+`/consulting` and `/slack` are redirect pages: those addresses moved to
+`/contact#consulting` and the join sheet on the home page.
 
 ## Repository layout
 

@@ -43,7 +43,7 @@ Every public page rebuilt from the V3 boards, reading data files in the repo and
 - [x] #35
 - [x] #36
 - [x] #37
-- [ ] #38
+- [x] #38
 
 ## M2 · Foundations
 App server, database, sign-in, email, jobs, servers, CI and backups, running on staging.

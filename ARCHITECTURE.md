@@ -8,9 +8,10 @@ A static Astro 5 site with no server or database.
 
 | Part | What it is |
 | --- | --- |
-| Build | Astro 5 with `output: 'static'`, built with Bun. 9 pages, all rendered at build time |
+| Build | Astro 5 with `output: 'static'`, built with Bun. 115 pages, all rendered at build time |
 | Checks | `astro check`, plus Playwright smoke, axe accessibility and outside-link checks against the built site, at desktop and phone widths. Run on every PR and before each deploy ([#76](docs/issues/76-static-site-ci-checks-and-a-daily-rebuild.md)) |
 | Hosting | GitHub Pages on a preview domain. `.github/workflows/deploy.yml` runs the checks and `bun run build` on every push to `main`, and once a day |
+| Analytics | Cloudflare Web Analytics, with its token from `CF_ANALYTICS_TOKEN` in the build's environment. Without one the beacon isn't added ([#8](docs/issues/08-decide-analytics-at-launch-none-or-self-hosted-and-cookie-fr.md), [#38](docs/issues/38-redirects-from-old-urls-404-sitemap-social-cards-and-analyti.md)) |
 | Content | TypeScript and JSON in the repo, read through the content layer in `src/lib/content/` ([#26](docs/issues/26-data-layer-for-public-pages-repo-data-first-postgres-later.md)). Changing content means a commit and a rebuild |
 | Styling | Tailwind CSS v3 with the V3 `vrc-*` colour tokens from the design boards, and Bricolage Grotesque, Geist and Geist Mono self-hosted through Fontsource, so no font request leaves the site ([#24](docs/issues/24-v3-design-tokens-and-self-hosted-fonts.md)) |
 | Map | MapLibre GL, bundled, with tiles from OpenStreetMap. The data is the JSON file, served at `/data/organizations.json`, `.csv` and `.geojson` |

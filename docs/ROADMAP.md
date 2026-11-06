@@ -50,6 +50,8 @@ Forms that aren't built yet show their state, such as "Coming soon", instead of 
 
 **Ready when:** every page has been checked on desktop and phone and passes the automated accessibility and link checks, and the new site replaces the old one.
 
+**Done.** Every issue is closed. Each page is checked at desktop and phone width on every pull request, by the accessibility, link and smoke checks in #76. The last step is the one nobody can do from a branch: merging to `main`, which deploys.
+
 **Tracked in:** #75, #76, #24–#38
 
 ### M2 · Foundations

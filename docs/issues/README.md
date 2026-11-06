@@ -37,7 +37,7 @@ Edit these files as work progresses; nothing syncs back to GitHub.
 | [35](35-getinvolvedv3-static-parts.md) | GetInvolvedV3: static parts | closed |
 | [36](36-jobsv3-layout-and-internship-tracks.md) | JobsV3: layout and internship tracks | closed |
 | [37](37-contactv3-and-privacyv3-static-parts.md) | ContactV3 and PrivacyV3: static parts | closed |
-| [38](38-redirects-from-old-urls-404-sitemap-social-cards-and-analyti.md) | Redirects from old URLs, 404, sitemap, social cards and analytics | open |
+| [38](38-redirects-from-old-urls-404-sitemap-social-cards-and-analyti.md) | Redirects from old URLs, 404, sitemap, social cards and analytics | closed |
 | [75](75-remove-tinacms.md) | Remove TinaCMS | closed |
 | [76](76-static-site-ci-checks-and-a-daily-rebuild.md) | Static site: CI checks and a daily rebuild | closed |
 
