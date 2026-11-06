@@ -1,0 +1,106 @@
+---
+/**
+ * The news list (#34), from NewsV3: a featured post, the latest, and the
+ * earlier ones by year, with a filter by type.
+ *
+ * The monthly digest sign-up comes with #65.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import NewsCard from '@/components/site/NewsCard.astro';
+import { getNews, type NewsType } from '@/lib/content';
+
+const news = getNews();
+const featured = news.find((p) => p.featured) ?? news[0]!;
+const rest = news.filter((p) => p !== featured);
+const latest = rest.slice(0, 6);
+const earlier = rest.slice(6);
+
+// The earlier posts, newest year first. Undated posts stay with the latest.
+const byYear = new Map<string, typeof earlier>();
+for (const post of earlier) {
+  const year = post.date?.slice(0, 4) ?? 'Undated';
+  byYear.set(year, [...(byYear.get(year) ?? []), post]);
+}
+
+const FILTERS: [string, string][] = [
+  ['all', 'All'],
+  ['essay', 'Essays'],
+  ['announcement', 'Announcements'],
+  ['video', 'Videos'],
+  ['summit', 'Summit'],
+];
+const types = new Set<NewsType>(news.map((p) => p.type));
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title="News" description="Essays, announcements and episodes from the Vert Robo Con network.">
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-wrap items-end justify-between gap-x-12 gap-y-6">
+      <div class="flex max-w-3xl flex-col gap-4">
+        <span class={eyebrow}>NEWS · ESSAYS · ANNOUNCEMENTS · EPISODES</span>
+        <h1 class="m-0 font-heading text-[clamp(48px,8vw,96px)] font-semibold leading-[0.92] tracking-[-0.045em]">News</h1>
+        <p class="m-0 text-xl text-vrc-ink-2">What the network is reading, watching and planning.</p>
+      </div>
+      <div class="flex flex-col items-start gap-2">
+        <a href="/news/rss.xml" class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-vrc-line-strong px-4 font-medium text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">
+          <Icon name="news" />Get the RSS feed
+        </a>
+        <span class="inline-flex items-center gap-2 text-[15px] text-vrc-muted">
+          The monthly digest <Chip>Coming soon</Chip>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <div data-news class="px-4 py-10 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-col gap-12">
+      <div data-news-controls hidden class="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl bg-vrc-surface p-3">
+        <div role="group" aria-label="Post type" class="flex flex-wrap gap-1.5">
+          {
+            FILTERS.filter(([v]) => v === 'all' || types.has(v as NewsType)).map(([value, label]) => (
+              <button
+                type="button"
+                data-type-filter={value}
+                aria-pressed={value === 'all' ? 'true' : 'false'}
+                class="min-h-9 cursor-pointer rounded-full border border-vrc-line-strong bg-white px-3.5 text-sm font-medium text-vrc-ink-2 aria-pressed:border-vrc-ink aria-pressed:bg-vrc-ink aria-pressed:text-white"
+              >
+                {label}
+              </button>
+            ))
+          }
+        </div>
+        <span data-count class="font-mono text-xs text-vrc-muted"></span>
+      </div>
+
+      <section aria-labelledby="featured" class="flex flex-col gap-4">
+        <h2 id="featured" class={eyebrow}>FEATURED</h2>
+        <NewsCard post={featured} featured />
+      </section>
+
+      <section data-group aria-labelledby="latest" class="flex flex-col gap-5">
+        <h2 id="latest" class="m-0 font-heading text-3xl font-semibold tracking-[-0.025em]">Latest</h2>
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-x-4 gap-y-8">
+          {latest.map((p) => <NewsCard post={p} />)}
+        </div>
+      </section>
+
+      {
+        [...byYear.entries()].map(([year, posts]) => (
+          <section data-group aria-labelledby={`year-${year}`} class="flex flex-col gap-5">
+            <h2 id={`year-${year}`} class="m-0 font-heading text-3xl font-semibold tracking-[-0.025em]">{year}</h2>
+            <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-x-4 gap-y-8">
+              {posts.map((p) => <NewsCard post={p} />)}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</SiteLayout>
+
+<script>
+  import { initNewsFilter } from '@/scripts/news-filter';
+  initNewsFilter();
+</script>

@@ -1,0 +1,151 @@
+---
+/**
+ * One news post (#34), from NewsV3's article view: who wrote it, when, how
+ * long it takes to read, the piece itself, and where to go next.
+ *
+ * Section bodies are "[ARTICLE TEXT]" in the demo content, which is the
+ * canvas's placeholder, kept as it is (#7).
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PersonAvatar from '@/components/site/PersonAvatar.astro';
+import NewsCard from '@/components/site/NewsCard.astro';
+import { roleLine } from '@/components/site/drawer-people';
+import { formatLongDate, getNews, getPerson, type NewsPost, type NewsType } from '@/lib/content';
+
+export function getStaticPaths() {
+  return getNews().map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+interface Props {
+  post: NewsPost;
+}
+
+const { post } = Astro.props;
+const TYPE_LABEL: Record<NewsType, string> = { essay: 'Essay', video: 'Video', announcement: 'Announcement', summit: 'Summit' };
+const author = getPerson(post.author);
+const news = getNews();
+const more = news.filter((p) => p.slug !== post.slug && p.type === post.type).slice(0, 2);
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title={post.title} description={post.summary}>
+  <article class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <a href="/news" class="text-vrc-muted no-underline hover:text-vrc-ink">NEWS</a> /
+        <span class="text-vrc-ink" aria-current="page">{TYPE_LABEL[post.type].toUpperCase()}</span>
+      </nav>
+
+      <header class="flex max-w-[820px] flex-col gap-5">
+        <span class="flex flex-wrap items-center gap-2">
+          <Chip>{TYPE_LABEL[post.type]}</Chip>
+          <span class={eyebrow}>
+            {post.date ? formatLongDate(post.date).toUpperCase() : '[DATE]'} · {post.readTime}
+          </span>
+        </span>
+        <h1 class="m-0 font-heading text-[clamp(36px,6vw,64px)] font-semibold leading-[0.98] tracking-[-0.04em]">{post.title}</h1>
+        <p class="m-0 text-xl text-vrc-ink-2">{post.summary}</p>
+        {
+          author && (
+            <a href={`/people/${author.slug}`} class="flex items-center gap-3 self-start text-vrc-ink no-underline hover:text-vrc-ink">
+              <PersonAvatar person={author} size={44} class="h-11 w-11 rounded-full" />
+              <span class="flex flex-col leading-tight">
+                <strong class="font-semibold underline decoration-vrc-line-strong underline-offset-[3px]">{author.name}</strong>
+                <span class="text-sm text-vrc-muted">{roleLine(author)}</span>
+              </span>
+            </a>
+          )
+        }
+      </header>
+
+      {
+        post.image ? (
+          <img src={post.image} alt="" class="block aspect-[21/9] w-full rounded-[28px] object-cover" />
+        ) : post.cover ? (
+          <span
+            class:list={[
+              'flex aspect-[21/9] items-end rounded-[28px] p-12 font-heading text-[clamp(32px,5vw,56px)] font-semibold leading-tight tracking-[-0.03em]',
+              post.cover.tint === 'green' ? 'bg-vrc-green-tint text-vrc-green-dark' : 'bg-vrc-blue-tint text-vrc-ink',
+            ]}
+          >
+            {post.cover.text}
+          </span>
+        ) : null
+      }
+
+      <div class="flex flex-wrap items-start gap-x-16 gap-y-10">
+        <div class="flex min-w-0 max-w-[720px] flex-[2_1_560px] flex-col gap-8">
+          {
+            post.sections.length > 0 ? (
+              post.sections.map((s) => (
+                <section class="flex flex-col gap-3">
+                  <h2 class="m-0 font-heading text-[28px] font-semibold tracking-[-0.025em]">{s.heading}</h2>
+                  {s.paragraphs.map((text) => (
+                    <p class="m-0 text-lg leading-relaxed text-vrc-ink-2">{text}</p>
+                  ))}
+                  {s.list && (
+                    <ul class="m-0 flex list-none flex-col gap-2 p-0">
+                      {s.list.map((item) => (
+                        <li class="flex items-start gap-2.5 text-lg text-vrc-ink-2">
+                          <Icon name="chevron-right" class="mt-1.5 text-vrc-blue" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))
+            ) : (
+              <p class="m-0 text-lg leading-relaxed text-vrc-ink-2">{post.summary}</p>
+            )
+          }
+
+          {
+            post.quote && (
+              <blockquote class="m-0 flex flex-col gap-3 border-l-4 border-vrc-green pl-6">
+                <p class="m-0 font-heading text-[28px] font-semibold leading-tight tracking-[-0.025em]">“{post.quote.text}”</p>
+                <cite class="text-[15px] not-italic text-vrc-muted">{post.quote.by}</cite>
+              </blockquote>
+            )
+          }
+        </div>
+
+        <aside class="flex flex-[1_1_280px] flex-col gap-8">
+          {
+            post.links.length > 0 && (
+              <section aria-labelledby="go-next" class="flex flex-col gap-3">
+                <h2 id="go-next" class={eyebrow}>WHERE TO GO NEXT</h2>
+                <ul class="m-0 flex list-none flex-col gap-2 p-0">
+                  {post.links.map((l) => (
+                    <li>
+                      <a href={l.href} class="flex items-center gap-3 rounded-[14px] border border-vrc-line px-3.5 py-3 text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">
+                        <span class="flex min-w-0 flex-1 flex-col leading-snug">
+                          <strong class="text-[15px] font-medium">{l.title}</strong>
+                          <span class="text-[13px] text-vrc-muted">{l.meta}</span>
+                        </span>
+                        <Icon name="chevron-right" class="text-vrc-blue" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+
+          {
+            more.length > 0 && (
+              <section aria-labelledby="more-news" class="flex flex-col gap-4">
+                <h2 id="more-news" class={eyebrow}>MORE {TYPE_LABEL[post.type].toUpperCase()}S</h2>
+                <div class="flex flex-col gap-6">
+                  {more.map((p) => <NewsCard post={p} />)}
+                </div>
+              </section>
+            )
+          }
+        </aside>
+      </div>
+    </div>
+  </article>
+</SiteLayout>
