@@ -1,0 +1,232 @@
+---
+/**
+ * Privacy (#37), from PrivacyV3.
+ *
+ * This is the draft. The legal entity, the legal basis for each purpose and
+ * the retention periods are open in #5 and must be settled before any form
+ * collects personal data, which is why nothing here collects any. Every
+ * undecided value is shown as the canvas's placeholder, in brackets, so a
+ * gap is never mistaken for an answer.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import {
+  COOKIES,
+  DATA_ROWS,
+  LEGAL_BASIS,
+  LEGAL_ENTITY,
+  PROCESSORS,
+  REGISTERED_ADDRESS,
+  RIGHTS,
+  SHORT_VERSION,
+} from '@/data/privacy';
+import { REPLY_TIME } from '@/data/contact';
+import { LINKS } from '@/lib/constants';
+
+const SECTIONS = [
+  ['who', 'Who we are'],
+  ['collect', 'What we collect, and why'],
+  ['processors', 'Who processes it'],
+  ['cookies', 'No cookies for tracking'],
+  ['rights', 'Your rights'],
+  ['map', 'The map dataset'],
+  ['changes', 'Changes to this policy'],
+] as const;
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+const h2 = 'm-0 flex items-baseline gap-3 font-heading text-[clamp(26px,3.2vw,36px)] font-semibold tracking-[-0.03em]';
+const num = 'font-mono text-base font-medium text-vrc-muted';
+---
+
+<SiteLayout title="Privacy" description="What Vert Robo Con collects, why, who processes it, and how to see or delete it.">
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-5">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <span>ABOUT</span> / <span class="text-vrc-ink" aria-current="page">PRIVACY</span>
+      </nav>
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="m-0 font-heading text-[clamp(44px,7vw,84px)] font-semibold leading-[0.94] tracking-[-0.045em]">Privacy</h1>
+        <Chip tone="amber" dot>Draft · in legal review</Chip>
+      </div>
+      <p class="m-0 max-w-[720px] text-xl text-vrc-ink-2">
+        What we collect, why, who else sees it, and how to get it back or delete it. This is a draft: the entity, the legal
+        basis and how long we keep things are still being settled, and are shown in brackets until they are.
+      </p>
+    </div>
+  </section>
+
+  <div class="px-4 py-10 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-wrap items-start gap-x-14 gap-y-10">
+      <nav aria-label="On this page" class="order-2 flex flex-[1_1_240px] flex-col gap-1 lg:sticky lg:top-24 lg:order-1">
+        <span class={`${eyebrow} px-3 pb-2`}>ON THIS PAGE</span>
+        {
+          SECTIONS.map(([id, title], i) => (
+            <a href={`#${id}`} class="flex items-baseline gap-2.5 rounded-[10px] px-3 py-2 text-[15px] leading-snug text-vrc-ink no-underline hover:bg-vrc-surface hover:text-vrc-ink">
+              <span class="font-mono text-[13px] text-vrc-muted">{i + 1}</span>
+              {title}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="order-1 flex min-w-0 max-w-[760px] flex-[2.4_1_560px] flex-col gap-12 lg:order-2">
+        <aside aria-labelledby="short" class="flex flex-col gap-4 rounded-3xl bg-vrc-surface p-7">
+          <span id="short" class={eyebrow}>THE SHORT VERSION</span>
+          <ul class="m-0 flex list-none flex-col gap-2.5 p-0">
+            {
+              SHORT_VERSION.map((line) => (
+                <li class="flex items-start gap-2.5 text-lg text-vrc-ink-2">
+                  <Icon name="shield" class="mt-1.5 text-vrc-green-dark" />
+                  {line}
+                </li>
+              ))
+            }
+          </ul>
+        </aside>
+
+        <section id="who" class="flex scroll-mt-28 flex-col gap-4">
+          <h2 class={h2}><span class={num}>1</span>Who we are</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">
+            Vert Robo Con (“VRC”, “we”) runs vert-robo-con.example, the summit, the map, the job board and the monthly digest.
+          </p>
+          <p class="m-0 rounded-2xl border border-vrc-line p-5 text-lg text-vrc-ink-2">
+            The data controller is <strong class="font-semibold text-vrc-ink">{LEGAL_ENTITY}</strong>, {REGISTERED_ADDRESS}. A
+            data controller is the organization that decides why and how your data is used, and that answers to you and the law
+            for it.
+          </p>
+          <dl class="m-0 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-px overflow-hidden rounded-2xl border border-vrc-line bg-vrc-line">
+            <div class="bg-white p-5">
+              <dt class={eyebrow}>PRIVACY CONTACT</dt>
+              <dd class="m-0 mt-1"><a href={LINKS.contact.mailto}>{LINKS.contact.email}</a></dd>
+            </div>
+            <div class="bg-white p-5">
+              <dt class={eyebrow}>WE REPLY</dt>
+              <dd class="m-0 mt-1 font-semibold">{REPLY_TIME.replace(/^within /, 'Within ')}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section id="collect" class="flex scroll-mt-28 flex-col gap-4">
+          <h2 class={h2}><span class={num}>2</span>What we collect, and why</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">
+            We only collect what a form asks you for. There are no accounts and no passwords: every receipt email has a private
+            link to My VRC, where you can see and change what you sent.
+          </p>
+          <p class="m-0 text-[15px] text-vrc-muted">
+            No form on the site collects anything yet. The legal basis for each purpose is still being settled, so it reads
+            {' '}{LEGAL_BASIS} below until it is.
+          </p>
+          <div class="flex flex-col gap-3">
+            {
+              DATA_ROWS.map((row) => (
+                <details class="group rounded-2xl border border-vrc-line p-5 open:bg-vrc-surface-2">
+                  <summary class="flex cursor-pointer flex-wrap items-center justify-between gap-3 font-semibold marker:content-none">
+                    {row.name}
+                    <span class="font-mono text-[11px] uppercase tracking-[0.06em] text-vrc-muted">KEPT {row.keep}</span>
+                  </summary>
+                  <div class="mt-4 flex flex-col gap-3 text-[15px] text-vrc-ink-2">
+                    <p class="m-0">{row.summary}</p>
+                    <p class="m-0"><strong class="font-semibold text-vrc-ink">Why:</strong> {row.why}</p>
+                    <p class="m-0"><strong class="font-semibold text-vrc-ink">Legal basis:</strong> {LEGAL_BASIS}</p>
+                    <div class="flex flex-col gap-1.5">
+                      <strong class="font-semibold text-vrc-ink">What the form asks</strong>
+                      <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">
+                        {row.fields.map((f) => <li><Chip onSurface>{f}</Chip></li>)}
+                      </ul>
+                    </div>
+                    <p class="m-0"><strong class="font-semibold text-vrc-ink">Published?</strong> {row.published}</p>
+                    <p class="m-0"><strong class="font-semibold text-vrc-ink">In My VRC:</strong> {row.inMyVrc}</p>
+                  </div>
+                </details>
+              ))
+            }
+          </div>
+        </section>
+
+        <section id="processors" class="flex scroll-mt-28 flex-col gap-4">
+          <h2 class={h2}><span class={num}>3</span>Who processes it</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">These are the only companies that touch your data, and only for what is listed.</p>
+          <ul class="m-0 flex list-none flex-col gap-2 p-0">
+            {
+              PROCESSORS.map((p) => (
+                <li class="flex flex-col gap-1.5 rounded-2xl border border-vrc-line p-5">
+                  <span class="flex flex-wrap items-baseline justify-between gap-2">
+                    <strong class="font-semibold">{p.name}</strong>
+                    <span class={eyebrow}>{p.where.toUpperCase()} · {p.when.toUpperCase()}</span>
+                  </span>
+                  <span class="text-[15px] text-vrc-ink-2">{p.does}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section id="cookies" class="flex scroll-mt-28 flex-col gap-4">
+          <h2 class={h2}><span class={num}>4</span>No cookies for tracking</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">
+            We count visits with Cloudflare Web Analytics. It sets no cookies and doesn’t follow you from site to site: we see
+            totals such as page views, referring sites, countries and device types. That’s why there’s no cookie banner.
+          </p>
+          <dl class="m-0 overflow-hidden rounded-2xl border border-vrc-line">
+            {
+              COOKIES.map((c, i) => (
+                <div class:list={['flex flex-wrap gap-x-4 gap-y-1 p-4', i > 0 && 'border-t border-vrc-line']}>
+                  <dt class="font-semibold">{c.where}</dt>
+                  <dd class="m-0 text-vrc-ink-2">{c.what}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </section>
+
+        <section id="rights" class="flex scroll-mt-28 flex-col gap-4">
+          <h2 class={h2}><span class={num}>5</span>Your rights</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">It’s your data. You can do all of this yourself, any time, without asking us.</p>
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
+            {
+              RIGHTS.map((r) => (
+                <div class="flex flex-col gap-1.5 rounded-2xl border border-vrc-line p-5">
+                  <span class={eyebrow}>{r.kind}</span>
+                  <strong class="font-heading text-lg font-semibold tracking-[-0.02em]">{r.title}</strong>
+                  <span class="text-[15px] text-vrc-ink-2">{r.detail}</span>
+                </div>
+              ))
+            }
+          </div>
+          <div class="flex flex-col items-start gap-3 rounded-2xl bg-vrc-surface p-6">
+            <strong class="font-heading text-xl font-semibold tracking-[-0.02em]">See, fix, download or delete it in My VRC</strong>
+            <p class="m-0 text-[15px] text-vrc-ink-2">
+              Open the private link from any receipt email. My VRC lists everything we hold for your email address, with
+              Download my data and Delete everything.
+            </p>
+            <Chip onSurface dot>My VRC opens with registration</Chip>
+          </div>
+        </section>
+
+        <section id="map" class="flex scroll-mt-28 flex-col gap-4">
+          <h2 class={h2}><span class={num}>6</span>The map dataset</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">
+            The map lists organizations, not people: a name, a website, a country and what kind of robots they build. It is
+            published openly and can be downloaded. If your organization is on it and you want a change, ask us and we will
+            make it.
+          </p>
+          <a href="/map" class="inline-flex items-center gap-1.5 self-start font-medium no-underline hover:underline">
+            Open the map <Icon name="arrow-right" />
+          </a>
+        </section>
+
+        <section id="changes" class="flex scroll-mt-28 flex-col gap-4">
+          <h2 class={h2}><span class={num}>7</span>Changes to this policy</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">
+            When this page changes in a way that affects you, we say so here and, if it matters, by email. This draft becomes
+            the final text before registration opens.
+          </p>
+          <p class="m-0 text-[15px] text-vrc-muted">
+            Questions about any of this? Write to <a href={LINKS.contact.mailto}>{LINKS.contact.email}</a>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+</SiteLayout>

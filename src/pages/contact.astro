@@ -1,0 +1,136 @@
+---
+/**
+ * Contact (#37), from ContactV3: the questions people ask most, a topic
+ * picker that says where each message goes, and the email address.
+ *
+ * The message form and the consulting enquiry come in #54. Until then every
+ * topic either points at the page that already answers it, or offers the
+ * email address with the subject filled in: never an outside form.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PersonAvatar from '@/components/site/PersonAvatar.astro';
+import { CONTACT_FAQ, CONTACT_TOPICS, REPLY_TIME } from '@/data/contact';
+import { getPerson } from '@/lib/content';
+import { LINKS } from '@/lib/constants';
+
+const coordinator = getPerson('imogen-calder');
+/** A message by email, with the topic in the subject so it reaches the right people. */
+const mailto = (label: string) => `${LINKS.contact.mailto}?subject=${encodeURIComponent(label)}`;
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout title="Contact" description={`Pick a topic so your message reaches the right people. We usually reply ${REPLY_TIME}.`}>
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-5">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <span>ABOUT</span> / <span class="text-vrc-ink" aria-current="page">CONTACT</span>
+      </nav>
+      <h1 class="m-0 font-heading text-[clamp(48px,8vw,96px)] font-semibold leading-[0.92] tracking-[-0.045em]">
+        How can we <span class="text-vrc-green-dark">help?</span>
+      </h1>
+      <p class="m-0 max-w-[620px] text-xl text-vrc-ink-2">
+        Pick a topic so your message reaches the right people. We usually reply {REPLY_TIME}.
+      </p>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq" class="px-4 py-12 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-col gap-5">
+      <h2 id="faq" class={eyebrow}>BEFORE YOU WRITE</h2>
+      <dl class="m-0 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
+        {
+          CONTACT_FAQ.map((item) => (
+            <div class="flex flex-col gap-2.5 rounded-3xl border border-vrc-line p-6">
+              <dt class="font-heading text-xl font-semibold tracking-[-0.02em]">{item.question}</dt>
+              <dd class="m-0 flex flex-col items-start gap-3 text-[15px] text-vrc-ink-2">
+                {item.answer}
+                <a href={item.href} class="inline-flex items-center gap-1.5 font-medium no-underline hover:underline">
+                  {item.cta} <Icon name="arrow-right" />
+                </a>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section id="topics" class="scroll-mt-28 bg-vrc-surface px-4 py-16 lg:px-8 lg:py-20">
+    <div class="mx-auto flex max-w-page flex-wrap items-start gap-x-12 gap-y-10">
+      <div class="flex min-w-0 flex-[1.6_1_560px] flex-col gap-5">
+        <h2 class="m-0 font-heading text-[clamp(32px,4vw,44px)] font-semibold leading-tight tracking-[-0.03em]">What is it about?</h2>
+        <p class="m-0 text-lg text-vrc-ink-2">
+          Each topic goes to the people who handle it. Writing to us on the site opens with the contact form (#54); until then
+          every topic here either points you at the page that answers it, or opens an email with the subject filled in.
+        </p>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0">
+          {
+            CONTACT_TOPICS.map((topic) => (
+              <li class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-2xl bg-white p-4">
+                <span class="flex min-w-0 flex-col gap-1">
+                  <strong class="font-semibold">{topic.label}</strong>
+                  <span class="text-sm text-vrc-muted">Goes to {topic.team}{topic.note ? ` · ${topic.note}` : ''}</span>
+                </span>
+                {
+                  topic.route.kind === 'page' ? (
+                    <Button href={topic.route.href} variant="secondary" size="sm">
+                      {topic.route.cta} <Icon name="arrow-right" />
+                    </Button>
+                  ) : (
+                    <span class="flex items-center gap-2">
+                      <Chip onSurface>Form coming soon</Chip>
+                      <Button href={mailto(topic.label)} variant="secondary" size="sm">
+                        <Icon name="mail" />Email us
+                      </Button>
+                    </span>
+                  )
+                }
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <aside aria-label="Consulting and email" class="flex flex-[1_1_320px] flex-col gap-4">
+        {
+          coordinator && (
+            <div class="flex flex-col gap-4 rounded-3xl bg-white p-7">
+              <span class={eyebrow}>ABOUT THE CONSULTING COORDINATOR</span>
+              <span class="flex items-center gap-3">
+                <PersonAvatar person={coordinator} size={48} class="h-12 w-12 rounded-full" />
+                <span class="flex flex-col leading-tight">
+                  <strong class="font-semibold">{coordinator.name}</strong>
+                  <span class="text-sm text-vrc-muted">Consulting coordinator · Vert Robo Con</span>
+                </span>
+              </span>
+              <p class="m-0 text-[15px] text-vrc-ink-2">
+                Imogen reads every enquiry first and matches it with members who have done that kind of work, from tender
+                paperwork to maintenance logs and data licences.
+              </p>
+              <p class="m-0 text-[15px] text-vrc-ink-2">
+                Open to startups, companies, investors, foundations, public bodies, NGOs and universities.
+              </p>
+              <div id="consulting" class="flex scroll-mt-28 flex-wrap items-center gap-3">
+                <Chip>Enquiry form coming soon</Chip>
+                <Button href={mailto('Consulting')} size="sm"><Icon name="mail" />Start by email</Button>
+                <Button href={`/people/${coordinator.slug}`} variant="text" size="sm">View profile</Button>
+              </div>
+            </div>
+          )
+        }
+        <div class="flex flex-col gap-3 rounded-3xl border border-vrc-line p-7">
+          <span class={eyebrow}>PREFER EMAIL?</span>
+          <p class="m-0 text-[15px] text-vrc-ink-2">
+            Write to us directly at <a href={LINKS.contact.mailto}>{LINKS.contact.email}</a>. We usually reply {REPLY_TIME}.
+          </p>
+          <p class="m-0 text-[15px] text-vrc-muted">
+            How we handle what you send is on the <a href="/privacy">privacy page</a>.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</SiteLayout>
