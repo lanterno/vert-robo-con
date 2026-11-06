@@ -1,0 +1,22 @@
+---
+/**
+ * The white paper reader (#31): /research/white-paper/2025.
+ */
+import { getEntry, render } from 'astro:content';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import DocumentReader from '@/components/site/DocumentReader.astro';
+
+const doc = await getEntry('documents', 'white-paper-2025');
+if (!doc) throw new Error('The 2025 white paper is missing from src/content/documents');
+const { Content } = await render(doc);
+---
+
+<SiteLayout title={doc.data.title} description="Working Notes on Climate Robots: what happens after a field robot's first season.">
+  <div class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto max-w-page">
+      <DocumentReader doc={doc} back={{ href: '/research', label: 'Research' }}>
+        <Content />
+      </DocumentReader>
+    </div>
+  </div>
+</SiteLayout>

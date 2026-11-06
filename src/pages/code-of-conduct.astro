@@ -1,0 +1,22 @@
+---
+/**
+ * Code of conduct (#31): a document from src/content/documents.
+ */
+import { getEntry, render } from 'astro:content';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import DocumentReader from '@/components/site/DocumentReader.astro';
+
+const doc = await getEntry('documents', 'code-of-conduct');
+if (!doc) throw new Error('The document "code-of-conduct" is missing from src/content/documents');
+const { Content } = await render(doc);
+---
+
+<SiteLayout title={doc.data.title} description="How we treat each other in the network and at the summit.">
+  <div class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto max-w-page">
+      <DocumentReader doc={doc} back={{ href: '/research', label: 'Research' }}>
+        <Content />
+      </DocumentReader>
+    </div>
+  </div>
+</SiteLayout>

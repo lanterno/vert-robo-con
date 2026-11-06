@@ -17,6 +17,10 @@ export const ROUTES = [
   '/get-involved',
   '/contact',
   '/privacy',
+  '/research/white-paper/2025',
+  '/principles',
+  '/deployment-code',
+  '/code-of-conduct',
   '/map',
   '/slack',
   // The shared components gallery (#25).

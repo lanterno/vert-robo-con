@@ -1,0 +1,22 @@
+---
+/**
+ * Deployment code (#31): a document from src/content/documents.
+ */
+import { getEntry, render } from 'astro:content';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import DocumentReader from '@/components/site/DocumentReader.astro';
+
+const doc = await getEntry('documents', 'deployment-code');
+if (!doc) throw new Error('The document "deployment-code" is missing from src/content/documents');
+const { Content } = await render(doc);
+---
+
+<SiteLayout title={doc.data.title} description="Principles for putting robots into the field.">
+  <div class="px-4 py-10 lg:px-8 lg:py-14">
+    <div class="mx-auto max-w-page">
+      <DocumentReader doc={doc} back={{ href: '/research', label: 'Research' }}>
+        <Content />
+      </DocumentReader>
+    </div>
+  </div>
+</SiteLayout>
