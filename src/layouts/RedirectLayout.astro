@@ -1,0 +1,38 @@
+---
+/**
+ * A redirect page for an address the site used to have (#38).
+ *
+ * A meta refresh moves most readers, the canonical link tells search
+ * engines where the page went, and the link in the body carries anyone the
+ * refresh doesn't. Caddy replaces these with 301s on the server (#19).
+ */
+import '@/styles/global.css';
+import { SITE } from '@/lib/constants';
+
+interface Props {
+  to: string;
+  why: string;
+}
+
+const { to, why } = Astro.props;
+const target = new URL(to, SITE.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Moved · {SITE.name}</title>
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <link rel="canonical" href={target} />
+    <meta name="robots" content="noindex, follow" />
+  </head>
+  <body class="flex min-h-screen flex-col items-center justify-center gap-4 bg-white p-8 text-center font-body text-vrc-ink">
+    <h1 class="m-0 font-heading text-3xl font-semibold tracking-[-0.03em]">This page has moved</h1>
+    <p class="m-0 text-vrc-ink-2">{why}</p>
+    <a href={to} class="inline-flex min-h-12 items-center rounded-xl bg-vrc-blue px-5 font-medium text-white no-underline hover:bg-vrc-blue-dark hover:text-white">
+      Continue
+    </a>
+  </body>
+</html>
