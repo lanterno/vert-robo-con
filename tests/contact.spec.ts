@@ -42,9 +42,9 @@ test.describe('privacy', () => {
     await page.goto('/privacy');
   });
 
-  test('is marked as a draft, since #5 is still open', async ({ page }) => {
+  test('is marked a draft until a lawyer has read it', async ({ page }) => {
     await expect(page.getByRole('heading', { level: 1, name: 'Privacy' })).toBeVisible();
-    await expect(page.getByText('Draft · in legal review')).toBeVisible();
+    await expect(page.getByText('Draft · awaiting legal review')).toBeVisible();
   });
 
   test('names Cloudflare Web Analytics, and none of the tools that were dropped', async ({ page }) => {
@@ -53,10 +53,19 @@ test.describe('privacy', () => {
     for (const gone of ['Umami', 'listmonk', 'Plausible', 'Matomo']) expect(text).not.toContain(gone);
   });
 
-  test('shows what is still undecided as a placeholder, not a guess', async ({ page }) => {
+  test('names a legal basis and a retention period for every kind of data', async ({ page }) => {
     const text = (await page.locator('main').textContent()) ?? '';
-    expect(text).toContain('[LEGAL ENTITY]');
-    expect(text).toContain('[LEGAL BASIS]');
+    // Decided in docs/COMPLIANCE.md, so nothing reads as a gap.
+    expect(text).toContain('Legal basis: Contract');
+    expect(text).toContain('Legal basis: Legitimate interests');
+    expect(text).not.toContain('[LEGAL BASIS]');
+    expect(text).not.toMatch(/\[N\] months/);
+    expect(text).toContain('Vert Robo Con e.V.');
+  });
+
+  test('still shows the one thing nobody has answered', async ({ page }) => {
+    // The registered address needs the real organisation (COMPLIANCE.md, C1).
+    await expect(page.getByText(/\[REGISTERED ADDRESS\]/)).toBeVisible();
   });
 
   test('has every section, and lists what each form asks for', async ({ page }) => {
