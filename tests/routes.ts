@@ -13,6 +13,8 @@ export const ROUTES = [
   '/watch',
   '/people',
   '/news',
+  '/jobs',
+  '/get-involved',
   '/map',
   '/slack',
   // The shared components gallery (#25).

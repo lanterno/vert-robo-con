@@ -1,0 +1,131 @@
+---
+/**
+ * Jobs and internships (#36), from JobsV3.
+ *
+ * There are no listings yet: posting, filtering and reviewing a job come in
+ * #57, so the jobs section shows its empty state. The internship tracks are
+ * here now, each with the status an admin sets (#46).
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { INTERNSHIP_TERMS, getInternshipTracks, type Availability } from '@/lib/content';
+import { LINKS } from '@/lib/constants';
+
+const tracks = getInternshipTracks();
+const open = tracks.filter((t) => t.status === 'open');
+const STATUS: Record<Availability, { label: string; tone: 'green' | 'neutral' }> = {
+  open: { label: 'Open', tone: 'green' },
+  soon: { label: 'Coming soon', tone: 'neutral' },
+  later: { label: 'Coming later', tone: 'neutral' },
+};
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<SiteLayout
+  title="Jobs & internships"
+  description="Roles at organizations on our map, and short remote internships with the network."
+>
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-col gap-6">
+      <nav aria-label="Breadcrumb" class="font-mono text-xs tracking-[0.04em] text-vrc-muted">
+        <span>COMMUNITY</span> / <span class="text-vrc-ink" aria-current="page">JOBS</span>
+      </nav>
+      <h1 class="m-0 max-w-4xl font-heading text-[clamp(44px,7vw,84px)] font-semibold leading-[0.94] tracking-[-0.045em]">
+        Jobs building <span class="text-vrc-green-dark">robots for a cooler planet</span>
+      </h1>
+      <p class="m-0 max-w-[620px] text-xl text-vrc-ink-2">
+        Roles at organizations on our map, shared by the community and reviewed by an admin before they go live.
+      </p>
+      <nav aria-label="Sections" class="flex flex-wrap gap-2">
+        <a href="#jobs" class="inline-flex min-h-9 items-center rounded-full border border-vrc-line-strong px-3.5 text-sm font-medium text-vrc-ink-2 no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">Jobs</a>
+        <a href="#internships" class="inline-flex min-h-9 items-center rounded-full border border-vrc-line-strong px-3.5 text-sm font-medium text-vrc-ink-2 no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">Internships</a>
+      </nav>
+    </div>
+  </section>
+
+  <section id="jobs" class="scroll-mt-28 px-4 py-12 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-col gap-5">
+      <div class="flex flex-wrap items-baseline justify-between gap-3">
+        <h2 class="m-0 font-heading text-3xl font-semibold tracking-[-0.025em]">Open roles</h2>
+        <span class={eyebrow}>0 ROLES</span>
+      </div>
+      <!-- The board's empty state. Listings arrive with #57. -->
+      <div class="flex flex-col items-start gap-3 rounded-3xl border border-dashed border-vrc-line-strong p-8 lg:p-12">
+        <span aria-hidden="true" class="flex h-12 w-12 items-center justify-center rounded-2xl bg-vrc-surface text-vrc-muted">
+          <Icon name="briefcase" size={24} />
+        </span>
+        <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">No open roles right now</h3>
+        <p class="m-0 max-w-xl text-vrc-ink-2">
+          Nothing is posted today. Members and partner organizations share roles here, and an admin reviews each one before it
+          goes live.
+        </p>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <span class="inline-flex items-center gap-2 text-[15px] text-vrc-muted">
+            <Icon name="bell" />Get alerted when one is posted <Chip>Coming soon</Chip>
+          </span>
+          <span class="inline-flex items-center gap-2 text-[15px] text-vrc-muted">
+            <Icon name="briefcase" />Post a job <Chip>Coming soon</Chip>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="internships" class="scroll-mt-28 bg-vrc-surface px-4 py-16 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-8">
+      <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+        <div class="flex max-w-3xl flex-col gap-4">
+          <span class={eyebrow}>INTERNSHIPS · {tracks.length} TRACKS · REMOTE</span>
+          <h2 class="m-0 font-heading text-[clamp(36px,4.6vw,56px)] font-semibold leading-[0.98] tracking-[-0.035em]">Work with the network</h2>
+          <p class="m-0 text-lg text-vrc-ink-2">
+            Short remote placements for anyone studying or starting out. Tell us what you want to learn. Each track shows its own
+            status, so you can see what’s open today.
+          </p>
+        </div>
+        <span class="text-[15px] text-vrc-muted">
+          Questions about internships? <a href={LINKS.contact.mailto}>{LINKS.contact.email}</a>
+        </span>
+      </div>
+
+      <ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 p-0">
+        {
+          tracks.map((track, i) => (
+            <li class="flex flex-col gap-3.5 rounded-3xl border border-vrc-line bg-white p-7">
+              <span class="flex flex-wrap items-center justify-between gap-2">
+                <span class={eyebrow}>{String(i + 1).padStart(2, '0')} · TRACK</span>
+                <Chip tone={STATUS[track.status].tone} dot data-track-status>{STATUS[track.status].label}</Chip>
+              </span>
+              <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">{track.name}</h3>
+              <p class="m-0 text-base text-vrc-ink-2">{track.description}</p>
+              {track.needs && <p class="m-0 text-base text-vrc-ink-2"><strong class="font-semibold">You’ll need:</strong> {track.needs}</p>}
+              <span class="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.06em] text-vrc-muted">
+                <Icon name="calendar" size={14} />{INTERNSHIP_TERMS}
+              </span>
+              <span class="mt-auto inline-flex items-center gap-2 text-[15px] text-vrc-muted">
+                {track.status === 'open' ? 'Apply' : 'Tell me when this opens'} <Chip>Coming soon</Chip>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="m-0 text-[15px] text-vrc-muted">
+        {open.length} of {tracks.length} tracks are open today. Applying opens with the rest of the forms (#58).
+      </p>
+    </div>
+  </section>
+
+  <section class="px-4 pb-20 lg:px-8">
+    <div class="mx-auto flex max-w-page flex-wrap items-center justify-between gap-6 rounded-3xl border border-vrc-line p-8">
+      <div class="flex flex-col gap-2">
+        <span class={eyebrow}>ON THE MAP</span>
+        <p class="m-0 max-w-xl text-lg text-vrc-ink-2">
+          Most roles come from the organizations on our map. Browse who is building what, and where.
+        </p>
+      </div>
+      <Button href="/map" variant="secondary">Explore the map <Icon name="arrow-right" /></Button>
+    </div>
+  </section>
+</SiteLayout>

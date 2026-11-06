@@ -1,0 +1,231 @@
+---
+/**
+ * Get involved (#35), from GetInvolvedV3: the summit calls, sponsoring, and
+ * the network's own projects.
+ *
+ * None of the forms are built yet. The pitch calls show their state from the
+ * edition's dates and open in #51; sponsoring, nominating and volunteering
+ * open in #59; "Propose a project" is tracked in the roadmap for M7. Each
+ * says so rather than linking to an outside form.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { SPONSOR_FAQ, SPONSOR_TIERS } from '@/data/involvement';
+import {
+  editionDates,
+  formatShortDate,
+  getCurrentEdition,
+  getNow,
+  getProjects,
+  type Availability,
+} from '@/lib/content';
+import { LINKS } from '@/lib/constants';
+
+const edition = getCurrentEdition();
+const now = getNow();
+const projects = getProjects();
+const active = projects.filter((p) => p.status === 'open');
+
+/** A pitch call's state, from its dates (#26). The form itself is #51. */
+function callState(opensAt?: string, closesAt?: string): { label: string; tone: 'green' | 'neutral' } {
+  if (!opensAt) return { label: 'Dates to come', tone: 'neutral' };
+  const opens = Date.parse(opensAt);
+  const closes = closesAt ? Date.parse(closesAt) : undefined;
+  if (now.getTime() < opens) return { label: `Opens ${formatShortDate(opensAt)}`, tone: 'neutral' };
+  if (closes !== undefined && now.getTime() >= closes) return { label: 'Closed', tone: 'neutral' };
+  return { label: 'Open', tone: 'green' };
+}
+
+const calls = [
+  {
+    id: 'startup',
+    title: 'Pitch your startup',
+    body: 'Present your company in the startup pitch session, in front of researchers, founders and funders.',
+    ...callState(edition.calls?.find((c) => c.id === 'startup')?.opensAt, edition.calls?.find((c) => c.id === 'startup')?.closesAt),
+  },
+  {
+    id: 'research',
+    title: 'Pitch your research',
+    body: 'Share your lab’s work in the research pitch session.',
+    ...callState(edition.calls?.find((c) => c.id === 'research')?.opensAt, edition.calls?.find((c) => c.id === 'research')?.closesAt),
+  },
+  { id: 'sponsor', title: 'Sponsor the summit', body: 'Help keep the summit free and online, and reach the whole network.', label: 'Open', tone: 'green' as const },
+  { id: 'speaker', title: 'Recommend a speaker', body: 'Know someone the network should hear from? Tell us who, and why.', label: 'Open', tone: 'green' as const },
+];
+
+const STATUS: Record<Availability, { label: string; tone: 'green' | 'neutral' }> = {
+  open: { label: 'Active', tone: 'green' },
+  soon: { label: 'Coming soon', tone: 'neutral' },
+  later: { label: 'Coming later', tone: 'neutral' },
+};
+
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+const soon = 'inline-flex items-center gap-2 text-[15px] text-vrc-muted';
+---
+
+<SiteLayout
+  title="Get involved"
+  description="Pitch at the summit, sponsor it, nominate a speaker, or lend a hand with a network project."
+>
+  <section class="px-4 pt-10 lg:px-8 lg:pt-14">
+    <div class="mx-auto flex max-w-page flex-wrap items-end justify-between gap-x-16 gap-y-8">
+      <div class="flex max-w-3xl flex-col gap-5">
+        <span class={eyebrow}>GET INVOLVED</span>
+        <h1 class="m-0 font-heading text-[clamp(44px,7vw,84px)] font-semibold leading-[0.94] tracking-[-0.045em]">
+          Help build <span class="text-vrc-green-dark">robots for a cooler planet</span>
+        </h1>
+        <p class="m-0 text-xl text-vrc-ink-2">Pitch at the summit, sponsor it, nominate a speaker, or lend a hand with a network project.</p>
+        <div class="flex flex-wrap gap-3">
+          <Button href="#calls">See the summit calls <Icon name="arrow-right" /></Button>
+          <Button href="#network" variant="secondary">Network projects</Button>
+        </div>
+      </div>
+      <dl class="m-0 grid flex-[1_1_320px] grid-cols-2 gap-px overflow-hidden rounded-[20px] border border-vrc-line bg-vrc-line">
+        <div class="bg-white p-5">
+          <dt class={eyebrow}>SUMMIT {edition.year}</dt>
+          <dd class="m-0 mt-1 font-semibold">{editionDates(edition)}</dd>
+        </div>
+        <div class="bg-white p-5">
+          <dt class={eyebrow}>PITCH CALLS</dt>
+          <dd class="m-0 mt-1 font-semibold">{calls[0]?.label}</dd>
+        </div>
+        <div class="bg-white p-5">
+          <dt class={eyebrow}>NETWORK</dt>
+          <dd class="m-0 mt-1 font-semibold">120+ members, 18 countries</dd>
+        </div>
+        <div class="bg-white p-5">
+          <dt class={eyebrow}>PROJECTS</dt>
+          <dd class="m-0 mt-1 font-semibold">{active.length} active · {projects.length - active.length} coming</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="calls" class="scroll-mt-28 px-4 py-16 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-8">
+      <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+        <div class="flex flex-col gap-4">
+          <span class={eyebrow}>01 — SUMMIT {edition.year} · {editionDates(edition).toUpperCase()}</span>
+          <h2 class="m-0 font-heading text-[clamp(36px,4.6vw,56px)] font-semibold leading-[0.98] tracking-[-0.035em]">Calls for the {edition.year} summit</h2>
+        </div>
+        <p class="m-0 max-w-sm text-lg text-vrc-ink-2">Four ways to take part. Each one opens here on the site.</p>
+      </div>
+      <ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-0">
+        {
+          calls.map((call) => (
+            <li id={call.id} class="flex scroll-mt-28 flex-col gap-3.5 rounded-3xl border border-vrc-line p-7">
+              <Chip tone={call.tone} dot data-call-status>{call.label}</Chip>
+              <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">{call.title}</h3>
+              <p class="m-0 text-base text-vrc-ink-2">{call.body}</p>
+              <span class={`mt-auto ${soon}`}>
+                <Icon name="bell" />
+                {call.tone === 'green' ? 'Take part' : 'Remind me'} <Chip>Coming soon</Chip>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section id="sponsor" class="scroll-mt-28 bg-vrc-surface px-4 py-16 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-8">
+      <div class="flex max-w-3xl flex-col gap-4">
+        <span class={eyebrow}>SPONSOR · SUMMIT {edition.year}</span>
+        <h2 class="m-0 font-heading text-[clamp(36px,4.6vw,56px)] font-semibold leading-[0.98] tracking-[-0.035em]">Sponsor the summit</h2>
+        <p class="m-0 text-lg text-vrc-ink-2">
+          Sponsorship keeps the summit free and online, with no cap on places. Tiers are named when the program is set; tell us
+          what you have in mind and we will suggest one.
+        </p>
+      </div>
+
+      <ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 p-0">
+        {
+          SPONSOR_TIERS.map((tier) => (
+            <li class="flex flex-col gap-4 rounded-3xl border border-vrc-line bg-white p-7">
+              <span class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">{tier.name}</h3>
+                {tier.taken ? <Chip>Taken for {edition.year}</Chip> : <Chip tone="green" dot>Available</Chip>}
+              </span>
+              <ul class="m-0 flex list-none flex-col gap-2 p-0">
+                {tier.perks.map((perk) => (
+                  <li class="flex items-start gap-2.5 text-[15px] text-vrc-ink-2">
+                    <Icon name="chevron-right" class="mt-1 text-vrc-green-dark" />
+                    {perk}
+                  </li>
+                ))}
+              </ul>
+              <span class={`mt-auto ${soon}`}>
+                <Icon name="mail" />Express interest <Chip onSurface>Coming soon</Chip>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <section aria-labelledby="faq" class="flex flex-col gap-3">
+        <h3 id="faq" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">Questions sponsors ask</h3>
+        <dl class="m-0 flex flex-col gap-3">
+          {
+            SPONSOR_FAQ.map((item) => (
+              <div class="flex flex-col gap-1.5 rounded-2xl bg-white p-6">
+                <dt class="font-semibold">{item.question}</dt>
+                <dd class="m-0 text-vrc-ink-2">{item.answer}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="m-0 text-[15px] text-vrc-muted">
+          Anything else? Write to <a href={LINKS.contact.mailto}>{LINKS.contact.email}</a>.
+        </p>
+      </section>
+    </div>
+  </section>
+
+  <section id="network" class="scroll-mt-28 px-4 py-16 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-8">
+      <div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+        <div class="flex flex-col gap-4">
+          <span class={eyebrow}>02 — NETWORK</span>
+          <h2 class="m-0 font-heading text-[clamp(36px,4.6vw,56px)] font-semibold leading-[0.98] tracking-[-0.035em]">Lend a hand, all year</h2>
+        </div>
+        <p class="m-0 max-w-sm text-lg text-vrc-ink-2">
+          The network runs on volunteers and member-led projects. Each one shows where it honestly stands.
+        </p>
+      </div>
+
+      <div id="volunteer" class="flex scroll-mt-28 flex-wrap items-center justify-between gap-6 rounded-3xl bg-vrc-navy p-8 text-white lg:p-10">
+        <div class="flex max-w-2xl flex-col gap-3">
+          <span class="font-mono text-xs tracking-[0.06em] text-vrc-on-navy-muted">VOLUNTEER</span>
+          <h3 class="m-0 font-heading text-[28px] font-semibold tracking-[-0.025em]">Volunteer with us</h3>
+          <p class="m-0 text-vrc-on-navy">Give a few hours a month to the summit, the research, or the people joining the field next.</p>
+        </div>
+        <span class="inline-flex items-center gap-2 text-[15px] text-vrc-on-navy-muted">
+          <Icon name="bell" />Sign up
+          <span class="rounded-full bg-vrc-navy-raised px-2.5 py-1 font-mono text-[11px] font-medium tracking-[0.06em] text-vrc-on-navy">COMING SOON</span>
+        </span>
+      </div>
+
+      <ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 p-0">
+        {
+          projects.map((project) => (
+            <li class="flex flex-col gap-3 rounded-3xl border border-vrc-line p-7">
+              <span class="flex flex-wrap items-center justify-between gap-2">
+                <span class={eyebrow}>{project.kicker.toUpperCase()}</span>
+                <Chip tone={STATUS[project.status].tone} dot data-project-status>{STATUS[project.status].label}</Chip>
+              </span>
+              <h3 class="m-0 font-heading text-xl font-semibold tracking-[-0.02em]">{project.name}</h3>
+              <p class="m-0 text-base text-vrc-ink-2">{project.description}</p>
+              <span class={`mt-auto ${soon}`}>
+                <Icon name="bell" />
+                {project.status === 'open' ? 'Take part' : 'Tell me when it starts'} <Chip>Coming soon</Chip>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</SiteLayout>
