@@ -6,6 +6,14 @@
  * /images/people/<slug>.svg, which the content layer already uses.
  */
 
+/**
+ * Team members PeopleV3 lists that the summit data doesn't. The board's team
+ * has seven people; `ORGANIZERS` in src/lib/summits-data.ts has six.
+ */
+export const TEAM_EXTRA: { slug: string; name: string; title: string; org: string }[] = [
+  { slug: 'imogen-calder', name: 'Imogen Calder', title: 'Consulting Coordinator', org: 'Vert Robo Con' },
+];
+
 /** A short note about a person, shown on their page and in the drawer. */
 export const BIOS: Record<string, string> = {
   'elif-brandvold': 'Elif started Vert Robo Con as a mailing list for people who repair field robots. She still keeps the books.',

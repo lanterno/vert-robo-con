@@ -4,7 +4,7 @@
  * roles they hold.
  */
 import { SESSIONS } from '@/data/program';
-import { BIOS, LINKS, WHITE_PAPER_AUTHORS } from '@/data/people';
+import { BIOS, LINKS, TEAM_EXTRA, WHITE_PAPER_AUTHORS } from '@/data/people';
 import { ORGANIZERS, SPEAKERS_2025, SPEAKERS_2026, type Speaker } from '@/lib/summits-data';
 import { slugify } from './slug';
 import type { Person } from './types';
@@ -23,6 +23,10 @@ function build(): Person[] {
     const slug = slugify(o.name);
     add(slug, { slug, name: o.name, ...(o.photoUrl ? { photo: o.photoUrl } : {}) }, { kind: 'team', title: o.role ?? '', org: o.organization ?? '' });
   }
+  for (const t of TEAM_EXTRA) {
+    add(t.slug, { slug: t.slug, name: t.name, photo: `/images/people/${t.slug}.svg` }, { kind: 'team', title: t.title, org: t.org });
+  }
+
   const speaker = (s: Speaker) => {
     const slug = slugify(s.name);
     add(

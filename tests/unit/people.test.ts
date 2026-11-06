@@ -57,6 +57,16 @@ describe('roles', () => {
     expect(getTeam().length).toBeGreaterThan(0);
   });
 
+  it('include every person the boards name, each with a portrait', () => {
+    // The boards list 39 people. One of them, the consulting coordinator, is
+    // not in the summit data, so she is added in src/data/people.ts; without
+    // her the contact page has no coordinator card.
+    expect(getPerson('imogen-calder')?.roles.some((r) => r.kind === 'team')).toBe(true);
+    expect(getTeam()).toHaveLength(7);
+    expect(getPeople()).toHaveLength(39);
+    for (const p of getPeople()) expect(p.photo, `${p.slug} has no portrait`).toBeDefined();
+  });
+
   it('point every link at the demo domain, never a real site', () => {
     for (const p of getPeople()) {
       for (const l of p.links ?? []) expect(l.href, `${p.slug}: ${l.href}`).toContain('vert-robo-con.example');
