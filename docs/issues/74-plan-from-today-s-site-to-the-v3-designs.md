@@ -42,7 +42,7 @@ Every public page rebuilt from the V3 boards, reading data files in the repo and
 - [x] #34
 - [x] #35
 - [x] #36
-- [ ] #37
+- [x] #37
 - [ ] #38
 
 ## M2 · Foundations
