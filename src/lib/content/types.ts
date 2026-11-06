@@ -150,6 +150,8 @@ export interface NewsPost {
   slug: string;
   type: NewsType;
   title: string;
+  /** Who wrote it, as a person slug (getPerson). */
+  author: string;
   /** ISO date, or unset while a post is still a placeholder ([DATE]). */
   date?: string;
   summary: string;

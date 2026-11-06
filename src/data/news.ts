@@ -9,6 +9,13 @@ import type { NewsPost } from '@/lib/content/types';
 
 const TXT = '[ARTICLE TEXT]';
 const sec = (heading: string, paragraphs: string[] = [TXT], list?: string[]) => ({ heading, paragraphs, ...(list ? { list } : {}) });
+/**
+ * NewsV3 credits every post it shows to the network's founder, and has no
+ * per-post author, so each post here is hers. The field is per post, so a
+ * later post can name someone else.
+ */
+const AUTHOR = 'elif-brandvold';
+
 const IMG = {
   hand: '/images/v3/hero.svg',
   leaf: '/images/v3/leaf.svg',
@@ -23,6 +30,7 @@ const WHITE_PAPER = '/research/white-paper/2025';
 export const NEWS: NewsPost[] = [
   {
     slug: 'vert-robo-con-summit-2027',
+    author: AUTHOR,
     type: 'summit',
     title: 'Save the date: Vert Robo Con Summit 2027',
     summary: 'The next Vert Robo Con Summit runs April 20–22, 2027. Online, free and with no cap on places. Registration opens Monday, December 7, 2026.',
@@ -37,6 +45,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'the-2025-white-paper-is-out',
+    author: AUTHOR,
     type: 'announcement',
     title: 'The 2025 white paper is out',
     summary:
@@ -51,6 +60,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'who-checks-the-wind-turbines',
+    author: AUTHOR,
     type: 'video',
     title: 'Who checks the wind turbines?',
     date: '2026-06-30',
@@ -63,6 +73,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'who-repairs-the-robot-after-the-pilot-ends',
+    author: AUTHOR,
     type: 'essay',
     title: 'Who repairs the robot after the pilot ends?',
     date: '2026-03-12',
@@ -97,6 +108,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'can-drones-reseed-a-burned-hillside',
+    author: AUTHOR,
     type: 'video',
     title: 'Can drones reseed a burned hillside?',
     date: '2025-09-16',
@@ -109,6 +121,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'five-questions-buyers-ask-before-a-field-trial',
+    author: AUTHOR,
     type: 'essay',
     title: 'Five questions buyers ask before a field trial',
     date: '2025-07-01',
@@ -124,6 +137,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'replanting-reefs-with-diving-robots',
+    author: AUTHOR,
     type: 'video',
     title: 'Replanting reefs with diving robots',
     date: '2025-04-08',
@@ -136,6 +150,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'summit-2025-dates',
+    author: AUTHOR,
     type: 'summit',
     title: 'Vert Robo Con Summit 2025: June 10–12, online',
     date: '2025-03-18',
@@ -151,6 +166,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'why-robots-belong-in-climate-work',
+    author: AUTHOR,
     type: 'video',
     title: 'Why robots belong in climate work',
     date: '2025-02-25',
@@ -163,6 +179,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'the-organization-map-is-open',
+    author: AUTHOR,
     type: 'announcement',
     title: 'The organization map is open',
     date: '2025-01-14',
@@ -177,6 +194,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'air-land-water-factory',
+    author: AUTHOR,
     type: 'essay',
     title: 'Air, land, water, factory: a simple way to sort climate robots',
     date: '2024-11-19',
@@ -192,6 +210,7 @@ export const NEWS: NewsPost[] = [
   },
   {
     slug: 'notes-from-the-2024-pilot',
+    author: AUTHOR,
     type: 'summit',
     title: 'Notes from the 2024 pilot summit',
     date: '2024-10-08',
