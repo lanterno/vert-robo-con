@@ -6,6 +6,7 @@ export * from './edition-copy';
 export * from './format';
 export * from './ics';
 export * from './news';
+export * from './rss';
 export * from './organizations';
 export * from './partners';
 export * from './people';
