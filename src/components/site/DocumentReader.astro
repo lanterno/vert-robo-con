@@ -1,0 +1,105 @@
+---
+/**
+ * A chaptered reader (#31), from ResearchV3: contents down the side, each
+ * section with its own address, and how to cite the document.
+ *
+ * "Suggest an edit" opens with the smaller forms (#59), so each section
+ * says so rather than linking anywhere.
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
+import Chip from '@/components/ui/Chip.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  doc: CollectionEntry<'documents'>;
+  /** Where "back" goes, and what it is called. */
+  back: { href: string; label: string };
+}
+
+const { doc, back } = Astro.props;
+const { headings } = await render(doc);
+const sections: MarkdownHeading[] = headings.filter((h: MarkdownHeading) => h.depth === 2);
+const eyebrow = 'font-mono text-xs tracking-[0.06em] text-vrc-muted';
+---
+
+<div class="flex flex-wrap items-start gap-x-14 gap-y-8">
+  <nav aria-label="Contents" class="order-2 flex flex-[1_1_240px] flex-col gap-1 lg:sticky lg:top-24 lg:order-1">
+    <a href={back.href} class="mb-2 inline-flex items-center gap-1.5 px-3 font-medium no-underline hover:underline">
+      <Icon name="chevron-left" size={14} />{back.label}
+    </a>
+    <span class={`${eyebrow} px-3 pb-1`}>CONTENTS</span>
+    {
+      sections.map((h: MarkdownHeading, i: number) => (
+        <a href={`#${h.slug}`} class="flex items-baseline gap-2.5 rounded-[10px] px-3 py-2 text-[15px] leading-snug text-vrc-ink no-underline hover:bg-vrc-surface hover:text-vrc-ink">
+          <span class="font-mono text-[13px] text-vrc-muted">{i + 1}</span>
+          {h.text}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="order-1 flex min-w-0 max-w-[720px] flex-[2.4_1_560px] flex-col gap-8 lg:order-2">
+    <header class="flex flex-col gap-3">
+      <span class={eyebrow}>{doc.data.eyebrow}</span>
+      <h1 class="m-0 font-heading text-[clamp(36px,5.5vw,60px)] font-semibold leading-[0.98] tracking-[-0.04em]">{doc.data.title}</h1>
+      <span class={eyebrow}>{doc.data.version}</span>
+    </header>
+
+    <!--
+      The sections are rendered one by one rather than as one blob, so each
+      gets its own address and its own "suggest an edit".
+    -->
+    <div class="doc-body flex flex-col gap-10">
+      <slot />
+    </div>
+
+    <section aria-labelledby="cite" class="flex flex-col gap-3 rounded-3xl bg-vrc-surface p-7">
+      <h2 id="cite" class="m-0 font-heading text-2xl font-semibold tracking-[-0.02em]">How to cite this</h2>
+      <div class="flex flex-col gap-1.5">
+        <span class={eyebrow}>APA</span>
+        <p class="m-0 rounded-2xl bg-white p-4 font-mono text-[13px] leading-relaxed text-vrc-ink-2">{doc.data.citation.apa}</p>
+      </div>
+      {
+        doc.data.citation.bibtex && (
+          <div class="flex flex-col gap-1.5">
+            <span class={eyebrow}>BIBTEX</span>
+            <!-- Focusable: it scrolls sideways on a narrow screen, and a
+                 keyboard user needs to be able to scroll it. -->
+            <pre
+              tabindex="0"
+              role="region"
+              aria-label="BibTeX citation"
+              class="m-0 overflow-x-auto rounded-2xl bg-white p-4 font-mono text-[13px] leading-relaxed text-vrc-ink-2"
+            >{doc.data.citation.bibtex}</pre>
+          </div>
+        )
+      }
+    </section>
+
+    <p class="m-0 flex flex-wrap items-center gap-2 text-[15px] text-vrc-muted">
+      <Icon name="document" />Spotted something to change? <Chip>Suggest an edit coming soon</Chip>
+    </p>
+  </div>
+</div>
+
+<style is:global>
+  /* The document's own Markdown, styled once. */
+  .doc-body h2 {
+    margin: 0 0 12px;
+    scroll-margin-top: 7rem;
+    font-family: theme('fontFamily.heading');
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+  .doc-body p {
+    margin: 0 0 16px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: theme('colors.vrc.ink-2');
+  }
+  .doc-body p:last-child {
+    margin-bottom: 0;
+  }
+</style>
