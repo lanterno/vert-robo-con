@@ -1,0 +1,55 @@
+---
+/**
+ * A post in the news list, as NewsV3 shows them: a picture or a text tile,
+ * what it is, when it ran, and its title.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { formatShortDate, type NewsPost, type NewsType } from '@/lib/content';
+
+interface Props {
+  post: NewsPost;
+  featured?: boolean;
+  class?: string;
+}
+
+const { post, featured = false, class: className } = Astro.props;
+const TYPE_LABEL: Record<NewsType, string> = { essay: 'ESSAY', video: 'VIDEO', announcement: 'ANNOUNCEMENT', summit: 'SUMMIT' };
+const meta = `${TYPE_LABEL[post.type]} · ${post.date ? formatShortDate(post.date).toUpperCase() : '[DATE]'} · ${post.readTime}`;
+---
+
+<a
+  href={`/news/${post.slug}`}
+  data-post
+  data-post-type={post.type}
+  class:list={['group flex flex-col gap-3 text-vrc-ink no-underline hover:text-vrc-ink', className]}
+>
+  <span class:list={['relative block overflow-hidden rounded-[20px] bg-vrc-navy', featured ? 'aspect-[21/9]' : 'aspect-[4/3]']}>
+    {
+      post.image ? (
+        <img src={post.image} alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover opacity-90" />
+      ) : (
+        <span
+          class:list={[
+            'absolute inset-0 flex items-end p-6 font-heading font-semibold leading-tight tracking-[-0.02em]',
+            featured ? 'text-[40px]' : 'text-[28px]',
+            post.cover?.tint === 'green' ? 'bg-vrc-green-tint text-vrc-green-dark' : 'bg-vrc-blue-tint text-vrc-ink',
+          ]}
+        >
+          {post.cover?.text ?? post.title}
+        </span>
+      )
+    }
+    {
+      post.type === 'video' && (
+        <span aria-hidden="true" class="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-white text-vrc-ink">
+          <Icon name="play" size={18} filled />
+        </span>
+      )
+    }
+  </span>
+  <span class="font-mono text-[11px] tracking-[0.06em] text-vrc-muted">{meta}</span>
+  <span class:list={['font-heading font-semibold leading-tight tracking-[-0.015em] group-hover:underline', featured ? 'text-[32px]' : 'text-xl']}>
+    {post.title}
+  </span>
+  {featured && <span class="max-w-2xl text-vrc-ink-2">{post.summary}</span>}
+</a>
