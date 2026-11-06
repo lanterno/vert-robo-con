@@ -1,8 +1,7 @@
 ---
 /**
- * The page shell for the V3 pages: the header, the footer, the phone tab bar,
- * and the sheets every page can open. Pages move onto it as they are rebuilt
- * from the boards in M1; until then the old pages keep BaseLayout.
+ * The page shell for every page: the header, the footer, the phone tab bar,
+ * and the sheets any page can open.
  */
 import '@/styles/global.css';
 import { SITE } from '@/lib/constants';
@@ -25,6 +24,8 @@ const path = Astro.url.pathname;
 const fullTitle = path === '/' ? `${SITE.name}: ${SITE.tagline}` : `${title} · ${SITE.name}`;
 const canonical = new URL(path, SITE.url).href;
 const image = new URL('/images/og-image.png', SITE.url).href;
+// Set CF_ANALYTICS_TOKEN in the build's environment to turn analytics on.
+const analyticsToken = import.meta.env.CF_ANALYTICS_TOKEN;
 ---
 
 <!doctype html>
@@ -47,7 +48,25 @@ const image = new URL('/images/og-image.png', SITE.url).href;
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} news`} href="/news/rss.xml" />
     <meta name="theme-color" content="#0138AC" />
+
+    {
+      /*
+       * Cloudflare Web Analytics (#8): no cookies, so no banner. The token
+       * comes from the build's configuration, never the repo, and without
+       * one the beacon simply isn't there, so a local build and a fork
+       * send nothing.
+       */
+      analyticsToken && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: analyticsToken })}
+        />
+      )
+    }
   </head>
   <body class="flex min-h-screen flex-col bg-white font-body text-[17px] leading-relaxed text-vrc-ink">
     <a href="#main-content" class="skip-link">Skip to main content</a>
