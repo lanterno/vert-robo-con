@@ -1,10 +1,12 @@
 /**
  * Every page the static site builds. Add a route here when you add a page and
  * the smoke, accessibility and link checks all pick it up.
+ *
+ * The old addresses that now redirect (/consulting, /slack) are not pages;
+ * tests/site.spec.ts checks those.
  */
 export const ROUTES = [
   '/',
-  '/consulting',
   '/research',
   '/summits',
   '/summits/2025',
@@ -22,7 +24,6 @@ export const ROUTES = [
   '/deployment-code',
   '/code-of-conduct',
   '/map',
-  '/slack',
   // The shared components gallery (#25).
   '/components',
 ] as const;
