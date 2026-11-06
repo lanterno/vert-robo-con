@@ -2,11 +2,11 @@
 /**
  * Privacy (#37), from PrivacyV3.
  *
- * This is the draft. The legal entity, the legal basis for each purpose and
- * the retention periods are open in #5 and must be settled before any form
- * collects personal data, which is why nothing here collects any. Every
- * undecided value is shown as the canvas's placeholder, in brackets, so a
- * gap is never mistaken for an answer.
+ * The legal basis and retention period for each purpose come from
+ * docs/COMPLIANCE.md, which explains why each was chosen. Two things are
+ * still open there and shown as placeholders rather than guessed at: the
+ * real controller address (C1) and a lawyer's read of this page (C2). Both
+ * are needed before the first form collects data, in M3.
  */
 import SiteLayout from '@/layouts/SiteLayout.astro';
 import Chip from '@/components/ui/Chip.astro';
@@ -14,7 +14,6 @@ import Icon from '@/components/ui/Icon.astro';
 import {
   COOKIES,
   DATA_ROWS,
-  LEGAL_BASIS,
   LEGAL_ENTITY,
   PROCESSORS,
   REGISTERED_ADDRESS,
@@ -47,11 +46,11 @@ const num = 'font-mono text-base font-medium text-vrc-muted';
       </nav>
       <div class="flex flex-wrap items-center gap-3">
         <h1 class="m-0 font-heading text-[clamp(44px,7vw,84px)] font-semibold leading-[0.94] tracking-[-0.045em]">Privacy</h1>
-        <Chip tone="amber" dot>Draft · in legal review</Chip>
+        <Chip tone="amber" dot>Draft · awaiting legal review</Chip>
       </div>
       <p class="m-0 max-w-[720px] text-xl text-vrc-ink-2">
-        What we collect, why, who else sees it, and how to get it back or delete it. This is a draft: the entity, the legal
-        basis and how long we keep things are still being settled, and are shown in brackets until they are.
+        What we collect, why, who else sees it, and how to get it back or delete it. No form on the site collects anything
+        yet. This text is a draft awaiting a lawyer's read, and our registered address is still to be filled in.
       </p>
     </div>
   </section>
@@ -114,8 +113,8 @@ const num = 'font-mono text-base font-medium text-vrc-muted';
             link to My VRC, where you can see and change what you sent.
           </p>
           <p class="m-0 text-[15px] text-vrc-muted">
-            No form on the site collects anything yet. The legal basis for each purpose is still being settled, so it reads
-            {' '}{LEGAL_BASIS} below until it is.
+            No form on the site collects anything yet. Each row below says what it will ask for, why the law lets us hold it,
+            and how long we keep it.
           </p>
           <div class="flex flex-col gap-3">
             {
@@ -128,7 +127,7 @@ const num = 'font-mono text-base font-medium text-vrc-muted';
                   <div class="mt-4 flex flex-col gap-3 text-[15px] text-vrc-ink-2">
                     <p class="m-0">{row.summary}</p>
                     <p class="m-0"><strong class="font-semibold text-vrc-ink">Why:</strong> {row.why}</p>
-                    <p class="m-0"><strong class="font-semibold text-vrc-ink">Legal basis:</strong> {LEGAL_BASIS}</p>
+                    <p class="m-0"><strong class="font-semibold text-vrc-ink">Legal basis:</strong> {row.basis}</p>
                     <div class="flex flex-col gap-1.5">
                       <strong class="font-semibold text-vrc-ink">What the form asks</strong>
                       <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0">

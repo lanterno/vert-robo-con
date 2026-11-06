@@ -1,15 +1,17 @@
 /**
- * The privacy page's draft content, from PrivacyV3 (#37).
+ * The privacy page's content, from PrivacyV3 (#37).
  *
- * This is a draft. The legal entity, the legal basis for each purpose and
- * how long data is kept are all open in #5, and must be settled before any
- * form collects personal data. Everything still undecided is left as the
- * canvas's placeholder, in brackets, rather than guessed at.
+ * The legal basis and retention period for each purpose are decided in
+ * docs/COMPLIANCE.md, which also explains why each one was chosen. Change
+ * them there and here together.
+ *
+ * Still open, and tracked in that document: the real controller name and
+ * address (C1) and a lawyer's read of this page (C2). Both are needed
+ * before the first form collects data, in M3.
  */
 
-/** What #5 has yet to decide. Shown as written, so a gap is never mistaken for an answer. */
-export const LEGAL_BASIS = '[LEGAL BASIS]';
-export const LEGAL_ENTITY = '[LEGAL ENTITY]';
+/** The controller. A real deployment replaces both (COMPLIANCE.md, C1). */
+export const LEGAL_ENTITY = 'Vert Robo Con e.V.';
 export const REGISTERED_ADDRESS = '[REGISTERED ADDRESS]';
 
 export const SHORT_VERSION: string[] = [
@@ -21,10 +23,12 @@ export const SHORT_VERSION: string[] = [
 
 export interface DataRow {
   id: string;
+  /** Why the law lets us hold it; see docs/COMPLIANCE.md. */
+  basis: string;
   name: string;
   summary: string;
   why: string;
-  /** How long it is kept; undecided in #5. */
+  /** How long it is kept, from docs/COMPLIANCE.md. */
   keep: string;
   fields: string[];
   published: string;
@@ -34,100 +38,110 @@ export interface DataRow {
 export const DATA_ROWS: DataRow[] = [
   {
     id: 'reg',
+    basis: 'Contract',
     name: 'Summit registration',
     summary: 'Name, email, country, and what you plan to attend',
     why: 'To register you, email your confirmation and My VRC link, and plan sessions and captions.',
-    keep: '[N] months after the edition',
+    keep: '24 months after the edition',
     fields: ['Full name', 'Email', 'Organization (optional)', 'Role', 'Country', 'Time zone (optional)', 'Days you plan to attend', 'Topics you care about (optional)', 'Accessibility or captioning needs (optional)', 'How you heard about us (optional)', 'Summit email consent', 'Monthly digest (optional)'],
     published: 'Never. There is no public attendee list.',
     inMyVrc: 'Edit or cancel your registration and starred sessions.',
   },
   {
     id: 'join',
+    basis: 'Contract',
     name: 'Join requests',
     summary: 'Name, email, and Slack community or email updates only',
     why: 'An admin reviews each Slack request by hand and emails your invite. Email updates only starts your digest.',
-    keep: '[N] months after an admin decides',
+    keep: '12 months after a decision',
     fields: ['Full name', 'Email', 'Role (optional)', 'Country (optional)', 'Interests (optional)', 'Slack community or Email updates only', 'Code of conduct confirmation'],
     published: 'Never.',
     inMyVrc: 'See your request status: Pending approval, then Approved, invite sent.',
   },
   {
     id: 'pitch',
+    basis: 'Contract',
     name: 'Pitches',
     summary: 'Your details, your organization or lab, and your pitch',
     why: 'Admins review and score each pitch, then email you the outcome.',
-    keep: '[N] months after the edition',
+    keep: '24 months after the edition',
     fields: ['Full name', 'Email', 'Your role', 'Country', 'Organization, or lab and PI', 'Website', 'Stage and robot type', 'Your pitch answers', 'Deck or video link', 'Pitch deck or project link (optional)'],
-    published: 'Only if your pitch is selected: your name, organization and pitch title appear in the program [CONFIRM].',
+    published: 'Only if your pitch is selected: your name, organization and pitch title appear in the program.',
     inMyVrc: 'Follow your pitch and withdraw it.',
   },
   {
     id: 'intern',
+    basis: 'Contract, as a step before one',
     name: 'Internship applications',
     summary: 'Your details, a track, and a CV or portfolio',
     why: 'Admins review your application and contact you about an interview.',
-    keep: '[N] months after the decision',
+    keep: '12 months after the decision',
     fields: ['Track', 'Full name', 'Email', 'School, university or program', 'Country', 'Time zone', 'Hours per week', 'Start window', 'Why this track', 'Portfolio or CV (link)'],
     published: 'Never.',
     inMyVrc: 'Follow your application and withdraw it.',
   },
   {
     id: 'map',
+    basis: 'Legitimate interests',
     name: 'Map suggestions',
     summary: 'Details about an organization, plus your email',
     why: 'An admin checks every suggestion before it goes on the map, and may email you a question.',
-    keep: 'Your email: [N] months after review. Organization data: while it’s on the map.',
+    keep: 'Your email: 12 months after review. Organization data: while it’s on the map.',
     fields: ['Organization name', 'Website', 'HQ country', 'City (optional)', 'Robot type', 'Application', 'Climate role', 'One-line description', 'Founded (optional)', 'LinkedIn (optional)', 'What changed and how you know (optional)', 'Your email'],
     published: 'The organization details, under CC BY 4.0. Your email never.',
     inMyVrc: 'See your suggestions and whether they were published.',
   },
   {
     id: 'jobs',
+    basis: 'Legitimate interests',
     name: 'Job posts',
     summary: 'The job, and your email',
     why: 'An admin reviews each post before it’s published, and we email you when it goes live or ends.',
-    keep: '[N] months after the listing closes',
+    keep: '12 months after the listing closes',
     fields: ['Organization, from the map or new', 'Job title', 'Role type', 'Location', 'Description', 'Apply link or email', 'Salary range (optional)', 'Listing length', 'Your email'],
     published: 'The listing, once approved, until it closes. Your email never.',
     inMyVrc: 'Edit, renew or close your listing.',
   },
   {
     id: 'involve',
+    basis: 'Legitimate interests',
     name: 'Sponsor, volunteer, project and speaker forms',
     summary: 'Your contact details and your answers',
     why: 'To reply about sponsorship, volunteering, a project idea or a speaker you recommend.',
-    keep: '[N] months after we reply',
+    keep: '12 months after we reply',
     fields: ['Name or contact name', 'Email', 'Organization, tier and edition (sponsors)', 'Role, hours and skills (volunteers)', 'Project name and idea (projects)', 'Speaker’s name, affiliation and topic (recommendations)', 'Message (optional)'],
     published: 'Never.',
     inMyVrc: 'Follow what you sent from the link in your receipt.',
   },
   {
     id: 'research',
+    basis: 'Legitimate interests',
     name: 'White paper contributions',
     summary: 'Suggestions, topic proposals and research team applications',
     why: 'To review your contribution, reply, and credit you if you ask.',
-    keep: '[N] months after the next edition',
+    keep: '24 months after the next edition',
     fields: ['Kind of suggestion and comment', 'Topic, why it matters, your expertise and links', 'Affiliation, areas and hours (research team)', 'Name (optional on suggestions)', 'Email (optional on suggestions)', 'Credit me (optional)'],
     published: 'Only your name in the edition’s credits, if you tick Credit me.',
     inMyVrc: 'Follow proposals and applications.',
   },
   {
     id: 'coc',
+    basis: 'Legitimate interests, to keep people safe',
     name: 'Code of conduct reports',
     summary: 'What happened, when, where and who was involved',
     why: 'So the moderators can look into it and act under the code of conduct.',
-    keep: '[N] months after the report is closed',
+    keep: '36 months after the report is closed',
     fields: ['What happened', 'When', 'Where', 'People involved (optional)', 'Email, unless you stay anonymous'],
-    published: 'Never. Only the moderators [NAMES] read reports.',
+    published: 'Never. Only the owner reads reports.',
     inMyVrc: 'Not listed, to keep reports private. Quote your reference to follow up.',
   },
   {
     id: 'contact',
+    basis: 'Legitimate interests',
     name: 'Contact and consulting messages',
     summary: 'Your message, name and email',
     why: 'To reply to you, within 24–48 hours.',
-    keep: '[N] months after we reply',
+    keep: '12 months after we reply',
     fields: ['Topic', 'Name', 'Email', 'Organization', 'Publication and deadline (press)', 'Message', 'Engagement type, project and budget (consulting)', 'Website (optional)'],
     published: 'Never.',
     inMyVrc: 'Not listed. Ask us by email to see or delete a message.',
@@ -144,34 +158,34 @@ export const PROCESSORS: { name: string; where: string; does: string; when: stri
   },
   {
     name: 'Cloudflare (analytics)',
-    where: '[LOCATION]',
+    where: 'Global · US company, EU–US Data Privacy Framework',
     does: 'Counts visits with Cloudflare Web Analytics: page views, referring sites, countries and device types. No cookies, no banner.',
     when: 'On public pages',
   },
   {
     name: 'YouTube',
-    where: '[LOCATION]',
+    where: 'Global · US company, EU–US Data Privacy Framework',
     does: 'Plays our videos through privacy-enhanced embeds (youtube-nocookie.com). Nothing loads from YouTube until you press play.',
     when: 'Only when you press play',
   },
   {
     name: 'Slack',
-    where: '[LOCATION]',
+    where: 'Global · US company, EU–US Data Privacy Framework',
     does: 'Hosts the community. Once an admin approves your request, we email you an invite link. Slack only sees what you give it when you join, and Slack’s own policy applies there.',
     when: 'Only if you join Slack',
   },
-  { name: '[SECOND BACKUP PROVIDER]', where: '[LOCATION]', does: 'Keeps a second encrypted copy of the backups.', when: 'Always' },
+  { name: 'Second backup provider', where: 'EU · chosen with the servers (#20)', does: 'Keeps a second encrypted copy of the backups, which it cannot read.', when: 'Always' },
 ];
 
 export const COOKIES: { where: string; what: string }[] = [
   { where: 'Public pages', what: 'No cookies at all.' },
-  { where: 'My VRC', what: '[CONFIRM: one strictly necessary cookie that keeps your private link session open for [N] days, or none]' },
+  { where: 'My VRC', what: 'One strictly necessary cookie, holding your sign-in session for 30 days. Nothing else.' },
   { where: 'Admin site', what: 'Strictly necessary sign-in cookies, for admins only.' },
 ];
 
 export const RIGHTS: { kind: string; title: string; detail: string }[] = [
   { kind: 'ACCESS', title: 'See it', detail: 'Everything we hold for your email address, in one place.' },
   { kind: 'CORRECTION', title: 'Fix it', detail: 'Edit your registration, applications and listings.' },
-  { kind: 'DELETION', title: 'Delete it', detail: 'One item, or everything. Backups clear within [N] days.' },
+  { kind: 'DELETION', title: 'Delete it', detail: 'One item, or everything. Backups hold it no longer than 12 months, then age out.' },
   { kind: 'EXPORT', title: 'Take it with you', detail: 'Download everything as one JSON file.' },
 ];
