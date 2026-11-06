@@ -153,5 +153,6 @@ Edit the files in the repo; there is no CMS. The team edits content in the admin
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md): today's site and the approved target architecture
 - [`docs/ROADMAP.md`](docs/ROADMAP.md): plan from today's site to the V3 designs
+- [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md): the legal basis and retention behind every form, and what still needs a lawyer
 - [`docs/issues/`](docs/issues/README.md): the 77 implementation issues, one file each, grouped by milestone
 - [`project/`](project): the 26 V3 design boards the build works from

@@ -14,7 +14,7 @@ Edit these files as work progresses; nothing syncs back to GitHub.
 | [2](02-decide-who-builds-it-and-how-many-developers.md) | Decide: who builds it, and how many developers | closed |
 | [3](03-decide-launch-and-call-dates-registration-dec-7-pitches-dec.md) | Decide: launch and call dates (registration Dec 7, pitches Dec 8, or Jan 11) | closed |
 | [4](04-decide-the-owner-and-the-first-admins.md) | Decide: the owner and the first admins | closed |
-| [5](05-decide-legal-entity-legal-basis-and-retention-periods-for-th.md) | Decide: legal entity, legal basis and retention periods for the Privacy page | open |
+| [5](05-decide-legal-entity-legal-basis-and-retention-periods-for-th.md) | Decide: legal entity, legal basis and retention periods for the Privacy page | closed |
 | [6](06-decide-email-provider-and-sending-domain-and-get-dns-access.md) | Decide: email provider and sending domain, and get DNS access | closed |
 | [7](07-decide-sign-off-the-drafted-copy-sponsor-tiers-faq-internshi.md) | Decide: sign off the drafted copy (sponsor tiers, FAQ, internships, news authors) | closed |
 | [8](08-decide-analytics-at-launch-none-or-self-hosted-and-cookie-fr.md) | Decide: analytics at launch (none, or self-hosted and cookie-free) | closed |

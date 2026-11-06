@@ -33,7 +33,7 @@ The milestones ship in this order. [`docs/issues/`](issues/README.md) has every 
 
 | Milestone | What people get |
 | --- | --- |
-| M0 · Decisions | The choices that shape the product. Only privacy is still open |
+| M0 · Decisions | The choices that shape the product. All made |
 | M1 · Public site without a database | The new public site, live for every visitor |
 | M2 · Foundations | Nothing visible yet: sign-in, email and storage, ready for the features that need them |
 | M3 · Registration and the admin core | Summit sign-ups, registration for the next summit, My VRC, and the first admin screens |
@@ -70,7 +70,7 @@ Nothing changes for visitors yet. This milestone gives the product what the inte
 
 **The team** sets each edition's details and registration window without a developer, sees and exports registrations, manages admins, and checks that the system is healthy. The site moves to its own server, and the map stops loading tiles from third parties.
 
-Before registration opens: someone outside the project reviews the sign-in code, the final privacy text is published, emails land in inboxes rather than spam, and the default admin password has been changed.
+Before registration opens: someone outside the project reviews the sign-in code, the final privacy text is published, emails land in inboxes rather than spam, and the default admin password has been changed. The compliance roadmap lists what else M3 waits on.
 
 **Ready when:** registration is open on the new server.
 
@@ -148,9 +148,16 @@ Recordings come first: each session links its video, and speakers' pages show wh
 
 ## Open decisions and checkpoints
 
-Privacy is the only question with no answer yet. The other two are settled, with a date to look at them again.
+Every decision that shapes the build is made. What remains are two
+checkpoints, and the compliance work that needs someone outside the code.
 
-- **Privacy (#5), open:** the legal entity, the legal basis and how long data is kept. It's needed before registration opens, because no form may collect personal data until it's settled.
+- **Privacy (#5), decided:** the legal basis for each purpose, how long
+  everything is kept, and who processes it are in
+  [`COMPLIANCE.md`](COMPLIANCE.md), as defaults drawn from common practice.
+  The Privacy page shows them. Three things still need the organisation
+  before the first form collects data in M3: its real registered address, a
+  lawyer's read of the page, and signed agreements with the processors.
+  They are tracked there, not here.
 - **When registration opens (#3), checkpoint at the end of M1:** Dec 7 for registration and Dec 8 for the startup pitch call. The designs show registration opening together with the new site, while on this plan it arrives two milestones later, in M3. If registration isn't ready by then, the fallback is to launch the site on Dec 7 and open both on Jan 11. The dates are admin settings, so either way it is a setting, not a code change.
 - **Old form responses (#72), after the summit:** what happens to responses collected by the old tools.
 
@@ -179,6 +186,7 @@ This section is for whoever picks up the build, whether a person or an agent.
 
 - **The issue says what to build.** Each one lists its routes, its design boards, a checklist, and what it depends on. They are in [`docs/issues/`](issues/README.md), one file each; `#N` anywhere in these docs means the file there that starts with that number. Smaller work with no issue is listed under its milestone as "Tracked here", and its line in "The designs, stage by stage" is its spec.
 - **[`ARCHITECTURE.md`](../ARCHITECTURE.md) says how.** Where a design board disagrees with it, the architecture wins.
+- **[`COMPLIANCE.md`](COMPLIANCE.md) says what the law and access need**: the legal basis and retention period behind every form, what must not regress, and what still needs someone outside the code.
 - **The design canvas shows the look, the copy and every state.** Build only the parts the issue asks for, not everything on the board.
 - **This file says the order**, and which parts of each board belong to which milestone ("The designs, stage by stage" below).
 
@@ -191,7 +199,7 @@ Work through the milestones in order. Within a milestone, follow each issue's "D
 3. The pages, #27–#37, in any order
 4. #38 (redirects, 404, sitemap and analytics), once the home page is in
 
-M2 starts with #10 (server mode) and #11 (the database), and the rest follow their dependencies. Two decisions fall along the way: when registration opens (#3), at the end of M1, and privacy (#5), before M3 starts.
+M2 starts with #10 (server mode) and #11 (the database), and the rest follow their dependencies. One checkpoint falls along the way: when registration opens (#3), at the end of M1.
 
 ### Taking a piece of work
 

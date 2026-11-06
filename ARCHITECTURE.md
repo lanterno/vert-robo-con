@@ -1,6 +1,6 @@
 # Architecture
 
-How the Vert Robo Con (VRC) site works today, and the target architecture approved in [#1](docs/issues/01-decide-approve-the-target-architecture-one-typescript-app-on.md) on Oct 29, 2026. VRC is a fictional community; see "Demo content" in the [README](README.md). [`docs/ROADMAP.md`](docs/ROADMAP.md) has the plan for getting from one to the other.
+How the Vert Robo Con (VRC) site works today, and the target architecture approved in [#1](docs/issues/01-decide-approve-the-target-architecture-one-typescript-app-on.md) on Oct 29, 2026. VRC is a fictional community; see "Demo content" in the [README](README.md). [`docs/ROADMAP.md`](docs/ROADMAP.md) has the plan for getting from one to the other, and [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) what it has to satisfy about personal data and access.
 
 ## Today
 
