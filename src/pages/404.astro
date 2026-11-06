@@ -1,90 +1,65 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE } from '@/lib/constants';
+/**
+ * The page that isn't there (#38), in the V3 look.
+ *
+ * It suggests the places people actually want, with no search box: there is
+ * nothing to search yet, and a box that finds nothing is worse than a list
+ * of real links.
+ */
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { editionDates, getCurrentEdition } from '@/lib/content';
+import type { IconName } from '@/lib/icons';
+import { LINKS } from '@/lib/constants';
+
+const edition = getCurrentEdition();
+const suggestions: { href: string; title: string; detail: string; icon: IconName }[] = [
+  { href: `/summits/${edition.year}`, title: `Summit ${edition.year}`, detail: `${editionDates(edition)} · online · free`, icon: 'calendar' },
+  { href: '/watch', title: 'Watch', detail: 'Summit talks, the series and explainers', icon: 'watch' },
+  { href: '/research', title: 'Research', detail: 'The white paper and the three codes', icon: 'document' },
+  { href: '/map', title: 'The map', detail: 'Organizations building climate robots', icon: 'map-pin' },
+  { href: '/news', title: 'News', detail: 'Essays, announcements and episodes', icon: 'news' },
+  { href: '/people', title: 'People', detail: 'The team, speakers and authors', icon: 'users' },
+];
 ---
 
-<BaseLayout title="Page Not Found" description="The page you're looking for doesn't exist.">
-  <section class="min-h-[70vh] flex items-center justify-center py-20">
-    <div class="container mx-auto px-4 text-center">
-      {/* 404 Illustration */}
-      <div class="mb-8">
-        <div class="relative inline-block">
-          {/* Large 404 */}
-          <span class="text-[150px] md:text-[200px] font-heading font-bold text-gray-100 select-none">
-            404
-          </span>
-          {/* Robot Icon */}
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-32 h-32 md:w-40 md:h-40 bg-vrc-blue rounded-2xl flex items-center justify-center shadow-xl">
-              <svg class="w-16 h-16 md:w-20 md:h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-          </div>
+<SiteLayout title="Page not found" noindex>
+  <section class="px-4 py-16 lg:px-8 lg:py-24">
+    <div class="mx-auto flex max-w-page flex-col gap-10">
+      <div class="flex max-w-2xl flex-col gap-5">
+        <span class="font-mono text-xs tracking-[0.06em] text-vrc-muted">404 · PAGE NOT FOUND</span>
+        <h1 class="m-0 font-heading text-[clamp(44px,7vw,84px)] font-semibold leading-[0.94] tracking-[-0.045em]">
+          That page isn’t here
+        </h1>
+        <p class="m-0 text-xl text-vrc-ink-2">
+          It may have moved when we rebuilt the site, or the address may have a typo in it. Here is where most people are
+          going.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <Button href="/">Go to the home page <Icon name="arrow-right" /></Button>
+          <Button href={LINKS.contact.mailto} variant="secondary">Tell us what you were looking for</Button>
         </div>
       </div>
-      
-      {/* Message */}
-      <h1 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">
-        Page Not Found
-      </h1>
-      <p class="text-gray-600 text-lg mb-8 max-w-md mx-auto">
-        Our little robot searched every shelf and came back empty-handed. The link may be old, or the page never existed.
-      </p>
-      
-      {/* Actions */}
-      <div class="flex flex-wrap justify-center gap-4 mb-12">
-        <a 
-          href="/"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-vrc-blue text-white font-semibold uppercase tracking-wider hover:bg-vrc-blue-dark transition-colors rounded-lg"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          Go Home
-        </a>
-        <button 
-          onclick="history.back()"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold uppercase tracking-wider hover:bg-gray-200 transition-colors rounded-lg"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Go Back
-        </button>
-      </div>
-      
-      {/* Helpful Links */}
-      <div class="max-w-2xl mx-auto">
-        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-          Try One of These
-        </h2>
-        <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <a href="/research" class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-            <svg class="w-6 h-6 text-vrc-blue mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span class="text-sm font-medium text-gray-700 group-hover:text-vrc-blue transition-colors">Research</span>
-          </a>
-          <a href="/summits" class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-            <svg class="w-6 h-6 text-vrc-blue mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <span class="text-sm font-medium text-gray-700 group-hover:text-vrc-blue transition-colors">Summits</span>
-          </a>
-          <a href="/map" class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-            <svg class="w-6 h-6 text-vrc-blue mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
-            <span class="text-sm font-medium text-gray-700 group-hover:text-vrc-blue transition-colors">Map</span>
-          </a>
-          <a href="/slack" class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-            <svg class="w-6 h-6 text-vrc-blue mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-            <span class="text-sm font-medium text-gray-700 group-hover:text-vrc-blue transition-colors">Community</span>
-          </a>
-        </div>
-      </div>
+
+      <ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3 p-0">
+        {
+          suggestions.map((s) => (
+            <li>
+              <a href={s.href} class="flex h-full items-center gap-3.5 rounded-2xl border border-vrc-line p-5 text-vrc-ink no-underline hover:bg-vrc-surface-2 hover:text-vrc-ink">
+                <span aria-hidden="true" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-vrc-blue-tint text-vrc-blue">
+                  <Icon name={s.icon} size={20} />
+                </span>
+                <span class="flex min-w-0 flex-col leading-snug">
+                  <strong class="font-semibold">{s.title}</strong>
+                  <span class="text-sm text-vrc-muted">{s.detail}</span>
+                </span>
+                <Icon name="chevron-right" class="ml-auto text-vrc-blue" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
-</BaseLayout>
-
+</SiteLayout>
