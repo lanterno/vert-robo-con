@@ -49,3 +49,25 @@ export function getDomains(): DomainSummary[] {
     }),
   }));
 }
+
+/** How many organisations of each robot type, for the legend. */
+export function countsByType(): { type: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const o of ORGS) counts.set(o.roboticsType, (counts.get(o.roboticsType) ?? 0) + 1);
+  return [...counts].map(([type, count]) => ({ type, count })).sort((a, b) => b.count - a.count);
+}
+
+/** Every value of a field that appears in the data, sorted, for the filters. */
+export function valuesOf(field: 'mainApplication' | 'continentHQ' | 'countryHQ'): string[] {
+  return [...new Set(ORGS.map((o) => o[field]))].filter(Boolean).sort();
+}
+
+/** The colour each robot type is drawn in, from MapV3. */
+export const TYPE_COLOURS: Record<string, string> = {
+  'Aerial Robot': '#6D5BD0',
+  'Ground Robot': '#1F9D5C',
+  'Underwater Robot': '#0B6FB8',
+  'Surface Robot': '#0B6FB8',
+  Hybrid: '#D9822B',
+  Other: '#646B7A',
+};

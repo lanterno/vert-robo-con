@@ -8,6 +8,7 @@ export * from './ics';
 export * from './news';
 export * from './rss';
 export * from './organizations';
+export * from './map-export';
 export * from './partners';
 export * from './people';
 export * from './program';
