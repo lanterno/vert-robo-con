@@ -13,7 +13,7 @@ A static Astro 5 site with no server or database.
 | Hosting | GitHub Pages on a preview domain. `.github/workflows/deploy.yml` runs the checks and `bun run build` on every push to `main`, and once a day |
 | Content | TypeScript and JSON in the repo, read through the content layer in `src/lib/content/` ([#26](docs/issues/26-data-layer-for-public-pages-repo-data-first-postgres-later.md)). Changing content means a commit and a rebuild |
 | Styling | Tailwind CSS v3 with the V3 `vrc-*` colour tokens from the design boards, and Bricolage Grotesque, Geist and Geist Mono self-hosted through Fontsource, so no font request leaves the site ([#24](docs/issues/24-v3-design-tokens-and-self-hosted-fonts.md)) |
-| Map | Leaflet and its marker-cluster plugin loaded from unpkg, with tiles from CARTO and Esri. The data is the JSON file, also served at `/data/organizations.json` |
+| Map | MapLibre GL, bundled, with tiles from OpenStreetMap. The data is the JSON file, served at `/data/organizations.json`, `.csv` and `.geojson` |
 | Types | TypeScript on Astro's strict preset, plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature` |
 
 ## Target

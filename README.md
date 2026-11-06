@@ -104,7 +104,15 @@ When adding links or summit data, edit `src/lib/` rather than hardcoding values 
 
 ## The map
 
-The `/map` page reads the fictional dataset in `src/data/organizations.json` at build time; there is no external spreadsheet and no geocoding step. The coordinates are city locations. To change the map, edit the JSON file and rebuild. The same data is served at `/data/organizations.json`.
+The `/map` page reads the fictional dataset in `src/data/organizations.json` at build time; there is no external spreadsheet and no geocoding step. The coordinates are city locations. To change the map, edit the JSON file and rebuild.
+
+The map itself is MapLibre GL, bundled rather than loaded from a CDN, on OpenStreetMap's tiles. [#77](docs/issues/77-serve-the-map-basemap-from-our-own-server-pmtiles.md) moves the basemap onto our own server. The dataset is served in three formats, all under CC BY 4.0:
+
+| Address | Format |
+| :--- | :--- |
+| `/data/organizations.json` | The dataset as it is stored, one object per organisation |
+| `/data/organizations.csv` | One row per organisation, coordinates split into latitude and longitude |
+| `/data/organizations.geojson` | A `FeatureCollection`, longitude first, carrying the licence and citation |
 
 ## Deployment
 
